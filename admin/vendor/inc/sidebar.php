@@ -1,8 +1,3 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  <ul class="sidebar navbar-nav">
      <li class="nav-item active">
          <a class="nav-link" href="admin-dashboard.php">
@@ -10,11 +5,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              <span>Dashboard</span>
          </a>
      </li>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-users"></i>
@@ -27,11 +17,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              <a class="dropdown-item" href="admin-manage-user.php">Manage</a>
          </div>
      </li>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-tools"></i>
@@ -39,16 +24,11 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
 
-             <a class="dropdown-item" href="admin-add-vehicle.php">Add</a>
-             <a class="dropdown-item" href="admin-view-vehicle.php">View</a>
-             <a class="dropdown-item" href="admin-manage-vehicle.php">Manage</a>
+             <a class="dropdown-item" href="admin-add-technician.php">Add</a>
+             <a class="dropdown-item" href="admin-view-technician.php">View</a>
+             <a class="dropdown-item" href="admin-manage-technician.php">Manage</a>
          </div>
      </li>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-book"></i>
@@ -61,11 +41,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              <a class="dropdown-item" href="admin-manage-booking.php">Manage</a>
          </div>
      </li>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-comments"></i>
@@ -77,11 +52,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          </div>
      </li>
 
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <li class="nav-item">
          <a class="nav-link" href="admin-view-syslogs.php">
              <i class="fas fa-fw fa fa-history"></i>
@@ -94,8 +64,3 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              <span>Settings</span></a>
      </li>
  </ul>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->

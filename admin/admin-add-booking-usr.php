@@ -1,8 +1,4 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
---><?php
+<?php
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
@@ -34,20 +30,10 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                 }
             }
 ?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  <!DOCTYPE html>
  <html lang="en">
 
  <?php include('vendor/inc/head.php');?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  <body id="page-top">
      <!--Start Navigation Bar-->
@@ -82,13 +68,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                  </script>
 
                  <?php } ?>
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
                  <p>
-                     <marquee onMouseOver="this.stop()" onMouseOut="this.start()">This code is not for sale. Its sole owner is Code Camp BD For any need you can message me <a href="https://www.facebook.com/dev.mhrony">MH RONY</a> and don't forget to <a href="https://www.youtube.com/@codecampbdofficial">subscribe</a> the youtube channel.</marquee>
                  </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
@@ -148,11 +128,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                                  <input type="email" value="<?php echo $row->u_email;?>" class="form-control" name="u_email"">
             </div>
 
-             <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
             <div class=" form-group">
                                  <label for="exampleFormControlSelect1">Vehicle Category</label>
@@ -210,11 +185,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                  </div>
 
                  <hr>
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>
@@ -248,11 +218,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                  </div>
              </div>
          </div>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <!-- Bootstrap core JavaScript-->
          <script src="vendor/jquery/jquery.min.js"></script>
          <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -273,11 +238,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <script src="vendor/js/demo/chart-area-demo.js"></script>
          <!--INject Sweet alert js-->
          <script src="vendor/js/swal.js"></script>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  </body>
 
  </html>

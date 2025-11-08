@@ -1,8 +1,4 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
---><?php
+<?php
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
@@ -13,11 +9,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
  <html lang="en">
 
  <?php include('vendor/inc/head.php');?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  <body id="page-top">
 
@@ -32,13 +23,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <div id="content-wrapper">
 
              <div class="container-fluid">
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
                  <p>
-                     <marquee onMouseOver="this.stop()" onMouseOut="this.start()">This code is not for sale. Its sole owner is Code Camp BD For any need you can message me <a href="https://www.facebook.com/dev.mhrony">MH RONY</a> and don't forget to <a href="https://www.youtube.com/@codecampbdofficial">subscribe</a> the youtube channel.</marquee>
                  </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
@@ -47,11 +32,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                      </li>
                      <li class="breadcrumb-item active">View</li>
                  </ol>
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
                  <!-- DataTables Example -->
                  <div class="card mb-3">
                      <div class="card-header">
@@ -105,11 +85,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              <?php include("vendor/inc/footer.php");?>
          </div>
          <!-- /.content-wrapper -->
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      </div>
      <!-- /#wrapper -->
 
@@ -136,11 +111,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              </div>
          </div>
      </div>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <!-- Bootstrap core JavaScript-->
      <script src="vendor/jquery/jquery.min.js"></script>
      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -159,10 +129,5 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
      <script src="js/demo/datatables-demo.js"></script>
 
  </body>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  </html>

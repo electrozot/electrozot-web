@@ -24,7 +24,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
             <h6 class="dropdown-header">Available Technicians:</h6>
-            <a class="dropdown-item" href="usr-book-vehicle.php">Book</a>
+            <a class="dropdown-item" href="usr-book-technician.php">Book</a>
         </div>
     </li>
 
@@ -35,7 +35,7 @@
         </a>
         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
             <h6 class="dropdown-header">Bookings:</h6>
-            <a class="dropdown-item" href="usr-book-vehicle.php">Add</a>
+            <a class="dropdown-item" href="usr-book-technician.php">Add</a>
             <a class="dropdown-item" href="user-view-booking.php">View</a>
             <a class="dropdown-item" href="user-manage-booking.php">Manage</a>
         </div>

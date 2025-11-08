@@ -41,11 +41,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 <html lang="en">
 
 <head>
-    <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -63,11 +58,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 </head>
 
 <body class="bg-dark">
-    <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
     <div class="container">
         <div class="card card-login mx-auto mt-5">
             <div class="card-header">Client Login Panel</div>
@@ -107,11 +97,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
             </div>
         </div>
     </div>
-    <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

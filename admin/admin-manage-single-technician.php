@@ -1,32 +1,28 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
---><?php
+<?php
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-  //Add Technician
-  if(isset($_POST['add_tech']))
+  //Update Technician
+  if(isset($_POST['update_tech']))
     {
-
+            $t_id = $_GET['t_id'];
             $t_name=$_POST['t_name'];
             $t_id_no = $_POST['t_id_no'];
             $t_category=$_POST['t_category'];
-            $t_experience=$_POST['t_experience'];
             $t_status=$_POST['t_status'];
             $t_specialization=$_POST['t_specialization'];
+            $t_experience=$_POST['t_experience'];
             $t_pic=$_FILES["t_pic"]["name"];
-		        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status ) values(?,?,?,?,?,?,?)";
+            move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+            $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=? where t_id = ?";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status);
+            $rc=$stmt->bind_param('sssssssi', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_id);
             $stmt->execute();
                 if($stmt)
                 {
-                    $succ = "Technician Added";
+                    $succ = "Technician Updated";
                 }
                 else 
                 {
@@ -34,37 +30,22 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                 }
             }
 ?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  <!DOCTYPE html>
  <html lang="en">
 
  <?php include('vendor/inc/head.php');?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  <body id="page-top">
      <!--Start Navigation Bar-->
      <?php include("vendor/inc/nav.php");?>
      <!--Navigation Bar-->
-
      <div id="wrapper">
 
          <!-- Sidebar -->
          <?php include("vendor/inc/sidebar.php");?>
          <!--End Sidebar-->
          <div id="content-wrapper">
-             <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+
              <div class="container-fluid">
                  <?php if(isset($succ)) {?>
                  <!--This code for injecting an alert-->
@@ -84,50 +65,56 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                      },
                      100);
                  </script>
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+
                  <?php } ?>
-                 <p>
-                     <marquee onMouseOver="this.stop()" onMouseOut="this.start()">This code is not for sale. Its sole owner is Code Camp BD For any need you can message me <a href="https://www.facebook.com/dev.mhrony">MH RONY</a> and don't forget to <a href="https://www.youtube.com/@codecampbdofficial">subscribe</a> the youtube channel.</marquee>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
                          <a href="#">Technicians</a>
                      </li>
-                     <li class="breadcrumb-item active">Add Technician</li>
+                     <li class="breadcrumb-item active">Update Technician</li>
                  </ol>
                  <hr>
                  <div class="card">
                      <div class="card-header">
-                         Add Technician
+                         Update Technician
                      </div>
-                     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
                      <div class="card-body">
-                         <!--Add Technician Form-->
+                         <!--Update Technician Form-->
+                         <?php
+            $aid=$_GET['t_id'];
+            $ret="select * from tms_technician where t_id=?";
+            $stmt= $mysqli->prepare($ret) ;
+            $stmt->bind_param('i',$aid);
+            $stmt->execute() ;//ok
+            $res=$stmt->get_result();
+            //$cnt=1;
+            while($row=$res->fetch_object())
+        {
+        ?>
+                         <!-- Author By: MH RONY
+        Author Website: https://developerrony.com
+        Github Link: https://github.com/dev-mhrony
+        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
+        -->
                          <form method="POST" enctype="multipart/form-data">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Technician Name</label>
-                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="t_name">
+                                 <input type="text" value="<?php echo $row->t_name;?>" required class="form-control" id="exampleInputEmail1" name="t_name">
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Technician ID Number</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_id_no">
+                                 <input type="text" value="<?php echo $row->t_id_no;?>" class="form-control" id="exampleInputEmail1" name="t_id_no">
                              </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Years of Experience</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_experience" placeholder="e.g., 5">
-                             </div>
+
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Specialization</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_specialization" placeholder="e.g., Electrical Repairs, Plumbing">
+                                 <input type="text" value="<?php echo $row->t_specialization;?>" class="form-control" id="exampleInputEmail1" name="t_specialization">
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="exampleInputEmail1">Years of Experience</label>
+                                 <input type="text" value="<?php echo $row->t_experience;?>" class="form-control" id="exampleInputEmail1" name="t_experience">
                              </div>
 
                              <div class="form-group">
@@ -147,32 +134,26 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                                  <select class="form-control" name="t_status" id="exampleFormControlSelect1">
                                      <option>Booked</option>
                                      <option>Available</option>
-
                                  </select>
                              </div>
-                             <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
-                             <div class="form-group col-md-12">
-                                 <label for="exampleInputEmail1">Technician Picture</label>
-                                 <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
+                             <div class="card form-group" style="width: 30rem">
+                                 <img src="../vendor/img/<?php echo $row->t_pic;?>" class="card-img-top">
+                                 <div class="card-body">
+                                     <h5 class="card-title">Technician Picture</h5>
+                                     <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
+                                 </div>
                              </div>
-
-                             <button type="submit" name="add_tech" class="btn btn-success">Add Technician</button>
+                             <hr>
+                             <button type="submit" name="update_tech" class="btn btn-success">Update Technician</button>
                          </form>
                          <!-- End Form-->
+                         <?php }?>
                      </div>
                  </div>
 
                  <hr>
 
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>
 
@@ -181,16 +162,11 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 
          </div>
          <!-- /#wrapper -->
-
          <!-- Scroll to Top Button-->
          <a class="scroll-to-top rounded" href="#page-top">
              <i class="fas fa-angle-up"></i>
          </a>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+
          <!-- Logout Modal-->
          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
              <div class="modal-dialog" role="document">
@@ -209,11 +185,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                  </div>
              </div>
          </div>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <!-- Bootstrap core JavaScript-->
          <script src="vendor/jquery/jquery.min.js"></script>
          <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -228,11 +199,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 
          <!-- Custom scripts for all pages-->
          <script src="vendor/js/sb-admin.min.js"></script>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+
          <!-- Demo scripts for this page-->
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
@@ -240,10 +207,5 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <script src="vendor/js/swal.js"></script>
 
  </body>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  </html>

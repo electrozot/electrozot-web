@@ -1,19 +1,9 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  <!DOCTYPE html>
  <html lang="en">
 
  <?php include("vendor/inc/head.php");?>
 
  <body>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <!-- Navigation -->
      <?php include("vendor/inc/nav.php");?>
 
@@ -32,11 +22,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          </ol>
 
          <!-- Intro Content -->
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <div class="row">
              <div class="col-lg-6">
                  <img class="img-fluid rounded mb-4" src="vendor/img/pexels-pixabay-35967.jpg" alt="">
@@ -61,11 +46,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <!-- /.row -->
      </div>
      <!-- /.container -->
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <!-- Footer -->
      <?php include("vendor/inc/footer.php");?>
 
@@ -74,10 +54,5 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
  </body>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  </html>

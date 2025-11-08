@@ -1,19 +1,9 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
  <!DOCTYPE html>
  <html lang="en">
 
  <?php include("vendor/inc/head.php");?>
 
  <body>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
      <!-- Navigation -->
      <?php include("vendor/inc/nav.php");?>
@@ -23,22 +13,12 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <!-- Page Heading/Breadcrumbs -->
          <h1 class="mt-4 mb-3">Contact Us
          </h1>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <ol class="breadcrumb">
              <li class="breadcrumb-item">
                  <a href="index.php">Home</a>
              </li>
              <li class="breadcrumb-item active">Contact</li>
          </ol>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <!-- Content Row -->
          <div class="row">
              <!-- Map Column -->
@@ -75,11 +55,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                      <button type="submit" class="btn btn-success" id="sendMessageButton">Send Message</button>
                  </form>
              </div>
-             <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
              <!-- Contact Details Column -->
              <div class="col-lg-4 mb-4">
                  <h3>Contact Details</h3>
@@ -102,11 +77,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
              </div>
          </div>
          <!-- /.row -->
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
          <!-- Contact Form -->
          <!-- In order to set the email address and subject line for the contact form go to the bin/contact_me.php file. -->
          <div class="row">
@@ -120,11 +90,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 
      <!-- Footer -->
      <?php include("vendor/inc/footer.php");?>
-     <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
      <!-- Bootstrap core JavaScript -->
      <script src="vendor/jquery/jquery.min.js"></script>
      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -135,10 +100,5 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
      <script src="js/contact_me.js"></script>
 
  </body>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  </html>

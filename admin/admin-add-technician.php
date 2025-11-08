@@ -3,20 +3,26 @@
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
   check_login();
-  $aid=$_SESSION['u_id'];
-  //Add USer
-  if(isset($_POST['give_feedback']))
+  $aid=$_SESSION['a_id'];
+  //Add Technician
+  if(isset($_POST['add_tech']))
     {
 
-            $f_uname=$_POST['f_uname'];
-            $f_content = $_POST['f_content'];
-            $query="insert into tms_feedback (f_uname, f_content) values(?,?)";
+            $t_name=$_POST['t_name'];
+            $t_id_no = $_POST['t_id_no'];
+            $t_category=$_POST['t_category'];
+            $t_experience=$_POST['t_experience'];
+            $t_status=$_POST['t_status'];
+            $t_specialization=$_POST['t_specialization'];
+            $t_pic=$_FILES["t_pic"]["name"];
+		        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status ) values(?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('ss', $f_uname, $f_content);
+            $rc=$stmt->bind_param('sssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status);
             $stmt->execute();
                 if($stmt)
                 {
-                    $succ = "Feedback Submitted";
+                    $succ = "Technician Added";
                 }
                 else 
                 {
@@ -33,6 +39,7 @@
      <!--Start Navigation Bar-->
      <?php include("vendor/inc/nav.php");?>
      <!--Navigation Bar-->
+
      <div id="wrapper">
 
          <!-- Sidebar -->
@@ -58,51 +65,65 @@
                      },
                      100);
                  </script>
-
                  <?php } ?>
-                 <p>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="user-dashboard.php">Dashboard</a>
+                         <a href="#">Technicians</a>
                      </li>
-                     <li class="breadcrumb-item ">Feedbacks</li>
+                     <li class="breadcrumb-item active">Add Technician</li>
                  </ol>
                  <hr>
                  <div class="card">
                      <div class="card-header">
-                         Give Feedback
+                         Add Technician
                      </div>
                      <div class="card-body">
-                         <!--Add User Form-->
-                         <form method="POST">
-                             <?php
-                $aid=$_SESSION['u_id'];
-                $ret="select * from tms_user where u_id=?";
-                $stmt= $mysqli->prepare($ret) ;
-                $stmt->bind_param('i',$aid);
-                $stmt->execute() ;//ok
-                $res=$stmt->get_result();
-                //$cnt=1;
-                while($row=$res->fetch_object())
-                     {
-            ?>
-                             <!-- Author By: MH RONY
-            Author Website: https://developerrony.com
-            Github Link: https://github.com/dev-mhrony
-            Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-            -->
+                         <!--Add Technician Form-->
+                         <form method="POST" enctype="multipart/form-data">
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">My Name</label>
-                                 <input type="text" required readonly class="form-control" value="<?php echo $row->u_fname;?> <?php echo $row->u_lname;?> " id="exampleInputEmail1" name="f_uname">
+                                 <label for="exampleInputEmail1">Technician Name</label>
+                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="t_name">
                              </div>
-                             <?php }?>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">My Testimonial</label>
-                                 <textarea type="text" class="form-control" placeholder="Give Your Feedback" id="exampleInputEmail1" name="f_content"></textarea>
+                                 <label for="exampleInputEmail1">Technician ID Number</label>
+                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_id_no">
                              </div>
-                             <button type="submit" name="give_feedback" class="btn btn-success">Give Feedback</button>
+                             <div class="form-group">
+                                 <label for="exampleInputEmail1">Years of Experience</label>
+                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_experience" placeholder="e.g., 5">
+                             </div>
+                             <div class="form-group">
+                                 <label for="exampleInputEmail1">Specialization</label>
+                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_specialization" placeholder="e.g., Electrical Repairs, Plumbing">
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="exampleFormControlSelect1">Service Category</label>
+                                 <select class="form-control" name="t_category" id="exampleFormControlSelect1">
+                                     <option>Electrical</option>
+                                     <option>Plumbing</option>
+                                     <option>HVAC</option>
+                                     <option>Appliance</option>
+                                     <option>General</option>
+
+                                 </select>
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="exampleFormControlSelect1">Technician Status</label>
+                                 <select class="form-control" name="t_status" id="exampleFormControlSelect1">
+                                     <option>Booked</option>
+                                     <option>Available</option>
+
+                                 </select>
+                             </div>
+                             <div class="form-group col-md-12">
+                                 <label for="exampleInputEmail1">Technician Picture</label>
+                                 <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
+                             </div>
+
+                             <button type="submit" name="add_tech" class="btn btn-success">Add Technician</button>
                          </form>
                          <!-- End Form-->
                      </div>
@@ -136,7 +157,7 @@
                      <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                      <div class="modal-footer">
                          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                         <a class="btn btn-danger" href="user-logout.php">Logout</a>
+                         <a class="btn btn-danger" href="admin-logout.php">Logout</a>
                      </div>
                  </div>
              </div>
@@ -155,12 +176,12 @@
 
          <!-- Custom scripts for all pages-->
          <script src="vendor/js/sb-admin.min.js"></script>
-
          <!-- Demo scripts for this page-->
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
          <!--INject Sweet alert js-->
          <script src="vendor/js/swal.js"></script>
+
  </body>
 
  </html>

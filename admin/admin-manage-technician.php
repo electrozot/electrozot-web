@@ -4,6 +4,25 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+
+  if(isset($_GET['del']))
+{
+      $id=intval($_GET['del']);
+      $adn="delete from tms_technician where t_id=?";
+      $stmt= $mysqli->prepare($adn);
+      $stmt->bind_param('i',$id);
+      $stmt->execute();
+      $stmt->close();	 
+
+        if($stmt)
+        {
+          $succ = "Technician Removed";
+        }
+          else
+          {
+            $err = "Try Again Later";
+          }
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -22,20 +41,39 @@
          <div id="content-wrapper">
 
              <div class="container-fluid">
-                 <p>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="#">User</a>
+                         <a href="#">Technicians</a>
                      </li>
-                     <li class="breadcrumb-item active">Add Booking</li>
+                     <li class="breadcrumb-item active">Manage Technicians</li>
                  </ol>
+                 <?php if(isset($succ)) {?>
+                 <!--This code for injecting an alert-->
+                 <script>
+                 setTimeout(function() {
+                         swal("Success!", "<?php echo $succ;?>!", "success");
+                     },
+                     100);
+                 </script>
+
+                 <?php } ?>
+                 <?php if(isset($err)) {?>
+                 <!--This code for injecting an alert-->
+                 <script>
+                 setTimeout(function() {
+                         swal("Failed!", "<?php echo $err;?>!", "Failed");
+                     },
+                     100);
+                 </script>
+
+                 <?php } ?>
+
                  <!-- DataTables Example -->
                  <div class="card mb-3">
                      <div class="card-header">
-                         <i class="fas fa-users"></i>
-                         Registered Users
+                         <i class="fas fa-tools"></i>
+                         Available Technicians
                      </div>
                      <div class="card-body">
                          <div class="table-responsive">
@@ -44,15 +82,14 @@
                                      <tr>
                                          <th>#</th>
                                          <th>Name</th>
-                                         <th>Contact</th>
-                                         <th>Address</th>
-                                         <th>Email</th>
-                                         <th>Action</th>
+                                         <th>ID Number</th>
+                                         <th>Specialization</th>
+                                         <th>Status</th>
                                      </tr>
                                  </thead>
                                  <?php
 
-                    $ret="SELECT * FROM tms_user where u_category= 'User'"; //sql code to get to ten trains randomly
+                    $ret="SELECT * FROM tms_technician "; 
                     $stmt= $mysqli->prepare($ret) ;
                     $stmt->execute() ;//ok
                     $res=$stmt->get_result();
@@ -68,16 +105,12 @@
                                  <tbody>
                                      <tr>
                                          <td><?php echo $cnt;?></td>
-                                         <td><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></td>
-                                         <td><?php echo $row->u_phone;?></td>
-                                         <td><?php echo $row->u_addr;?></td>
-                                         <td><?php echo $row->u_email;?></td>
+                                         <td><?php echo $row->t_name;?></td>
+                                         <td><?php echo $row->t_id_no;?></td>
+                                         <td><?php echo $row->t_specialization;?></td>
                                          <td>
-                                             <a href="admin-add-booking-usr.php?u_id=<?php echo $row->u_id;?>" class="badge badge-success">
-                                                 <i class="fa fa-clipboard"></i>
-                                                 Book Vehicle
-                                             </a>
-                                             <!-- <a href="admin-manage-user.php?del=<?php echo $row->u_id;?>" class="badge badge-danger">Delete</a> -->
+                                             <a href="admin-manage-single-technician.php?t_id=<?php echo $row->t_id;?>" class="badge badge-success">Update</a>
+                                             <a href="admin-manage-technician.php?del=<?php echo $row->t_id;?>" class="badge badge-danger">Delete</a>
                                          </td>
                                      </tr>
                                  </tbody>
@@ -90,11 +123,11 @@
                  </div>
              </div>
              <!-- /.container-fluid -->
+
              <!-- Sticky Footer -->
              <?php include("vendor/inc/footer.php");?>
          </div>
          <!-- /.content-wrapper -->
-
      </div>
      <!-- /#wrapper -->
 
@@ -136,7 +169,6 @@
 
      <!-- Demo scripts for this page-->
      <script src="js/demo/datatables-demo.js"></script>
-
  </body>
 
  </html>
