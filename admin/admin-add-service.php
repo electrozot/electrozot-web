@@ -4,25 +4,22 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-  //Update Technician
-  if(isset($_POST['update_tech']))
+  //Add Service
+  if(isset($_POST['add_service']))
     {
-            $t_id = $_GET['t_id'];
-            $t_name=$_POST['t_name'];
-            $t_id_no = $_POST['t_id_no'];
-            $t_category=$_POST['t_category'];
-            $t_status=$_POST['t_status'];
-            $t_specialization=$_POST['t_specialization'];
-            $t_experience=$_POST['t_experience'];
-            $t_pic=$_FILES["t_pic"]["name"];
-            move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=? where t_id = ?";
+            $s_name=$_POST['s_name'];
+            $s_description = $_POST['s_description'];
+            $s_category=$_POST['s_category'];
+            $s_price=$_POST['s_price'];
+            $s_duration=$_POST['s_duration'];
+            $s_status=$_POST['s_status'];
+            $query="insert into tms_service (s_name, s_description, s_category, s_price, s_duration, s_status) values(?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssssi', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_id);
+            $rc=$stmt->bind_param('sssdss', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status);
             $stmt->execute();
                 if($stmt)
                 {
-                    $succ = "Technician Updated";
+                    $succ = "Service Added";
                 }
                 else 
                 {
@@ -36,19 +33,15 @@
  <?php include('vendor/inc/head.php');?>
 
  <body id="page-top">
-     <!--Start Navigation Bar-->
      <?php include("vendor/inc/nav.php");?>
-     <!--Navigation Bar-->
+
      <div id="wrapper">
 
          <!-- Sidebar -->
          <?php include("vendor/inc/sidebar.php");?>
-         <!--End Sidebar-->
          <div id="content-wrapper">
-
              <div class="container-fluid">
                  <?php if(isset($succ)) {?>
-                 <!--This code for injecting an alert-->
                  <script>
                  setTimeout(function() {
                          swal("Success!", "<?php echo $succ;?>!", "success");
@@ -58,101 +51,70 @@
 
                  <?php } ?>
                  <?php if(isset($err)) {?>
-                 <!--This code for injecting an alert-->
                  <script>
                  setTimeout(function() {
                          swal("Failed!", "<?php echo $err;?>!", "Failed");
                      },
                      100);
                  </script>
-
                  <?php } ?>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="#">Technicians</a>
+                         <a href="#">Services</a>
                      </li>
-                     <li class="breadcrumb-item active">Update Technician</li>
+                     <li class="breadcrumb-item active">Add Service</li>
                  </ol>
                  <hr>
                  <div class="card">
                      <div class="card-header">
-                         Update Technician
+                         Add Service
                      </div>
                      <div class="card-body">
-                         <!--Update Technician Form-->
-                         <?php
-            $aid=$_GET['t_id'];
-            $ret="select * from tms_technician where t_id=?";
-            $stmt= $mysqli->prepare($ret) ;
-            $stmt->bind_param('i',$aid);
-            $stmt->execute() ;//ok
-            $res=$stmt->get_result();
-            //$cnt=1;
-            while($row=$res->fetch_object())
-        {
-        ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
-                         <form method="POST" enctype="multipart/form-data">
+                         <!--Add Service Form-->
+                         <form method="POST">
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Technician Name</label>
-                                 <input type="text" value="<?php echo $row->t_name;?>" required class="form-control" id="exampleInputEmail1" name="t_name">
+                                 <label for="exampleInputEmail1">Service Name</label>
+                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="s_name" placeholder="Enter Service Name">
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Technician ID Number</label>
-                                 <input type="text" value="<?php echo $row->t_id_no;?>" class="form-control" id="exampleInputEmail1" name="t_id_no">
+                                 <label for="exampleInputEmail1">Service Description</label>
+                                 <textarea class="form-control" required name="s_description" rows="4" placeholder="Enter Service Description"></textarea>
                              </div>
-
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Specialization</label>
-                                 <input type="text" value="<?php echo $row->t_specialization;?>" class="form-control" id="exampleInputEmail1" name="t_specialization">
-                             </div>
-
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Years of Experience</label>
-                                 <input type="text" value="<?php echo $row->t_experience;?>" class="form-control" id="exampleInputEmail1" name="t_experience">
-                             </div>
-
                              <div class="form-group">
                                  <label for="exampleFormControlSelect1">Service Category</label>
-                                 <select class="form-control" name="t_category" id="exampleFormControlSelect1">
+                                 <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
+                                     <option value="">Select Category</option>
                                      <option>Electrical</option>
                                      <option>Plumbing</option>
                                      <option>HVAC</option>
                                      <option>Appliance</option>
                                      <option>General</option>
-
                                  </select>
                              </div>
-
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Technician Status</label>
-                                 <select class="form-control" name="t_status" id="exampleFormControlSelect1">
-                                     <option>Booked</option>
-                                     <option>Available</option>
-                                 </select>
+                                 <label for="exampleInputEmail1">Service Price</label>
+                                 <input type="number" step="0.01" required class="form-control" id="exampleInputEmail1" name="s_price" placeholder="Enter Service Price">
                              </div>
-                             <div class="card form-group" style="width: 30rem">
-                                 <img src="../vendor/img/<?php echo $row->t_pic;?>" class="card-img-top">
-                                 <div class="card-body">
-                                     <h5 class="card-title">Technician Picture</h5>
-                                     <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
-                                 </div>
+                             <div class="form-group">
+                                 <label for="exampleInputEmail1">Service Duration</label>
+                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="s_duration" placeholder="e.g., 2-3 hours">
+                             </div>
+                             <div class="form-group">
+                                 <label for="exampleFormControlSelect1">Service Status</label>
+                                 <select class="form-control" name="s_status" id="exampleFormControlSelect1" required>
+                                     <option>Active</option>
+                                     <option>Inactive</option>
+                                 </select>
                              </div>
                              <hr>
-                             <button type="submit" name="update_tech" class="btn btn-success">Update Technician</button>
+                             <button type="submit" name="add_service" class="btn btn-success">Add Service</button>
                          </form>
                          <!-- End Form-->
-                         <?php }?>
                      </div>
                  </div>
 
                  <hr>
-
 
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>
@@ -162,6 +124,7 @@
 
          </div>
          <!-- /#wrapper -->
+
          <!-- Scroll to Top Button-->
          <a class="scroll-to-top rounded" href="#page-top">
              <i class="fas fa-angle-up"></i>
@@ -203,9 +166,9 @@
          <!-- Demo scripts for this page-->
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
-         <!--INject Sweet alert js-->
          <script src="vendor/js/swal.js"></script>
 
  </body>
 
  </html>
+

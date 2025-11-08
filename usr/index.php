@@ -47,7 +47,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Online Car Booking System - Client Login</title>
+    <title>Technician Booking System - Client Login</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

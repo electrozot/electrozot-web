@@ -4,25 +4,6 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-
-  if(isset($_GET['del']))
-{
-      $id=intval($_GET['del']);
-      $adn="delete from tms_technician where t_id=?";
-      $stmt= $mysqli->prepare($adn);
-      $stmt->bind_param('i',$id);
-      $stmt->execute();
-      $stmt->close();	 
-
-        if($stmt)
-        {
-          $succ = "Technician Removed";
-        }
-          else
-          {
-            $err = "Try Again Later";
-          }
-  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -44,36 +25,16 @@
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="#">Technicians</a>
+                         <a href="#">Service Bookings</a>
                      </li>
-                     <li class="breadcrumb-item active">Manage Technicians</li>
+                     <li class="breadcrumb-item active">Manage</li>
                  </ol>
-                 <?php if(isset($succ)) {?>
-                 <!--This code for injecting an alert-->
-                 <script>
-                 setTimeout(function() {
-                         swal("Success!", "<?php echo $succ;?>!", "success");
-                     },
-                     100);
-                 </script>
 
-                 <?php } ?>
-                 <?php if(isset($err)) {?>
-                 <!--This code for injecting an alert-->
-                 <script>
-                 setTimeout(function() {
-                         swal("Failed!", "<?php echo $err;?>!", "Failed");
-                     },
-                     100);
-                 </script>
-
-                 <?php } ?>
-
-                 <!-- DataTables Example -->
+                 <!--Service Bookings-->
                  <div class="card mb-3">
                      <div class="card-header">
-                         <i class="fas fa-tools"></i>
-                         Available Technicians
+                         <i class="fas fa-table"></i>
+                         Service Bookings
                      </div>
                      <div class="card-body">
                          <div class="table-responsive">
@@ -81,45 +42,64 @@
                                  <thead>
                                      <tr>
                                          <th>#</th>
-                                         <th>Name</th>
-                                         <th>ID Number</th>
-                                         <th>Specialization</th>
+                                         <th>Customer Name</th>
+                                         <th>Service</th>
+                                         <th>Booking Date</th>
+                                         <th>Booking Time</th>
+                                         <th>Assigned Technician</th>
                                          <th>Status</th>
+                                         <th>Action</th>
                                      </tr>
                                  </thead>
-                                 <?php
-
-                    $ret="SELECT * FROM tms_technician "; 
-                    $stmt= $mysqli->prepare($ret) ;
-                    $stmt->execute() ;//ok
-                    $res=$stmt->get_result();
-                    $cnt=1;
-                    while($row=$res->fetch_object())
+                                 <tbody>
+                                     <?php
+                  $ret="SELECT sb.*, u.u_fname, u.u_lname, s.s_name, t.t_name as tech_name 
+                        FROM tms_service_booking sb
+                        LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
+                        LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                        LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+                        WHERE sb.sb_status IN ('Pending', 'Approved', 'In Progress')
+                        ORDER BY sb.sb_created_at DESC"; 
+                  $stmt= $mysqli->prepare($ret) ;
+                  $stmt->execute();
+                  $res=$stmt->get_result();
+                  $cnt=1;
+                  while($row=$res->fetch_object())
                 {
                 ?>
-                                 <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
-                                 <tbody>
                                      <tr>
                                          <td><?php echo $cnt;?></td>
-                                         <td><?php echo $row->t_name;?></td>
-                                         <td><?php echo $row->t_id_no;?></td>
-                                         <td><?php echo $row->t_specialization;?></td>
+                                         <td><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></td>
+                                         <td><?php echo $row->s_name;?></td>
+                                         <td><?php echo date('M d, Y', strtotime($row->sb_booking_date));?></td>
+                                         <td><?php echo date('h:i A', strtotime($row->sb_booking_time));?></td>
+                                         <td><?php echo $row->tech_name ? $row->tech_name : '<span class="badge badge-warning">Not Assigned</span>';?></td>
                                          <td>
-                                             <a href="admin-manage-single-vehicle.php?t_id=<?php echo $row->t_id;?>" class="badge badge-success">Update</a>
-                                             <a href="admin-manage-vehicle.php?del=<?php echo $row->t_id;?>" class="badge badge-danger">Delete</a>
+                                             <?php 
+                                             if($row->sb_status == "Pending"){ 
+                                                 echo '<span class="badge badge-warning">'.$row->sb_status.'</span>'; 
+                                             } elseif($row->sb_status == "Approved"){ 
+                                                 echo '<span class="badge badge-info">'.$row->sb_status.'</span>'; 
+                                             } elseif($row->sb_status == "In Progress"){ 
+                                                 echo '<span class="badge badge-primary">'.$row->sb_status.'</span>'; 
+                                             } elseif($row->sb_status == "Completed"){ 
+                                                 echo '<span class="badge badge-success">'.$row->sb_status.'</span>'; 
+                                             } else { 
+                                                 echo '<span class="badge badge-danger">'.$row->sb_status.'</span>'; 
+                                             }
+                                             ?>
+                                         </td>
+                                         <td>
+                                             <a href="admin-assign-technician.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-success">Assign Technician</a>
+                                             <a href="admin-view-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-info">View Details</a>
                                          </td>
                                      </tr>
-                                 </tbody>
-                                 <?php $cnt = $cnt+1; }?>
+                                     <?php $cnt = $cnt+1; }?>
 
+                                 </tbody>
                              </table>
                          </div>
                      </div>
-                     <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                  </div>
              </div>
              <!-- /.container-fluid -->
@@ -172,3 +152,4 @@
  </body>
 
  </html>
+

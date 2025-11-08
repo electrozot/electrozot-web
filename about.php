@@ -28,19 +28,17 @@
              </div>
              <div class="col-lg-6">
                  <h2>About Us</h2>
-                 <p>
-                     Online Car Booking System is a system build to deal with problems faced in
-                     transportation. Major problems faced in this transport sector are such as task allocation,
-                     tracking of Online Cars, assigning routes, payment, booking order, delivery report, generating
-                     transactions receipt, overworking of the employees, security of goods, users, drivers and also
-                     maintenance of the Online Cars in terms of finance and time consumption.Online Car Booking System
-                     will be able to solve major problems such as task allocation where by a GPRS will
-                     be mounted in all Online Cars and cab to ensure that each and every vehicle and cab is traced and
-                     assigned a tasks at a time, also keep track of all financial reports and expenses incurred in the
-                     organization by ensuring that all payments are made through credit/debit card or pay bill. The
-                     system will be able to have details of all the customers who has booked Online Car and also view
-                     the vehicles with tasks at hand and those without.
-                 </p>
+                <p>
+                    Technician Booking System is a system built to deal with problems faced in
+                    finding and booking professional technicians. Major problems faced in this sector are such as task allocation,
+                    tracking of technicians, assigning services, payment, booking order, service reports, generating
+                    transactions receipt, and ensuring quality service delivery. Our Technician Booking System
+                    will be able to solve major problems such as efficient technician allocation, ensuring that
+                    each technician is properly tracked and assigned tasks, keeping track of all financial reports and expenses incurred,
+                    and ensuring that all payments are made through secure payment methods. The
+                    system will be able to have details of all the customers who have booked technicians and also view
+                    the technicians with tasks at hand and those available for booking.
+                </p>
              </div>
          </div>
          <!-- /.row -->

@@ -4,9 +4,29 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+
+  if(isset($_GET['del']))
+{
+      $id=intval($_GET['del']);
+      $adn="delete from tms_service where s_id=?";
+      $stmt= $mysqli->prepare($adn);
+      $stmt->bind_param('i',$id);
+      $stmt->execute();
+      $stmt->close();	 
+
+        if($stmt)
+        {
+          $succ = "Service Removed";
+        }
+          else
+          {
+            $err = "Try Again Later";
+          }
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
+
  <?php include('vendor/inc/head.php');?>
 
  <body id="page-top">
@@ -21,55 +41,72 @@
          <div id="content-wrapper">
 
              <div class="container-fluid">
-                 <p>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="#">Drivers</a>
+                         <a href="#">Services</a>
                      </li>
-                     <li class="breadcrumb-item active">View Drivers</li>
+                     <li class="breadcrumb-item active">Manage Services</li>
                  </ol>
+                 <?php if(isset($succ)) {?>
+                 <script>
+                 setTimeout(function() {
+                         swal("Success!", "<?php echo $succ;?>!", "success");
+                     },
+                     100);
+                 </script>
+
+                 <?php } ?>
+                 <?php if(isset($err)) {?>
+                 <script>
+                 setTimeout(function() {
+                         swal("Failed!", "<?php echo $err;?>!", "Failed");
+                     },
+                     100);
+                 </script>
+
+                 <?php } ?>
+
                  <!-- DataTables Example -->
                  <div class="card mb-3">
                      <div class="card-header">
-                         <i class="fas fa-users"></i>
-                         Registered Users
+                         <i class="fas fa-cogs"></i>
+                         Available Services
                      </div>
                      <div class="card-body">
                          <div class="table-responsive">
-                             <table class="table table-bordered table-striped table-hover" id="dataTable" width="100%" cellspacing="0">
+                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                  <thead>
                                      <tr>
                                          <th>#</th>
-                                         <th>Name</th>
-                                         <th>Contact</th>
-                                         <th>Address</th>
-                                         <th>Email</th>
+                                         <th>Service Name</th>
+                                         <th>Category</th>
+                                         <th>Price</th>
+                                         <th>Status</th>
+                                         <th>Action</th>
                                      </tr>
                                  </thead>
                                  <?php
 
-                    $ret="SELECT * FROM tms_user where u_category = 'Driver'  ORDER BY RAND() LIMIT 1000  "; 
+                    $ret="SELECT * FROM tms_service "; 
                     $stmt= $mysqli->prepare($ret) ;
-                    $stmt->execute() ;//ok
+                    $stmt->execute();
                     $res=$stmt->get_result();
                     $cnt=1;
                     while($row=$res->fetch_object())
                 {
                 ?>
-                                 <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
                                  <tbody>
                                      <tr>
                                          <td><?php echo $cnt;?></td>
-                                         <td><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></td>
-                                         <td><?php echo $row->u_phone;?></td>
-                                         <td><?php echo $row->u_addr;?></td>
-                                         <td><?php echo $row->u_email;?></td>
+                                         <td><?php echo $row->s_name;?></td>
+                                         <td><?php echo $row->s_category;?></td>
+                                         <td>$<?php echo number_format($row->s_price, 2);?></td>
+                                         <td><?php if($row->s_status == "Active"){ echo '<span class = "badge badge-success">'.$row->s_status.'</span>'; } else { echo '<span class = "badge badge-danger">'.$row->s_status.'</span>';}?></td>
+                                         <td>
+                                             <a href="admin-manage-single-service.php?s_id=<?php echo $row->s_id;?>" class="badge badge-success">Update</a>
+                                             <a href="admin-manage-service.php?del=<?php echo $row->s_id;?>" class="badge badge-danger">Delete</a>
+                                         </td>
                                      </tr>
                                  </tbody>
                                  <?php $cnt = $cnt+1; }?>
@@ -127,6 +164,8 @@
 
      <!-- Demo scripts for this page-->
      <script src="js/demo/datatables-demo.js"></script>
+     <script src="vendor/js/swal.js"></script>
  </body>
 
  </html>
+

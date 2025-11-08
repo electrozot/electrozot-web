@@ -17,30 +17,43 @@
              <a class="dropdown-item" href="admin-manage-user.php">Manage</a>
          </div>
      </li>
-     <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             <i class="fas fa-fw fa-tools"></i>
-             <span>Technicians</span>
-         </a>
-         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-tools"></i>
+            <span>Technicians</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
 
-             <a class="dropdown-item" href="admin-add-technician.php">Add</a>
-             <a class="dropdown-item" href="admin-view-technician.php">View</a>
-             <a class="dropdown-item" href="admin-manage-technician.php">Manage</a>
-         </div>
-     </li>
-     <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             <i class="fas fa-fw fa-book"></i>
-             <span>Bookings</span>
-         </a>
-         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+            <a class="dropdown-item" href="admin-add-technician.php">Add</a>
+            <a class="dropdown-item" href="admin-view-technician.php">View</a>
+            <a class="dropdown-item" href="admin-manage-technician.php">Manage</a>
+        </div>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-cogs"></i>
+            <span>Services</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
 
-             <a class="dropdown-item" href="admin-add-booking.php">Add</a>
-             <a class="dropdown-item" href="admin-view-booking.php">View</a>
-             <a class="dropdown-item" href="admin-manage-booking.php">Manage</a>
-         </div>
-     </li>
+            <a class="dropdown-item" href="admin-add-service.php">Add</a>
+            <a class="dropdown-item" href="admin-view-service.php">View</a>
+            <a class="dropdown-item" href="admin-manage-service.php">Manage</a>
+        </div>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-book"></i>
+            <span>Bookings</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+
+            <a class="dropdown-item" href="admin-add-booking.php">Add</a>
+            <a class="dropdown-item" href="admin-view-booking.php">View</a>
+            <a class="dropdown-item" href="admin-manage-booking.php">Manage</a>
+            <a class="dropdown-item" href="admin-manage-service-booking.php">Service Bookings</a>
+        </div>
+    </li>
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-comments"></i>

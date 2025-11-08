@@ -42,8 +42,7 @@
                      <h4 class="card-header">Faster And Safe Travels</h4>
                      <div class="card-body">
                          <p class="card-text">
-                             Our Travels reduce traffic growth and congestion by achieving a mode shift from private
-                             motorized Online Car trips to a more efficient and sustainable mode of transport.
+                            We provide professional technician services with accountability, reliability and ease of booking skilled technicians for all your needs.
                          </p>
                      </div>
 

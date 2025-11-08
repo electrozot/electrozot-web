@@ -4,24 +4,23 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-  //Add USer
-  if(isset($_POST['add_driver']))
+  //Update Service
+  if(isset($_POST['update_service']))
     {
-
-            $u_fname=$_POST['u_fname'];
-            $u_lname = $_POST['u_lname'];
-            $u_phone=$_POST['u_phone'];
-            $u_addr=$_POST['u_addr'];
-            $u_email=$_POST['u_email'];
-            $u_pwd=$_POST['u_pwd'];
-            $u_category=$_POST['u_category'];
-            $query="insert into tms_user (u_fname, u_lname, u_phone, u_addr, u_category, u_email, u_pwd) values(?,?,?,?,?,?,?)";
+            $s_id = $_GET['s_id'];
+            $s_name=$_POST['s_name'];
+            $s_description = $_POST['s_description'];
+            $s_category=$_POST['s_category'];
+            $s_price=$_POST['s_price'];
+            $s_duration=$_POST['s_duration'];
+            $s_status=$_POST['s_status'];
+            $query="update tms_service set s_name=?, s_description=?, s_category=?, s_price=?, s_duration=?, s_status=? where s_id = ?";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssss', $u_fname,  $u_lname, $u_phone, $u_addr, $u_category, $u_email, $u_pwd);
+            $rc=$stmt->bind_param('sssdssi', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status, $s_id);
             $stmt->execute();
                 if($stmt)
                 {
-                    $succ = "Driver Added";
+                    $succ = "Service Updated";
                 }
                 else 
                 {
@@ -35,18 +34,15 @@
  <?php include('vendor/inc/head.php');?>
 
  <body id="page-top">
-     <!--Start Navigation Bar-->
      <?php include("vendor/inc/nav.php");?>
-     <!--Navigation Bar-->
      <div id="wrapper">
 
          <!-- Sidebar -->
          <?php include("vendor/inc/sidebar.php");?>
-         <!--End Sidebar-->
          <div id="content-wrapper">
+
              <div class="container-fluid">
                  <?php if(isset($succ)) {?>
-                 <!--This code for injecting an alert-->
                  <script>
                  setTimeout(function() {
                          swal("Success!", "<?php echo $succ;?>!", "success");
@@ -56,7 +52,6 @@
 
                  <?php } ?>
                  <?php if(isset($err)) {?>
-                 <!--This code for injecting an alert-->
                  <script>
                  setTimeout(function() {
                          swal("Failed!", "<?php echo $err;?>!", "Failed");
@@ -65,56 +60,69 @@
                  </script>
 
                  <?php } ?>
-                 <p>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
-                         <a href="#">Drivers</a>
+                         <a href="#">Services</a>
                      </li>
-                     <li class="breadcrumb-item active">Add Driver</li>
+                     <li class="breadcrumb-item active">Update Service</li>
                  </ol>
                  <hr>
                  <div class="card">
                      <div class="card-header">
-                         Add Driver
+                         Update Service
                      </div>
                      <div class="card-body">
-                         <!--Add User Form-->
+                         <!--Update Service Form-->
+                         <?php
+            $aid=$_GET['s_id'];
+            $ret="select * from tms_service where s_id=?";
+            $stmt= $mysqli->prepare($ret) ;
+            $stmt->bind_param('i',$aid);
+            $stmt->execute();
+            $res=$stmt->get_result();
+            while($row=$res->fetch_object())
+        {
+        ?>
                          <form method="POST">
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">First Name</label>
-                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="u_fname">
+                                 <label for="exampleInputEmail1">Service Name</label>
+                                 <input type="text" value="<?php echo $row->s_name;?>" required class="form-control" id="exampleInputEmail1" name="s_name">
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Last Name</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_lname">
+                                 <label for="exampleInputEmail1">Service Description</label>
+                                 <textarea class="form-control" required name="s_description" rows="4"><?php echo $row->s_description;?></textarea>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Contact</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_phone">
+                                 <label for="exampleFormControlSelect1">Service Category</label>
+                                 <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
+                                     <option value="Electrical" <?php echo ($row->s_category == 'Electrical') ? 'selected' : ''; ?>>Electrical</option>
+                                     <option value="Plumbing" <?php echo ($row->s_category == 'Plumbing') ? 'selected' : ''; ?>>Plumbing</option>
+                                     <option value="HVAC" <?php echo ($row->s_category == 'HVAC') ? 'selected' : ''; ?>>HVAC</option>
+                                     <option value="Appliance" <?php echo ($row->s_category == 'Appliance') ? 'selected' : ''; ?>>Appliance</option>
+                                     <option value="General" <?php echo ($row->s_category == 'General') ? 'selected' : ''; ?>>General</option>
+                                 </select>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Address</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_addr">
+                                 <label for="exampleInputEmail1">Service Price</label>
+                                 <input type="number" step="0.01" value="<?php echo $row->s_price;?>" required class="form-control" id="exampleInputEmail1" name="s_price">
                              </div>
-                             <div class="form-group" style="display:none">
-                                 <label for="exampleInputEmail1">Category</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" value="Driver" name="u_category">
-                             </div>
-
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Email address</label>
-                                 <input type="email" class="form-control" name="u_email"">
-            </div>
-            <div class=" form-group">
-                                 <label for="exampleInputPassword1">Password</label>
-                                 <input type="password" class="form-control" name="u_pwd" id="exampleInputPassword1">
+                                 <label for="exampleInputEmail1">Service Duration</label>
+                                 <input type="text" value="<?php echo $row->s_duration;?>" required class="form-control" id="exampleInputEmail1" name="s_duration">
                              </div>
-
-                             <button type="submit" name="add_driver" class="btn btn-success">Add Driver</button>
+                             <div class="form-group">
+                                 <label for="exampleFormControlSelect1">Service Status</label>
+                                 <select class="form-control" name="s_status" id="exampleFormControlSelect1" required>
+                                     <option value="Active" <?php echo ($row->s_status == 'Active') ? 'selected' : ''; ?>>Active</option>
+                                     <option value="Inactive" <?php echo ($row->s_status == 'Inactive') ? 'selected' : ''; ?>>Inactive</option>
+                                 </select>
+                             </div>
+                             <hr>
+                             <button type="submit" name="update_service" class="btn btn-success">Update Service</button>
                          </form>
                          <!-- End Form-->
+                         <?php }?>
                      </div>
                  </div>
 
@@ -128,11 +136,11 @@
 
          </div>
          <!-- /#wrapper -->
-
          <!-- Scroll to Top Button-->
          <a class="scroll-to-top rounded" href="#page-top">
              <i class="fas fa-angle-up"></i>
          </a>
+
          <!-- Logout Modal-->
          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
              <div class="modal-dialog" role="document">
@@ -169,8 +177,9 @@
          <!-- Demo scripts for this page-->
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
-         <!--INject Sweet alert js-->
          <script src="vendor/js/swal.js"></script>
+
  </body>
 
  </html>
+

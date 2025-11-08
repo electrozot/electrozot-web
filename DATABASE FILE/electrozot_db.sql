@@ -232,6 +232,104 @@ ALTER TABLE `tms_user`
 --
 ALTER TABLE `tms_technician`
   MODIFY `t_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tms_service`
+--
+
+CREATE TABLE `tms_service` (
+  `s_id` int NOT NULL,
+  `s_name` varchar(200) NOT NULL,
+  `s_description` longtext NOT NULL,
+  `s_category` varchar(200) NOT NULL,
+  `s_price` decimal(10,2) NOT NULL,
+  `s_duration` varchar(200) NOT NULL,
+  `s_status` varchar(200) NOT NULL DEFAULT 'Active',
+  `s_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tms_service`
+--
+
+INSERT INTO `tms_service` (`s_id`, `s_name`, `s_description`, `s_category`, `s_price`, `s_duration`, `s_status`) VALUES
+(1, 'Electrical Repair', 'Complete electrical system repair and maintenance', 'Electrical', 150.00, '2-3 hours', 'Active'),
+(2, 'Plumbing Service', 'Professional plumbing installation and repair', 'Plumbing', 120.00, '1-2 hours', 'Active'),
+(3, 'HVAC Maintenance', 'Heating, ventilation and air conditioning service', 'HVAC', 200.00, '3-4 hours', 'Active'),
+(4, 'Appliance Repair', 'Home appliance repair and maintenance', 'Appliance', 100.00, '1-2 hours', 'Active'),
+(5, 'General Maintenance', 'General home maintenance and repairs', 'General', 80.00, '1-2 hours', 'Active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tms_service_booking`
+--
+
+CREATE TABLE `tms_service_booking` (
+  `sb_id` int NOT NULL,
+  `sb_user_id` int NOT NULL,
+  `sb_service_id` int NOT NULL,
+  `sb_technician_id` int DEFAULT NULL,
+  `sb_booking_date` date NOT NULL,
+  `sb_booking_time` time NOT NULL,
+  `sb_address` varchar(500) NOT NULL,
+  `sb_phone` varchar(200) NOT NULL,
+  `sb_description` longtext,
+  `sb_status` varchar(200) NOT NULL DEFAULT 'Pending',
+  `sb_total_price` decimal(10,2) NOT NULL,
+  `sb_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sb_updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tms_service`
+--
+ALTER TABLE `tms_service`
+  ADD PRIMARY KEY (`s_id`);
+
+--
+-- Indexes for table `tms_service_booking`
+--
+ALTER TABLE `tms_service_booking`
+  ADD PRIMARY KEY (`sb_id`),
+  ADD KEY `sb_user_id` (`sb_user_id`),
+  ADD KEY `sb_service_id` (`sb_service_id`),
+  ADD KEY `sb_technician_id` (`sb_technician_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tms_service`
+--
+ALTER TABLE `tms_service`
+  MODIFY `s_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `tms_service_booking`
+--
+ALTER TABLE `tms_service_booking`
+  MODIFY `sb_id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `tms_service_booking`
+--
+ALTER TABLE `tms_service_booking`
+  ADD CONSTRAINT `tms_service_booking_ibfk_1` FOREIGN KEY (`sb_user_id`) REFERENCES `tms_user` (`u_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tms_service_booking_ibfk_2` FOREIGN KEY (`sb_service_id`) REFERENCES `tms_service` (`s_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tms_service_booking_ibfk_3` FOREIGN KEY (`sb_technician_id`) REFERENCES `tms_technician` (`t_id`) ON DELETE SET NULL;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

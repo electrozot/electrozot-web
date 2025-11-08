@@ -30,12 +30,24 @@
 
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-fw fa-cogs"></i>
+            <span>Services</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+            <h6 class="dropdown-header">Available Services:</h6>
+            <a class="dropdown-item" href="usr-book-service.php">Book Service</a>
+        </div>
+    </li>
+
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-fw fa-book"></i>
             <span>Bookings</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
             <h6 class="dropdown-header">Bookings:</h6>
-            <a class="dropdown-item" href="usr-book-technician.php">Add</a>
+            <a class="dropdown-item" href="usr-book-technician.php">Book Technician</a>
+            <a class="dropdown-item" href="usr-book-service.php">Book Service</a>
             <a class="dropdown-item" href="user-view-booking.php">View</a>
             <a class="dropdown-item" href="user-manage-booking.php">Manage</a>
         </div>
