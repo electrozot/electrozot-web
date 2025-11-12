@@ -6,22 +6,32 @@
   $aid=$_SESSION['a_id'];
 
   if(isset($_GET['del']))
-{
+  {
       $id=intval($_GET['del']);
-      $adn="delete from tms_technician where t_id=?";
+      // Snapshot technician row
+      $get = $mysqli->prepare("SELECT * FROM tms_technician WHERE t_id=?");
+      $get->bind_param('i', $id);
+      $get->execute();
+      $res = $get->get_result();
+      $tech = $res->fetch_assoc();
+      if($tech){
+        $payload = json_encode($tech);
+        $ins = $mysqli->prepare("INSERT INTO tms_recycle_bin (rb_type, rb_table, rb_object_id, rb_payload, rb_deleted_by) VALUES ('technician','tms_technician', ?, ?, ?)");
+        $ins->bind_param('isi', $id, $payload, $aid);
+        $ins->execute();
+      }
+      // Hard delete technician
+      $adn="DELETE FROM tms_technician WHERE t_id=?";
       $stmt= $mysqli->prepare($adn);
       $stmt->bind_param('i',$id);
       $stmt->execute();
-      $stmt->close();	 
+      $stmt->close();
 
-        if($stmt)
-        {
-          $succ = "Technician Removed";
-        }
-          else
-          {
-            $err = "Try Again Later";
-          }
+      if($stmt){
+        $succ = "Technician removed and sent to Recycle Bin";
+      } else {
+        $err = "Try Again Later";
+      }
   }
 ?>
  <!DOCTYPE html>

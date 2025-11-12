@@ -92,7 +92,7 @@
                     <li class="breadcrumb-item active">Confirm Booking</li>
                 </ol>
                 <hr>
-                <div class="card">
+                <div class="card compact-card">
                     <div class="card-header">
                         Confirm Service Booking
                     </div>
@@ -108,7 +108,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                        <form method="POST">
+                        <form method="POST" class="compact-form">
                             <input type="hidden" name="sb_service_id" value="<?php echo $row->s_id;?>">
                             <div class="form-group">
                                 <label>Service Name</label>

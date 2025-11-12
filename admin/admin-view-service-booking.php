@@ -66,6 +66,42 @@
                                          <td><?php echo $booking->u_phone;?></td>
                                      </tr>
                                  </table>
+                                 <hr>
+                                 <h5>Completion Evidence & Bill</h5>
+                                 <?php if($booking->sb_status == 'Completed'): ?>
+                                   <table class="table table-bordered">
+                                     <tr>
+                                       <th>Completed At:</th>
+                                       <td><?php echo isset($booking->sb_completed_at) ? date('M d, Y h:i A', strtotime($booking->sb_completed_at)) : '—';?></td>
+                                     </tr>
+                                     <tr>
+                                       <th>Service Image:</th>
+                                       <td>
+                                         <?php if(!empty($booking->sb_completion_image)): ?>
+                                           <img src="../<?php echo $booking->sb_completion_image; ?>" alt="Completion Image" style="max-width:100%;height:auto;border-radius:8px;" />
+                                         <?php else: ?>
+                                           <span class="text-muted">No image uploaded</span>
+                                         <?php endif; ?>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th>Bill Amount:</th>
+                                       <td>₹<?php echo isset($booking->sb_bill_amount) ? number_format($booking->sb_bill_amount, 2) : '0.00';?></td>
+                                     </tr>
+                                     <tr>
+                                       <th>Bill Attachment:</th>
+                                       <td>
+                                         <?php if(!empty($booking->sb_bill_attachment)): ?>
+                                           <a href="../<?php echo $booking->sb_bill_attachment; ?>" target="_blank" class="btn btn-sm btn-primary">View Attachment</a>
+                                         <?php else: ?>
+                                           <span class="text-muted">No attachment uploaded</span>
+                                         <?php endif; ?>
+                                       </td>
+                                     </tr>
+                                   </table>
+                                 <?php else: ?>
+                                   <p class="text-muted">Service not completed yet.</p>
+                                 <?php endif; ?>
                              </div>
                              <div class="col-md-6">
                                  <h5>Service Information</h5>

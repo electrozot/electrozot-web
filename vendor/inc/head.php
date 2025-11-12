@@ -12,5 +12,7 @@
     <link href="css/modern-business.css" rel="stylesheet">
     <!--Font Awesome--->
     <link href="usr/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <!-- Compact UI overrides -->
+    <link href="vendor/css/custom.css" rel="stylesheet">
 
 </head>

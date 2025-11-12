@@ -5,30 +5,28 @@
   check_login();
   $aid=$_SESSION['a_id'];
   //Add Booking
-  if(isset($_POST['book_vehicle']))
+  if(isset($_POST['book']))
     {
             $u_id = $_GET['u_id'];
-            //$u_fname=$_POST['u_fname'];
-            //$u_lname = $_POST['u_lname'];
-            //$u_phone=$_POST['u_phone'];
-            //$u_addr=$_POST['u_addr'];
-            $u_car_type = $_POST['u_car_type'];
-           $u_car_regno  = $_POST['u_car_regno'];
-            $u_car_bookdate = $_POST['u_car_bookdate'];
-            $u_car_book_status  = $_POST['u_car_book_status'];
-            $query="update tms_user set u_car_type=?, u_car_bookdate=?, u_car_regno=?, u_car_book_status=? where u_id=?";
+            // Map to correct tms_user columns
+            $t_booking_date = isset($_POST['t_booking_date']) ? $_POST['t_booking_date'] : '';
+            $t_booking_status  = isset($_POST['t_booking_status']) ? $_POST['t_booking_status'] : '';
+            
+            $query="UPDATE tms_user SET t_booking_date=?, t_booking_status=? WHERE u_id=?";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('ssssi', $u_car_type, $u_car_bookdate, $u_car_regno, $u_car_book_status, $u_id);
-            $stmt->execute();
-                if($stmt)
-                {
-                    $succ = "User Booking Added";
-                }
-                else 
-                {
-                    $err = "Please Try Again Later";
-                }
+            if($stmt){
+              $rc=$stmt->bind_param('ssi', $t_booking_date, $t_booking_status, $u_id);
+              $stmt->execute();
             }
+            if($stmt && $stmt->affected_rows >= 0)
+            {
+                $succ = "User Booking Added";
+            }
+            else 
+            {
+                $err = "Please Try Again Later";
+            }
+    }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -125,59 +123,22 @@
 
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Email address</label>
-                                 <input type="email" value="<?php echo $row->u_email;?>" class="form-control" name="u_email"">
+                                 <input type="email" value="<?php echo $row->u_email;?>" class="form-control" name="u_email">
             </div>
-
-
-            <div class=" form-group">
-                                 <label for="exampleFormControlSelect1">Vehicle Category</label>
-                                 <select class="form-control" name="u_car_type" id="exampleFormControlSelect1">
-                                     <option>Bus</option>
-                                     <option>Matatu</option>
-                                     <option>Nissan</option>
-
-                                 </select>
-                             </div>
-
-                             <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Vehicle Registration Number</label>
-                                 <select class="form-control" name="u_car_regno" id="exampleFormControlSelect1">
-                                     <?php
-
-                $ret="SELECT * FROM tms_vehicle  "; //sql code to get to all vehicles
-                $stmt= $mysqli->prepare($ret) ;
-                $stmt->execute() ;//ok
-                $res=$stmt->get_result();
-                $cnt=1;
-                while($row=$res->fetch_object())
-                {
-                ?>
-                                     <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
-                                     <option><?php echo $row->v_reg_no;?></option>
-                                     <?php }?>
-                                 </select>
-                             </div>
-
-
-
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Booking Date</label>
-                                 <input type="date" class="form-control" id="exampleInputEmail1" name="u_car_bookdate">
+                                 <input type="date" class="form-control" id="exampleInputEmail1" name="t_booking_date">
                              </div>
 
                              <div class="form-group">
                                  <label for="exampleFormControlSelect1">Booking Status</label>
-                                 <select class="form-control" name="u_car_book_status" id="exampleFormControlSelect1">
+                                 <select class="form-control" name="t_booking_status" id="exampleFormControlSelect1">
                                      <option>Approved</option>
                                      <option>Pending</option>
                                  </select>
                              </div>
 
-                             <button type="submit" name="book_vehicle" class="btn btn-success">Confirm Booking</button>
+                             <button type="submit" name="book" class="btn btn-success">Confirm Booking</button>
                          </form>
                          <!-- End Form-->
                          <?php }?>

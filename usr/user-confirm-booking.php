@@ -81,7 +81,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                     <li class="breadcrumb-item active">Confirm Booking</li>
                 </ol>
                 <hr>
-                <div class="card">
+                <div class="card compact-card">
                     <div class="card-header">
                         Confirm Booking
                     </div>
@@ -103,7 +103,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
         Github Link: https://github.com/dev-mhrony
         Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
         -->
-                        <form method="POST">
+                        <form method="POST" class="compact-form">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Technician Category</label>
                                 <input type="text" value="<?php echo $row->t_category;?>" readonly class="form-control" name="t_tech_category">

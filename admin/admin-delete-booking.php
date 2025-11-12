@@ -4,31 +4,42 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-  //Add Booking
+  // Delete legacy user booking: snapshot then clear booking fields
   if(isset($_POST['delete_booking']))
     {
             $u_id = $_GET['u_id'];
-            //$u_fname=$_POST['u_fname'];
-            //$u_lname = $_POST['u_lname'];
-            //$u_phone=$_POST['u_phone'];
-            //$u_addr=$_POST['u_addr'];
-            $u_car_type = $_POST['u_car_type'];
-            $u_car_regno  = $_POST['u_car_regno'];
-            $u_car_bookdate = $_POST['u_car_bookdate'];
-            $u_car_book_status  = $_POST['u_car_book_status'];
-            $query="update tms_user set u_car_type=?, u_car_regno=?, u_car_bookdate=?,  u_car_book_status=? where u_id=?";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('ssssi',  $u_car_type, $u_car_regno, $u_car_bookdate, $u_car_book_status, $u_id);
-            $stmt->execute();
-                if($stmt)
-                {
-                    $succ = "Booking Deleted";
+            
+            // Snapshot current user row into recycle bin
+            $snap_sql = "SELECT * FROM tms_user WHERE u_id=?";
+            if($snap_stmt = $mysqli->prepare($snap_sql)) {
+              $snap_stmt->bind_param('i', $u_id);
+              $snap_stmt->execute();
+              $snap_res = $snap_stmt->get_result();
+              $snap = $snap_res->fetch_assoc();
+              if($snap) {
+                $payload = json_encode($snap);
+                if($rb_ins = $mysqli->prepare("INSERT INTO tms_recycle_bin (rb_type, rb_table, rb_object_id, rb_payload, rb_deleted_by) VALUES ('legacy_booking','tms_user', ?, ?, ?)")) {
+                  $rb_ins->bind_param('isi', $u_id, $payload, $aid);
+                  $rb_ins->execute();
                 }
-                else 
-                {
-                    $err = "Please Try Again Later";
-                }
+              }
             }
+            
+            // Clear booking fields to mark as deleted
+            $query="UPDATE tms_user SET t_booking_date = NULL, t_booking_status = NULL WHERE u_id=?";
+            $stmt = $mysqli->prepare($query);
+            if($stmt){
+              $stmt->bind_param('i', $u_id);
+              $stmt->execute();
+              if($stmt->affected_rows >= 0){
+                $succ = "Booking deleted and sent to Recycle Bin";
+              } else {
+                $err = "Failed to delete booking";
+              }
+            } else {
+              $err = "Please Try Again Later";
+            }
+    }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -138,12 +149,12 @@
 
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Booking Date</label>
-                                 <input type="text" readonly placeholder="<?php echo $row->u_car_bookdate;?>" class="form-control" name="u_car_bookdate">
+                                 <input type="text" readonly placeholder="<?php echo $row->t_booking_date;?>" class="form-control" name="t_booking_date">
                              </div>
 
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Booking Status</label>
-                                 <input type="text" readonly placeholder="<?php echo $row->u_car_book_status;?>" class="form-control" id="exampleInputEmail1" name="u_car_book_status">
+                                 <input type="text" readonly placeholder="<?php echo $row->t_booking_status;?>" class="form-control" id="exampleInputEmail1" name="t_booking_status">
                              </div>
 
 

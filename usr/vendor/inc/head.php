@@ -16,5 +16,7 @@
 
     <!-- Custom styles for this template-->
     <link href="vendor/css/sb-admin.css" rel="stylesheet">
+    <!-- Compact form overrides -->
+    <link href="vendor/css/custom.css" rel="stylesheet">
 
 </head>

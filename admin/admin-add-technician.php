@@ -4,6 +4,16 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  // Ensure technician password column exists
+  try {
+    $colChk = $mysqli->query("SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tms_technician' AND COLUMN_NAME = 't_pwd'");
+    if($colChk){
+      $hasPwdCol = $colChk->fetch_object();
+      if(!$hasPwdCol || intval($hasPwdCol->c) === 0){
+        $mysqli->query("ALTER TABLE tms_technician ADD COLUMN t_pwd VARCHAR(200) NOT NULL DEFAULT ''");
+      }
+    }
+  } catch(Exception $e) { /* ignore */ }
   //Add Technician
   if(isset($_POST['add_tech']))
     {
@@ -13,12 +23,13 @@
             $t_category=$_POST['t_category'];
             $t_experience=$_POST['t_experience'];
             $t_status=$_POST['t_status'];
+            $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
             $t_pic=$_FILES["t_pic"]["name"];
-		        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status ) values(?,?,?,?,?,?,?)";
+	        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd ) values(?,?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status);
+            $rc=$stmt->bind_param('ssssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd);
             $stmt->execute();
                 if($stmt)
                 {
@@ -92,6 +103,10 @@
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Years of Experience</label>
                                  <input type="text" class="form-control" id="exampleInputEmail1" name="t_experience" placeholder="e.g., 5">
+                             </div>
+                             <div class="form-group">
+                                 <label for="t_pwd">Technician Password</label>
+                                 <input type="password" class="form-control" id="t_pwd" name="t_pwd" placeholder="Set login password" required>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Specialization</label>

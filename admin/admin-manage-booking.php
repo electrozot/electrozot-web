@@ -33,9 +33,20 @@
                  </p>
                  <!--Bookings-->
                  <div class="card mb-3">
-                     <div class="card-header">
-                         <i class="fas fa-table"></i>
-                         Bookings
+                     <div class="card-header d-flex align-items-center justify-content-between">
+                         <div>
+                             <i class="fas fa-table"></i>
+                             Bookings
+                         </div>
+                         <div class="form-inline">
+                             <label class="mr-2 mb-0" for="statusFilter">Status</label>
+                             <select id="statusFilter" class="form-control mr-3">
+                                 <option value="all">All</option>
+                                 <option value="Pending">Pending</option>
+                                 <option value="Approved">Approved</option>
+                             </select>
+                             <input id="adminSearch" class="form-control" type="search" placeholder="Search bookings...">
+                         </div>
                      </div>
                      <div class="card-body">
                          <div class="table-responsive">
@@ -143,6 +154,25 @@
 
          <!-- Demo scripts for this page-->
          <script src="js/demo/datatables-demo.js"></script>
+         <script>
+           $(function(){
+             var table = $('#dataTable').DataTable();
+
+             // Status column index: 6
+             $('#statusFilter').on('change', function(){
+               var val = $(this).val();
+               if (val === 'all') {
+                 table.column(6).search('').draw();
+               } else {
+                 table.column(6).search(val).draw();
+               }
+             });
+
+             $('#adminSearch').on('keyup change', function(){
+               table.search(this.value).draw();
+             });
+           });
+         </script>
 
  </body>
 
