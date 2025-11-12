@@ -98,9 +98,9 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group mb-2">
+                                                <div class="form-group ">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Select Service</label>
-                                                    <select class="form-control form-control-sm" name="sb_service_id" required>
+                                                    <select class="p-0 form-control form-control-sm" name="sb_service_id" required>
                                                         <option value="">Choose a service...</option>
                                                         <?php
                                                         $ret="SELECT * FROM tms_service WHERE s_status = 'Active'";
