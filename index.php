@@ -19,9 +19,59 @@
     <!-- Page Content -->
     <div class="container-fluid px-0">
         
-        <!-- Hero Section with Booking Form -->
-        <section class="hero-section animated-gradient" style="padding: 40px 0 50px 0; position: relative; overflow: hidden;">
-            <div class="gradient-overlay"></div>
+        <!-- Enhanced Hero Section with Background Elements -->
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 0 80px 0; position: relative; overflow: hidden;">
+            
+            <!-- Background Decorative Elements -->
+            <div class="hero-bg-elements">
+                <!-- Large Circles -->
+                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: rgba(255, 215, 0, 0.08); border-radius: 50%; z-index: 1;"></div>
+                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; z-index: 1;"></div>
+                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 200px; height: 200px; background: rgba(255, 215, 0, 0.05); border-radius: 50%; z-index: 1;"></div>
+                
+                <!-- Floating Icons -->
+                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.15;">
+                    <i class="fas fa-bolt" style="font-size: 3rem; color: #ffd700;"></i>
+                </div>
+                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.12;">
+                    <i class="fas fa-tools" style="font-size: 2.5rem; color: #ffffff;"></i>
+                </div>
+                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.1;">
+                    <i class="fas fa-cog" style="font-size: 2rem; color: #ffd700;"></i>
+                </div>
+                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.08;">
+                    <i class="fas fa-wrench" style="font-size: 2.2rem; color: #ffffff;"></i>
+                </div>
+                
+                <!-- Geometric Shapes -->
+                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 80px; height: 80px; border: 3px solid rgba(255, 215, 0, 0.2); border-radius: 15px; transform: rotate(45deg); z-index: 1;"></div>
+                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 60px; height: 60px; border: 3px solid rgba(255, 255, 255, 0.15); border-radius: 50%; z-index: 1;"></div>
+                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 40px; height: 40px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; transform: rotate(25deg); z-index: 1;"></div>
+                
+                <!-- Dots Pattern -->
+                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.2;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 8px); gap: 12px;">
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                    </div>
+                </div>
+                
+                <!-- Wave Lines -->
+                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; z-index: 1; opacity: 0.1;" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.3)"></path>
+                </svg>
+            </div>
+            
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
                     <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content">
@@ -42,7 +92,7 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card compact-card" style="border-radius: 25px; overflow: hidden; position: relative;">
+                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #ffd700;">
                                 <!-- Sliding Images Background -->
                                 <div class="form-sliding-bg">
                                     <div class="slide-image active" style="background-image: url('vendor/img/slide_2.jpg');"></div>
@@ -53,11 +103,14 @@
                                 </div>
                                 <div class="form-overlay"></div>
                                 
-                                <div class="card-header text-gray  text-center py-2 booking-header" style="background: linear-gradient(135deg, #36d7f4ff 0%, #79fbabff 50%, #66ece0ff 100%); background-size: 300% 300%; animation: gradientShift 8s ease infinite; position: relative; z-index: 3;">
-                                    <h3 class="mb-0"><i class="fas fa-calendar-check"></i> Book Service Now</h3>
-                                
+                                <div class="card-header text-center py-4 booking-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; z-index: 3; border-bottom: 4px solid #ffd700;">
+                                    <h3 class="mb-1 font-weight-bold" style="color: #ffffff; font-size: 1.8rem; font-family: 'Segoe UI', sans-serif;">
+                                        <i class="fas fa-calendar-check" style="color: #ffd700; margin-right: 10px;"></i>
+                                        Book Service Now
+                                    </h3>
+                                    <p class="mb-0" style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Fill the form below to get started</p>
                                 </div>
-                                <div class="card-body p-3" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px);">
+                                <div class="card-body p-4" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
                                     <?php if(isset($_SESSION['booking_success'])) { ?>
                                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                                             <i class="fas fa-check-circle"></i> <?php echo $_SESSION['booking_success']; unset($_SESSION['booking_success']); ?>
@@ -74,18 +127,18 @@
                                             </button>
                                         </div>
                                     <?php } ?>
-                                    <form method="POST" action="process-guest-booking.php" class="compact-form" enctype="multipart/form-data">
+                                    <form method="POST" action="process-guest-booking.php" class="booking-form-enhanced" enctype="multipart/form-data">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-user text-primary"></i> Name</label>
-                                                    <input type="text" class="form-control form-control-sm" name="customer_name" required placeholder="Your name">
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label-enhanced"><i class="fas fa-user"></i> Full Name <span style="color: #e74c3c;">*</span></label>
+                                                    <input type="text" class="form-control form-control-enhanced" name="customer_name" required placeholder="Enter your full name">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-phone text-primary"></i> Phone No</label>
-                                                    <input type="tel" class="form-control form-control-sm" name="customer_phone" required placeholder="10-digit phone" maxlength="10" pattern="^[0-9]{10}$" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+                                                <div class="form-group mb-3">
+                                                    <label class="form-label-enhanced"><i class="fas fa-phone"></i> Phone Number <span style="color: #e74c3c;">*</span></label>
+                                                    <input type="tel" class="form-control form-control-enhanced" name="customer_phone" required placeholder="10-digit mobile number" maxlength="10" pattern="^[0-9]{10}$" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                                                 </div>
                                             </div>
                                         </div>
@@ -323,6 +376,112 @@
             </div>
         </section>
 
+        <!-- Our Work Showcase Section -->
+        <section class="py-5" style="background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="display-5 font-weight-bold mb-3" style="color: #2d3748;">
+                            <span class="gradient-text-2">Our Work</span> Portfolio
+                        </h2>
+                        <p class="lead text-muted">See the quality of our completed projects</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-10 mx-auto">
+                        <div id="workCarousel" class="carousel slide shadow-lg" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                <li data-target="#workCarousel" data-slide-to="0" class="active"></li>
+                                <li data-target="#workCarousel" data-slide-to="1"></li>
+                                <li data-target="#workCarousel" data-slide-to="2"></li>
+                                <li data-target="#workCarousel" data-slide-to="3"></li>
+                                <li data-target="#workCarousel" data-slide-to="4"></li>
+                            </ol>
+
+                            <!-- Slides -->
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <img src="vendor/img/completions/sb19_1762849470.jpg" class="d-block w-100" alt="Completed Work 1" style="height: 500px; object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                        <h5 class="font-weight-bold">Professional Service Completed</h5>
+                                        <p>Quality work delivered with customer satisfaction</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="vendor/img/completions/sb21_1762850637.png" class="d-block w-100" alt="Completed Work 2" style="height: 500px; object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                        <h5 class="font-weight-bold">Expert Installation</h5>
+                                        <p>Professional installation with attention to detail</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="vendor/img/completions/sb23_1762856579.png" class="d-block w-100" alt="Completed Work 3" style="height: 500px; object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                        <h5 class="font-weight-bold">Quality Workmanship</h5>
+                                        <p>Delivering excellence in every project</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="vendor/img/completions/sb27_1762875513.jpg" class="d-block w-100" alt="Completed Work 4" style="height: 500px; object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                        <h5 class="font-weight-bold">Reliable Service</h5>
+                                        <p>Trusted by hundreds of satisfied customers</p>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <img src="vendor/img/completions/sb30_1762947816.jpg" class="d-block w-100" alt="Completed Work 5" style="height: 500px; object-fit: cover;">
+                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                        <h5 class="font-weight-bold">Professional Results</h5>
+                                        <p>Your satisfaction is our priority</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controls -->
+                            <a class="carousel-control-prev" href="#workCarousel" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#workCarousel" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+
+                        <!-- Stats Below Carousel -->
+                        <div class="row mt-5 text-center">
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">500+</h3>
+                                    <p class="text-muted mb-0 small">Projects Completed</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">450+</h3>
+                                    <p class="text-muted mb-0 small">Happy Clients</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">50+</h3>
+                                    <p class="text-muted mb-0 small">Expert Technicians</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">5+</h3>
+                                    <p class="text-muted mb-0 small">Years Experience</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Testimonials Section -->
         <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
             <div class="testimonial-overlay"></div>
@@ -408,6 +567,13 @@
             
             // Change slide every 4 seconds
             setInterval(nextSlide, 4000);
+
+            // Initialize Work Carousel with auto-play
+            $('#workCarousel').carousel({
+                interval: 4000,
+                pause: 'hover',
+                wrap: true
+            });
         });
     </script>
     
@@ -434,6 +600,68 @@ Author Website: https://developerrony.com
 Github Link: https://github.com/dev-mhrony
 Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 -->
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/917559606925" target="_blank" class="whatsapp-float" aria-label="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <style>
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 50%;
+            right: 10px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            animation: whatsapp-pulse 2s infinite;
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128c7e;
+            color: #FFF;
+            transform: scale(1.1);
+            box-shadow: 2px 2px 20px rgba(37, 211, 102, 0.6);
+            text-decoration: none;
+        }
+
+        .whatsapp-float i {
+            margin-top: 3px;
+        }
+
+        @keyframes whatsapp-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+                font-size: 26px;
+            }
+        }
+    </style>
+
 </body>
 
 </html>
