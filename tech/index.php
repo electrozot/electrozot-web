@@ -59,16 +59,27 @@
     }
     
     .navbar .navbar-brand { 
-      color: #fff; 
-      font-weight: 700; 
-      font-size: 1.5rem;
       display: flex;
       align-items: center;
+      padding: 5px;
     }
     
-    .navbar .navbar-brand i {
-      color: var(--accent);
-      margin-right: 10px;
+    .logo-container {
+      width: 50px;
+      height: 50px;
+      background: white;
+      border-radius: 10px;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    
+    .logo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     
     .login-container {
@@ -198,6 +209,11 @@
     }
     
     @media (max-width: 576px) {
+      .logo-container {
+        width: 45px;
+        height: 45px;
+      }
+      
       .card-header h3 {
         font-size: 1.4rem;
       }
@@ -211,8 +227,9 @@
 <body>
   <nav class="navbar navbar-expand navbar-dark">
     <a class="navbar-brand" href="../index.php">
-      <i class="fas fa-bolt"></i>
-      Electrozot
+      <div class="logo-container">
+        <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
+      </div>
     </a>
   </nav>
   

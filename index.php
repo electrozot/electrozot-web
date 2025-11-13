@@ -76,7 +76,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content">
                         <h1 class="display-4 font-weight-bold mb-4 hero-title" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
-                            Welcome to <span class="gradient-text">Electrozot</span>
+                            Welcome to <span class="electro-white">Electro</span><span class="zot-skyblue">zot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">
                             Professional Technician Booking System - Book expert technicians for all your electrical, plumbing, HVAC, and appliance repair needs. Fast, reliable, and hassle-free service.
@@ -103,12 +103,13 @@
                                 </div>
                                 <div class="form-overlay"></div>
                                 
-                                <div class="card-header text-center py-4 booking-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: relative; z-index: 3; border-bottom: 4px solid #ffd700;">
-                                    <h3 class="mb-1 font-weight-bold" style="color: #ffffff; font-size: 1.8rem; font-family: 'Segoe UI', sans-serif;">
-                                        <i class="fas fa-calendar-check" style="color: #ffd700; margin-right: 10px;"></i>
+                                <div class="card-header text-center py-4 booking-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); position: relative; z-index: 3; border-bottom: 4px solid #a78bfa; overflow: hidden;">
+                                    <div class="header-shine"></div>
+                                    <h3 class="mb-1 font-weight-bold" style="color: #ffffff; font-size: 1.8rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2;">
+                                        <i class="fas fa-calendar-check" style="color: #a78bfa; margin-right: 10px;"></i>
                                         Book Service Now
                                     </h3>
-                                    <p class="mb-0" style="color: rgba(255,255,255,0.9); font-size: 0.95rem;">Fill the form below to get started</p>
+                                    <p class="mb-0" style="color: rgba(255,255,255,0.95); font-size: 0.95rem; position: relative; z-index: 2;">Fill the form below to get started</p>
                                 </div>
                                 <div class="card-body p-4" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
                                     <?php if(isset($_SESSION['booking_success'])) { ?>
@@ -293,29 +294,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 mb-4">
-                        <div class="card h-100 border-0" style="border-radius: 20px; overflow: hidden; background: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.06);">
-                            <div class="card-body p-3" style="position: relative; z-index: 2;">
-                                <h5 class="font-weight-bold mb-2" style="color: #2d3748;">Services We Done & Our Happy Customers</h5>
-                                <div id="home-gallery-slider" class="home-slider">
-                                    <div class="home-slider-track">
-                                        <?php
-                                        // Ensure gallery table exists
-                                        $mysqli->query("CREATE TABLE IF NOT EXISTS tms_gallery (\n                                            g_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,\n                                            g_title VARCHAR(255) NOT NULL,\n                                            g_image VARCHAR(255) NOT NULL,\n                                            g_service_id INT NULL,\n                                            g_description TEXT NULL,\n                                            g_status VARCHAR(20) NOT NULL DEFAULT 'Active',\n                                            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP\n                                        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-                                        $q = $mysqli->prepare("SELECT g_image, g_title FROM tms_gallery WHERE g_status='Active' ORDER BY created_at DESC LIMIT 12");
-                                        $q->execute();
-                                        $r = $q->get_result();
-                                        while($item = $r->fetch_object()) {
-                                        ?>
-                                            <div class="home-slider-item">
-                                                <img src="<?php echo htmlspecialchars($item->g_image); ?>" alt="<?php echo htmlspecialchars($item->g_title); ?>">
-                                            </div>
-                                        <?php } ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </section>

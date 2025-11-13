@@ -1,17 +1,8 @@
- <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+ <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
 
-     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 12px; padding: 8px 15px; background: rgba(255,255,255,0.15); border-radius: 12px; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2);">
-         <div class="logo-container" style="background: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; overflow: hidden; padding: 5px;">
+     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 12px; padding: 8px 15px;">
+         <div class="logo-container" style="background: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 5px;">
              <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" style="width: 100%; height: 100%; object-fit: contain;">
-             <div style="position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: #ffc107; border-radius: 50%; box-shadow: 0 0 10px #ffc107;"></div>
-         </div>
-         <div style="display: flex; flex-direction: column; line-height: 1.3;">
-             <span style="font-size: 19px; font-weight: 900; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.4); letter-spacing: 0.5px;">
-                 Hi, <span style="color: #ffd700;">Electrozot</span> Admin
-             </span>
-             <span style="font-size: 11px; color: rgba(255,255,255,0.95); font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
-                 <i class="fas fa-shield-alt" style="font-size: 10px;"></i> Admin Control Panel
-             </span>
          </div>
      </a>
 
@@ -87,10 +78,91 @@
  }
  
  nav.navbar {
-     background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%) !important;
-     background-size: 200% 200%;
-     animation: gradientShift 15s ease infinite;
-     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+ }
+ 
+ /* Sidebar Styling */
+ .sidebar {
+     background: linear-gradient(180deg, #f7fafc 0%, #edf2f7 100%) !important;
+     box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+ }
+ 
+ .sidebar .nav-link {
+     color: #2d3748 !important;
+     font-weight: 600;
+     padding: 12px 20px;
+     margin: 5px 10px;
+     border-radius: 10px;
+     transition: all 0.3s ease;
+ }
+ 
+ .sidebar .nav-link:hover {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+     color: white !important;
+     transform: translateX(5px);
+     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+ }
+ 
+ .sidebar .nav-link i {
+     color: #667eea;
+     margin-right: 10px;
+     transition: all 0.3s ease;
+ }
+ 
+ .sidebar .nav-link:hover i {
+     color: white !important;
+ }
+ 
+ .sidebar .nav-item.active .nav-link {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+     color: white !important;
+     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+ }
+ 
+ .sidebar .nav-item.active .nav-link i {
+     color: white !important;
+ }
+ 
+ .sidebar .dropdown-menu {
+     background: white;
+     border: none;
+     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+     border-radius: 10px;
+     margin-left: 10px;
+ }
+ 
+ .sidebar .dropdown-item {
+     color: #4a5568;
+     padding: 10px 20px;
+     transition: all 0.3s ease;
+     border-radius: 8px;
+     margin: 3px 5px;
+ }
+ 
+ .sidebar .dropdown-item:hover {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     color: white !important;
+     transform: translateX(5px);
+ }
+ 
+ .sidebar .dropdown-item i {
+     color: #667eea;
+     margin-right: 8px;
+     width: 20px;
+     text-align: center;
+ }
+ 
+ .sidebar .dropdown-item:hover i {
+     color: white;
+ }
+ 
+ .sidebar .dropdown-toggle::after {
+     color: #667eea;
+ }
+ 
+ .sidebar .nav-link:hover .dropdown-toggle::after {
+     color: white;
  }
  
  /* Logo animations */

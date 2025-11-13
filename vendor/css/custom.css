@@ -136,3 +136,125 @@
         font-size: 9px;
     }
 }
+
+/* Welcome Text Styling - Color Changing Every 4 Seconds */
+.electro-white {
+    font-weight: 900;
+    display: inline-block;
+    animation: colorChangeElectro 12s ease-in-out infinite;
+}
+
+.zot-skyblue {
+    font-weight: 900;
+    display: inline-block;
+    animation: colorChangeZot 12s ease-in-out infinite;
+}
+
+/* Color Change Animation for "Electro" - Changes every 4 seconds */
+@keyframes colorChangeElectro {
+    0%, 33% {
+        color: #ffffff;
+        text-shadow: 
+            0 0 10px rgba(255, 255, 255, 0.8),
+            0 0 20px rgba(255, 255, 255, 0.6),
+            0 0 30px rgba(255, 255, 255, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+    33.33%, 66% {
+        color: #ffd700;
+        text-shadow: 
+            0 0 10px rgba(255, 215, 0, 0.8),
+            0 0 20px rgba(255, 215, 0, 0.6),
+            0 0 30px rgba(255, 215, 0, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+    66.33%, 100% {
+        color: #ff6b9d;
+        text-shadow: 
+            0 0 10px rgba(255, 107, 157, 0.8),
+            0 0 20px rgba(255, 107, 157, 0.6),
+            0 0 30px rgba(255, 107, 157, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Color Change Animation for "zot" - Changes every 4 seconds */
+@keyframes colorChangeZot {
+    0%, 33% {
+        color: #00bfff;
+        text-shadow: 
+            0 0 10px rgba(0, 191, 255, 0.8),
+            0 0 20px rgba(0, 191, 255, 0.6),
+            0 0 30px rgba(0, 191, 255, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+    33.33%, 66% {
+        color: #00ff88;
+        text-shadow: 
+            0 0 10px rgba(0, 255, 136, 0.8),
+            0 0 20px rgba(0, 255, 136, 0.6),
+            0 0 30px rgba(0, 255, 136, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+    66.33%, 100% {
+        color: #a78bfa;
+        text-shadow: 
+            0 0 10px rgba(167, 139, 250, 0.8),
+            0 0 20px rgba(167, 139, 250, 0.6),
+            0 0 30px rgba(167, 139, 250, 0.4),
+            3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Hover effect for the entire title - speeds up color change */
+.hero-title:hover .electro-white {
+    animation: colorChangeElectro 4s ease-in-out infinite;
+}
+
+.hero-title:hover .zot-skyblue {
+    animation: colorChangeZot 4s ease-in-out infinite;
+}
+
+/* Book Service Now Header Gradient Animation */
+.booking-header {
+    background-size: 200% 200% !important;
+    animation: gradientShift 8s ease infinite !important;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Shine Effect for Header */
+.header-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    animation: shine 3s infinite;
+    z-index: 1;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}

@@ -140,10 +140,22 @@ $completed_count = $counts->completed_count;
             gap: 15px;
         }
         
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #ff4757;
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         
         .dashboard-title {
@@ -553,8 +565,9 @@ $completed_count = $counts->completed_count;
         
         /* Tablets (992px and below) */
         @media (max-width: 992px) {
-            .logo {
-                font-size: 1.6rem;
+            .logo-image {
+                width: 48px;
+                height: 48px;
             }
             
             .dashboard-title {
@@ -762,8 +775,9 @@ $completed_count = $counts->completed_count;
                 gap: 10px;
             }
             
-            .logo {
-                font-size: 1.4rem;
+            .logo-image {
+                width: 45px;
+                height: 45px;
             }
             
             .dashboard-title {
@@ -871,8 +885,9 @@ $completed_count = $counts->completed_count;
                 padding: 10px;
             }
             
-            .logo {
-                font-size: 1.2rem;
+            .logo-image {
+                width: 40px;
+                height: 40px;
             }
             
             .dashboard-title {
@@ -969,8 +984,9 @@ $completed_count = $counts->completed_count;
                 align-items: center;
             }
             
-            .logo {
-                font-size: 1.1rem;
+            .logo-image {
+                width: 38px;
+                height: 38px;
             }
             
             .dashboard-title {
@@ -1041,8 +1057,8 @@ $completed_count = $counts->completed_count;
     <!-- Header -->
     <div class="header">
         <div class="logo-section">
-            <div class="logo">
-                <i class="fas fa-bolt"></i> Electrozot
+            <div class="logo-image">
+                <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
             </div>
             <div class="dashboard-title">
                 Technician Dashboard

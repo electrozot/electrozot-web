@@ -44,31 +44,37 @@
                         </h3>
                         <p class="mb-0 mt-2" style="opacity: 0.95;">Fill out the form below and we'll get back to you</p>
                     </div>
-                    <div class="card-body p-5" style="background: linear-gradient(180deg, #ffffff 0%, #fff5f7 100%);">
+                    <div class="card-body p-4" style="background: linear-gradient(180deg, #ffffff 0%, #fff5f7 100%);">
                         <form name="sentMessage" id="contactForm" novalidate>
-                            <div class="control-group form-group contact-form-group">
-                                <div class="controls">
-                                    <label class="contact-label">
-                                        <i class="fas fa-user text-danger"></i> Full Name *
-                                    </label>
-                                    <input type="text" class="form-control contact-input" id="name" required data-validation-required-message="Please enter your name." placeholder="Enter your full name">
-                                    <p class="help-block"></p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="control-group form-group contact-form-group">
+                                        <div class="controls">
+                                            <label class="contact-label">
+                                                <i class="fas fa-user text-danger"></i> Full Name *
+                                            </label>
+                                            <input type="text" class="form-control contact-input" id="name" required data-validation-required-message="Please enter your name." placeholder="Your name">
+                                            <p class="help-block"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group form-group contact-form-group">
+                                        <div class="controls">
+                                            <label class="contact-label">
+                                                <i class="fas fa-phone text-danger"></i> Phone *
+                                            </label>
+                                            <input type="tel" class="form-control contact-input" id="phone" required data-validation-required-message="Please enter your phone number." placeholder="Your phone">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="control-group form-group contact-form-group">
                                 <div class="controls">
                                     <label class="contact-label">
-                                        <i class="fas fa-phone text-danger"></i> Phone Number *
+                                        <i class="fas fa-envelope text-danger"></i> Email *
                                     </label>
-                                    <input type="tel" class="form-control contact-input" id="phone" required data-validation-required-message="Please enter your phone number." placeholder="Enter your phone number">
-                                </div>
-                            </div>
-                            <div class="control-group form-group contact-form-group">
-                                <div class="controls">
-                                    <label class="contact-label">
-                                        <i class="fas fa-envelope text-danger"></i> Email Address *
-                                    </label>
-                                    <input type="email" class="form-control contact-input" id="email" required data-validation-required-message="Please enter your email address." placeholder="Enter your email address">
+                                    <input type="email" class="form-control contact-input" id="email" required data-validation-required-message="Please enter your email address." placeholder="Your email">
                                 </div>
                             </div>
                             <div class="control-group form-group contact-form-group">
@@ -76,11 +82,11 @@
                                     <label class="contact-label">
                                         <i class="fas fa-comment-alt text-danger"></i> Message *
                                     </label>
-                                    <textarea rows="8" class="form-control contact-input" id="message" required data-validation-required-message="Please enter your message" maxlength="999" style="resize:none" placeholder="Type your message here..."></textarea>
+                                    <textarea rows="5" class="form-control contact-input" id="message" required data-validation-required-message="Please enter your message" maxlength="999" style="resize:none" placeholder="Your message..."></textarea>
                                 </div>
                             </div>
                             <div id="success"></div>
-                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%); border: none; padding: 15px; font-weight: 600; border-radius: 12px; font-size: 1.1rem; position: relative; overflow: hidden;">
+                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%); border: none; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; position: relative; overflow: hidden;">
                                 <span style="position: relative; z-index: 2;">
                                     <i class="fas fa-paper-plane"></i> Send Message
                                 </span>
