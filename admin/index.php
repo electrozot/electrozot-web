@@ -86,7 +86,7 @@
                 transform: translateY(0px) translateX(0px);
             }
             50% {
-                transform: translateY(-20px) translateX(20px);
+                transform: translateY(-20px) translateX(20gitx);
             }
         }
         

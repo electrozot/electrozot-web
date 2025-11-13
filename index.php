@@ -162,7 +162,7 @@
                                                         $stmt->execute();
                                                         $res=$stmt->get_result();
                                                         while($row=$res->fetch_object()) {
-                                                            echo '<option value="'.$row->s_id.'">'.$row->s_name.' - $'.number_format($row->s_price, 2).'</option>';
+                                                            echo '<option value="'.$row->s_id.'">'.$row->s_name.' - ₹'.number_format($row->s_price, 0).'</option>';
                                                         }
                                                         ?>
                                                     </select>
@@ -366,7 +366,7 @@
                                 <p class="text-muted mb-4" style="line-height: 1.7;"><?php echo substr($row->s_description, 0, 100); ?>...</p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="price-badge px-4 py-2" style="background: <?php echo $gradient; ?>; color: white; font-size: 1.1rem; font-weight: 700; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                                        $<?php echo number_format($row->s_price, 2); ?>
+                                        ₹<?php echo number_format($row->s_price, 0); ?>
                                     </span>
                                     <span class="text-muted" style="font-weight: 500;">
                                         <i class="fas fa-clock"></i> <?php echo $row->s_duration; ?>
