@@ -1,8 +1,21 @@
- <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+ <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
 
-     <a class="navbar-brand mr-1" href="admin-dashboard.php">Technician Booking System</a>
+     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 12px; padding: 8px 15px; background: rgba(255,255,255,0.15); border-radius: 12px; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2);">
+         <div class="logo-container" style="background: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; overflow: hidden; padding: 5px;">
+             <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" style="width: 100%; height: 100%; object-fit: contain;">
+             <div style="position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; background: #ffc107; border-radius: 50%; box-shadow: 0 0 10px #ffc107;"></div>
+         </div>
+         <div style="display: flex; flex-direction: column; line-height: 1.3;">
+             <span style="font-size: 19px; font-weight: 900; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.4); letter-spacing: 0.5px;">
+                 Hi, <span style="color: #ffd700;">Electrozot</span> Admin
+             </span>
+             <span style="font-size: 11px; color: rgba(255,255,255,0.95); font-weight: 600; text-shadow: 1px 1px 3px rgba(0,0,0,0.3);">
+                 <i class="fas fa-shield-alt" style="font-size: 10px;"></i> Admin Control Panel
+             </span>
+         </div>
+     </a>
 
-     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
+     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
          <i class="fas fa-bars"></i>
      </button>
 
@@ -49,6 +62,100 @@
          </li>
      </ul>
  </nav>
+
+ <style>
+ /* Enhanced Navbar Styling */
+ .navbar-brand {
+     transition: all 0.3s ease;
+ }
+ 
+ .navbar-brand:hover {
+     transform: translateY(-3px);
+     filter: brightness(1.1);
+ }
+ 
+ .navbar-brand:hover .logo-container {
+     box-shadow: 0 8px 25px rgba(255,193,7,0.5);
+     transform: rotate(5deg) scale(1.05);
+ }
+ 
+ /* Animated gradient background */
+ @keyframes gradientShift {
+     0% { background-position: 0% 50%; }
+     50% { background-position: 100% 50%; }
+     100% { background-position: 0% 50%; }
+ }
+ 
+ nav.navbar {
+     background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%) !important;
+     background-size: 200% 200%;
+     animation: gradientShift 15s ease infinite;
+     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+ }
+ 
+ /* Logo animations */
+ @keyframes logoPulse {
+     0%, 100% { transform: scale(1) rotate(0deg); }
+     50% { transform: scale(1.08) rotate(-5deg); }
+ }
+ 
+ @keyframes sparkle {
+     0%, 100% { opacity: 1; transform: scale(1); }
+     50% { opacity: 0.6; transform: scale(1.3); }
+ }
+ 
+ .logo-container {
+     animation: logoPulse 3s ease-in-out infinite;
+     transition: all 0.3s ease;
+ }
+ 
+ .logo-container > div {
+     animation: sparkle 2s ease-in-out infinite;
+ }
+ 
+ .logo-container img {
+     animation: logoPulse 2.5s ease-in-out infinite;
+     transition: all 0.3s ease;
+ }
+ 
+ /* Glow effect on hover */
+ .navbar-brand:hover .logo-container img {
+     filter: drop-shadow(0 0 8px rgba(255,193,7,0.6)) drop-shadow(2px 2px 6px rgba(0,0,0,0.2));
+     transform: scale(1.05);
+ }
+ 
+ /* Responsive adjustments */
+ @media (max-width: 768px) {
+     .navbar-brand {
+         padding: 5px 10px !important;
+         gap: 8px !important;
+     }
+     .navbar-brand > div:last-child span:first-child {
+         font-size: 14px !important;
+     }
+     .navbar-brand > div:last-child span:last-child {
+         font-size: 9px !important;
+     }
+     .logo-container {
+         width: 40px !important;
+         height: 40px !important;
+         padding: 3px !important;
+     }
+     .logo-container img {
+         width: 100% !important;
+         height: 100% !important;
+     }
+ }
+ 
+ @media (max-width: 576px) {
+     .navbar-brand > div:last-child span:first-child {
+         font-size: 12px !important;
+     }
+     .navbar-brand > div:last-child span:last-child {
+         display: none;
+     }
+ }
+ </style>
 
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

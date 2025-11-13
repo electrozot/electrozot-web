@@ -54,10 +54,10 @@
                 <div class="row">
                     <!-- Bookings first -->
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <div class="card text-white bg-dark o-hidden h-100">
+                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px;">
                             <div class="card-body">
-                                <div class="card-body-icon">
-                                    <i class="fas fa-fw fa fa-address-book"></i>
+                                <div class="card-body-icon" style="opacity: 0.3;">
+                                    <i class="fas fa-calendar-check" style="font-size: 5rem;"></i>
                                 </div>
                                 <?php
                                 // Count all bookings
@@ -77,12 +77,15 @@
 
                                 $total_bookings = $service_book + $legacy_book;
                                 ?>
-                                <div class="mr-5"><span class="badge badge-danger"><?php echo $total_bookings;?></span> All Bookings</div>
+                                <div class="mr-5" style="position: relative; z-index: 2;">
+                                    <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 900;"><?php echo $total_bookings;?></h2>
+                                    <p class="mb-0" style="font-size: 1rem; opacity: 0.9;">All Bookings</p>
+                                </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-manage-all-bookings.php">
+                            <a class="card-footer text-white clearfix small z-1" href="admin-all-bookings.php" style="background: rgba(0,0,0,0.2); border: none;">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
+                                    <i class="fas fa-arrow-circle-right"></i>
                                 </span>
                             </a>
                         </div>
@@ -90,10 +93,10 @@
 
                     <!-- Services second -->
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <div class="card text-white bg-dark o-hidden h-100">
+                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 15px;">
                             <div class="card-body">
-                                <div class="card-body-icon">
-                                    <i class="fas fa-fw fa-cogs"></i>
+                                <div class="card-body-icon" style="opacity: 0.3;">
+                                    <i class="fas fa-wrench" style="font-size: 5rem;"></i>
                                 </div>
                                 <?php
                                   //count services
@@ -104,12 +107,15 @@
                                   $stmt->fetch();
                                   $stmt->close();
                                 ?>
-                                <div class="mr-5"><span class="badge badge-danger"><?php echo $services;?></span> Services</div>
+                                <div class="mr-5" style="position: relative; z-index: 2;">
+                                    <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 900;"><?php echo $services;?></h2>
+                                    <p class="mb-0" style="font-size: 1rem; opacity: 0.9;">Services</p>
+                                </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-service.php">
+                            <a class="card-footer text-white clearfix small z-1" href="admin-view-service.php" style="background: rgba(0,0,0,0.2); border: none;">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
+                                    <i class="fas fa-arrow-circle-right"></i>
                                 </span>
                             </a>
                         </div>
@@ -117,10 +123,10 @@
 
                     <!-- Technicians third -->
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <div class="card text-white bg-dark o-hidden h-100">
+                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 15px;">
                             <div class="card-body">
-                                <div class="card-body-icon">
-                                    <i class="fas fa-fw fa-tools"></i>
+                                <div class="card-body-icon" style="opacity: 0.3;">
+                                    <i class="fas fa-user-cog" style="font-size: 5rem;"></i>
                                 </div>
                                 <?php
                   //code for summing up number of technicians
@@ -131,12 +137,15 @@
                   $stmt->fetch();
                   $stmt->close();
                 ?>
-                                <div class="mr-5"><span class="badge badge-danger"><?php echo $technician;?></span> Technicians</div>
+                                <div class="mr-5" style="position: relative; z-index: 2;">
+                                    <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 900;"><?php echo $technician;?></h2>
+                                    <p class="mb-0" style="font-size: 1rem; opacity: 0.9;">Technicians</p>
+                                </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-technician.php">
+                            <a class="card-footer text-white clearfix small z-1" href="admin-view-technician.php" style="background: rgba(0,0,0,0.2); border: none;">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
+                                    <i class="fas fa-arrow-circle-right"></i>
                                 </span>
                             </a>
                         </div>
@@ -144,10 +153,10 @@
 
                     <!-- Users fourth -->
                     <div class="col-xl-3 col-sm-6 mb-3">
-                        <div class="card text-white bg-dark o-hidden h-100">
+                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border: none; border-radius: 15px;">
                             <div class="card-body">
-                                <div class="card-body-icon">
-                                    <i class="fas fa-fw fa-users"></i>
+                                <div class="card-body-icon" style="opacity: 0.3;">
+                                    <i class="fas fa-users-cog" style="font-size: 5rem;"></i>
                                 </div>
                                 <?php
                   //code for summing up number of users 
@@ -158,12 +167,15 @@
                   $stmt->fetch();
                   $stmt->close();
                 ?>
-                                <div class="mr-5"><span class="badge badge-danger"><?php echo $user;?></span> Users</div>
+                                <div class="mr-5" style="position: relative; z-index: 2;">
+                                    <h2 class="mb-0" style="font-size: 2.5rem; font-weight: 900;"><?php echo $user;?></h2>
+                                    <p class="mb-0" style="font-size: 1rem; opacity: 0.9;">Users</p>
+                                </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-user.php">
+                            <a class="card-footer text-white clearfix small z-1" href="admin-view-user.php" style="background: rgba(0,0,0,0.2); border: none;">
                                 <span class="float-left">View Details</span>
                                 <span class="float-right">
-                                    <i class="fas fa-angle-right"></i>
+                                    <i class="fas fa-arrow-circle-right"></i>
                                 </span>
                             </a>
                         </div>
