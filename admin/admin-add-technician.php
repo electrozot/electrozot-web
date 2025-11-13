@@ -4,7 +4,7 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
-  // Ensure technician password column exists
+  // Ensure technician columns exist
   try {
     $colChk = $mysqli->query("SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tms_technician' AND COLUMN_NAME = 't_pwd'");
     if($colChk){
@@ -13,6 +13,8 @@
         $mysqli->query("ALTER TABLE tms_technician ADD COLUMN t_pwd VARCHAR(200) NOT NULL DEFAULT ''");
       }
     }
+    // Add service pincode column
+    $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_service_pincode VARCHAR(20) DEFAULT ''");
   } catch(Exception $e) { /* ignore */ }
   //Add Technician
   if(isset($_POST['add_tech']))
@@ -25,11 +27,12 @@
             $t_status=$_POST['t_status'];
             $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
+            $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
             $t_pic=$_FILES["t_pic"]["name"];
 	        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd ) values(?,?,?,?,?,?,?,?)";
+            $query="insert into tms_technician (t_name, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('ssssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd);
+            $rc=$stmt->bind_param('sssssssss', $t_name, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
             $stmt->execute();
                 if($stmt)
                 {
@@ -111,6 +114,16 @@
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Specialization</label>
                                  <input type="text" class="form-control" id="exampleInputEmail1" name="t_specialization" placeholder="e.g., Electrical Repairs, Plumbing">
+                             </div>
+
+                             <div class="form-group">
+                                 <label for="t_service_pincode">
+                                     <i class="fas fa-map-marker-alt"></i> Service Pincode
+                                     <small class="text-muted">(Area where technician provides service)</small>
+                                 </label>
+                                 <input type="text" class="form-control" id="t_service_pincode" name="t_service_pincode" 
+                                        placeholder="e.g., 560001" pattern="[0-9]{6}" maxlength="6" required>
+                                 <small class="form-text text-muted">Enter 6-digit pincode for service area</small>
                              </div>
 
                              <div class="form-group">

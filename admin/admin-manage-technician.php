@@ -5,32 +5,19 @@
   check_login();
   $aid=$_SESSION['a_id'];
 
+  // Include soft delete helper
+  include('vendor/inc/soft-delete.php');
+
   if(isset($_GET['del']))
   {
       $id=intval($_GET['del']);
-      // Snapshot technician row
-      $get = $mysqli->prepare("SELECT * FROM tms_technician WHERE t_id=?");
-      $get->bind_param('i', $id);
-      $get->execute();
-      $res = $get->get_result();
-      $tech = $res->fetch_assoc();
-      if($tech){
-        $payload = json_encode($tech);
-        $ins = $mysqli->prepare("INSERT INTO tms_recycle_bin (rb_type, rb_table, rb_object_id, rb_payload, rb_deleted_by) VALUES ('technician','tms_technician', ?, ?, ?)");
-        $ins->bind_param('isi', $id, $payload, $aid);
-        $ins->execute();
-      }
-      // Hard delete technician
-      $adn="DELETE FROM tms_technician WHERE t_id=?";
-      $stmt= $mysqli->prepare($adn);
-      $stmt->bind_param('i',$id);
-      $stmt->execute();
-      $stmt->close();
-
-      if($stmt){
-        $succ = "Technician removed and sent to Recycle Bin";
+      $reason = isset($_GET['reason']) ? $_GET['reason'] : 'Deleted by admin';
+      
+      // Use soft delete function
+      if(softDeleteTechnician($mysqli, $id, $aid, $reason)) {
+          $succ = "Technician deleted and sent to Recycle Bin";
       } else {
-        $err = "Try Again Later";
+          $err = "Failed to delete technician";
       }
   }
 ?>

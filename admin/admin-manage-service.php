@@ -2,33 +2,19 @@
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
+  include('vendor/inc/soft-delete.php');
   check_login();
   $aid=$_SESSION['a_id'];
 
   if(isset($_GET['del']))
   {
       $id=intval($_GET['del']);
-      // Snapshot service row
-      $get = $mysqli->prepare("SELECT * FROM tms_service WHERE s_id=?");
-      $get->bind_param('i', $id);
-      $get->execute();
-      $res = $get->get_result();
-      $service = $res->fetch_assoc();
-      if($service){
-        $payload = json_encode($service);
-        $ins = $mysqli->prepare("INSERT INTO tms_recycle_bin (rb_type, rb_table, rb_object_id, rb_payload, rb_deleted_by) VALUES ('service','tms_service', ?, ?, ?)");
-        $ins->bind_param('isi', $id, $payload, $aid);
-        $ins->execute();
-      }
-      // Soft delete service to avoid cascading booking deletion
-      $upd = $mysqli->prepare("UPDATE tms_service SET s_status='Inactive' WHERE s_id=?");
-      $upd->bind_param('i', $id);
-      $upd->execute();
-
-      if($upd){
-        $succ = "Service marked inactive and sent to Recycle Bin";
+      
+      // Use soft delete function
+      if(softDeleteService($mysqli, $id, $aid, 'Deleted by admin')) {
+        $succ = "Service deleted and sent to Recycle Bin";
       } else {
-        $err = "Try Again Later";
+        $err = "Failed to delete service";
       }
   }
 ?>

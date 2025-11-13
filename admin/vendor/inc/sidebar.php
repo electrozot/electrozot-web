@@ -13,10 +13,13 @@
              <span>Bookings</span>
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item" href="admin-all-bookings.php"><i class="fas fa-list"></i> All Bookings</a>
              <a class="dropdown-item" href="admin-add-booking.php">Add</a>
              <a class="dropdown-item" href="admin-view-booking.php">View</a>
              <a class="dropdown-item" href="admin-manage-booking.php">Manage</a>
              <a class="dropdown-item" href="admin-manage-service-booking.php">Service Bookings</a>
+             <a class="dropdown-item" href="admin-completed-bookings.php"><i class="fas fa-check-circle"></i> Completed (Images)</a>
+             <a class="dropdown-item" href="admin-rejected-bookings.php"><i class="fas fa-times-circle"></i> Rejected</a>
          </div>
      </li>
      
@@ -76,6 +79,13 @@
          <a class="nav-link" href="admin-view-syslogs.php">
              <i class="fas fa-fw fa fa-history"></i>
              <span>System Logs</span></a>
+     </li>
+
+     <!-- Recycle Bin -->
+     <li class="nav-item">
+         <a class="nav-link" href="admin-recycle-bin.php">
+             <i class="fas fa-fw fa-recycle"></i>
+             <span>Recycle Bin</span></a>
      </li>
 
      <!-- 7. Settings -->

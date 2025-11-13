@@ -2,30 +2,13 @@
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
+  include('vendor/inc/soft-delete.php');
   check_login();
   $aid=$_SESSION['a_id'];
   
   //Delete Service Booking
   if(isset($_GET['sb_id'])) {
     $sb_id = $_GET['sb_id'];
-    
-    // Snapshot booking before deletion into recycle bin
-    $snap_sql = "SELECT * FROM tms_service_booking WHERE sb_id = ?";
-    $snap_stmt = $mysqli->prepare($snap_sql);
-    if ($snap_stmt) {
-      $snap_stmt->bind_param('i', $sb_id);
-      $snap_stmt->execute();
-      $snap_res = $snap_stmt->get_result();
-      $snap = $snap_res->fetch_assoc();
-      if ($snap) {
-        $payload = json_encode($snap);
-        $rb_ins = $mysqli->prepare("INSERT INTO tms_recycle_bin (rb_type, rb_table, rb_object_id, rb_payload, rb_deleted_by) VALUES ('service_booking','tms_service_booking', ?, ?, ?)");
-        if ($rb_ins) {
-          $rb_ins->bind_param('isi', $sb_id, $payload, $aid);
-          $rb_ins->execute();
-        }
-      }
-    }
     
     // Get the booking details to free up technician if assigned
     $get_booking = "SELECT sb_technician_id FROM tms_service_booking WHERE sb_id = ?";
@@ -43,21 +26,11 @@
       $free_stmt->execute();
     }
     
-    // Delete the booking
-    $query = "DELETE FROM tms_service_booking WHERE sb_id=?";
-    $stmt = $mysqli->prepare($query);
-    
-    if(!$stmt) {
-      $_SESSION['delete_error'] = "Database error: " . $mysqli->error;
+    // Use soft delete function
+    if(softDeleteBooking($mysqli, $sb_id, $aid, 'Deleted by admin')) {
+      $_SESSION['delete_success'] = "Service booking deleted and sent to Recycle Bin!";
     } else {
-      $stmt->bind_param('i', $sb_id);
-      $result = $stmt->execute();
-      
-      if($result && $stmt->affected_rows > 0) {
-        $_SESSION['delete_success'] = "Service booking deleted and sent to Recycle Bin!";
-      } else {
-        $_SESSION['delete_error'] = "Failed to delete booking. " . ($stmt->error ? $stmt->error : "Booking not found.");
-      }
+      $_SESSION['delete_error'] = "Failed to delete booking.";
     }
     
     // Redirect back to manage bookings page

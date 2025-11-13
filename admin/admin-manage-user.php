@@ -2,8 +2,22 @@
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
+  include('vendor/inc/soft-delete.php');
   check_login();
   $aid=$_SESSION['a_id'];
+
+  if(isset($_GET['del']))
+  {
+      $id=intval($_GET['del']);
+      $reason = isset($_GET['reason']) ? $_GET['reason'] : 'Deleted by admin';
+      
+      // Use soft delete function
+      if(softDeleteUser($mysqli, $id, $aid, $reason)) {
+          $succ = "User deleted and sent to Recycle Bin";
+      } else {
+          $err = "Failed to delete user";
+      }
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -22,8 +36,19 @@
          <div id="content-wrapper">
 
              <div class="container-fluid">
-                 <p>
-                 </p>
+                 <?php if(isset($succ)) {?>
+                 <div class="alert alert-success alert-dismissible">
+                     <button type="button" class="close" data-dismiss="alert">&times;</button>
+                     <i class="fas fa-check-circle"></i> <?php echo $succ;?>
+                 </div>
+                 <?php } ?>
+                 <?php if(isset($err)) {?>
+                 <div class="alert alert-danger alert-dismissible">
+                     <button type="button" class="close" data-dismiss="alert">&times;</button>
+                     <i class="fas fa-exclamation-circle"></i> <?php echo $err;?>
+                 </div>
+                 <?php } ?>
+                 
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">

@@ -11,12 +11,14 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
       $a_email=$_POST['a_email'];
       $a_pwd=($_POST['a_pwd']);//
       $a_pwd= md5($a_pwd);//
-      $stmt=$mysqli->prepare("SELECT a_email, a_pwd, a_id FROM tms_admin WHERE a_email=? and a_pwd=? ");//sql to log in user
+      $stmt=$mysqli->prepare("SELECT a_email, a_pwd, a_id, a_name, a_photo FROM tms_admin WHERE a_email=? and a_pwd=? ");//sql to log in user
       $stmt->bind_param('ss',$a_email,$a_pwd);//bind fetched parameters
       $stmt->execute();//execute bind
-      $stmt -> bind_result($a_email,$a_pwd,$a_id);//bind result
+      $stmt -> bind_result($a_email,$a_pwd,$a_id,$a_name,$a_photo);//bind result
       $rs=$stmt->fetch();
       $_SESSION['a_id']=$a_id;//assaign session to admin id
+      $_SESSION['a_name']=$a_name;//assign session to admin name
+      $_SESSION['a_photo']=$a_photo;//assign session to admin photo
       //$uip=$_SERVER['REMOTE_ADDR'];
       //$ldate=date('d/m/Y h:i:s', time());
       if($rs)
