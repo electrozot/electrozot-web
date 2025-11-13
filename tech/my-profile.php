@@ -112,7 +112,7 @@ if(!empty($display_pincode)) {
     <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             font-family: 'Segoe UI', Tahoma, sans-serif;
             min-height: 100vh;
             padding: 30px 15px;
@@ -124,34 +124,36 @@ if(!empty($display_pincode)) {
         }
         
         .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: white;
+            color: #2d3748;
             padding: 10px 25px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
             display: inline-block;
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
         }
         
         .back-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: #f7fafc;
             text-decoration: none;
-            color: white;
+            color: #2d3748;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
         
         .profile-card {
             background: white;
             border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
             overflow: hidden;
             margin-bottom: 30px;
         }
         
         .profile-header {
-            background: linear-gradient(135deg, #ff4757 0%, #ffa502 100%);
+            background: linear-gradient(135deg, #c0fa87ff 0%, #667eea 100%);
             padding: 40px;
             color: white;
             position: relative;
@@ -164,18 +166,18 @@ if(!empty($display_pincode)) {
             right: -50px;
             width: 200px;
             height: 200px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
             border-radius: 50%;
         }
         
         .service-pincode-badge {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
             padding: 12px 25px;
             border-radius: 50px;
             display: inline-block;
             margin-bottom: 20px;
             backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.25);
         }
         
         .service-pincode-badge h5 {
@@ -223,14 +225,15 @@ if(!empty($display_pincode)) {
         }
         
         .tech-id-badge {
-            background: #ffd700;
-            color: #ff4757;
+            background: rgba(255,255,255,0.25);
+            color: white;
             padding: 8px 20px;
             border-radius: 50px;
             font-weight: 900;
             display: inline-block;
             margin-bottom: 15px;
             font-size: 1.1rem;
+            border: 2px solid rgba(255,255,255,0.3);
         }
         
         .contact-info {
@@ -243,10 +246,11 @@ if(!empty($display_pincode)) {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
             padding: 10px 20px;
             border-radius: 50px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
         
         .contact-item i {
@@ -255,10 +259,11 @@ if(!empty($display_pincode)) {
         
         .profile-actions {
             padding: 30px 40px;
-            background: #f8f9fa;
+            background: #f7fafc;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            border-top: 1px solid #e2e8f0;
         }
         
         .action-btn {
@@ -275,27 +280,27 @@ if(!empty($display_pincode)) {
         }
         
         .btn-change-password {
-            background: #007bff;
+            background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
             color: white;
         }
         
         .btn-change-password:hover {
-            background: #0056b3;
+            background: linear-gradient(135deg, #3182ce 0%, #5a67d8 100%);
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,123,255,0.3);
+            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.4);
             text-decoration: none;
             color: white;
         }
         
         .btn-logout {
-            background: #dc3545;
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
             color: white;
         }
         
         .btn-logout:hover {
-            background: #c82333;
+            background: linear-gradient(135deg, #be13eeff 0%, #e53ea8ff 100%);
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(220,53,69,0.3);
+            box-shadow: 0 8px 20px rgba(245, 101, 101, 0.4);
             text-decoration: none;
             color: white;
         }
@@ -324,7 +329,7 @@ if(!empty($display_pincode)) {
         }
         
         .detail-label i {
-            color: #ff4757;
+            color: #4299e1;
             width: 25px;
         }
         
@@ -338,7 +343,7 @@ if(!empty($display_pincode)) {
             background: white;
             border-radius: 25px;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
         
         .stats-header {
@@ -365,7 +370,7 @@ if(!empty($display_pincode)) {
         }
         
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f85959ff 0%, #fc9484ff 100%);
             padding: 30px;
             border-radius: 20px;
             color: white;
@@ -381,16 +386,16 @@ if(!empty($display_pincode)) {
             right: -50px;
             width: 150px;
             height: 150px;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
             border-radius: 50%;
         }
         
         .stat-card.stat-orders {
-            background: linear-gradient(135deg, #ff4757 0%, #ffa502 100%);
+            background: linear-gradient(135deg, #f75af7ff 0%, #f4e18cff 100%);
         }
         
         .stat-card.stat-earnings {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #60f3e4ff 0%, #d368a3ff 100%);
         }
         
         .stat-icon {
@@ -533,7 +538,7 @@ if(!empty($display_pincode)) {
                         Service Pincode
                     </div>
                     <div class="detail-value">
-                        <span style="background: linear-gradient(135deg, #ff4757, #ffa502); color: white; padding: 8px 20px; border-radius: 50px; font-weight: 800; font-size: 1.1rem;">
+                        <span style="background: linear-gradient(135deg, #4299e1, #667eea); color: white; padding: 8px 20px; border-radius: 50px; font-weight: 800; font-size: 1.1rem;">
                             <?php echo htmlspecialchars($t_service_pincode); ?>
                         </span>
                         <small style="display: block; margin-top: 8px; color: #666;">

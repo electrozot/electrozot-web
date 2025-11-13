@@ -30,63 +30,194 @@
                      <li class="breadcrumb-item ">View My Booking</li>
                  </ol>
                  <!-- My Bookings-->
-                 <div class="card mb-3">
-                     <div class="card-header">
-                         <i class="fas fa-table"></i>
-                         Bookings
+                 <div class="card mb-3 shadow-lg" style="border: none; border-radius: 15px;">
+                     <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
+                         <h5 class="m-0 font-weight-bold text-white">
+                             <i class="fas fa-calendar-check"></i> My Bookings
+                         </h5>
                      </div>
-                     <div class="card-body">
-                         <div class="table-responsive">
-                             <table class="table table-bordered table-striped table-hover" id="dataTable" width="100%" cellspacing="0">
-                                 <thead>
-                                     <tr>
-                                         <th>Name</th>
-                                         <th>Phone</th>
-                                         <th>Technician Category</th>
-                                         <th>Technician ID</th>
-                                         <th>Booking date</th>
-                                         <th>Status</th>
-                                     </tr>
-                                 </thead>
-
-                                 <tbody>
-                                     <?php
-                    $aid=$_SESSION['u_id'];
-                    $ret="SELECT * from tms_user where u_id=? ";
-                    $stmt= $mysqli->prepare($ret) ;
-                    $stmt->bind_param('i',$aid);
-                    $stmt->execute() ;//ok
-                    $res=$stmt->get_result();
-                    //$cnt=1;
-                        while($row=$res->fetch_object())
-                        {
-                ?>
-                                     <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
-                                     <tr>
-                                         <td><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></td>
-                                         <td><?php echo $row->u_phone;?></td>
-                                         <td><?php echo $row->t_tech_category;?></td>
-                                         <td><?php echo $row->t_tech_id;?></td>
-                                         <td><?php echo $row->t_booking_date;?></td>
-                                         <td><?php if($row->t_booking_status == "Pending"){ echo '<span class = "badge badge-warning">'.$row->t_booking_status.'</span>'; } else { echo '<span class = "badge badge-success">'.$row->t_booking_status.'</span>';}?></td>
-                                     </tr>
-
-                                     <?php  }?>
-                                 </tbody>
-                             </table>
-                         </div>
-                     </div>
-                     <div class="card-footer small text-muted">
+                     <div class="card-body p-4">
                          <?php
-              date_default_timezone_set("Africa/Nairobi");
-              echo "Generated:" . date("h:i:sa");
-            ?>
+                         $bookings_query = "SELECT 
+                                             sb.*,
+                                             s.s_name, s.s_category, s.s_price,
+                                             t.t_name, t.t_phone
+                                           FROM tms_service_booking sb
+                                           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                                           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+                                           WHERE sb.sb_user_id = ?
+                                           ORDER BY sb.sb_created_at DESC";
+                         $bookings_stmt = $mysqli->prepare($bookings_query);
+                         $bookings_stmt->bind_param('i', $aid);
+                         $bookings_stmt->execute();
+                         $bookings_result = $bookings_stmt->get_result();
+                         
+                         if($bookings_result->num_rows > 0):
+                             while($booking = $bookings_result->fetch_object()):
+                                 $status_color = '';
+                                 $status_icon = '';
+                                 switch($booking->sb_status) {
+                                     case 'Pending':
+                                         $status_color = 'warning';
+                                         $status_icon = 'clock';
+                                         break;
+                                     case 'Confirmed':
+                                         $status_color = 'info';
+                                         $status_icon = 'check-circle';
+                                         break;
+                                     case 'In Progress':
+                                         $status_color = 'primary';
+                                         $status_icon = 'spinner';
+                                         break;
+                                     case 'Completed':
+                                         $status_color = 'success';
+                                         $status_icon = 'check-double';
+                                         break;
+                                     case 'Cancelled':
+                                         $status_color = 'danger';
+                                         $status_icon = 'times-circle';
+                                         break;
+                                     default:
+                                         $status_color = 'secondary';
+                                         $status_icon = 'question';
+                                 }
+                         ?>
+                             <a href="user-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" class="booking-card-link" style="text-decoration: none;">
+                                 <div class="booking-card mb-3">
+                                     <div class="booking-card-header">
+                                         <div class="booking-id">
+                                             <i class="fas fa-receipt"></i> Booking #<?php echo $booking->sb_id; ?>
+                                         </div>
+                                         <div class="booking-status">
+                                             <span class="badge badge-<?php echo $status_color; ?> p-2">
+                                                 <i class="fas fa-<?php echo $status_icon; ?>"></i> <?php echo $booking->sb_status; ?>
+                                             </span>
+                                         </div>
+                                     </div>
+                                     <div class="booking-card-body">
+                                         <div class="row">
+                                             <div class="col-md-6">
+                                                 <p class="mb-2">
+                                                     <i class="fas fa-wrench text-primary"></i>
+                                                     <strong><?php echo $booking->s_name; ?></strong>
+                                                 </p>
+                                                 <p class="mb-2 text-muted">
+                                                     <i class="fas fa-tag"></i> <?php echo $booking->s_category; ?>
+                                                 </p>
+                                             </div>
+                                             <div class="col-md-6">
+                                                 <p class="mb-2">
+                                                     <i class="fas fa-calendar text-info"></i>
+                                                     <?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?>
+                                                 </p>
+                                                 <p class="mb-2">
+                                                     <i class="fas fa-clock text-warning"></i>
+                                                     <?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?>
+                                                 </p>
+                                             </div>
+                                         </div>
+                                         <?php if($booking->t_name): ?>
+                                             <div class="technician-info mt-2">
+                                                 <i class="fas fa-user-cog"></i> Technician: <strong><?php echo $booking->t_name; ?></strong>
+                                                 <?php if($booking->t_phone): ?>
+                                                     | <i class="fas fa-phone"></i> <?php echo $booking->t_phone; ?>
+                                                 <?php endif; ?>
+                                             </div>
+                                         <?php else: ?>
+                                             <div class="alert alert-warning mt-2 mb-0 py-2">
+                                                 <small><i class="fas fa-info-circle"></i> Technician not assigned yet</small>
+                                             </div>
+                                         <?php endif; ?>
+                                     </div>
+                                     <div class="booking-card-footer">
+                                         <span class="booking-price">₹<?php echo number_format($booking->sb_total_price, 2); ?></span>
+                                         <span class="view-details-btn">
+                                             <i class="fas fa-arrow-right"></i> View Details
+                                         </span>
+                                     </div>
+                                 </div>
+                             </a>
+                         <?php 
+                             endwhile;
+                         else:
+                         ?>
+                             <div class="text-center py-5">
+                                 <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                                 <h4>No Bookings Yet</h4>
+                                 <p class="text-muted">You haven't made any bookings yet.</p>
+                                 <a href="usr-book-service-simple.php" class="btn btn-primary btn-lg mt-3">
+                                     <i class="fas fa-plus-circle"></i> Book a Service
+                                 </a>
+                             </div>
+                         <?php endif; ?>
                      </div>
                  </div>
+                 
+                 <style>
+                 .booking-card {
+                     background: white;
+                     border-radius: 15px;
+                     border: 2px solid #e9ecef;
+                     transition: all 0.3s ease;
+                     overflow: hidden;
+                 }
+                 
+                 .booking-card:hover {
+                     transform: translateY(-3px);
+                     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+                     border-color: #667eea;
+                 }
+                 
+                 .booking-card-header {
+                     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                     padding: 15px 20px;
+                     display: flex;
+                     justify-content: space-between;
+                     align-items: center;
+                 }
+                 
+                 .booking-id {
+                     font-size: 18px;
+                     font-weight: 700;
+                     color: #667eea;
+                 }
+                 
+                 .booking-card-body {
+                     padding: 20px;
+                 }
+                 
+                 .technician-info {
+                     background: #f8f9fa;
+                     padding: 10px 15px;
+                     border-radius: 10px;
+                     font-size: 14px;
+                     color: #495057;
+                 }
+                 
+                 .booking-card-footer {
+                     background: #f8f9fa;
+                     padding: 15px 20px;
+                     display: flex;
+                     justify-content: space-between;
+                     align-items: center;
+                     border-top: 2px solid #e9ecef;
+                 }
+                 
+                 .booking-price {
+                     font-size: 24px;
+                     font-weight: 900;
+                     color: #28a745;
+                 }
+                 
+                 .view-details-btn {
+                     color: #667eea;
+                     font-weight: 700;
+                 }
+                 
+                 .booking-card-link:hover .view-details-btn {
+                     color: #764ba2;
+                 }
+                 </style>
              </div>
              <!-- /.container-fluid -->
 

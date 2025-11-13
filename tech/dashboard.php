@@ -596,6 +596,149 @@ $completed_count = $counts->completed_count;
             }
         }
         
+        /* Mobile Card Layout */
+        .booking-card {
+            display: none;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-left: 4px solid #ff4757;
+        }
+        
+        .booking-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .booking-id-mobile {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #ff4757;
+        }
+        
+        .booking-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .booking-info-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .booking-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #ff4757, #ffa502);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .booking-info-content {
+            flex: 1;
+        }
+        
+        .booking-info-label {
+            font-size: 0.7rem;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        
+        .booking-info-value {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .booking-card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .mobile-call-btn {
+            flex: 1;
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .mobile-call-btn:hover {
+            background: #218838;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .mobile-action-btn {
+            flex: 1;
+            background: #ff4757;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .mobile-action-btn:hover {
+            background: #ff6b9d;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .mobile-view-btn {
+            flex: 1;
+            background: #007bff;
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .mobile-view-btn:hover {
+            background: #0056b3;
+            color: white;
+            text-decoration: none;
+        }
+        
         /* Mobile Landscape & Small Tablets (768px and below) */
         @media (max-width: 768px) {
             body {
@@ -680,59 +823,45 @@ $completed_count = $counts->completed_count;
             }
             
             .search-box input {
-                padding: 10px 15px;
-                font-size: 0.9rem;
+                padding: 12px 15px;
+                font-size: 1rem;
             }
             
             .filter-btn {
                 width: 100%;
-                padding: 10px 20px;
+                padding: 12px 20px;
                 text-align: center;
+                font-size: 0.95rem;
             }
             
             .main-container-full {
                 padding: 0 15px 15px 15px;
             }
             
+            /* Hide table, show cards on mobile */
             .bookings-section-full {
-                border-radius: 8px;
-                max-height: calc(100vh - 400px);
-                min-height: 300px;
-                overflow: auto;
+                background: transparent;
+                box-shadow: none;
+                overflow: visible;
+                max-height: none;
             }
             
             .bookings-table {
-                font-size: 0.75rem;
-                min-width: 800px;
+                display: none;
             }
             
-            .bookings-table th,
-            .bookings-table td {
-                padding: 8px 4px;
-                white-space: nowrap;
+            .booking-card {
+                display: block;
             }
             
-            .bookings-table th:nth-child(4),
-            .bookings-table td:nth-child(4) {
-                max-width: 120px;
-                white-space: normal;
-                word-wrap: break-word;
+            .scroll-hint {
+                display: none;
             }
             
-            .call-btn {
-                padding: 5px 10px;
-                font-size: 0.75rem;
-            }
-            
-            .action-btn,
-            .view-btn {
-                padding: 5px 10px;
-                font-size: 0.75rem;
-            }
-            
-            .status-badge {
-                padding: 4px 10px;
-                font-size: 0.7rem;
+            .empty-state {
+                background: white;
+                border-radius: 12px;
+                padding: 40px 20px;
             }
         }
         
@@ -997,6 +1126,7 @@ $completed_count = $counts->completed_count;
                 <i class="fas fa-arrows-alt"></i> Scroll to view all data
             </div>
             <?php if($bookings_result->num_rows > 0): ?>
+                <!-- Desktop Table View -->
                 <table class="bookings-table">
                     <thead>
                         <tr>
@@ -1010,7 +1140,10 @@ $completed_count = $counts->completed_count;
                         </tr>
                     </thead>
                     <tbody>
-                        <?php while($booking = $bookings_result->fetch_object()): 
+                        <?php 
+                        // Reset result pointer for table
+                        $bookings_result->data_seek(0);
+                        while($booking = $bookings_result->fetch_object()): 
                             // Extract pincode from customer address
                             $customer_pincode = '';
                             if(!empty($booking->u_addr)) {
@@ -1071,6 +1204,102 @@ $completed_count = $counts->completed_count;
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+                
+                <!-- Mobile Card View -->
+                <?php 
+                // Reset result pointer for cards
+                $bookings_result->data_seek(0);
+                while($booking = $bookings_result->fetch_object()): 
+                    // Extract pincode from customer address
+                    $customer_pincode = '';
+                    if(!empty($booking->u_addr)) {
+                        if(preg_match('/\b(\d{6})\b/', $booking->u_addr, $pin_matches)) {
+                            $customer_pincode = $pin_matches[1];
+                        } elseif(preg_match('/(\d{6})/', $booking->u_addr, $pin_matches)) {
+                            $customer_pincode = $pin_matches[1];
+                        }
+                    }
+                    
+                    $status_class = '';
+                    if($booking->sb_status == 'Pending') {
+                        $status_class = 'status-new';
+                    } elseif($booking->sb_status == 'In Progress') {
+                        $status_class = 'status-pending';
+                    } elseif($booking->sb_status == 'Completed') {
+                        $status_class = 'status-completed';
+                    }
+                ?>
+                <div class="booking-card">
+                    <div class="booking-card-header">
+                        <div class="booking-id-mobile">#<?php echo $booking->sb_id; ?></div>
+                        <span class="status-badge <?php echo $status_class; ?>">
+                            <?php echo $booking->sb_status; ?>
+                        </span>
+                    </div>
+                    
+                    <div class="booking-card-body">
+                        <div class="booking-info-row">
+                            <div class="booking-info-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="booking-info-content">
+                                <div class="booking-info-label">Customer Name</div>
+                                <div class="booking-info-value"><?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?></div>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-info-row">
+                            <div class="booking-info-icon">
+                                <i class="fas fa-map-pin"></i>
+                            </div>
+                            <div class="booking-info-content">
+                                <div class="booking-info-label">Pincode</div>
+                                <div class="booking-info-value"><?php echo $customer_pincode ? $customer_pincode : 'Not Available'; ?></div>
+                            </div>
+                        </div>
+                        
+                        <div class="booking-info-row">
+                            <div class="booking-info-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="booking-info-content">
+                                <div class="booking-info-label">Address</div>
+                                <div class="booking-info-value"><?php echo htmlspecialchars($booking->u_addr); ?></div>
+                            </div>
+                        </div>
+                        
+                        <?php if(!empty($booking->s_name)): ?>
+                        <div class="booking-info-row">
+                            <div class="booking-info-icon">
+                                <i class="fas fa-wrench"></i>
+                            </div>
+                            <div class="booking-info-content">
+                                <div class="booking-info-label">Service</div>
+                                <div class="booking-info-value"><?php echo htmlspecialchars($booking->s_name); ?></div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="booking-card-actions">
+                        <?php if(!empty($booking->u_phone)): ?>
+                            <a href="tel:<?php echo $booking->u_phone; ?>" class="mobile-call-btn">
+                                <i class="fas fa-phone"></i> Call
+                            </a>
+                        <?php endif; ?>
+                        
+                        <?php if($booking->sb_status != 'Completed' && $booking->sb_status != 'Rejected'): ?>
+                            <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>" class="mobile-action-btn">
+                                <i class="fas fa-tasks"></i> Take Action
+                            </a>
+                        <?php elseif($booking->sb_status == 'Completed'): ?>
+                            <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>" class="mobile-view-btn">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endwhile; ?>
             <?php else: ?>
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
