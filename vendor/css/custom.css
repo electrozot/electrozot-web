@@ -1,29 +1,29 @@
-/* WhatsApp Floating Button */
+/* WhatsApp Floating Button - Enhanced with Floating Animation */
 .whatsapp-chat-btn {
     position: fixed;
-    width: 60px;
-    height: 60px;
-    bottom: 30px;
+    width: 65px;
+    height: 55px;
+    bottom: 30make px;
     right: 30px;
     background-color: #25d366;
     color: #FFF;
-    border-radius: 50px;
+    border-radius: 50%;
     text-align: center;
-    font-size: 30px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    font-size: 32px;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
     z-index: 1000;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    animation: whatsapp-pulse 2s infinite;
+    animation: float-whatsapp 3s ease-in-out infinite, whatsapp-pulse 2s infinite;
 }
 
 .whatsapp-chat-btn:hover {
     background-color: #128c7e;
     color: #FFF;
-    transform: scale(1.1);
-    box-shadow: 2px 2px 20px rgba(37, 211, 102, 0.6);
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.7);
     text-decoration: none;
 }
 
@@ -31,69 +31,105 @@
     margin-top: 3px;
 }
 
+/* WhatsApp Floating Animation */
+@keyframes float-whatsapp {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* WhatsApp Pulse Animation */
 @keyframes whatsapp-pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
     }
     50% {
-        box-shadow: 0 0 0 15px rgba(37, 211, 102, 0);
+        box-shadow: 0 0 0 20px rgba(37, 211, 102, 0);
     }
     100% {
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
     }
 }
 
-/* Book Service Floating Button */
+/* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    bottom: 100px;
+    bottom: 110px;
     right: 30px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
-    width: 60px;
-    height: 60px;
-    border-radius: 50px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
     z-index: 999;
     transition: all 0.3s ease;
     text-decoration: none;
-    font-size: 20px;
+    font-size: 22px;
+    animation: float-book 3s ease-in-out infinite, blink-book 2s ease-in-out infinite;
 }
 
 .book-service-fab:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    background: linear-gradient(135deg, #ff006e 0%, #ee5a6f 50%, #ff6b6b 100%);
     color: #FFF;
-    transform: scale(1.1);
-    box-shadow: 2px 2px 20px rgba(102, 126, 234, 0.6);
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.7);
     text-decoration: none;
+    animation: float-book 3s ease-in-out infinite;
 }
 
 .book-service-fab span {
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+/* Book Button Floating Animation */
+@keyframes float-book {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+/* Book Button Blinking Animation */
+@keyframes blink-book {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+        opacity: 1;
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(255, 107, 107, 0.9), 0 0 0 15px rgba(255, 107, 107, 0);
+        opacity: 0.9;
+    }
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .whatsapp-chat-btn {
-        width: 50px;
-        height: 50px;
+        width: 55px;
+        height: 55px;
         bottom: 20px;
         right: 20px;
-        font-size: 26px;
+        font-size: 28px;
     }
     
     .book-service-fab {
-        width: 50px;
-        height: 50px;
-        bottom: 80px;
+        width: 55px;
+        height: 55px;
+        bottom: 90px;
         right: 20px;
-        font-size: 18px;
+        font-size: 20px;
     }
     
     .book-service-fab span {
