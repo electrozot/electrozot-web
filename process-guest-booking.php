@@ -52,16 +52,13 @@ if(isset($_POST['book_service_guest'])) {
     $stmt_user->close();
 
     if($customer_id) {
-        // Merge pincode into description to avoid schema changes
-        $sb_description_full = "Pincode: " . $customer_pincode;
-        if (!empty($sb_description)) {
-            $sb_description_full .= "\n" . trim($sb_description);
-        }
-
-        // Insert booking into tms_service_booking table
-        $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_phone, sb_description, sb_status, sb_total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Ensure sb_pincode column exists
+        $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
+        
+        // Insert booking into tms_service_booking table with pincode
+        $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt_booking = $mysqli->prepare($query_booking);
-        $stmt_booking->bind_param('iissssssd', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_phone, $sb_description_full, $sb_status, $sb_total_price);
+        $stmt_booking->bind_param('iisssssssd', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price);
         
         if($stmt_booking->execute()) {
             $_SESSION['booking_success'] = "Booking submitted successfully! We will contact you shortly.";

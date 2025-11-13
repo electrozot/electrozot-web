@@ -74,9 +74,9 @@
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
-                    <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content">
+                    <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
                         <h1 class="display-4 font-weight-bold mb-4 hero-title" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
-                            Welcome to <span class="electro-white">Electro</span><span class="zot-skyblue">zot</span>
+                            Welcome to <span class="electrozot-animated">Electrozot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">
                             Professional Technician Booking System - Book expert technicians for all your electrical, plumbing, HVAC, and appliance repair needs. Fast, reliable, and hassle-free service.
@@ -273,10 +273,10 @@
                             <div class="feature-gradient-bg"></div>
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
                                 <div class="feature-icon mb-3 icon-bounce" style="font-size: 1.8rem;">
-                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-user-cog"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">Why Us</h5>
-                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">We create accountability in the transport sector, enhance mobility and ease of accessing various transport modes. Our commitment to excellence ensures you get the best service every time.</p>
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">Professional Trained Teams</h5>
+                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">We have professional trained teams and experts for every service. Our skilled technicians are certified and experienced to handle all your electrical, plumbing, and appliance repair needs with precision and care.</p>
                             </div>
                         </div>
                     </div>
@@ -285,11 +285,25 @@
                             <div class="feature-gradient-bg-2"></div>
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
                                 <div class="feature-icon mb-3 icon-bounce" style="animation-delay: 0.2s; font-size: 1.8rem;">
-                                    <i class="fas fa-heart"></i>
+                                    <i class="fas fa-handshake"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">Core Values</h5>
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">On-Time & Affordable Service</h5>
                                 <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">
-                                    Excellence, Trust and Openness, Integrity, Take Responsibility, Customer Orientation. These values guide everything we do and ensure your satisfaction.
+                                    We commit our service on time with affordable and transparent prices for all. No hidden charges, no surprises - just honest pricing and punctual service delivery that respects your time and budget.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="feature-card card h-100 border-0 feature-card-3" style="border-radius: 20px; overflow: hidden; position: relative;">
+                            <div class="feature-gradient-bg-3"></div>
+                            <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
+                                <div class="feature-icon mb-3 icon-bounce" style="animation-delay: 0.4s; font-size: 1.8rem;">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">1 Month Warranty & Trust</h5>
+                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">
+                                    We provide you 1 month warranty on all repairs and parts we provide, so we are trusted. Your satisfaction is guaranteed with our comprehensive warranty coverage and reliable after-service support.
                                 </p>
                             </div>
                         </div>
@@ -312,10 +326,22 @@
                 </div>
                 <div class="row">
                     <?php
-                    $ret="SELECT * FROM tms_service WHERE s_status = 'Active' LIMIT 3";
+                    // Add is_popular column if it doesn't exist
+                    $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
+                    
+                    // First try to get popular services
+                    $ret="SELECT * FROM tms_service WHERE s_status = 'Active' AND is_popular = 1 ORDER BY s_id DESC LIMIT 3";
                     $stmt= $mysqli->prepare($ret);
                     $stmt->execute();
                     $res=$stmt->get_result();
+                    
+                    // If no popular services, get latest 3 active services
+                    if($res->num_rows == 0) {
+                        $ret="SELECT * FROM tms_service WHERE s_status = 'Active' ORDER BY s_id DESC LIMIT 3";
+                        $stmt= $mysqli->prepare($ret);
+                        $stmt->execute();
+                        $res=$stmt->get_result();
+                    }
                     $cnt=1;
                     $gradients = [
                         'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',

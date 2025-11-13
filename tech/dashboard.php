@@ -13,6 +13,7 @@ try {
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_phone VARCHAR(20) DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_email VARCHAR(100) DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_addr TEXT DEFAULT ''");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
 } catch(Exception $e) {}
 
 // Get technician details
@@ -1160,9 +1161,24 @@ $completed_count = $counts->completed_count;
                         // Reset result pointer for table
                         $bookings_result->data_seek(0);
                         while($booking = $bookings_result->fetch_object()): 
-                            // Extract pincode from customer address
+                            // Get pincode from booking or extract from address
                             $customer_pincode = '';
-                            if(!empty($booking->u_addr)) {
+                            
+                            // First check if sb_pincode property exists and is not empty
+                            if(isset($booking->sb_pincode) && !empty($booking->sb_pincode)) {
+                                $customer_pincode = $booking->sb_pincode;
+                            }
+                            // If not, try to extract from address
+                            elseif(!empty($booking->sb_address)) {
+                                // Try multiple patterns to extract 6-digit pincode from booking address
+                                if(preg_match('/\b(\d{6})\b/', $booking->sb_address, $pin_matches)) {
+                                    $customer_pincode = $pin_matches[1];
+                                } elseif(preg_match('/(\d{6})/', $booking->sb_address, $pin_matches)) {
+                                    $customer_pincode = $pin_matches[1];
+                                }
+                            }
+                            // Last resort: try user address
+                            elseif(!empty($booking->u_addr)) {
                                 // Try multiple patterns to extract 6-digit pincode
                                 if(preg_match('/\b(\d{6})\b/', $booking->u_addr, $pin_matches)) {
                                     $customer_pincode = $pin_matches[1];
@@ -1226,9 +1242,23 @@ $completed_count = $counts->completed_count;
                 // Reset result pointer for cards
                 $bookings_result->data_seek(0);
                 while($booking = $bookings_result->fetch_object()): 
-                    // Extract pincode from customer address
+                    // Get pincode from booking or extract from address
                     $customer_pincode = '';
-                    if(!empty($booking->u_addr)) {
+                    
+                    // First check if sb_pincode property exists and is not empty
+                    if(isset($booking->sb_pincode) && !empty($booking->sb_pincode)) {
+                        $customer_pincode = $booking->sb_pincode;
+                    }
+                    // If not, try to extract from booking address
+                    elseif(!empty($booking->sb_address)) {
+                        if(preg_match('/\b(\d{6})\b/', $booking->sb_address, $pin_matches)) {
+                            $customer_pincode = $pin_matches[1];
+                        } elseif(preg_match('/(\d{6})/', $booking->sb_address, $pin_matches)) {
+                            $customer_pincode = $pin_matches[1];
+                        }
+                    }
+                    // Last resort: try user address
+                    elseif(!empty($booking->u_addr)) {
                         if(preg_match('/\b(\d{6})\b/', $booking->u_addr, $pin_matches)) {
                             $customer_pincode = $pin_matches[1];
                         } elseif(preg_match('/(\d{6})/', $booking->u_addr, $pin_matches)) {

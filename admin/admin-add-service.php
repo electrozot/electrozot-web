@@ -4,6 +4,9 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  // Ensure is_popular column exists
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
+  
   //Add Service
   if(isset($_POST['add_service']))
     {
@@ -13,9 +16,10 @@
             $s_price=$_POST['s_price'];
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
-            $query="insert into tms_service (s_name, s_description, s_category, s_price, s_duration, s_status) values(?,?,?,?,?,?)";
+            $is_popular = isset($_POST['is_popular']) ? 1 : 0;
+            $query="insert into tms_service (s_name, s_description, s_category, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssdss', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status);
+            $rc=$stmt->bind_param('sssdssi', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status, $is_popular);
             $stmt->execute();
                 if($stmt)
                 {
@@ -106,6 +110,15 @@
                                      <option>Active</option>
                                      <option>Inactive</option>
                                  </select>
+                             </div>
+                             <div class="form-group">
+                                 <div class="custom-control custom-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="popularCheckbox" name="is_popular" value="1">
+                                     <label class="custom-control-label" for="popularCheckbox">
+                                         <i class="fas fa-star text-warning"></i> Mark as Popular Service (Show on Homepage)
+                                     </label>
+                                     <small class="form-text text-muted">Check this to display this service in the "Our Popular Services" section on the homepage.</small>
+                                 </div>
                              </div>
                              <hr>
                              <button type="submit" name="add_service" class="btn btn-success">Add Service</button>

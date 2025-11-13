@@ -4,6 +4,9 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  // Ensure is_popular column exists
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
+  
   //Update Service
   if(isset($_POST['update_service']))
     {
@@ -14,9 +17,10 @@
             $s_price=$_POST['s_price'];
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
-            $query="update tms_service set s_name=?, s_description=?, s_category=?, s_price=?, s_duration=?, s_status=? where s_id = ?";
+            $is_popular = isset($_POST['is_popular']) ? 1 : 0;
+            $query="update tms_service set s_name=?, s_description=?, s_category=?, s_price=?, s_duration=?, s_status=?, is_popular=? where s_id = ?";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssdssi', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status, $s_id);
+            $rc=$stmt->bind_param('sssdssii', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status, $is_popular, $s_id);
             $stmt->execute();
                 if($stmt)
                 {
@@ -117,6 +121,15 @@
                                      <option value="Active" <?php echo ($row->s_status == 'Active') ? 'selected' : ''; ?>>Active</option>
                                      <option value="Inactive" <?php echo ($row->s_status == 'Inactive') ? 'selected' : ''; ?>>Inactive</option>
                                  </select>
+                             </div>
+                             <div class="form-group">
+                                 <div class="custom-control custom-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="popularCheckbox" name="is_popular" value="1" <?php echo (isset($row->is_popular) && $row->is_popular == 1) ? 'checked' : ''; ?>>
+                                     <label class="custom-control-label" for="popularCheckbox">
+                                         <i class="fas fa-star text-warning"></i> Mark as Popular Service (Show on Homepage)
+                                     </label>
+                                     <small class="form-text text-muted">Check this to display this service in the "Our Popular Services" section on the homepage.</small>
+                                 </div>
                              </div>
                              <hr>
                              <button type="submit" name="update_service" class="btn btn-success">Update Service</button>

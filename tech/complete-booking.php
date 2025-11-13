@@ -12,6 +12,7 @@ try {
     $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_image VARCHAR(200) DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_completion_date DATETIME DEFAULT NULL");
     $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_rejection_reason TEXT DEFAULT ''");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_charged_price DECIMAL(10,2) DEFAULT NULL");
 } catch(Exception $e) {}
 
 $booking_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -39,42 +40,49 @@ if(!$booking) {
 if(isset($_POST['mark_completed'])) {
     $bill_image = '';
     $service_image = '';
+    $charged_price = isset($_POST['charged_price']) ? floatval($_POST['charged_price']) : 0;
     
-    // Upload bill image
-    if(isset($_FILES['bill_image']) && $_FILES['bill_image']['error'] == 0) {
-        $bill_ext = pathinfo($_FILES['bill_image']['name'], PATHINFO_EXTENSION);
-        $bill_image = 'bill_' . $booking_id . '_' . time() . '.' . $bill_ext;
-        move_uploaded_file($_FILES['bill_image']['tmp_name'], '../vendor/img/' . $bill_image);
-    }
-    
-    // Upload service image
-    if(isset($_FILES['service_image']) && $_FILES['service_image']['error'] == 0) {
-        $service_ext = pathinfo($_FILES['service_image']['name'], PATHINFO_EXTENSION);
-        $service_image = 'service_' . $booking_id . '_' . time() . '.' . $service_ext;
-        move_uploaded_file($_FILES['service_image']['tmp_name'], '../vendor/img/' . $service_image);
-    }
-    
-    if(!empty($bill_image) && !empty($service_image)) {
-        $update_query = "UPDATE tms_service_booking 
-                        SET sb_status = 'Completed', 
-                            sb_bill_image = ?, 
-                            sb_service_image = ?,
-                            sb_completion_date = NOW()
-                        WHERE sb_id = ? AND sb_technician_id = ?";
-        $update_stmt = $mysqli->prepare($update_query);
-        $update_stmt->bind_param('ssii', $bill_image, $service_image, $booking_id, $t_id);
-        
-        if($update_stmt->execute()) {
-            $success = "Booking marked as completed successfully!";
-            // Refresh booking data
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $booking = $result->fetch_object();
-        } else {
-            $error = "Failed to update booking.";
-        }
+    // Validate charged price
+    if($charged_price <= 0) {
+        $error = "Please enter a valid charged price.";
     } else {
-        $error = "Please upload both bill and service images.";
+        // Upload bill image
+        if(isset($_FILES['bill_image']) && $_FILES['bill_image']['error'] == 0) {
+            $bill_ext = pathinfo($_FILES['bill_image']['name'], PATHINFO_EXTENSION);
+            $bill_image = 'bill_' . $booking_id . '_' . time() . '.' . $bill_ext;
+            move_uploaded_file($_FILES['bill_image']['tmp_name'], '../vendor/img/' . $bill_image);
+        }
+        
+        // Upload service image
+        if(isset($_FILES['service_image']) && $_FILES['service_image']['error'] == 0) {
+            $service_ext = pathinfo($_FILES['service_image']['name'], PATHINFO_EXTENSION);
+            $service_image = 'service_' . $booking_id . '_' . time() . '.' . $service_ext;
+            move_uploaded_file($_FILES['service_image']['tmp_name'], '../vendor/img/' . $service_image);
+        }
+        
+        if(!empty($bill_image) && !empty($service_image)) {
+            $update_query = "UPDATE tms_service_booking 
+                            SET sb_status = 'Completed', 
+                                sb_bill_image = ?, 
+                                sb_service_image = ?,
+                                sb_charged_price = ?,
+                                sb_completion_date = NOW()
+                            WHERE sb_id = ? AND sb_technician_id = ?";
+            $update_stmt = $mysqli->prepare($update_query);
+            $update_stmt->bind_param('ssdii', $bill_image, $service_image, $charged_price, $booking_id, $t_id);
+            
+            if($update_stmt->execute()) {
+                $success = "Booking marked as completed successfully with charged price ₹" . number_format($charged_price, 2);
+                // Refresh booking data
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $booking = $result->fetch_object();
+            } else {
+                $error = "Failed to update booking.";
+            }
+        } else {
+            $error = "Please upload both bill and service images.";
+        }
     }
 }
 
@@ -450,6 +458,31 @@ if(isset($_POST['mark_rejected'])) {
                         </div>
                     </div>
 
+                    <div class="upload-section">
+                        <h5 style="margin-bottom: 15px; color: #333;">
+                            <i class="fas fa-rupee-sign"></i> Enter Charged Price
+                        </h5>
+                        <div class="form-group">
+                            <label class="form-label">
+                                Actual Price Charged to Customer <span style="color: #dc3545;">*</span>
+                            </label>
+                            <div style="position: relative;">
+                                <span style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); font-weight: 700; color: #666;">₹</span>
+                                <input type="number" 
+                                       name="charged_price" 
+                                       class="form-control" 
+                                       placeholder="Enter amount charged" 
+                                       step="0.01" 
+                                       min="0" 
+                                       required
+                                       style="padding-left: 35px; font-size: 1.2rem; font-weight: 700;">
+                            </div>
+                            <small style="color: #666; display: block; margin-top: 8px;">
+                                <i class="fas fa-info-circle"></i> Enter the final amount you charged to the customer
+                            </small>
+                        </div>
+                    </div>
+
                     <div class="action-buttons">
                         <button type="submit" name="mark_completed" class="btn-complete">
                             <i class="fas fa-check-circle"></i> Mark as Completed
@@ -461,6 +494,18 @@ if(isset($_POST['mark_rejected'])) {
                 </form>
             </div>
         <?php elseif($booking->sb_status == 'Completed'): ?>
+            <div class="card-custom">
+                <div class="card-title">
+                    <i class="fas fa-rupee-sign"></i> Charged Price
+                </div>
+                <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 10px; margin-bottom: 20px;">
+                    <h2 style="color: white; font-size: 3rem; font-weight: 900; margin: 0;">
+                        ₹<?php echo isset($booking->sb_charged_price) ? number_format($booking->sb_charged_price, 2) : '0.00'; ?>
+                    </h2>
+                    <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-weight: 600;">Amount Charged to Customer</p>
+                </div>
+            </div>
+            
             <div class="card-custom">
                 <div class="card-title">
                     <i class="fas fa-images"></i> Uploaded Images
