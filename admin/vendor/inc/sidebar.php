@@ -13,6 +13,8 @@
              <span>Bookings</span>
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item bg-success text-white" href="admin-quick-booking.php"><i class="fas fa-phone-alt"></i> Quick Booking</a>
+             <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-all-bookings.php"><i class="fas fa-list-ul"></i> All Bookings</a>
              <a class="dropdown-item" href="admin-add-booking.php"><i class="fas fa-plus-circle"></i> Add</a>
              <a class="dropdown-item" href="admin-view-booking.php"><i class="fas fa-eye"></i> View</a>

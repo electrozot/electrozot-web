@@ -1,0 +1,20 @@
+/* Custom Admin Styles */
+
+/* Sidebar Dropdown Menu - Light Gray Background */
+.sidebar .dropdown-menu {
+    background-color: #f8f9fa !important;
+}
+
+.sidebar .dropdown-item {
+    background-color: transparent;
+    color: #212529;
+}
+
+.sidebar .dropdown-item:hover {
+    background-color: #e9ecef !important;
+    color: #212529;
+}
+
+.sidebar .dropdown-divider {
+    border-top-color: #dee2e6;
+}

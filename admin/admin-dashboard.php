@@ -14,8 +14,7 @@
       $update_query = "UPDATE tms_service_booking 
                       SET sb_technician_id = ?, 
                           sb_status = 'Pending',
-                          sb_rejection_reason = NULL,
-                          sb_rejected_at = NULL
+                          sb_rejection_reason = NULL
                       WHERE sb_id = ?";
       $stmt = $mysqli->prepare($update_query);
       $stmt->bind_param('ii', $new_tech_id, $booking_id);
@@ -225,10 +224,22 @@
                     </div>
                 </div>
                 <!--All Bookings-->
+                <?php
+                // Count unassigned bookings
+                $count_unassigned = "SELECT COUNT(*) as total FROM tms_service_booking 
+                                    WHERE sb_technician_id IS NULL 
+                                    AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+                $stmt_count = $mysqli->prepare($count_unassigned);
+                $stmt_count->execute();
+                $count_result = $stmt_count->get_result();
+                $count_data = $count_result->fetch_object();
+                $unassigned_count = $count_data->total;
+                ?>
                 <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fas fa-table"></i>
-                        Recent Bookings
+                    <div class="card-header bg-warning text-dark">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Unassigned Bookings - Needs Technician Assignment</strong>
+                        <span class="badge badge-danger float-right"><?php echo $unassigned_count; ?> Pending</span>
                     </div>
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
@@ -261,13 +272,14 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // Service Bookings (only unassigned, most recent)
+                                    // Service Bookings (ALL unassigned bookings)
                                     $ret_service = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name 
                                                     FROM tms_service_booking sb
                                                     LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                                                     LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
-                                                    WHERE sb.sb_technician_id IS NULL AND (sb.sb_status = 'Pending' OR sb.sb_status = 'Approved')
-                                                    ORDER BY sb.sb_created_at DESC LIMIT 5";
+                                                    WHERE sb.sb_technician_id IS NULL 
+                                                    AND sb.sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')
+                                                    ORDER BY sb.sb_created_at DESC";
                                     $stmt_service = $mysqli->prepare($ret_service);
                                     $stmt_service->execute();
                                     $res_service = $stmt_service->get_result();
@@ -276,7 +288,15 @@
                                     ?>
                                     <tr>
                                         <td><?php echo $cnt;?></td>
-                                        <td><?php echo $row_service->u_fname;?> <?php echo $row_service->u_lname;?></td>
+                                        <td>
+                                            <?php 
+                                            if(!empty($row_service->u_fname)) {
+                                                echo $row_service->u_fname . ' ' . $row_service->u_lname;
+                                            } else {
+                                                echo '<span class="text-muted">Customer</span>';
+                                            }
+                                            ?>
+                                        </td>
                                         <td><?php echo $row_service->sb_phone;?></td>
                                         <td><span class="badge badge-primary">Service Booking</span></td>
                                         <td><?php echo $row_service->s_name;?></td>
@@ -342,10 +362,11 @@
 
                 <!-- Rejected/Cancelled Bookings Section -->
                 <?php
-                $rejected_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, s.s_name, s.s_category
+                $rejected_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, s.s_name, s.s_category, t.t_name as technician_name
                                    FROM tms_service_booking sb
                                    LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                                   LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                                    WHERE sb.sb_status = 'Rejected' OR sb.sb_status = 'Cancelled'
                                    ORDER BY sb.sb_booking_date DESC
                                    LIMIT 10";
@@ -367,6 +388,7 @@
                                         <th>Customer</th>
                                         <th>Service</th>
                                         <th>Category</th>
+                                        <th>Technician</th>
                                         <th>Date</th>
                                         <th>Status</th>
                                         <th>Reason</th>
@@ -383,11 +405,20 @@
                                         </td>
                                         <td><?php echo htmlspecialchars($booking->s_name); ?></td>
                                         <td><span class="badge badge-secondary"><?php echo $booking->s_category; ?></span></td>
+                                        <td>
+                                            <?php if($booking->technician_name): ?>
+                                                <span class="badge badge-info">
+                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars($booking->technician_name); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="text-muted"><i>Not assigned</i></span>
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?></td>
                                         <td><span class="badge badge-danger"><?php echo $booking->sb_status; ?></span></td>
                                         <td><small><?php echo htmlspecialchars(substr($booking->sb_rejection_reason, 0, 50)); ?></small></td>
                                         <td>
-                                            <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo $booking->s_category; ?>')">
+                                            <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_category); ?>', '<?php echo addslashes($booking->s_name); ?>')">
                                                 <i class="fas fa-user-plus"></i> Reassign
                                             </button>
                                         </td>
@@ -515,14 +546,17 @@
     </div>
     
     <script>
-        function openReassignModal(bookingId, category) {
+        function openReassignModal(bookingId, category, serviceName) {
             document.getElementById('booking_id').value = bookingId;
             
-            // Fetch available technicians for this category
+            // Fetch available technicians matching service name OR category (same logic as assignment)
             $.ajax({
                 url: 'vendor/inc/get-technicians.php',
                 method: 'POST',
-                data: { category: category },
+                data: { 
+                    category: category,
+                    service_name: serviceName || category
+                },
                 success: function(response) {
                     $('#tech_select').html(response);
                 }

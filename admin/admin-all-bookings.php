@@ -36,7 +36,7 @@ if($date_filter != 'all') {
 }
 
 if(!empty($search)) {
-    $where_conditions[] = "(u.u_fname LIKE ? OR u.u_lname LIKE ? OR u.u_phone LIKE ? OR s.s_name LIKE ? OR t.t_name LIKE ?)";
+    $where_conditions[] = "(u.u_fname LIKE ? OR u.u_lname LIKE ? OR sb.sb_phone LIKE ? OR s.s_name LIKE ? OR t.t_name LIKE ?)";
     $search_param = "%$search%";
     $params[] = $search_param;
     $params[] = $search_param;
@@ -305,10 +305,20 @@ $stats = $stats_result->fetch_object();
                                         <tr>
                                             <td><strong>#<?php echo $booking->sb_id; ?></strong></td>
                                             <td>
-                                                <strong><?php echo $booking->u_fname . ' ' . $booking->u_lname; ?></strong><br>
+                                                <strong>
+                                                    <?php 
+                                                    if(!empty($booking->u_fname)) {
+                                                        echo $booking->u_fname . ' ' . $booking->u_lname;
+                                                    } else {
+                                                        echo 'Customer';
+                                                    }
+                                                    ?>
+                                                </strong><br>
                                                 <small class="text-muted">
-                                                    <i class="fas fa-phone"></i> <?php echo $booking->u_phone; ?><br>
+                                                    <i class="fas fa-phone"></i> <?php echo $booking->sb_phone; ?><br>
+                                                    <?php if(!empty($booking->u_email)): ?>
                                                     <i class="fas fa-envelope"></i> <?php echo $booking->u_email; ?>
+                                                    <?php endif; ?>
                                                 </small>
                                             </td>
                                             <td>

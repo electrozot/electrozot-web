@@ -44,11 +44,11 @@
                     
                     if($result && $stmt->affected_rows > 0) {
                         // Update technician status based on booking status
-                        if($sb_status == 'Completed' || $sb_status == 'Cancelled') {
-                            // Free the technician if booking is completed or cancelled
+                        if($sb_status == 'Completed' || $sb_status == 'Cancelled' || $sb_status == 'Rejected') {
+                            // Free the technician if booking is completed, cancelled, or rejected
                             $update_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
-                        } else if($sb_status == 'In Progress' || $sb_status == 'Approved') {
-                            // Mark technician as booked if booking is in progress or approved
+                        } else if($sb_status == 'In Progress' || $sb_status == 'Approved' || $sb_status == 'Assigned') {
+                            // Mark technician as booked if booking is in progress, approved, or assigned
                             $update_tech = "UPDATE tms_technician SET t_status='Booked' WHERE t_id=?";
                         } else {
                             // For pending status, keep technician available (or don't change status)
@@ -178,30 +178,78 @@
                                      // Handle NULL technician_id
                                      $current_tech_id = $booking_data->sb_technician_id ? $booking_data->sb_technician_id : 0;
                                      
+                                     // FLEXIBLE MATCHING: Match by service name OR service category
                                      if($current_tech_id > 0) {
-                                         $tech_query = "SELECT * FROM tms_technician WHERE t_category = ? AND (t_status = 'Available' OR t_id = ?)";
+                                         // Include currently assigned technician even if not available
+                                         $tech_query = "SELECT * FROM tms_technician 
+                                                       WHERE (t_category = ? OR t_category = ?) 
+                                                       AND (t_status = 'Available' OR t_id = ?) 
+                                                       ORDER BY t_name";
                                          $tech_stmt = $mysqli->prepare($tech_query);
-                                         $tech_stmt->bind_param('si', $booking_data->s_category, $current_tech_id);
+                                         $tech_stmt->bind_param('ssi', $booking_data->s_name, $booking_data->s_category, $current_tech_id);
                                      } else {
-                                         $tech_query = "SELECT * FROM tms_technician WHERE t_category = ? AND t_status = 'Available'";
+                                         // Show available technicians matching service name OR category
+                                         $tech_query = "SELECT * FROM tms_technician 
+                                                       WHERE (t_category = ? OR t_category = ?) 
+                                                       AND t_status = 'Available' 
+                                                       ORDER BY t_name";
                                          $tech_stmt = $mysqli->prepare($tech_query);
-                                         $tech_stmt->bind_param('s', $booking_data->s_category);
+                                         $tech_stmt->bind_param('ss', $booking_data->s_name, $booking_data->s_category);
                                      }
                                      
                                      $tech_stmt->execute();
                                      $tech_result = $tech_stmt->get_result();
                                      
                                      if($tech_result->num_rows == 0) {
-                                         echo '<option value="" disabled>No technicians available for this category</option>';
+                                         // NO FALLBACK - Show clear message
+                                         echo '<option value="" disabled style="color: red;">⚠️ No technicians available for: '.$booking_data->s_category.'</option>';
+                                         echo '<option value="" disabled>Please add technicians with this category first</option>';
                                      } else {
+                                         // Show only matching technicians
                                          while($tech = $tech_result->fetch_object()) {
                                              $selected = ($tech->t_id == $current_tech_id) ? 'selected' : '';
-                                             echo '<option value="'.$tech->t_id.'" '.$selected.'>'.$tech->t_name.' - '.$tech->t_specialization.' ('.$tech->t_status.')</option>';
+                                             $status_badge = ($tech->t_status == 'Available') ? '✓' : '⚠';
+                                             echo '<option value="'.$tech->t_id.'" '.$selected.'>';
+                                             echo $status_badge . ' ' . $tech->t_name . ' - ' . $tech->t_specialization;
+                                             echo '</option>';
                                          }
                                      }
                                      ?>
                                  </select>
-                                 <small class="form-text text-muted">Showing technicians matching service category: <?php echo $booking_data->s_category;?></small>
+                                 <small class="form-text text-muted">
+                                     <strong>Service:</strong> <?php echo $booking_data->s_name;?> 
+                                     | <strong>Category:</strong> <?php echo $booking_data->s_category;?>
+                                     <?php
+                                     // Check if no technicians available (matching service name OR category)
+                                     $check_query = "SELECT COUNT(*) as count FROM tms_technician 
+                                                    WHERE (t_category = ? OR t_category = ?) 
+                                                    AND t_status = 'Available'";
+                                     $check_stmt = $mysqli->prepare($check_query);
+                                     $check_stmt->bind_param('ss', $booking_data->s_name, $booking_data->s_category);
+                                     $check_stmt->execute();
+                                     $check_result = $check_stmt->get_result();
+                                     $tech_count = $check_result->fetch_object()->count;
+                                     
+                                     if($tech_count == 0) {
+                                         echo '<br><span class="text-danger"><i class="fas fa-exclamation-triangle"></i> No available technicians matching this service!</span>';
+                                     } else {
+                                         echo '<br><span class="text-success"><i class="fas fa-check-circle"></i> '.$tech_count.' technician(s) available</span>';
+                                     }
+                                     ?>
+                                 </small>
+                                 
+                                 <?php if($tech_count == 0): ?>
+                                 <div class="alert alert-warning mt-2">
+                                     <strong><i class="fas fa-info-circle"></i> No Technicians Available</strong><br>
+                                     There are no technicians matching "<strong><?php echo $booking_data->s_name;?></strong>" or category "<strong><?php echo $booking_data->s_category;?></strong>" currently available.<br><br>
+                                     <strong>Solutions:</strong>
+                                     <ul class="mb-0">
+                                         <li>Add a new technician with matching category: <a href="admin-add-technician.php" class="alert-link">Add Technician</a></li>
+                                         <li>Update existing technician's category: <a href="admin-manage-technician.php" class="alert-link">Manage Technicians</a></li>
+                                         <li>Wait for assigned technicians to become available</li>
+                                     </ul>
+                                 </div>
+                                 <?php endif; ?>
                              </div>
                              <div class="form-group">
                                  <label for="sb_status">Booking Status *</label>
