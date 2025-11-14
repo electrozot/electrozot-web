@@ -3,8 +3,9 @@
     position: fixed;
     width: 65px;
     height: 65px;
-    bottom: 30px;
+    top: 50%;
     right: 30px;
+    transform: translateY(-50%);
     background-color: #25d366;
     color: #FFF;
     border-radius: 50%;
@@ -57,8 +58,9 @@
 /* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    bottom: 110px;
+    top: 50%;
     right: 30px;
+    transform: translateY(calc(-50% + 85px));
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
     width: 65px;
@@ -119,16 +121,18 @@
     .whatsapp-chat-btn {
         width: 55px;
         height: 55px;
-        bottom: 20px;
+        top: 50%;
         right: 20px;
+        transform: translateY(-50%);
         font-size: 28px;
     }
     
     .book-service-fab {
         width: 55px;
         height: 55px;
-        bottom: 90px;
+        top: 50%;
         right: 20px;
+        transform: translateY(calc(-50% + 75px));
         font-size: 20px;
     }
     
@@ -395,5 +399,104 @@
 @media (max-width: 576px) {
     .hero-title {
         font-size: 1.75rem !important;
+    }
+}
+
+/* Work Portfolio Responsive Images */
+.work-portfolio-img {
+    height: 500px;
+    object-fit: cover;
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .work-portfolio-img {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-portfolio-img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .work-portfolio-img {
+        height: 250px;
+    }
+}
+
+/* Carousel caption responsive */
+@media (max-width: 768px) {
+    .carousel-caption {
+        display: block !important;
+        background: rgba(0,0,0,0.8) !important;
+        padding: 10px !important;
+        border-radius: 5px !important;
+        bottom: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1rem !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .carousel-caption p {
+        font-size: 0.85rem !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Testimonials Auto-Sliding Animation */
+.testimonials-slider-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.testimonials-slider {
+    display: flex;
+    white-space: nowrap;
+    animation: slideTestimonials 40s linear infinite;
+    will-change: transform;
+}
+
+.testimonial-slide {
+    flex-shrink: 0;
+}
+
+@keyframes slideTestimonials {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.testimonials-slider:hover {
+    animation-play-state: paused;
+}
+
+/* Responsive testimonials */
+@media (max-width: 768px) {
+    .testimonial-slide {
+        width: 300px !important;
+        margin: 0 10px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .testimonial-slide {
+        width: 280px !important;
+        margin: 0 8px !important;
+    }
+    
+    .testimonial-text {
+        font-size: 0.95rem !important;
+        min-height: 100px !important;
     }
 }

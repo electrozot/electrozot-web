@@ -27,7 +27,7 @@
                     <i class="fas fa-bolt" style="color: #ff4757; margin-right: 15px;"></i>
                     ELECTROZOT
                 </h1>
-                <p class="about-subtitle" style="font-size: 1.2rem; color: #4a5568; max-width: 700px; margin: 0 auto; line-height: 1.8; font-weight: 400;">
+                <p class="about-subtitle" style="font-size: 1.2rem; color: #5e6570ff; max-width: 700px; margin: 0 auto; line-height: 1.8; font-weight: 400;">
                     Your trusted partner for excellence in electronic repair, electrical installation, and plumbing solutions
                 </p>
             </div>
@@ -64,7 +64,7 @@
                         Our Commitment to <span style="color: #ff4757;">Excellence</span>
                     </h2>
                     <p style="font-size: 1.05rem; color: #4a5568; line-height: 1.9; margin-bottom: 25px;">
-                        Welcome to <strong style="color: #ff4757;">ElectroZot</strong>, your expert provider for Electronic Repair, Electrical Installation, and Plumbing Solutions. Our entire operation is centered on a single goal: delivering service defined by <strong>Trust, Quality, and Perfection</strong>.
+                        Welcome to <strong style="color: #fe90d2ff;">ElectroZot</strong>, your expert provider for Electronic Repair, Electrical Installation, and Plumbing Solutions. Our entire operation is centered on a single goal: delivering service defined by <strong>Trust, Quality, and Perfection</strong>.
                     </p>
                     <p style="font-size: 1.05rem; color: #4a5568; line-height: 1.9; margin-bottom: 25px;">
                         We firmly believe that exceptional service starts with superior materials. That is why we mandate the use of high-quality parts in every job—we never compromise on the components that ensure the longevity and safety of your home systems.

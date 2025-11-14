@@ -31,13 +31,13 @@
                 
                 <!-- Floating Icons -->
                 <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.15;">
-                    <i class="fas fa-bolt" style="font-size: 3rem; color: #ffd700;"></i>
+                    <i class="fas fa-bolt" style="font-size: 3rem; color: #7ff4fdff;"></i>
                 </div>
                 <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.12;">
                     <i class="fas fa-tools" style="font-size: 2.5rem; color: #ffffff;"></i>
                 </div>
                 <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.1;">
-                    <i class="fas fa-cog" style="font-size: 2rem; color: #ffd700;"></i>
+                    <i class="fas fa-cog" style="font-size: 2rem; color: #7ff4fdff;"></i>
                 </div>
                 <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.08;">
                     <i class="fas fa-wrench" style="font-size: 2.2rem; color: #ffffff;"></i>
@@ -454,40 +454,12 @@
                                 <span class="sr-only">Next</span>
                             </a>
                         </div>
-
-                        <!-- Stats Below Carousel -->
-                        <div class="row mt-5 text-center">
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">500+</h3>
-                                    <p class="text-muted mb-0 small">Projects Completed</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">450+</h3>
-                                    <p class="text-muted mb-0 small">Happy Clients</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">50+</h3>
-                                    <p class="text-muted mb-0 small">Expert Technicians</p>
-                                </div>
-                            </div>
-                            <div class="col-md-3 col-6 mb-3">
-                                <div class="p-3" style="background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                                    <h3 class="font-weight-bold mb-0" style="color: #667eea;">5+</h3>
-                                    <p class="text-muted mb-0 small">Years Experience</p>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Testimonials Section -->
+        <!-- Testimonials Section with Auto-Sliding -->
         <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
             <div class="testimonial-overlay"></div>
             <div class="container" style="position: relative; z-index: 2;">
@@ -499,43 +471,51 @@
                         <p class="lead text-white" style="opacity: 0.95; font-weight: 400;">What our customers say about us</p>
                     </div>
                 </div>
-                <div class="row">
-                    <?php
-                    $ret="SELECT * FROM tms_feedback where f_status ='Published' ORDER BY RAND() LIMIT 3";
-                    $stmt= $mysqli->prepare($ret);
-                    $stmt->execute();
-                    $res=$stmt->get_result();
-                    $cnt=1;
-                    $testimonialGradients = [
-                        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                        'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
-                    ];
-                    while($row=$res->fetch_object()) {
-                        $testGradient = $testimonialGradients[($cnt-1) % count($testimonialGradients)];
-                    ?>
-                    <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="testimonial-card card h-100 border-0 testimonial-card-hover" style="border-radius: 20px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
-                            <div class="card-body p-4">
-                                <div class="mb-3">
-                                    <i class="fas fa-quote-left testimonial-quote" style="font-size: 2.5rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
-                                </div>
-                                <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #4a5568; font-size: 1.05rem;">
-                                    "<?php echo $row->f_content; ?>"
-                                </p>
-                                <div class="d-flex align-items-center">
-                                    <div class="avatar-circle mr-3 testimonial-avatar" style="width: 60px; height: 60px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                                        <?php echo strtoupper(substr($row->f_uname, 0, 1)); ?>
+                
+                <!-- Testimonials Slider Container -->
+                <div class="testimonials-slider-wrapper" style="position: relative; overflow: hidden;">
+                    <div class="testimonials-slider" id="testimonialsSlider">
+                        <?php
+                        $ret="SELECT * FROM tms_feedback where f_status ='Published' ORDER BY f_id DESC";
+                        $stmt= $mysqli->prepare($ret);
+                        $stmt->execute();
+                        $res=$stmt->get_result();
+                        $cnt=1;
+                        $testimonialGradients = [
+                            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+                        ];
+                        while($row=$res->fetch_object()) {
+                            $testGradient = $testimonialGradients[($cnt-1) % count($testimonialGradients)];
+                        ?>
+                        <div class="testimonial-slide" style="display: inline-block; width: 350px; margin: 0 15px; vertical-align: top;">
+                            <div class="testimonial-card card border-0" style="border-radius: 20px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.15); height: 100%;">
+                                <div class="card-body p-4">
+                                    <div class="mb-3">
+                                        <i class="fas fa-quote-left testimonial-quote" style="font-size: 2.5rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
                                     </div>
-                                    <div>
-                                        <h6 class="mb-0 font-weight-bold" style="color: #2d3748;"><?php echo $row->f_uname; ?></h6>
-                                        <small class="text-muted" style="font-weight: 500;">Verified Customer</small>
+                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #4a5568; font-size: 1.05rem; min-height: 120px;">
+                                        "<?php echo $row->f_content; ?>"
+                                    </p>
+                                    <div class="d-flex align-items-center">
+                                        <?php if(isset($row->f_photo) && $row->f_photo) { ?>
+                                            <img src="<?php echo $row->f_photo; ?>" alt="<?php echo $row->f_uname; ?>" class="mr-3" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                        <?php } else { ?>
+                                            <div class="avatar-circle mr-3" style="width: 60px; height: 60px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                                <?php echo strtoupper(substr($row->f_uname, 0, 1)); ?>
+                                            </div>
+                                        <?php } ?>
+                                        <div>
+                                            <h6 class="mb-0 font-weight-bold" style="color: #2d3748;"><?php echo $row->f_uname; ?></h6>
+                                            <small class="text-muted" style="font-weight: 500;">Verified Customer</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        <?php $cnt++; } ?>
                     </div>
-                    <?php $cnt++; } ?>
                 </div>
             </div>
         </section>
@@ -579,6 +559,28 @@
                 pause: 'hover',
                 wrap: true
             });
+            
+            // Testimonials Auto-Sliding (Right to Left every 7 seconds)
+            const slider = document.getElementById('testimonialsSlider');
+            if(slider) {
+                const slides = slider.querySelectorAll('.testimonial-slide');
+                
+                // Clone slides for seamless loop
+                slides.forEach(slide => {
+                    const clone = slide.cloneNode(true);
+                    slider.appendChild(clone);
+                });
+                
+                // Calculate total width
+                let totalWidth = 0;
+                slides.forEach(slide => {
+                    totalWidth += slide.offsetWidth + 30; // 30 = margin
+                });
+                
+                // Set animation duration based on number of slides (7 seconds per slide transition)
+                const duration = slides.length * 7;
+                slider.style.animation = `slideTestimonials ${duration}s linear infinite`;
+            }
         });
     </script>
     

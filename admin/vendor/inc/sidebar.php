@@ -69,8 +69,10 @@
              <span>Feedbacks</span>
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-             <a class="dropdown-item" href="admin-view-feedback.php"><i class="fas fa-comments"></i> View</a>
-             <a class="dropdown-item" href="admin-publish-feedback.php"><i class="fas fa-thumbs-up"></i> Manage</a>
+             <a class="dropdown-item" href="admin-add-feedback.php"><i class="fas fa-plus"></i> Add Feedback</a>
+             <a class="dropdown-item" href="admin-manage-feedback.php"><i class="fas fa-edit"></i> Manage Feedbacks</a>
+             <a class="dropdown-item" href="admin-view-feedback.php"><i class="fas fa-comments"></i> View All</a>
+             <a class="dropdown-item" href="admin-publish-feedback.php"><i class="fas fa-thumbs-up"></i> Publish</a>
          </div>
      </li>
 

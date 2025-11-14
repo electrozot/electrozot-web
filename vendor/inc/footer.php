@@ -44,6 +44,26 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <h5 style="font-weight: 600; margin-bottom: 25px; color: #00d4ff; font-size: 1.1rem;">Quick Links</h5>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 15px;">
+                        <a href="tech/index.php" style="background: linear-gradient(135deg, #1a51f5ff 0%, #6bc9f2ff 100%); color: white ; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3); font-weight: 500;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(135, 206, 235, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(135, 206, 235, 0.3)'">
+                            <i class="fas fa-user-cog" style="font-size: 1.1rem;"></i>
+                            <span>Technician Login</span>
+                        </a>
+                    </li>
+                    <li style="margin-bottom: 15px;">
+                        <a href="admin/index.php" style="background: linear-gradient(135deg, #e94efeff 0%, #f61848ff 100%); color: black; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-weight: 500;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.3)'">
+                            <i class="fas fa-user-shield" style="font-size: 1.1rem;"></i>
+                            <span>Admin Login</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
         </div>
 
         <!-- Bottom Bar -->
