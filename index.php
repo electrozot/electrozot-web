@@ -147,11 +147,20 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-map-signs text-primary"></i> Area / Locality</label>
+                                                    <input type="text" class="form-control form-control-sm" name="customer_area" required placeholder="Enter your area or locality">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-map-pin text-primary"></i> Pincode</label>
                                                     <input type="text" class="form-control form-control-sm" name="customer_pincode" required placeholder="6-digit" maxlength="6" pattern="^[0-9]{6}$" title="Enter exactly 6 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
                                                 <div class="form-group ">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Select Service</label>
                                                     <select class="p-0 form-control form-control-sm" name="sb_service_id" required>

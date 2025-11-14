@@ -184,16 +184,49 @@
                              </div>
 
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Service Category (Legacy)</label>
-                                 <select class="form-control" name="t_category" id="exampleFormControlSelect1">
-                                     <option>Electrical</option>
-                                     <option>Plumbing</option>
-                                     <option>HVAC</option>
-                                     <option>Appliance</option>
-                                     <option>General</option>
+                                 <label for="t_category">
+                                     <i class="fas fa-tools"></i> Service Category <span class="text-danger">*</span>
+                                 </label>
+                                 <select class="form-control" name="t_category" id="t_category" required onchange="showCategoryDetails(this)">
+                                     <option value="">Select Service Category...</option>
+                                     <?php
+                                     // Get service categories from database
+                                     $services_query = "SELECT s_name, s_description FROM tms_service WHERE s_status = 'Active' ORDER BY s_name";
+                                     $services_result = $mysqli->query($services_query);
+                                     if($services_result) {
+                                         while($service = $services_result->fetch_object()) {
+                                             echo '<option value="'.htmlspecialchars($service->s_name).'" data-description="'.htmlspecialchars($service->s_description).'">';
+                                             echo htmlspecialchars($service->s_name);
+                                             echo '</option>';
+                                         }
+                                     }
+                                     ?>
                                  </select>
-                                 <small class="form-text text-muted">Keep for backward compatibility</small>
+                                 <small class="form-text text-muted">
+                                     Select the service category this technician specializes in
+                                 </small>
+                                 
+                                 <!-- Category Details Display -->
+                                 <div id="categoryDetails" class="alert alert-info mt-2" style="display:none;">
+                                     <strong><i class="fas fa-info-circle"></i> This category includes:</strong>
+                                     <p class="mb-0 mt-2" id="categoryDescription"></p>
+                                 </div>
                              </div>
+                             
+                             <script>
+                             function showCategoryDetails(select) {
+                                 const selectedOption = select.options[select.selectedIndex];
+                                 const detailsDiv = document.getElementById('categoryDetails');
+                                 const descriptionP = document.getElementById('categoryDescription');
+                                 
+                                 if(select.value && selectedOption.dataset.description) {
+                                     descriptionP.textContent = selectedOption.dataset.description;
+                                     detailsDiv.style.display = 'block';
+                                 } else {
+                                     detailsDiv.style.display = 'none';
+                                 }
+                             }
+                             </script>
                              
                              <?php
                              // Check if service categories table exists

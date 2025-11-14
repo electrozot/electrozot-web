@@ -1,0 +1,240 @@
+================================================================================
+ELECTROZOT DATABASE - SAMPLE DATA INSERTION & TESTING INSTRUCTIONS
+================================================================================
+
+STEP-BY-STEP EXECUTION GUIDE
+================================================================================
+
+STEP 1: BACKUP YOUR DATABASE (IMPORTANT!)
+--------------------------------------------------------------------------------
+Before inserting sample data, backup your current database:
+
+Method A - Using phpMyAdmin:
+1. Open phpMyAdmin
+2. Select 'electrozot_db' database
+3. Click 'Export' tab
+4. Click 'Go' to download backup
+
+Method B - Using Command Line:
+mysqldump -u root -p electrozot_db > backup_before_sample_data.sql
+
+
+STEP 2: INSERT SAMPLE USERS (25 records)
+--------------------------------------------------------------------------------
+1. Open phpMyAdmin
+2. Select 'electrozot_db' database
+3. Click 'SQL' tab
+4. Open file: sample_data_insert.sql
+5. Copy ONLY the "INSERT SAMPLE USERS" section (lines 15-40)
+6. Paste into SQL tab
+7. Click 'Go'
+8. Verify: Should see "25 rows inserted"
+
+
+STEP 3: INSERT SAMPLE TECHNICIANS (25 records)
+--------------------------------------------------------------------------------
+1. In phpMyAdmin SQL tab
+2. Copy ONLY the "INSERT SAMPLE TECHNICIANS" section from sample_data_insert.sql
+3. Paste and click 'Go'
+4. Verify: Should see "25 rows inserted"
+
+
+STEP 4: INSERT SAMPLE BOOKINGS (30 records)
+--------------------------------------------------------------------------------
+IMPORTANT: Use the insert_bookings.sql file (not sample_data_insert.sql)
+This file uses dynamic user IDs to prevent foreign key errors.
+
+1. In phpMyAdmin SQL tab
+2. Open file: insert_bookings.sql
+3. Copy entire content
+4. Paste and click 'Go'
+5. Verify: Should see "30 rows inserted"
+
+
+STEP 5: VERIFY DATA INSERTION
+--------------------------------------------------------------------------------
+Run these queries in phpMyAdmin SQL tab:
+
+-- Check total records
+SELECT 
+    (SELECT COUNT(*) FROM tms_user) as users,
+    (SELECT COUNT(*) FROM tms_technician) as technicians,
+    (SELECT COUNT(*) FROM tms_service_booking) as bookings;
+
+Expected Results:
+- Users: 26 (1 existing + 25 new)
+- Technicians: 30 (5 existing + 25 new)
+- Bookings: 30 (all new)
+
+-- Check booking status distribution
+SELECT sb_status, COUNT(*) as count 
+FROM tms_service_booking 
+GROUP BY sb_status;
+
+Expected Results:
+- Pending: 5
+- Assigned: 5
+- In Progress: 5
+- Completed: 5
+- Rejected: 5
+- Cancelled: 5
+
+
+STEP 6: RUN DATABASE TESTS
+--------------------------------------------------------------------------------
+Method A - Using phpMyAdmin:
+1. Open file: test_database_logic.sql
+2. Copy entire content
+3. Paste into phpMyAdmin SQL tab
+4. Click 'Go'
+5. Review all test results
+
+Method B - Using PHP Test Page:
+1. Open browser
+2. Navigate to: http://localhost/electrozot/test-database.php
+3. Review visual test results
+4. Check all sections for errors
+
+
+STEP 7: TEST ADMIN DASHBOARD
+--------------------------------------------------------------------------------
+1. Login to admin dashboard: http://localhost/electrozot/admin/
+2. Check "Rejected/Cancelled Bookings" section
+3. Should see 10 bookings (5 rejected + 5 cancelled)
+4. Click "Reassign" button on any rejected booking
+5. Select a technician from the modal
+6. Click "Reassign Booking"
+7. Verify booking status changes to "Assigned"
+
+
+STEP 8: TEST TECHNICIAN DASHBOARD
+--------------------------------------------------------------------------------
+1. Check technician login credentials (need to add login functionality)
+2. Login as technician
+3. Should see assigned bookings
+4. Test accept/reject functionality
+
+
+================================================================================
+QUICK EXECUTION (ALL AT ONCE)
+================================================================================
+
+If you want to insert everything at once:
+
+1. Open phpMyAdmin
+2. Select 'electrozot_db' database
+3. Click 'SQL' tab
+4. Execute in this order:
+
+   a) Copy and run: sample_data_insert.sql (users section)
+   b) Copy and run: sample_data_insert.sql (technicians section)
+   c) Copy and run: insert_bookings.sql (entire file)
+   d) Copy and run: test_database_logic.sql (for verification)
+
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+ERROR: Duplicate entry for key 'PRIMARY'
+SOLUTION: Data already exists. Either:
+- Skip that INSERT statement
+- Delete existing sample data first
+- Modify the INSERT to use different values
+
+ERROR: Cannot add or update a child row: a foreign key constraint fails
+SOLUTION: 
+- Make sure users are inserted before bookings
+- Make sure technicians are inserted before bookings
+- Use insert_bookings.sql instead of sample_data_insert.sql for bookings
+
+ERROR: Unknown column in 'field list'
+SOLUTION:
+- Check your database schema matches electrozot_db.sql
+- Run electrozot_db.sql first to create/update tables
+
+ERROR: Access denied for user
+SOLUTION:
+- Check database credentials in vendor/inc/config.php
+- Make sure MySQL server is running
+
+
+================================================================================
+CLEANUP (REMOVE SAMPLE DATA)
+================================================================================
+
+To remove all sample data and start fresh:
+
+-- Delete all bookings
+DELETE FROM tms_service_booking WHERE sb_id > 0;
+
+-- Delete sample users (keep original user with ID 13)
+DELETE FROM tms_user WHERE u_id > 13;
+
+-- Delete sample technicians (keep original 5)
+DELETE FROM tms_technician WHERE t_id > 7;
+
+-- Reset auto-increment counters
+ALTER TABLE tms_service_booking AUTO_INCREMENT = 1;
+ALTER TABLE tms_user AUTO_INCREMENT = 14;
+ALTER TABLE tms_technician AUTO_INCREMENT = 8;
+
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+After insertion, verify:
+☐ Total users = 26 (or more)
+☐ Total technicians = 30 (or more)
+☐ Total bookings = 30 (or more)
+☐ Booking statuses: 5 each of Pending, Assigned, In Progress, Completed, Rejected, Cancelled
+☐ No orphaned bookings (all have valid user_id)
+☐ No category mismatches (technician category matches service category)
+☐ All assigned/in-progress/completed bookings have technician_id
+☐ Admin dashboard shows rejected bookings section
+☐ Reassignment modal works correctly
+
+
+================================================================================
+SAMPLE LOGIN CREDENTIALS
+================================================================================
+
+Admin:
+- Email: mohit@electrozot.in
+- Password: mohit123
+
+Sample Users (all have password: 123456):
+- john.anderson@email.com
+- sarah.williams@email.com
+- michael.brown@email.com
+... (see sample_data_insert.sql for complete list)
+
+
+================================================================================
+NEXT STEPS AFTER TESTING
+================================================================================
+
+1. Test booking creation flow from user side
+2. Test technician assignment from admin side
+3. Test booking status updates
+4. Test rejection and reassignment workflow
+5. Verify email notifications (if implemented)
+6. Test payment processing (if implemented)
+7. Load test with more data if needed
+
+
+================================================================================
+SUPPORT & DOCUMENTATION
+================================================================================
+
+For more information, see:
+- README_TESTING.md - Detailed testing guide
+- sample_data_insert.sql - Sample data with comments
+- test_database_logic.sql - All test queries
+- test-database.php - Visual testing interface
+
+
+================================================================================
+END OF INSTRUCTIONS
+================================================================================

@@ -72,6 +72,12 @@ if(isset($_POST['mark_completed'])) {
             $update_stmt->bind_param('ssdii', $bill_image, $service_image, $charged_price, $booking_id, $t_id);
             
             if($update_stmt->execute()) {
+                // Set technician status back to Available
+                $tech_update = "UPDATE tms_technician SET t_status = 'Available' WHERE t_id = ?";
+                $tech_stmt = $mysqli->prepare($tech_update);
+                $tech_stmt->bind_param('i', $t_id);
+                $tech_stmt->execute();
+                
                 $success = "Booking marked as completed successfully with charged price ₹" . number_format($charged_price, 2);
                 // Refresh booking data
                 $stmt->execute();
@@ -100,6 +106,12 @@ if(isset($_POST['mark_rejected'])) {
         $update_stmt->bind_param('sii', $rejection_reason, $booking_id, $t_id);
         
         if($update_stmt->execute()) {
+            // Set technician status back to Available
+            $tech_update = "UPDATE tms_technician SET t_status = 'Available' WHERE t_id = ?";
+            $tech_stmt = $mysqli->prepare($tech_update);
+            $tech_stmt->bind_param('i', $t_id);
+            $tech_stmt->execute();
+            
             header('Location: dashboard.php?msg=rejected');
             exit();
         } else {

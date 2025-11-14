@@ -51,15 +51,26 @@ if(isset($_POST['update_user_password'])) {
     
     // If guest user, convert to self-registered when password is assigned
     if($user_data && $user_data->registration_type == 'guest') {
-        $query = "UPDATE tms_user SET u_pwd=?, registration_type='self' WHERE u_id=?";
-        $stmt = $mysqli->prepare($query);
-        $stmt->bind_param('si', $new_password, $u_id);
+        // Check if email is provided for guest user
+        $new_email = isset($_POST['new_email']) ? trim($_POST['new_email']) : '';
+        
+        if(!empty($new_email)) {
+            $query = "UPDATE tms_user SET u_pwd=?, u_email=?, u_category='User', registration_type='self' WHERE u_id=?";
+            $stmt = $mysqli->prepare($query);
+            $stmt->bind_param('ssi', $new_password, $new_email, $u_id);
+        } else {
+            $query = "UPDATE tms_user SET u_pwd=?, u_category='User', registration_type='self' WHERE u_id=?";
+            $stmt = $mysqli->prepare($query);
+            $stmt->bind_param('si', $new_password, $u_id);
+        }
         
         if($stmt->execute()) {
-            $succ = "Password assigned successfully! Guest user converted to Self Registered user.";
+            $_SESSION['succ'] = "Password assigned successfully! Guest user converted to Self Registered user.";
         } else {
             $err = "Failed to update password";
         }
+        header("Location: admin-manage-user-passwords.php");
+        exit();
     } else {
         // Regular password update
         $query = "UPDATE tms_user SET u_pwd=? WHERE u_id=?";
@@ -417,6 +428,19 @@ if(isset($_POST['bulk_delete'])) {
                                                 <form method="POST">
                                                     <div class="modal-body">
                                                         <input type="hidden" name="u_id" value="<?php echo $row->u_id; ?>">
+                                                        
+                                                        <?php if($reg_type == 'guest'): ?>
+                                                            <div class="alert alert-info">
+                                                                <i class="fas fa-info-circle"></i> This is a guest user. Assigning a password will convert them to a Self Registered user.
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+                                                                <label>Email Address <?php echo empty($row->u_email) ? '<span class="text-danger">*</span>' : ''; ?></label>
+                                                                <input type="email" class="form-control" name="new_email" value="<?php echo $row->u_email; ?>" <?php echo empty($row->u_email) ? 'required' : ''; ?> placeholder="Enter email address">
+                                                                <small class="form-text text-muted">Email is required for self-registered users</small>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        
                                                         <div class="form-group">
                                                             <label>New Password <span class="text-danger">*</span></label>
                                                             <div class="input-group">

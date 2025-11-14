@@ -7,22 +7,35 @@ $aid = $_SESSION['a_id'];
 
 // Handle reassignment
 if(isset($_POST['reassign'])) {
-    $booking_id = $_POST['booking_id'];
-    $new_tech_id = $_POST['new_tech_id'];
+    $booking_id = intval($_POST['booking_id']);
+    $new_tech_id = intval($_POST['new_tech_id']);
     
     $update_query = "UPDATE tms_service_booking 
                     SET sb_technician_id = ?, 
                         sb_status = 'Pending',
-                        sb_rejection_reason = ''
+                        sb_rejection_reason = NULL,
+                        sb_rejected_at = NULL
                     WHERE sb_id = ?";
     $stmt = $mysqli->prepare($update_query);
     $stmt->bind_param('ii', $new_tech_id, $booking_id);
     
     if($stmt->execute()) {
-        $success = "Booking reassigned successfully!";
+        $_SESSION['success'] = "Booking #$booking_id reassigned successfully to new technician!";
     } else {
-        $error = "Failed to reassign booking.";
+        $_SESSION['error'] = "Failed to reassign booking: " . $stmt->error;
     }
+    header("Location: admin-rejected-bookings.php");
+    exit();
+}
+
+// Get session messages
+if(isset($_SESSION['success'])) {
+    $success = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+if(isset($_SESSION['error'])) {
+    $error = $_SESSION['error'];
+    unset($_SESSION['error']);
 }
 
 // Get rejected bookings

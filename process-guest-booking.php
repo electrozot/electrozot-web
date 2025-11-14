@@ -20,6 +20,7 @@ if(isset($_POST['book_service_guest'])) {
         header("location: index.php#booking-form");
         exit();
     }
+    $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
     $sb_service_id = $_POST['sb_service_id'];
     $sb_booking_date = $_POST['sb_booking_date'];
     // Time removed from form; default to 00:00 to keep DB insert stable
@@ -43,13 +44,15 @@ if(isset($_POST['book_service_guest'])) {
     $sb_total_price = $service ? $service->s_price : 0.00;
     $stmt_price->close();
 
-    // Ensure registration_type column exists
+    // Ensure registration_type, u_area and u_pincode columns exist
     $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS registration_type ENUM('admin', 'self', 'guest') DEFAULT 'admin'");
+    $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS u_area VARCHAR(100)");
+    $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS u_pincode VARCHAR(10)");
     
-    // Insert customer into tms_user table as guest user
-    $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, 'Guest', '', 'guest')";
+    // Insert customer into tms_user table as guest user with area and pincode
+    $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
     $stmt_user = $mysqli->prepare($query_user);
-    $stmt_user->bind_param('sssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address);
+    $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
     $stmt_user->execute();
     $customer_id = $stmt_user->insert_id;
     $stmt_user->close();

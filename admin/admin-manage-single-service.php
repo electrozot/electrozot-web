@@ -100,11 +100,14 @@
                              <div class="form-group">
                                  <label for="exampleFormControlSelect1">Service Category</label>
                                  <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
-                                     <option value="Electrical" <?php echo ($row->s_category == 'Electrical') ? 'selected' : ''; ?>>Electrical</option>
-                                     <option value="Plumbing" <?php echo ($row->s_category == 'Plumbing') ? 'selected' : ''; ?>>Plumbing</option>
-                                     <option value="HVAC" <?php echo ($row->s_category == 'HVAC') ? 'selected' : ''; ?>>HVAC</option>
-                                     <option value="Appliance" <?php echo ($row->s_category == 'Appliance') ? 'selected' : ''; ?>>Appliance</option>
-                                     <option value="General" <?php echo ($row->s_category == 'General') ? 'selected' : ''; ?>>General</option>
+                                     <option value="Wiring & Fixtures" <?php echo ($row->s_category == 'Wiring & Fixtures') ? 'selected' : ''; ?>>Wiring & Fixtures</option>
+                                     <option value="Safety & Power" <?php echo ($row->s_category == 'Safety & Power') ? 'selected' : ''; ?>>Safety & Power</option>
+                                     <option value="Major Appliances" <?php echo ($row->s_category == 'Major Appliances') ? 'selected' : ''; ?>>Major Appliances</option>
+                                     <option value="Small Gadgets" <?php echo ($row->s_category == 'Small Gadgets') ? 'selected' : ''; ?>>Small Gadgets</option>
+                                     <option value="Appliance Setup" <?php echo ($row->s_category == 'Appliance Setup') ? 'selected' : ''; ?>>Appliance Setup</option>
+                                     <option value="Tech & Security" <?php echo ($row->s_category == 'Tech & Security') ? 'selected' : ''; ?>>Tech & Security</option>
+                                     <option value="Routine Care" <?php echo ($row->s_category == 'Routine Care') ? 'selected' : ''; ?>>Routine Care</option>
+                                     <option value="Fixtures & Taps" <?php echo ($row->s_category == 'Fixtures & Taps') ? 'selected' : ''; ?>>Fixtures & Taps</option>
                                  </select>
                              </div>
                              <div class="form-group">

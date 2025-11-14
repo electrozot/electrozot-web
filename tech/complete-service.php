@@ -65,6 +65,12 @@ if(isset($_POST['complete_service'])){
     $update_stmt->bind_param('ssdsii', $service_img, $bill_img, $final_price, $completion_notes, $sb_id, $t_id);
     
     if($update_stmt->execute()){
+        // Set technician status back to Available
+        $tech_update = "UPDATE tms_technician SET t_status = 'Available' WHERE t_id = ?";
+        $tech_stmt = $mysqli->prepare($tech_update);
+        $tech_stmt->bind_param('i', $t_id);
+        $tech_stmt->execute();
+        
         $_SESSION['success_msg'] = "Service marked as completed successfully!";
         header('Location: completed-bookings.php');
         exit();

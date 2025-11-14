@@ -89,11 +89,14 @@
                                  <label for="exampleFormControlSelect1">Service Category</label>
                                  <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
                                      <option value="">Select Category</option>
-                                     <option>Electrical</option>
-                                     <option>Plumbing</option>
-                                     <option>HVAC</option>
-                                     <option>Appliance</option>
-                                     <option>General</option>
+                                     <option>Wiring & Fixtures</option>
+                                     <option>Safety & Power</option>
+                                     <option>Major Appliances</option>
+                                     <option>Small Gadgets</option>
+                                     <option>Appliance Setup</option>
+                                     <option>Tech & Security</option>
+                                     <option>Routine Care</option>
+                                     <option>Fixtures & Taps</option>
                                  </select>
                              </div>
                              <div class="form-group">

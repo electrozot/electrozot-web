@@ -14,7 +14,7 @@ $user_result = $user_stmt->get_result();
 $user = $user_result->fetch_object();
 
 // Get all active services
-$services_query = "SELECT * FROM tms_service WHERE s_status = 'Active' ORDER BY s_category, s_name";
+$services_query = "SELECT * FROM tms_service WHERE s_status = 'Active' ORDER BY s_name";
 $services_result = $mysqli->query($services_query);
 
 // Ensure pincode column exists
@@ -119,8 +119,8 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
                                             </div>
                                             <div class="service-btn-text">
                                                 <h6><?php echo $service->s_name; ?></h6>
-                                                <p class="mb-1"><i class="fas fa-tag"></i> <?php echo $service->s_category; ?></p>
-                                                <p class="service-btn-price">₹<?php echo number_format($service->s_price, 0); ?></p>
+                                                <p class="text-muted small mb-1"><?php echo substr($service->s_description, 0, 50) . '...'; ?></p>
+                                                <p class="service-btn-price">৳<?php echo number_format($service->s_price, 0); ?></p>
                                                 <small><i class="fas fa-clock"></i> <?php echo $service->s_duration; ?></small>
                                             </div>
                                         </div>
@@ -249,6 +249,56 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <style>
+        /* Category Button Styles */
+        .category-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 15px;
+            padding: 30px 20px;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            text-align: center;
+        }
+        
+        .category-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        
+        /* Subcategory Button Styles */
+        .subcategory-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 3px 12px rgba(240, 147, 251, 0.3);
+            text-align: left;
+        }
+        
+        .subcategory-btn:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 20px rgba(240, 147, 251, 0.5);
+        }
+        
+        /* Service Button Styles */
         .service-btn-green {
             width: 100%;
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
@@ -270,10 +320,10 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
         }
         
         .service-btn-green.selected {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
             color: white;
-            border-color: #ffd700;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+            border-color: #28a745;
+            box-shadow: 0 4px 20px rgba(67, 233, 123, 0.5);
             transform: scale(1.02);
         }
         
@@ -330,10 +380,16 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
                 height: 38px;
                 font-size: 18px;
             }
+            
+            .category-icon {
+                width: 60px;
+                height: 60px;
+            }
         }
     </style>
 
     <script>
+        // Select service
         function selectService(id, name, price) {
             // Remove selection from all buttons
             document.querySelectorAll('.service-btn-green').forEach(btn => {
@@ -353,6 +409,7 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
             document.getElementById('bookingForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
         
+        // Cancel booking
         function cancelBooking() {
             // Hide form
             document.getElementById('bookingForm').style.display = 'none';
