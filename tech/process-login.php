@@ -34,7 +34,7 @@
   $row = $res->fetch_object();
 
   if(!$row){
-    $_SESSION['tech_err'] = 'Technician not found with this mobile number.';
+    $_SESSION['tech_err'] = 'Mobile number not registered. Please check your number or contact Admin.';
     header('Location: index.php');
     exit();
   }
@@ -43,19 +43,19 @@
   $usePwd = isset($row->t_pwd);
   if($usePwd){
     if($row->t_pwd === ''){
-      $_SESSION['tech_err'] = 'Password not set. Please contact Admin.';
+      $_SESSION['tech_err'] = 'Password not set for your account. Please contact Admin to set your password.';
       header('Location: index.php');
       exit();
     }
     if($t_pwd !== $row->t_pwd){
-      $_SESSION['tech_err'] = 'Invalid password.';
+      $_SESSION['tech_err'] = 'Incorrect password. Please try again or contact Admin if you forgot your password.';
       header('Location: index.php');
       exit();
     }
   } else {
     // Legacy fallback: password equals Technician ID
     if($t_pwd !== $row->t_id_no){
-      $_SESSION['tech_err'] = 'Invalid password.';
+      $_SESSION['tech_err'] = 'Incorrect password. Please try again or contact Admin if you forgot your password.';
       header('Location: index.php');
       exit();
     }

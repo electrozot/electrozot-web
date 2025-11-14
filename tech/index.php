@@ -244,13 +244,13 @@
       </div>
       <div class="card-body">
         <?php if(isset($_SESSION['tech_err'])): ?>
-          <div class="alert alert-danger" role="alert">
+          <div class="alert alert-danger" role="alert" id="errorAlert">
             <i class="fas fa-exclamation-circle"></i>
             <?php echo $_SESSION['tech_err']; unset($_SESSION['tech_err']); ?>
           </div>
         <?php endif; ?>
         
-        <form method="POST" action="process-login.php">
+        <form method="POST" action="process-login.php" id="loginForm">
           <div class="form-group">
             <label for="t_phone">
               <i class="fas fa-mobile-alt"></i>
@@ -310,6 +310,41 @@
           toggleIcon.classList.add('fa-eye');
       }
   }
+  
+  // Hide error message when user starts typing
+  document.addEventListener('DOMContentLoaded', function() {
+      const errorAlert = document.getElementById('errorAlert');
+      const phoneInput = document.getElementById('t_phone');
+      const passwordInput = document.getElementById('t_pwd');
+      
+      if (errorAlert) {
+          // Hide error when user types in mobile number field
+          phoneInput.addEventListener('input', function() {
+              errorAlert.style.transition = 'opacity 0.3s ease, max-height 0.3s ease';
+              errorAlert.style.opacity = '0';
+              errorAlert.style.maxHeight = '0';
+              errorAlert.style.overflow = 'hidden';
+              errorAlert.style.marginBottom = '0';
+              errorAlert.style.padding = '0';
+              setTimeout(function() {
+                  errorAlert.style.display = 'none';
+              }, 300);
+          });
+          
+          // Hide error when user types in password field
+          passwordInput.addEventListener('input', function() {
+              errorAlert.style.transition = 'opacity 0.3s ease, max-height 0.3s ease';
+              errorAlert.style.opacity = '0';
+              errorAlert.style.maxHeight = '0';
+              errorAlert.style.overflow = 'hidden';
+              errorAlert.style.marginBottom = '0';
+              errorAlert.style.padding = '0';
+              setTimeout(function() {
+                  errorAlert.style.display = 'none';
+              }, 300);
+          });
+      }
+  });
   </script>
 </body>
 </html>
