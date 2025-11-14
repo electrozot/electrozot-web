@@ -5,14 +5,14 @@
     height: 65px;
     top: 50%;
     right: 30px;
-    transform: translateY(-50%);
+    transform: translateY(calc(-50% - 85px));
     background-color: #25d366;
     color: #FFF;
     border-radius: 50%;
     text-align: center;
     font-size: 32px;
     box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
-    z-index: 1000;
+    z-index: 1001;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -58,9 +58,8 @@
 /* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    top: 50%;
+    bottom: 30px;
     right: 30px;
-    transform: translateY(calc(-50% + 85px));
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
     width: 65px;
@@ -71,7 +70,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
-    z-index: 999;
+    z-index: 1000;
     transition: all 0.3s ease;
     text-decoration: none;
     font-size: 22px;
@@ -123,16 +122,15 @@
         height: 55px;
         top: 50%;
         right: 20px;
-        transform: translateY(-50%);
+        transform: translateY(calc(-50% - 75px));
         font-size: 28px;
     }
     
     .book-service-fab {
         width: 55px;
         height: 55px;
-        top: 50%;
+        bottom: 20px;
         right: 20px;
-        transform: translateY(calc(-50% + 75px));
         font-size: 20px;
     }
     
