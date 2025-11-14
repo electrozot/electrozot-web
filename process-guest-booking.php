@@ -43,8 +43,11 @@ if(isset($_POST['book_service_guest'])) {
     $sb_total_price = $service ? $service->s_price : 0.00;
     $stmt_price->close();
 
-    // Insert customer into tms_user table
-    $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_category, u_pwd) VALUES (?, ?, ?, ?, ?, 'Guest', '')";
+    // Ensure registration_type column exists
+    $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS registration_type ENUM('admin', 'self', 'guest') DEFAULT 'admin'");
+    
+    // Insert customer into tms_user table as guest user
+    $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, 'Guest', '', 'guest')";
     $stmt_user = $mysqli->prepare($query_user);
     $stmt_user->bind_param('sssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address);
     $stmt_user->execute();

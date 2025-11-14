@@ -33,6 +33,8 @@
              <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add</a>
              <a class="dropdown-item" href="admin-view-technician.php"><i class="fas fa-id-card"></i> View</a>
              <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage</a>
+             <div class="dropdown-divider"></div>
+             <a class="dropdown-item" href="admin-manage-technician-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      
@@ -59,6 +61,8 @@
              <a class="dropdown-item" href="admin-add-user.php"><i class="fas fa-user-plus"></i> Add</a>
              <a class="dropdown-item" href="admin-view-user.php"><i class="fas fa-address-book"></i> View</a>
              <a class="dropdown-item" href="admin-manage-user.php"><i class="fas fa-user-edit"></i> Manage</a>
+             <div class="dropdown-divider"></div>
+             <a class="dropdown-item" href="admin-manage-user-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      

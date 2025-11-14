@@ -8,30 +8,33 @@
     exit();
   }
 
-  $t_id_no = isset($_POST['t_id_no']) ? trim($_POST['t_id_no']) : '';
+  $t_phone = isset($_POST['t_phone']) ? trim($_POST['t_phone']) : '';
   $t_pwd   = isset($_POST['t_pwd']) ? trim($_POST['t_pwd']) : '';
 
-  if($t_id_no === '' || $t_pwd === ''){
-    $_SESSION['tech_err'] = 'Please provide Technician ID and Password.';
+  if($t_phone === '' || $t_pwd === ''){
+    $_SESSION['tech_err'] = 'Please provide Mobile Number and Password.';
     header('Location: index.php');
     exit();
   }
 
-  // Find technician by ID number
-  $ret = "SELECT * FROM tms_technician WHERE t_id_no = ? LIMIT 1";
+  // Add phone column if it doesn't exist
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_phone VARCHAR(15) DEFAULT NULL");
+  
+  // Find technician by phone number or ID number (for backward compatibility)
+  $ret = "SELECT * FROM tms_technician WHERE t_phone = ? OR t_id_no = ? LIMIT 1";
   $stmt = $mysqli->prepare($ret);
   if(!$stmt){
     $_SESSION['tech_err'] = 'Database error: ' . $mysqli->error;
     header('Location: index.php');
     exit();
   }
-  $stmt->bind_param('s', $t_id_no);
+  $stmt->bind_param('ss', $t_phone, $t_phone);
   $stmt->execute();
   $res = $stmt->get_result();
   $row = $res->fetch_object();
 
   if(!$row){
-    $_SESSION['tech_err'] = 'Technician not found.';
+    $_SESSION['tech_err'] = 'Technician not found with this mobile number.';
     header('Location: index.php');
     exit();
   }

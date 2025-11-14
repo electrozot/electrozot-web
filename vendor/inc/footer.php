@@ -47,22 +47,22 @@
 
             <!-- Quick Links -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <h5 style="font-weight: 600; margin-bottom: 25px; color: #00d4ff; font-size: 1.1rem;">Quick Links</h5>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 15px;">
-                        <a href="tech/index.php" style="background: linear-gradient(135deg, #1a51f5ff 0%, #6bc9f2ff 100%); color: white ; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(135, 206, 235, 0.3); font-weight: 500;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(135, 206, 235, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(135, 206, 235, 0.3)'">
-                            <i class="fas fa-user-cog" style="font-size: 1.1rem;"></i>
-                            <span>Technician Login</span>
-                        </a>
-                    </li>
-                    <li style="margin-bottom: 15px;">
-                        <a href="admin/index.php" style="background: linear-gradient(135deg, #e94efeff 0%, #f61848ff 100%); color: black; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; padding: 12px 24px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-weight: 500;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(16, 185, 129, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(16, 185, 129, 0.3)'">
-                            <i class="fas fa-user-shield" style="font-size: 1.1rem;"></i>
-                            <span>Admin Login</span>
-                        </a>
-                    </li>
+                <h5 style="font-weight: 600; margin-bottom: 25px; color: #00d4ff; font-size: 1.1rem;">Quick Access</h5>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <a href="tech/index.php" class="footer-login-btn footer-tech-btn" style="background: linear-gradient(135deg, #00fce3ff 0%, #00c4f0ff 100%); color: black; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 28px; border-radius: 12px; transition: all 0.3s; box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3); font-weight: 600; font-size: 1rem; border: 2px solid transparent;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 30px rgba(102, 126, 234, 0.5)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 20px rgba(233, 235, 245, 0.3)'; this.style.borderColor='transparent'">
+                        <i class="fas fa-user-cog" style="font-size: 1.2rem;"></i>
+                        <span>Technician Portal</span>
+                        <i class="fas fa-arrow-right" style="font-size: 0.9rem; margin-left: auto;"></i>
+                    </a>
                     
-                </ul>
+                    <a href="admin/index.php" class="footer-login-btn footer-admin-btn" style="background: linear-gradient(135deg, #0af83aff 0%, #5af557 100%); color: black; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 14px 28px; border-radius: 12px; transition: all 0.3s; box-shadow: 0 4px 20px rgba(240, 147, 251, 0.3); font-weight: 600; font-size: 1rem; border: 2px solid transparent;" onmouseover="this.style.transform='translateY(-3px) scale(1.02)'; this.style.boxShadow='0 8px 30px rgba(240, 147, 251, 0.5)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 20px rgba(240, 147, 251, 0.3)'; this.style.borderColor='transparent'">
+                        <i class="fas fa-user-shield" style="font-size: 1.2rem;"></i>
+                        <span>Admin Dashboard</span>
+                        <i class="fas fa-arrow-right" style="font-size: 0.9rem; margin-left: auto;"></i>
+                    </a>
+                    
+                    
+                </div>
             </div>
         </div>
 

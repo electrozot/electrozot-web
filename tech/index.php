@@ -252,11 +252,15 @@
         
         <form method="POST" action="process-login.php">
           <div class="form-group">
-            <label for="t_id_no">
-              <i class="fas fa-id-card"></i>
-              Technician ID
+            <label for="t_phone">
+              <i class="fas fa-mobile-alt"></i>
+              Mobile Number
             </label>
-            <input type="text" name="t_id_no" id="t_id_no" class="form-control" placeholder="Enter your technician ID" required autofocus>
+            <input type="tel" name="t_phone" id="t_phone" class="form-control" placeholder="Enter your 10-digit mobile number" required autofocus pattern="[0-9]{10}" maxlength="10">
+            <small class="helper">
+              <i class="fas fa-info-circle"></i>
+              Enter the mobile number registered with your account
+            </small>
           </div>
           
           <div class="form-group">
@@ -264,7 +268,10 @@
               <i class="fas fa-lock"></i>
               Password
             </label>
-            <input type="password" name="t_pwd" id="t_pwd" class="form-control" placeholder="Enter your password" required>
+            <div style="position: relative;">
+              <input type="password" name="t_pwd" id="t_pwd" class="form-control" placeholder="Enter your password" required style="padding-right: 45px;">
+              <i class="fas fa-eye toggle-password" id="toggleTechPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #667eea; font-size: 1.2rem;" onclick="togglePasswordVisibility('t_pwd', 'toggleTechPassword')"></i>
+            </div>
             <small class="helper">
               <i class="fas fa-info-circle"></i>
               If you don't have a password yet, please contact Admin.
@@ -287,5 +294,22 @@
   
   <script src="../admin/vendor/jquery/jquery.min.js"></script>
   <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+  function togglePasswordVisibility(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const toggleIcon = document.getElementById(iconId);
+      
+      if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('fa-eye');
+          toggleIcon.classList.add('fa-eye-slash');
+      } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('fa-eye-slash');
+          toggleIcon.classList.add('fa-eye');
+      }
+  }
+  </script>
 </body>
 </html>

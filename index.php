@@ -162,7 +162,7 @@
                                                         $stmt->execute();
                                                         $res=$stmt->get_result();
                                                         while($row=$res->fetch_object()) {
-                                                            echo '<option value="'.$row->s_id.'">'.$row->s_name.' - ₹'.number_format($row->s_price, 0).'</option>';
+                                                            echo '<option value="'.$row->s_id.'">'.$row->s_name.'</option>';
                                                         }
                                                         ?>
                                                     </select>

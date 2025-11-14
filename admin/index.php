@@ -4,11 +4,23 @@
     include('vendor/inc/config.php');//get configuration file
     if(isset($_POST['admin_login']))
     {
-      $a_email=$_POST['a_email'];
+      // Add phone column if it doesn't exist
+      $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_phone VARCHAR(15) DEFAULT NULL");
+      
+      $a_login=$_POST['a_login']; // Can be email or phone
       $a_pwd=($_POST['a_pwd']);//
       $a_pwd= md5($a_pwd);//
-      $stmt=$mysqli->prepare("SELECT a_email, a_pwd, a_id, a_name, a_photo FROM tms_admin WHERE a_email=? and a_pwd=? ");//sql to log in user
-      $stmt->bind_param('ss',$a_email,$a_pwd);//bind fetched parameters
+      
+      // Check if login is email or phone (phone is all digits)
+      if(preg_match('/^[0-9]{10}$/', $a_login)) {
+          // Login with phone number
+          $stmt=$mysqli->prepare("SELECT a_email, a_pwd, a_id, a_name, a_photo FROM tms_admin WHERE a_phone=? and a_pwd=? ");
+      } else {
+          // Login with email
+          $stmt=$mysqli->prepare("SELECT a_email, a_pwd, a_id, a_name, a_photo FROM tms_admin WHERE a_email=? and a_pwd=? ");
+      }
+      
+      $stmt->bind_param('ss',$a_login,$a_pwd);//bind fetched parameters
       $stmt->execute();//execute bind
       $stmt -> bind_result($a_email,$a_pwd,$a_id,$a_name,$a_photo);//bind result
       $rs=$stmt->fetch();
@@ -21,7 +33,7 @@
       }
       else
       {
-      $error = "Admin User Name & Password Not Match";
+      $error = "Email/Mobile Number & Password Not Match";
       }
   }
 ?>
@@ -427,21 +439,25 @@
                 <form method="POST">
                     <div class="form-group">
                         <label class="form-label">
-                            <i class="fas fa-envelope"></i> Email Address
+                            <i class="fas fa-user"></i> Email or Mobile Number
                         </label>
                         <div class="input-wrapper">
-                            <input type="email" name="a_email" class="form-input" placeholder="Enter your email" required autofocus>
-                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="text" name="a_login" class="form-input" placeholder="Enter email or 10-digit mobile number" required autofocus>
+                            <i class="fas fa-user input-icon"></i>
                         </div>
+                        <small style="color: rgba(255,255,255,0.7); font-size: 0.85rem; display: block; margin-top: 5px;">
+                            <i class="fas fa-info-circle"></i> You can login with either email or mobile number
+                        </small>
                     </div>
                     
                     <div class="form-group">
                         <label class="form-label">
                             <i class="fas fa-lock"></i> Password
                         </label>
-                        <div class="input-wrapper">
-                            <input type="password" name="a_pwd" class="form-input" placeholder="Enter your password" required>
+                        <div class="input-wrapper" style="position: relative;">
+                            <input type="password" name="a_pwd" id="adminPassword" class="form-input" placeholder="Enter your password" required style="padding-right: 45px;">
                             <i class="fas fa-lock input-icon"></i>
+                            <i class="fas fa-eye toggle-password" id="toggleAdminPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #667eea; z-index: 10;" onclick="togglePasswordVisibility('adminPassword', 'toggleAdminPassword')"></i>
                         </div>
                     </div>
                     
@@ -480,5 +496,22 @@
         }, 100);
     </script>
     <?php endif; ?>
+    
+    <script>
+    function togglePasswordVisibility(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const toggleIcon = document.getElementById(iconId);
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+    </script>
 </body>
 </html>
