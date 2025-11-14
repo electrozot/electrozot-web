@@ -5,8 +5,26 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid=$_SESSION['a_id'];
 
+// Create deleted_items table if not exists
+try {
+    $create_table = "CREATE TABLE IF NOT EXISTS tms_deleted_items (
+        di_id INT AUTO_INCREMENT PRIMARY KEY,
+        di_item_type VARCHAR(50) NOT NULL,
+        di_item_id INT NOT NULL,
+        di_item_data TEXT NOT NULL,
+        di_deleted_by INT NOT NULL,
+        di_deleted_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+        di_reason TEXT,
+        INDEX(di_item_type),
+        INDEX(di_deleted_date)
+    )";
+    $mysqli->query($create_table);
+} catch(Exception $e) {}
+
 // Add created_at column if it doesn't exist
 $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+$mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS is_deleted TINYINT(1) DEFAULT 0");
+$mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP NULL");
 
 // Check if registration_type column exists and update it
 $check_col = $mysqli->query("SHOW COLUMNS FROM tms_user LIKE 'registration_type'");
@@ -56,17 +74,50 @@ if(isset($_POST['update_user_password'])) {
     }
 }
 
-// Delete single user
+// Move single user to recycle bin
 if(isset($_GET['delete'])) {
-    $u_id = $_GET['delete'];
-    $query = "DELETE FROM tms_user WHERE u_id=?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('i', $u_id);
-    if($stmt->execute()) {
-        $succ = "User deleted successfully";
+    $u_id = intval($_GET['delete']);
+    
+    // Get user data
+    $get_query = "SELECT * FROM tms_user WHERE u_id=?";
+    $get_stmt = $mysqli->prepare($get_query);
+    $get_stmt->bind_param('i', $u_id);
+    $get_stmt->execute();
+    $user_data = $get_stmt->get_result()->fetch_assoc();
+    
+    if($user_data) {
+        // Insert into deleted_items table
+        $insert_query = "INSERT INTO tms_deleted_items (di_item_type, di_item_id, di_item_data, di_deleted_by) VALUES (?, ?, ?, ?)";
+        $insert_stmt = $mysqli->prepare($insert_query);
+        $item_type = 'user';
+        $item_data = json_encode($user_data);
+        $insert_stmt->bind_param('sisi', $item_type, $u_id, $item_data, $aid);
+        
+        if($insert_stmt->execute()) {
+            // Delete from main table
+            $delete_query = "DELETE FROM tms_user WHERE u_id=?";
+            $delete_stmt = $mysqli->prepare($delete_query);
+            $delete_stmt->bind_param('i', $u_id);
+            
+            if($delete_stmt->execute()) {
+                $_SESSION['succ'] = "User moved to recycle bin successfully";
+                header("Location: admin-manage-user-passwords.php");
+                exit();
+            } else {
+                $err = "Failed to delete user from main table: " . $delete_stmt->error;
+            }
+        } else {
+            $err = "Failed to move user to recycle bin: " . $insert_stmt->error;
+        }
     } else {
-        $err = "Failed to delete user";
+        $err = "User not found";
     }
+}
+
+// Check for session success message
+if(isset($_SESSION['succ'])) {
+    $succ = $_SESSION['succ'];
+    unset($_SESSION['succ']);
 }
 
 // Bulk delete users
@@ -74,14 +125,34 @@ if(isset($_POST['bulk_delete'])) {
     if(isset($_POST['selected_users']) && is_array($_POST['selected_users'])) {
         $deleted_count = 0;
         foreach($_POST['selected_users'] as $u_id) {
-            $query = "DELETE FROM tms_user WHERE u_id=?";
-            $stmt = $mysqli->prepare($query);
-            $stmt->bind_param('i', $u_id);
-            if($stmt->execute()) {
-                $deleted_count++;
+            // Get user data
+            $get_query = "SELECT * FROM tms_user WHERE u_id=?";
+            $get_stmt = $mysqli->prepare($get_query);
+            $get_stmt->bind_param('i', $u_id);
+            $get_stmt->execute();
+            $user_data = $get_stmt->get_result()->fetch_assoc();
+            
+            if($user_data) {
+                // Insert into deleted_items table
+                $insert_query = "INSERT INTO tms_deleted_items (di_item_type, di_item_id, di_item_data, di_deleted_by) VALUES (?, ?, ?, ?)";
+                $insert_stmt = $mysqli->prepare($insert_query);
+                $item_type = 'user';
+                $item_data = json_encode($user_data);
+                $insert_stmt->bind_param('sisi', $item_type, $u_id, $item_data, $aid);
+                
+                if($insert_stmt->execute()) {
+                    // Delete from main table
+                    $delete_query = "DELETE FROM tms_user WHERE u_id=?";
+                    $delete_stmt = $mysqli->prepare($delete_query);
+                    $delete_stmt->bind_param('i', $u_id);
+                    $delete_stmt->execute();
+                    $deleted_count++;
+                }
             }
         }
-        $succ = "$deleted_count user(s) deleted successfully";
+        $_SESSION['succ'] = "$deleted_count user(s) moved to recycle bin successfully";
+        header("Location: admin-manage-user-passwords.php");
+        exit();
     } else {
         $err = "No users selected";
     }
@@ -224,20 +295,42 @@ if(isset($_POST['bulk_delete'])) {
                         
                         <form method="POST" id="bulkDeleteForm">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped table-hover" id="usersTable">
+                                <table class="table table-bordered table-striped table-hover" id="usersTable" style="font-size: 0.9rem;">
+                                    <style>
+                                        #usersTable td {
+                                            vertical-align: middle;
+                                            padding: 8px 10px;
+                                        }
+                                        #usersTable th {
+                                            vertical-align: middle;
+                                            padding: 10px;
+                                            font-size: 0.85rem;
+                                            white-space: nowrap;
+                                        }
+                                        #usersTable .badge {
+                                            font-size: 0.75rem;
+                                            padding: 5px 8px;
+                                            white-space: nowrap;
+                                        }
+                                        #usersTable small {
+                                            font-size: 0.7rem;
+                                        }
+                                    </style>
                                     <thead>
                                         <tr>
-                                            <th width="30">
+                                            <th width="30" style="text-align: center;">
                                                 <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
                                             </th>
-                                            <th>#</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Registration</th>
-                                            <th>Created Date</th>
-                                            <th>Current Password</th>
-                                            <th>Actions</th>
+                                            <th width="40" style="text-align: center;">#</th>
+                                            <th width="140">Name</th>
+                                            <th width="180">Email</th>
+                                            <th width="110">Phone</th>
+                                            <th width="120">Area</th>
+                                            <th width="80">Pincode</th>
+                                            <th width="140">Registration</th>
+                                            <th width="130">Created Date</th>
+                                            <th width="140">Password</th>
+                                            <th width="120" style="text-align: center;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -252,46 +345,62 @@ if(isset($_POST['bulk_delete'])) {
                                             $created_date = isset($row->created_at) ? date('Y-m-d H:i', strtotime($row->created_at)) : 'N/A';
                                         ?>
                                         <tr data-type="<?php echo $reg_type; ?>" data-date="<?php echo $created_date; ?>">
-                                            <td>
+                                            <td style="text-align: center;">
                                                 <input type="checkbox" name="selected_users[]" value="<?php echo $row->u_id; ?>" class="user-checkbox" onchange="updateBulkDeleteBtn()">
                                             </td>
-                                            <td><?php echo $cnt; ?></td>
-                                            <td><?php echo $row->u_fname . ' ' . $row->u_lname; ?></td>
-                                            <td><?php echo $row->u_email; ?></td>
-                                            <td><?php echo $row->u_phone; ?></td>
+                                            <td style="text-align: center;"><?php echo $cnt; ?></td>
+                                            <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?php echo $row->u_fname . ' ' . $row->u_lname; ?>">
+                                                <?php echo $row->u_fname . ' ' . $row->u_lname; ?>
+                                            </td>
+                                            <td style="font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis;" title="<?php echo $row->u_email; ?>">
+                                                <?php echo $row->u_email; ?>
+                                            </td>
+                                            <td style="white-space: nowrap;"><?php echo $row->u_phone; ?></td>
+                                            <td style="font-size: 0.85rem;">
+                                                <?php 
+                                                $area = isset($row->u_area) && !empty($row->u_area) ? $row->u_area : '<span class="text-muted" style="font-size: 0.75rem;">N/A</span>';
+                                                echo $area;
+                                                ?>
+                                            </td>
+                                            <td style="text-align: center; white-space: nowrap;">
+                                                <?php 
+                                                $pincode = isset($row->u_pincode) && !empty($row->u_pincode) ? $row->u_pincode : '<span class="text-muted" style="font-size: 0.75rem;">N/A</span>';
+                                                echo $pincode;
+                                                ?>
+                                            </td>
                                             <td>
                                                 <?php 
                                                 if($reg_type == 'self') { 
-                                                    echo '<span class="badge badge-success" style="font-size: 0.9rem; padding: 8px 12px;">';
-                                                    echo '<i class="fas fa-user-plus"></i> Self Registered';
-                                                    echo '</span><br><small class="text-muted">Registered via website</small>';
+                                                    echo '<span class="badge badge-success">';
+                                                    echo '<i class="fas fa-user-plus"></i> Self';
+                                                    echo '</span>';
                                                 } elseif($reg_type == 'guest') { 
-                                                    echo '<span class="badge badge-warning" style="font-size: 0.9rem; padding: 8px 12px;">';
-                                                    echo '<i class="fas fa-user-clock"></i> Guest User';
-                                                    echo '</span><br><small class="text-muted">Booked without account</small>';
+                                                    echo '<span class="badge badge-warning">';
+                                                    echo '<i class="fas fa-user-clock"></i> Guest';
+                                                    echo '</span>';
                                                 } else { 
-                                                    echo '<span class="badge badge-info" style="font-size: 0.9rem; padding: 8px 12px;">';
-                                                    echo '<i class="fas fa-user-shield"></i> Admin Created';
-                                                    echo '</span><br><small class="text-muted">Created by administrator</small>';
+                                                    echo '<span class="badge badge-info">';
+                                                    echo '<i class="fas fa-user-shield"></i> Admin';
+                                                    echo '</span>';
                                                 } 
                                                 ?>
                                             </td>
-                                            <td><?php echo $created_date; ?></td>
+                                            <td style="font-size: 0.8rem; white-space: nowrap;"><?php echo date('d/m/y H:i', strtotime($created_date)); ?></td>
                                             <td>
-                                                <div class="input-group input-group-sm" style="max-width: 200px;">
-                                                    <input type="password" class="form-control" id="pwd_<?php echo $row->u_id; ?>" value="<?php echo $row->u_pwd; ?>" readonly>
+                                                <div class="input-group input-group-sm" style="max-width: 140px;">
+                                                    <input type="password" class="form-control form-control-sm" id="pwd_<?php echo $row->u_id; ?>" value="<?php echo $row->u_pwd; ?>" readonly style="font-size: 0.8rem; padding: 4px 8px;">
                                                     <div class="input-group-append">
-                                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword(<?php echo $row->u_id; ?>)">
-                                                            <i class="fas fa-eye" id="icon_<?php echo $row->u_id; ?>"></i>
+                                                        <button class="btn btn-outline-secondary btn-sm" type="button" onclick="togglePassword(<?php echo $row->u_id; ?>)" style="padding: 4px 8px;">
+                                                            <i class="fas fa-eye" id="icon_<?php echo $row->u_id; ?>" style="font-size: 0.8rem;"></i>
                                                         </button>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#changePasswordModal<?php echo $row->u_id; ?>">
-                                                    <i class="fas fa-key"></i> Change
+                                            <td style="text-align: center; white-space: nowrap;">
+                                                <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#changePasswordModal<?php echo $row->u_id; ?>" style="padding: 4px 8px; font-size: 0.8rem;">
+                                                    <i class="fas fa-key"></i>
                                                 </button>
-                                                <a href="admin-manage-user-passwords.php?delete=<?php echo $row->u_id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?')">
+                                                <a href="admin-manage-user-passwords.php?delete=<?php echo $row->u_id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Move this user to recycle bin?')" style="padding: 4px 8px; font-size: 0.8rem;">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </td>
@@ -430,8 +539,14 @@ if(isset($_POST['bulk_delete'])) {
             return;
         }
         
-        if(confirm('Are you sure you want to delete ' + checkboxes.length + ' user(s)?')) {
-            document.getElementById('bulkDeleteForm').submit();
+        if(confirm('Are you sure you want to move ' + checkboxes.length + ' user(s) to recycle bin?')) {
+            const form = document.getElementById('bulkDeleteForm');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'bulk_delete';
+            input.value = '1';
+            form.appendChild(input);
+            form.submit();
         }
     }
     

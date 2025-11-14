@@ -15,6 +15,8 @@
     }
     // Add service pincode column
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_service_pincode VARCHAR(20) DEFAULT ''");
+    // Add EZ ID column
+    $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_ez_id VARCHAR(20) DEFAULT NULL");
   } catch(Exception $e) { /* ignore */ }
   
   // Create technician_services table if it doesn't exist
@@ -39,6 +41,7 @@
     {
             $t_name=$_POST['t_name'];
             $t_phone = isset($_POST['t_phone']) ? $_POST['t_phone'] : '';
+            $t_ez_id = isset($_POST['t_ez_id']) ? $_POST['t_ez_id'] : '';
             $t_id_no = $_POST['t_id_no'];
             $t_category=$_POST['t_category'];
             $t_experience=$_POST['t_experience'];
@@ -48,9 +51,9 @@
             $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
             $t_pic=$_FILES["t_pic"]["name"];
 	        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="insert into tms_technician (t_name, t_phone, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?)";
+            $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('ssssssssss', $t_name, $t_phone, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
+            $rc=$stmt->bind_param('sssssssssss', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
             $stmt->execute();
             
             if($stmt)
@@ -144,6 +147,13 @@
                                  </label>
                                  <input type="tel" class="form-control" id="t_phone" name="t_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
                                  <small class="form-text text-muted">This mobile number will be used for technician login</small>
+                             </div>
+                             <div class="form-group">
+                                 <label for="t_ez_id">
+                                     <i class="fas fa-id-badge"></i> EZ ID <span class="text-danger">*</span>
+                                 </label>
+                                 <input type="text" class="form-control" id="t_ez_id" name="t_ez_id" placeholder="e.g., EZ0001" required>
+                                 <small class="form-text text-muted">Unique Electrozot ID for the technician (e.g., EZ0001, EZ0023)</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Technician ID Number (Optional)</label>
