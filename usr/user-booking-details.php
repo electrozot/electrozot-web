@@ -264,10 +264,17 @@ if(!$booking) {
                                 <a href="user-view-booking.php" class="btn btn-info btn-lg mx-2">
                                     <i class="fas fa-list"></i> All Bookings
                                 </a>
-                                <?php if($booking->sb_status == 'Pending'): ?>
-                                    <a href="user-manage-booking.php" class="btn btn-danger btn-lg mx-2">
+                                <?php if($booking->sb_status == 'Pending' && empty($booking->sb_technician_id)): ?>
+                                    <a href="user-cancel-service-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-danger btn-lg mx-2">
                                         <i class="fas fa-times-circle"></i> Cancel Booking
                                     </a>
+                                <?php elseif($booking->sb_status == 'Pending' && !empty($booking->sb_technician_id)): ?>
+                                    <button class="btn btn-secondary btn-lg mx-2" disabled title="Cannot cancel - Technician assigned">
+                                        <i class="fas fa-ban"></i> Cannot Cancel
+                                    </button>
+                                    <div class="alert alert-info mt-3 mx-2">
+                                        <i class="fas fa-info-circle"></i> <strong>Technician Assigned:</strong> You cannot cancel this booking as a technician has already been assigned. Please contact support if needed.
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>

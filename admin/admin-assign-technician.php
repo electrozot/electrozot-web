@@ -13,6 +13,10 @@
             $sb_technician_id = $_POST['sb_technician_id'];
             $sb_status = $_POST['sb_status'];
             
+            // Get service deadline from form
+            $service_deadline_date = isset($_POST['service_deadline_date']) ? $_POST['service_deadline_date'] : null;
+            $service_deadline_time = isset($_POST['service_deadline_time']) ? $_POST['service_deadline_time'] : null;
+            
             if(!$sb_id) {
                 $err = "Booking ID is missing. Please try again.";
             } else {
@@ -23,23 +27,50 @@
                 $old_tech_stmt->execute();
                 $old_tech_result = $old_tech_stmt->get_result();
                 $old_booking = $old_tech_result->fetch_object();
+                $old_tech_id = $old_booking ? $old_booking->sb_technician_id : null;
                 
-                // Free up the old technician if they were assigned
-                if($old_booking && $old_booking->sb_technician_id) {
+                // If technician is being changed (not first assignment)
+                if($old_tech_id && $old_tech_id != $sb_technician_id) {
+                    // Create cancelled booking table if not exists
+                    $create_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
+                        cb_id INT AUTO_INCREMENT PRIMARY KEY,
+                        cb_booking_id INT NOT NULL,
+                        cb_technician_id INT NOT NULL,
+                        cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
+                        cb_reason VARCHAR(255) DEFAULT 'Technician reassigned by admin',
+                        cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        INDEX(cb_booking_id),
+                        INDEX(cb_technician_id)
+                    )";
+                    $mysqli->query($create_table);
+                    
+                    // Record the cancellation for old technician
+                    $cancel_reason = "Admin reassigned booking to another technician";
+                    $insert_cancel = "INSERT INTO tms_cancelled_bookings (cb_booking_id, cb_technician_id, cb_cancelled_by, cb_reason) 
+                                     VALUES (?, ?, 'Admin', ?)";
+                    $cancel_stmt = $mysqli->prepare($insert_cancel);
+                    $cancel_stmt->bind_param('iis', $sb_id, $old_tech_id, $cancel_reason);
+                    $cancel_stmt->execute();
+                    
+                    // Free up the old technician
                     $free_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
                     $free_stmt = $mysqli->prepare($free_tech);
-                    $free_stmt->bind_param('i', $old_booking->sb_technician_id);
+                    $free_stmt->bind_param('i', $old_tech_id);
                     $free_stmt->execute();
                 }
                 
-                // Update the booking with new technician
-                $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=? WHERE sb_id=?";
+                // Add deadline columns if they don't exist
+                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_date DATE DEFAULT NULL");
+                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_time TIME DEFAULT NULL");
+                
+                // Update the booking with new technician and service deadline
+                $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=? WHERE sb_id=?";
                 $stmt = $mysqli->prepare($query);
                 
                 if(!$stmt) {
                     $err = "Database error: " . $mysqli->error;
                 } else {
-                    $stmt->bind_param('isi', $sb_technician_id, $sb_status, $sb_id);
+                    $stmt->bind_param('isssi', $sb_technician_id, $sb_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     $result = $stmt->execute();
                     
                     if($result && $stmt->affected_rows > 0) {
@@ -168,8 +199,41 @@
                              </div>
                          </div>
                          <hr>
-                         <form method="POST">
+                         
+                         <?php 
+                         // Check if technician is already assigned and booking is not rejected
+                         $is_assigned = !empty($booking_data->sb_technician_id);
+                         $is_rejected = ($booking_data->sb_status == 'Rejected' || $booking_data->sb_status == 'Cancelled');
+                         $can_reassign = $is_rejected || !$is_assigned;
+                         
+                         // Show warning if trying to reassign when not rejected
+                         if($is_assigned && !$is_rejected):
+                         ?>
+                         <div class="alert alert-info">
+                             <h5><i class="fas fa-info-circle"></i> Technician Already Assigned</h5>
+                             <p><strong><?php echo $booking_data->assigned_tech;?></strong> is currently assigned to this booking.</p>
+                             <p class="mb-0">
+                                 <strong>Note:</strong> You can only reassign a technician if:
+                                 <ul>
+                                     <li>The technician rejects the booking</li>
+                                     <li>The booking is cancelled</li>
+                                     <li>You manually change the technician (use the option below if technician is not responding)</li>
+                                 </ul>
+                             </p>
+                         </div>
+                         
+                         <div class="form-check mb-3">
+                             <input class="form-check-input" type="checkbox" id="force_reassign" onclick="toggleReassignment()">
+                             <label class="form-check-label" for="force_reassign">
+                                 <strong>Allow Technician Change</strong> (Check this if the assigned technician is not responding or unable to complete the service)
+                             </label>
+                         </div>
+                         <?php endif; ?>
+                         
+                         <form method="POST" id="assignForm">
                              <input type="hidden" name="sb_id" value="<?php echo $sb_id; ?>">
+                             
+                             <fieldset id="formFieldset" <?php echo ($is_assigned && !$is_rejected) ? 'disabled' : ''; ?>>
                              <div class="form-group">
                                  <label for="sb_technician_id">Select Technician *</label>
                                  <select class="form-control" name="sb_technician_id" id="sb_technician_id" required>
@@ -208,10 +272,16 @@
                                          // Show only matching technicians
                                          while($tech = $tech_result->fetch_object()) {
                                              $selected = ($tech->t_id == $current_tech_id) ? 'selected' : '';
-                                             $status_badge = ($tech->t_status == 'Available') ? '✓' : '⚠';
-                                             echo '<option value="'.$tech->t_id.'" '.$selected.'>';
-                                             echo $status_badge . ' ' . $tech->t_name . ' - ' . $tech->t_specialization;
-                                             echo '</option>';
+                                             // Only show status badge for currently assigned tech, not for available ones
+                                             if($tech->t_id == $current_tech_id && $tech->t_status != 'Available') {
+                                                 echo '<option value="'.$tech->t_id.'" '.$selected.'>';
+                                                 echo $tech->t_name . ' - ' . $tech->t_specialization . ' (Currently Assigned)';
+                                                 echo '</option>';
+                                             } else {
+                                                 echo '<option value="'.$tech->t_id.'" '.$selected.'>';
+                                                 echo $tech->t_name . ' - ' . $tech->t_specialization;
+                                                 echo '</option>';
+                                             }
                                          }
                                      }
                                      ?>
@@ -261,10 +331,57 @@
                                      <option value="Cancelled" <?php echo ($booking_data->sb_status == 'Cancelled') ? 'selected' : ''; ?>>Cancelled</option>
                                  </select>
                              </div>
+                             
+                             <div class="alert alert-info">
+                                 <i class="fas fa-clock"></i> <strong>Set Service Completion Deadline</strong><br>
+                                 <small>This deadline will be shown to the technician and customer</small>
+                             </div>
+                             
+                             <div class="row">
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="service_deadline_date">Service Deadline Date *</label>
+                                         <input type="date" class="form-control" name="service_deadline_date" id="service_deadline_date" required min="<?php echo date('Y-m-d'); ?>" value="<?php echo isset($booking_data->sb_service_deadline_date) ? $booking_data->sb_service_deadline_date : date('Y-m-d', strtotime('+1 day')); ?>">
+                                         <small class="form-text text-muted">When should service be completed?</small>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="service_deadline_time">Deadline Time *</label>
+                                         <input type="time" class="form-control" name="service_deadline_time" id="service_deadline_time" required value="<?php echo isset($booking_data->sb_service_deadline_time) ? $booking_data->sb_service_deadline_time : '18:00'; ?>">
+                                         <small class="form-text text-muted">Completion time</small>
+                                     </div>
+                                 </div>
+                             </div>
+                             </fieldset>
+                             
                              <hr>
-                             <button type="submit" name="assign_technician" class="btn btn-success">Assign Technician</button>
+                             <button type="submit" name="assign_technician" class="btn btn-success" id="submitBtn">
+                                 <?php echo $is_assigned ? 'Change Technician' : 'Assign Technician'; ?>
+                             </button>
                              <a href="admin-manage-service-booking.php" class="btn btn-secondary">Cancel</a>
                          </form>
+                         
+                         <script>
+                         function toggleReassignment() {
+                             var checkbox = document.getElementById('force_reassign');
+                             var fieldset = document.getElementById('formFieldset');
+                             var submitBtn = document.getElementById('submitBtn');
+                             
+                             if(checkbox.checked) {
+                                 fieldset.disabled = false;
+                                 submitBtn.disabled = false;
+                             } else {
+                                 fieldset.disabled = true;
+                                 submitBtn.disabled = true;
+                             }
+                         }
+                         
+                         // Initialize button state on page load
+                         <?php if($is_assigned && !$is_rejected): ?>
+                         document.getElementById('submitBtn').disabled = true;
+                         <?php endif; ?>
+                         </script>
                          <?php 
                          } // End if booking_data exists
                          } // End if sb_id exists

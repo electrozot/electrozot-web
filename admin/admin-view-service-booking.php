@@ -175,6 +175,17 @@
                                          <td><?php echo $booking->tech_id;?></td>
                                      </tr>
                                  </table>
+                                 <?php if($booking->sb_status == 'Rejected' || $booking->sb_status == 'Cancelled'): ?>
+                                 <div class="alert alert-warning">
+                                     <i class="fas fa-exclamation-triangle"></i> This booking was <?php echo strtolower($booking->sb_status);?>. You can reassign to a different technician.
+                                 </div>
+                                 <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning">Reassign Technician</a>
+                                 <?php elseif($booking->sb_status != 'Completed'): ?>
+                                 <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-info btn-sm">Change Technician</a>
+                                 <small class="text-muted d-block mt-2">
+                                     <i class="fas fa-info-circle"></i> Use this if technician is not responding
+                                 </small>
+                                 <?php endif; ?>
                                  <?php else: ?>
                                  <p class="text-warning">No technician assigned yet.</p>
                                  <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-success">Assign Technician</a>
@@ -194,7 +205,19 @@
                          <a href="admin-manage-service-booking.php" class="btn btn-secondary">Back to List</a>
                          <?php if(!$booking->tech_name): ?>
                          <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-success">Assign Technician</a>
+                         <?php elseif($booking->sb_status == 'Rejected' || $booking->sb_status == 'Cancelled'): ?>
+                         <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning">Reassign Technician</a>
                          <?php endif; ?>
+                         
+                         <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
+                         <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Cancel this booking?')">
+                             <i class="fas fa-ban"></i> Cancel Booking
+                         </a>
+                         <?php endif; ?>
+                         
+                         <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-danger" onclick="return confirm('Delete this booking permanently?')">
+                             <i class="fas fa-trash"></i> Delete
+                         </a>
                      </div>
                  </div>
              </div>

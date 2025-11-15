@@ -196,9 +196,6 @@ if($stmt_comp) {
                         <a class="dropdown-item" href="profile.php">
                             <i class="fas fa-user-circle"></i> My Profile
                         </a>
-                        <a class="dropdown-item" href="my-bookings.php">
-                            <i class="fas fa-clipboard-list"></i> All Bookings
-                        </a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="change-password.php">
                             <i class="fas fa-key"></i> Change Password
@@ -229,17 +226,7 @@ if($stmt_comp) {
                 </div>
             </a>
 
-            <a href="my-bookings.php" class="quick-bar-btn qb-yellow">
-                <div class="qb-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <div class="qb-info">
-                    <span class="qb-count"><?php echo $nav_total; ?></span>
-                    <span class="qb-label">All Bookings</span>
-                </div>
-            </a>
-
-            <a href="my-bookings.php?status=progress" class="quick-bar-btn qb-blue">
+            <a href="dashboard.php?filter=pending" class="quick-bar-btn qb-blue">
                 <div class="qb-icon">
                     <i class="fas fa-spinner"></i>
                 </div>

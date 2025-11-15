@@ -202,7 +202,7 @@ if(isset($_GET['delete'])) {
                             </div>
                             <div class="col-md-4">
                                 <label><i class="fas fa-search"></i> Search:</label>
-                                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, EZ ID, email..." onkeyup="searchTable()">
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by name, EZ ID, mobile, email..." onkeyup="searchTable()">
                             </div>
                         </div>
                         
@@ -222,15 +222,16 @@ if(isset($_GET['delete'])) {
                                 </style>
                                 <thead>
                                     <tr>
-                                        <th width="40" style="text-align: center;">#</th>
-                                        <th width="140">Name</th>
-                                        <th width="100">EZ ID</th>
-                                        <th width="100">ID Number</th>
-                                        <th width="180">Email</th>
-                                        <th width="120">Category</th>
-                                        <th width="120">Work Area (Pincode)</th>
-                                        <th width="140">Password</th>
-                                        <th width="150" style="text-align: center;">Actions</th>
+                                        <th width="35" style="text-align: center;">#</th>
+                                        <th width="120">Name</th>
+                                        <th width="90">EZ ID</th>
+                                        <th width="90">ID Number</th>
+                                        <th width="110">Mobile (Login)</th>
+                                        <th width="160">Email</th>
+                                        <th width="110">Category</th>
+                                        <th width="110">Work Area</th>
+                                        <th width="120">Password</th>
+                                        <th width="140" style="text-align: center;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -256,6 +257,15 @@ if(isset($_GET['delete'])) {
                                             <?php } ?>
                                         </td>
                                         <td><?php echo $row->t_id_no; ?></td>
+                                        <td style="text-align: center;">
+                                            <?php if(!empty($row->t_phone)) { ?>
+                                                <span class="badge badge-success" style="font-size: 0.85rem;">
+                                                    <i class="fas fa-mobile-alt"></i> <?php echo $row->t_phone; ?>
+                                                </span>
+                                            <?php } else { ?>
+                                                <span class="text-muted" style="font-size: 0.75rem;">Not Set</span>
+                                            <?php } ?>
+                                        </td>
                                         <td style="font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis;" title="<?php echo $row->t_email; ?>">
                                             <?php echo $row->t_email; ?>
                                         </td>
@@ -444,8 +454,8 @@ if(isset($_GET['delete'])) {
             }
             
             let found = false;
-            // Search in name (col 1), EZ ID (col 2), ID Number (col 3), email (col 4)
-            for (let j = 1; j <= 4; j++) {
+            // Search in name (col 1), EZ ID (col 2), ID Number (col 3), Mobile (col 4), email (col 5)
+            for (let j = 1; j <= 5; j++) {
                 if (cells[j]) {
                     const text = cells[j].textContent || cells[j].innerText;
                     if (text.toLowerCase().indexOf(filter) > -1) {

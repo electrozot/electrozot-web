@@ -7,6 +7,21 @@ $t_id = $_SESSION['t_id'];
 $t_name = $_SESSION['t_name'];
 $page_title = "My Bookings";
 
+// Create cancelled bookings table if not exists
+try {
+    $create_cancelled_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
+        cb_id INT AUTO_INCREMENT PRIMARY KEY,
+        cb_booking_id INT NOT NULL,
+        cb_technician_id INT NOT NULL,
+        cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
+        cb_reason VARCHAR(255) DEFAULT 'Technician reassigned by admin',
+        cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(cb_booking_id),
+        INDEX(cb_technician_id)
+    )";
+    $mysqli->query($create_cancelled_table);
+} catch(Exception $e) {}
+
 // Get filter parameter
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 
@@ -25,15 +40,17 @@ if($filter == 'new') {
     $filter_title = "Completed Bookings";
 }
 
-// Get all bookings assigned to this technician
-$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_price 
+// Get all bookings assigned to this technician (exclude cancelled ones)
+$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+          LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
           $where_clause
+          AND cb.cb_id IS NULL
           ORDER BY sb.sb_booking_date DESC, sb.sb_booking_time DESC";
 $stmt = $mysqli->prepare($query);
-$stmt->bind_param('i', $t_id);
+$stmt->bind_param('ii', $t_id, $t_id);
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
@@ -70,6 +87,7 @@ $result = $stmt->get_result();
             </div>
         </div>
 
+        <!-- Bookings Section -->
         <?php if($result->num_rows > 0): ?>
             <div class="card-custom">
                 <div class="table-responsive">
@@ -92,9 +110,13 @@ $result = $stmt->get_result();
                             $cnt = 1;
                             while($row = $result->fetch_object()): 
                                 $status_class = '';
-                                if($row->sb_status == 'Pending') $status_class = 'badge-pending';
-                                elseif($row->sb_status == 'Completed') $status_class = 'badge-completed';
-                                else $status_class = 'badge-cancelled';
+                                if($row->sb_status == 'Pending') {
+                                    $status_class = 'badge-pending';
+                                } elseif($row->sb_status == 'Completed') {
+                                    $status_class = 'badge-completed';
+                                } else {
+                                    $status_class = 'badge-cancelled';
+                                }
                             ?>
                             <tr>
                                 <td>

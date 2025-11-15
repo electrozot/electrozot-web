@@ -201,13 +201,14 @@
                                  <thead class="thead-light">
                                      <tr>
                                          <th style="width: 3%;">#</th>
-                                         <th style="width: 12%;">Name</th>
-                                         <th style="width: 10%;">ID Number</th>
-                                         <th style="width: 13%;">Category</th>
-                                         <th style="width: 18%;">Specialization</th>
-                                         <th style="width: 10%;">Availability</th>
-                                         <th style="width: 12%;">Booking Status</th>
-                                         <th style="width: 22%;">Actions</th>
+                                         <th style="width: 11%;">Name</th>
+                                         <th style="width: 9%;">ID Number</th>
+                                         <th style="width: 10%;">Mobile (Login)</th>
+                                         <th style="width: 12%;">Category</th>
+                                         <th style="width: 15%;">Specialization</th>
+                                         <th style="width: 9%;">Availability</th>
+                                         <th style="width: 11%;">Booking Status</th>
+                                         <th style="width: 20%;">Actions</th>
                                      </tr>
                                  </thead>
                                  <tbody>
@@ -253,6 +254,10 @@
                                          <td class="text-center"><?php echo $cnt;?></td>
                                          <td><strong><?php echo $row->t_name;?></strong></td>
                                          <td class="text-center"><?php echo $row->t_id_no;?></td>
+                                         <td class="text-center">
+                                             <i class="fas fa-mobile-alt text-success"></i> 
+                                             <strong><?php echo !empty($row->t_phone) ? $row->t_phone : 'N/A';?></strong>
+                                         </td>
                                          <td class="text-center">
                                              <span class="badge badge-info badge-pill" style="font-size: 0.75rem; white-space: nowrap;">
                                                  <?php echo $row->t_category;?>

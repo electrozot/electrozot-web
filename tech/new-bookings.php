@@ -121,8 +121,8 @@ $result = $stmt->get_result();
                 <i class="fas fa-check-circle" style="font-size: 5rem; color: #38ef7d; margin-bottom: 20px;"></i>
                 <h3 style="color: #2d3748; font-weight: 700;">All Caught Up!</h3>
                 <p style="color: #6c757d; font-size: 1.1rem;">You don't have any pending bookings at the moment.</p>
-                <a href="my-bookings.php" class="btn btn-primary-custom mt-3">
-                    <i class="fas fa-clipboard-list"></i> View All Bookings
+                <a href="dashboard.php" class="btn btn-primary-custom mt-3">
+                    <i class="fas fa-home"></i> Go to Dashboard
                 </a>
             </div>
         <?php endif; ?>

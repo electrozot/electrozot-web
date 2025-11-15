@@ -22,9 +22,9 @@ if(isset($_POST['book_service_guest'])) {
     }
     $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
     $sb_service_id = $_POST['sb_service_id'];
-    $sb_booking_date = $_POST['sb_booking_date'];
-    // Time removed from form; default to 00:00 to keep DB insert stable
-    $sb_booking_time = '00:00';
+    // Automatically set booking date and time to current timestamp
+    $sb_booking_date = date('Y-m-d');
+    $sb_booking_time = date('H:i:s');
     $sb_address = $_POST['sb_address'];
     $sb_description = isset($_POST['sb_description']) ? $_POST['sb_description'] : '';
     $sb_status = 'Pending'; // Default status
@@ -49,13 +49,28 @@ if(isset($_POST['book_service_guest'])) {
     $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS u_area VARCHAR(100)");
     $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS u_pincode VARCHAR(10)");
     
-    // Insert customer into tms_user table as guest user with area and pincode
-    $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
-    $stmt_user = $mysqli->prepare($query_user);
-    $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
-    $stmt_user->execute();
-    $customer_id = $stmt_user->insert_id;
-    $stmt_user->close();
+    // Check if customer already exists by phone number
+    $check_user = "SELECT u_id FROM tms_user WHERE u_phone = ?";
+    $stmt_check = $mysqli->prepare($check_user);
+    $stmt_check->bind_param('s', $customer_phone);
+    $stmt_check->execute();
+    $result_check = $stmt_check->get_result();
+    
+    if($result_check->num_rows > 0) {
+        // Customer exists - use existing user ID
+        $existing_user = $result_check->fetch_object();
+        $customer_id = $existing_user->u_id;
+        $stmt_check->close();
+    } else {
+        // New customer - insert into tms_user table as guest user with area and pincode
+        $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
+        $stmt_user = $mysqli->prepare($query_user);
+        $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
+        $stmt_user->execute();
+        $customer_id = $stmt_user->insert_id;
+        $stmt_user->close();
+        $stmt_check->close();
+    }
 
     if($customer_id) {
         // Ensure sb_pincode column exists

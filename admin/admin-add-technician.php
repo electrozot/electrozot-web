@@ -41,6 +41,12 @@
     {
             $t_name=$_POST['t_name'];
             $t_phone = isset($_POST['t_phone']) ? $_POST['t_phone'] : '';
+            
+            // Validate phone number is exactly 10 digits
+            if(!empty($t_phone) && !preg_match('/^[0-9]{10}$/', $t_phone)) {
+                $err = "Phone number must be exactly 10 digits";
+            } else {
+            
             $t_ez_id = isset($_POST['t_ez_id']) ? $_POST['t_ez_id'] : '';
             $t_id_no = $t_ez_id; // Use EZ ID as the ID number
             $t_category=$_POST['t_category'];
@@ -112,6 +118,7 @@
                 }
             }
             }
+            } // Close phone validation
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -185,9 +192,9 @@
                                              <div class="input-group-prepend">
                                                  <span class="input-group-text">+91</span>
                                              </div>
-                                             <input type="tel" class="form-control" name="t_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
+                                             <input type="tel" class="form-control" name="t_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                                          </div>
-                                         <small class="text-success"><i class="fas fa-info-circle"></i> This number will be used for technician login</small>
+                                         <small class="text-success"><i class="fas fa-info-circle"></i> This number will be used for technician login (exactly 10 digits)</small>
                                      </div>
                                  </div>
                                  

@@ -20,8 +20,9 @@ $services_result = $mysqli->query($services_query);
 // Handle booking submission
 if(isset($_POST['book_service'])) {
     $sb_service_id = $_POST['sb_service_id'];
-    $sb_booking_date = $_POST['sb_booking_date'];
-    $sb_booking_time = $_POST['sb_booking_time'];
+    // Automatically set booking date and time to current timestamp
+    $sb_booking_date = date('Y-m-d');
+    $sb_booking_time = date('H:i:s');
     $sb_address = $_POST['sb_address'];
     $sb_phone = $_POST['sb_phone'];
     $sb_description = $_POST['sb_description'];
@@ -297,26 +298,15 @@ if(isset($_POST['book_service'])) {
             <!-- Step 2: Booking Details -->
             <div id="bookingDetails" style="display: none;">
                 <div class="form-section">
-                    <h3><i class="fas fa-calendar"></i> When?</h3>
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" class="form-control" name="sb_booking_date" required min="<?php echo date('Y-m-d'); ?>">
-                    </div>
-                    <div class="form-group">
-                        <label>Time</label>
-                        <input type="time" class="form-control" name="sb_booking_time" required>
-                    </div>
-                </div>
-
-                <div class="form-section">
                     <h3><i class="fas fa-map-marker-alt"></i> Where?</h3>
                     <div class="form-group">
                         <label>Address</label>
                         <textarea class="form-control" name="sb_address" required placeholder="Enter your complete address"><?php echo $user->u_addr; ?></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Phone</label>
-                        <input type="tel" class="form-control" name="sb_phone" required value="<?php echo $user->u_phone; ?>" placeholder="Your contact number">
+                        <label>Phone <span class="text-danger">*</span></label>
+                        <input type="tel" class="form-control" name="sb_phone" required value="<?php echo $user->u_phone; ?>" placeholder="10-digit mobile number" maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+                        <small class="form-text text-muted">Enter exactly 10 digits</small>
                     </div>
                 </div>
 

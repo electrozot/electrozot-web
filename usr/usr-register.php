@@ -18,6 +18,12 @@
             $u_fname=$_POST['u_fname'];
             $u_lname = $_POST['u_lname'];
             $u_phone=$_POST['u_phone'];
+            
+            // Validate phone number is exactly 10 digits
+            if(!preg_match('/^[0-9]{10}$/', $u_phone)) {
+                $err = "Phone number must be exactly 10 digits";
+            } else {
+            
             $u_addr=$_POST['u_addr'];
             $u_area=$_POST['u_area'];
             $u_pincode=$_POST['u_pincode'];
@@ -51,6 +57,7 @@
             }
             $check_phone->close();
             }
+            } // Close phone validation
 ?>
 <!-- Author By: MH RONY
 Author Website: https://developerrony.com
@@ -413,10 +420,10 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-phone"></i> Mobile Number</label>
-                        <input type="text" required class="form-control" name="u_phone" placeholder="Enter your mobile number" pattern="[0-9]{10}" maxlength="10">
+                        <label><i class="fas fa-phone"></i> Mobile Number <span class="text-danger">*</span></label>
+                        <input type="tel" required class="form-control" name="u_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                         <div class="helper-text">
-                            <i class="fas fa-info-circle"></i>
+                            <i class="fas fa-info-circle"></i> Enter exactly 10 digits
                             <span>10-digit mobile number for login</span>
                         </div>
                     </div>

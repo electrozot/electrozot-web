@@ -25,8 +25,9 @@ try {
 // Handle booking submission
 if(isset($_POST['book_service'])) {
     $sb_service_id = $_POST['sb_service_id'];
-    $sb_booking_date = $_POST['sb_booking_date'];
-    $sb_booking_time = $_POST['sb_booking_time'];
+    // Automatically set booking date and time to current timestamp
+    $sb_booking_date = date('Y-m-d');
+    $sb_booking_time = date('H:i:s');
     $sb_address = $_POST['sb_address'];
     $sb_pincode = $_POST['sb_pincode'];
     $sb_phone = $_POST['sb_phone'];
@@ -147,31 +148,6 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="font-weight-bold">
-                                                <i class="fas fa-calendar"></i> Booking Date <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="date" 
-                                                   class="form-control form-control-lg" 
-                                                   name="sb_booking_date" 
-                                                   required 
-                                                   min="<?php echo date('Y-m-d'); ?>"
-                                                   style="border-radius: 10px;">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="font-weight-bold">
-                                                <i class="fas fa-clock"></i> Booking Time <span class="text-danger">*</span>
-                                            </label>
-                                            <input type="time" 
-                                                   class="form-control form-control-lg" 
-                                                   name="sb_booking_time" 
-                                                   required
-                                                   style="border-radius: 10px;">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="font-weight-bold">
                                                 <i class="fas fa-map-marker-alt"></i> Service Address <span class="text-danger">*</span>
                                             </label>
                                             <textarea class="form-control form-control-lg" 
@@ -209,7 +185,10 @@ $selected_service = isset($_GET['service_id']) ? $_GET['service_id'] : null;
                                                    maxlength="10"
                                                    value="<?php echo $user->u_phone; ?>"
                                                    placeholder="10-digit mobile number"
+                                                   title="Enter exactly 10 digits"
+                                                   oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
                                                    style="border-radius: 10px;">
+                                            <small class="form-text text-muted">Enter exactly 10 digits</small>
                                         </div>
                                         <div class="form-group">
                                             <label class="font-weight-bold">

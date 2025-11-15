@@ -132,14 +132,15 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label-enhanced"><i class="fas fa-user"></i> Full Name <span style="color: #e74c3c;">*</span></label>
-                                                    <input type="text" class="form-control form-control-enhanced" name="customer_name" required placeholder="Enter your full name">
+                                                    <label class="form-label-enhanced"><i class="fas fa-phone"></i> Phone Number <span style="color: #e74c3c;">*</span></label>
+                                                    <input type="tel" class="form-control form-control-enhanced" id="guest_phone" name="customer_phone" required placeholder="10-digit mobile number" maxlength="10" pattern="^[0-9]{10}$" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+                                                    <small id="customer_status" class="form-text"></small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-3">
-                                                    <label class="form-label-enhanced"><i class="fas fa-phone"></i> Phone Number <span style="color: #e74c3c;">*</span></label>
-                                                    <input type="tel" class="form-control form-control-enhanced" name="customer_phone" required placeholder="10-digit mobile number" maxlength="10" pattern="^[0-9]{10}$" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+                                                    <label class="form-label-enhanced"><i class="fas fa-user"></i> Full Name <span style="color: #e74c3c;">*</span></label>
+                                                    <input type="text" class="form-control form-control-enhanced" id="guest_name" name="customer_name" required placeholder="Enter your full name">
                                                 </div>
                                             </div>
                                         </div>
@@ -148,20 +149,20 @@
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-map-signs text-primary"></i> Area / Locality</label>
-                                                    <input type="text" class="form-control form-control-sm" name="customer_area" required placeholder="Enter your area or locality">
+                                                    <input type="text" class="form-control form-control-sm" id="guest_area" name="customer_area" required placeholder="Enter your area or locality">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-map-pin text-primary"></i> Pincode</label>
-                                                    <input type="text" class="form-control form-control-sm" name="customer_pincode" required placeholder="6-digit" maxlength="6" pattern="^[0-9]{6}$" title="Enter exactly 6 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
+                                                    <input type="text" class="form-control form-control-sm" id="guest_pincode" name="customer_pincode" required placeholder="6-digit" maxlength="6" pattern="^[0-9]{6}$" title="Enter exactly 6 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="form-group ">
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Select Service</label>
                                                     <select class="p-0 form-control form-control-sm" name="sb_service_id" required>
                                                         <option value="">Choose a service...</option>
@@ -176,37 +177,21 @@
                                                         ?>
                                                     </select>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-calendar text-primary"></i> Date</label>
-                                                    <input type="date" class="form-control form-control-sm" name="sb_booking_date" required min="<?php echo date('Y-m-d'); ?>">
+                                                <div class="form-group mb-2" style="margin-top: 8px;">
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-comment text-primary"></i> Additional Notes</label>
+                                                    <textarea class="form-control form-control-sm" name="sb_description" rows="3" placeholder="Any special requirements or additional information"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-map-marker-alt text-primary"></i> Address</label>
-                                                    <textarea class="form-control form-control-sm" name="sb_address" rows="2" required placeholder="Enter complete service address"></textarea>
+                                                    <textarea class="form-control form-control-sm" id="guest_address" name="sb_address" rows="3" required placeholder="Enter complete service address"></textarea>
                                                 </div>
-                                            </div>
-                                        </div>
-
-                                        
-
-                                        <div class="row">
-                                            <div class="col-md-8">
-                                                <div class="form-group mb-3">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-comment text-primary"></i> Additional Notes</label>
-                                                    <textarea class="form-control form-control-sm" name="sb_description" rows="2" placeholder="Any special requirements or additional information"></textarea>
+                                                <div class="text-right" style="margin-top: 8px;">
+                                                    <button type="submit" name="book_service_guest" class="btn btn-sm text-gray submit-btn" style="background: linear-gradient(135deg, #13b7f8ff 0%, #40ff22ff 50%, #4facfe 100%); background-size: 200% 200%; border: none; padding: 8px 20px; font-weight: 600; border-radius: 8px; position: relative; overflow: hidden; transition: all 0.4s ease;">
+                                                        <span style="position: relative; z-index: 2;"><i class="fas fa-paper-plane"></i> Submit</span>
+                                                    </button>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-4 d-flex align-items-end">
-                                                <button type="submit" name="book_service_guest" class="btn btn-block btn-sm text-gray submit-btn" style="background: linear-gradient(135deg, #13b7f8ff 0%, #40ff22ff 50%, #4facfe 100%); background-size: 200% 200%; border: none; padding: 10px; font-weight: 600; border-radius: 10px; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                                                    <span style="position: relative; z-index: 2;"><i class="fas fa-paper-plane"></i> Submit</span>
-                                                </button>
                                             </div>
                                         </div>
                                     </form>
@@ -617,6 +602,57 @@ Github Link: https://github.com/dev-mhrony
 Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
 -->
 
+    <!-- Guest Booking Auto-Fill Script -->
+    <script>
+    $(document).ready(function() {
+        $('#guest_phone').on('blur', function() {
+            var phone = $(this).val();
+            
+            // Only check if phone is exactly 10 digits
+            if (phone.length === 10) {
+                $.ajax({
+                    url: 'admin/vendor/inc/check-customer.php',
+                    method: 'POST',
+                    data: { phone: phone },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.exists && response.user) {
+                            // Customer found - auto-fill details
+                            var fullName = response.user.u_fname + ' ' + response.user.u_lname;
+                            $('#guest_name').val(fullName);
+                            $('#guest_area').val(response.user.u_area);
+                            $('#guest_pincode').val(response.user.u_pincode);
+                            $('#guest_address').val(response.user.u_addr);
+                            
+                            // Show success message
+                            $('#customer_status').html('<i class="fas fa-check-circle text-success"></i> Registered customer - details auto-filled').css('color', '#28a745');
+                            
+                            // Name is readonly for registered customers, other fields editable
+                            $('#guest_name').prop('readonly', true).css('background-color', '#f0f0f0');
+                            $('#guest_area').prop('readonly', false);
+                            $('#guest_pincode').prop('readonly', false);
+                            $('#guest_address').prop('readonly', false);
+                        } else {
+                            // New customer - clear any previous data
+                            $('#customer_status').html('<i class="fas fa-info-circle text-info"></i> New customer - please fill all details').css('color', '#17a2b8');
+                            
+                            // Ensure all fields are editable
+                            $('#guest_name').prop('readonly', false).css('background-color', '');
+                            $('#guest_area').prop('readonly', false);
+                            $('#guest_pincode').prop('readonly', false);
+                            $('#guest_address').prop('readonly', false);
+                        }
+                    },
+                    error: function() {
+                        $('#customer_status').html('<i class="fas fa-exclamation-triangle text-warning"></i> Could not verify customer').css('color', '#ffc107');
+                    }
+                });
+            } else {
+                $('#customer_status').html('');
+            }
+        });
+    });
+    </script>
 
 </body>
 

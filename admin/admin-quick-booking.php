@@ -14,8 +14,11 @@ if(isset($_POST['create_booking'])) {
     $customer_area = $_POST['customer_area'];
     $customer_pincode = $_POST['customer_pincode'];
     $service_id = $_POST['service_id'];
-    $booking_date = $_POST['booking_date'];
-    $booking_time = $_POST['booking_time'];
+    
+    // Automatically set booking date and time to current timestamp
+    $booking_date = date('Y-m-d');
+    $booking_time = date('H:i:s');
+    
     $notes = $_POST['notes'];
     
     // Check if user exists by phone
@@ -117,37 +120,41 @@ if(isset($_POST['create_booking'])) {
                                     <hr>
                                     
                                     <div class="form-group">
-                                        <label>Customer Name <span class="text-danger">*</span></label>
-                                        <input type="text" name="customer_name" class="form-control" required>
-                                    </div>
-                                    
-                                    <div class="form-group">
                                         <label>Phone Number <span class="text-danger">*</span></label>
-                                        <input type="text" name="customer_phone" class="form-control" required>
-                                        <small class="form-text text-muted">If customer exists, we'll use their account</small>
+                                        <input type="tel" name="customer_phone" id="customer_phone" class="form-control" required maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)" placeholder="10-digit mobile number">
+                                        <small class="form-text text-muted">Enter phone to auto-fill registered customer details</small>
+                                        <div id="customerStatus" class="mt-2"></div>
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label>Email</label>
-                                        <input type="email" name="customer_email" class="form-control">
+                                        <label>Customer Name <span class="text-danger">*</span></label>
+                                        <input type="text" name="customer_name" id="customer_name" class="form-control" required placeholder="Will auto-fill if registered">
                                     </div>
                                     
+                                    <input type="hidden" name="customer_email" id="customer_email" value="">
+                                    
                                     <div class="form-group">
-                                        <label>Address <span class="text-danger">*</span></label>
-                                        <textarea name="customer_address" class="form-control" rows="2" required></textarea>
+                                        <label>Service Address <span class="text-danger">*</span></label>
+                                        <textarea name="customer_address" id="customer_address" class="form-control" rows="2" required placeholder="Enter service location address"></textarea>
+                                        <small class="form-text text-info" id="addressHint" style="display:none;">
+                                            <i class="fas fa-info-circle"></i> Registered address shown - You can change if service needed at different location
+                                        </small>
                                     </div>
                                     
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Area <span class="text-danger">*</span></label>
-                                                <input type="text" name="customer_area" class="form-control" required>
+                                                <input type="text" name="customer_area" id="customer_area" class="form-control" required placeholder="Service area">
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Pincode <span class="text-danger">*</span></label>
-                                                <input type="text" name="customer_pincode" class="form-control" required>
+                                                <input type="text" name="customer_pincode" id="customer_pincode" class="form-control" required maxlength="6" pattern="[0-9]{6}" placeholder="6-digit pincode" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
+                                                <small class="form-text text-info" id="pincodeHint" style="display:none;">
+                                                    <i class="fas fa-info-circle"></i> Confirm or change pincode for service location
+                                                </small>
                                             </div>
                                         </div>
                                     </div>
@@ -176,19 +183,8 @@ if(isset($_POST['create_booking'])) {
                                     </div>
                                     
                                     <div class="form-group">
-                                        <label>Booking Date <span class="text-danger">*</span></label>
-                                        <input type="date" name="booking_date" class="form-control" 
-                                               min="<?php echo date('Y-m-d'); ?>" required>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label>Preferred Time <span class="text-danger">*</span></label>
-                                        <input type="time" name="booking_time" class="form-control" required>
-                                    </div>
-                                    
-                                    <div class="form-group">
                                         <label>Notes / Special Instructions</label>
-                                        <textarea name="notes" class="form-control" rows="3" 
+                                        <textarea name="notes" class="form-control" rows="5" 
                                                   placeholder="Any special requirements or notes..."></textarea>
                                     </div>
                                 </div>
@@ -239,5 +235,77 @@ if(isset($_POST['create_booking'])) {
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="vendor/js/sb-admin.min.js"></script>
+    
+    <script>
+    $(document).ready(function() {
+        // Auto-fill customer details when phone number is entered
+        $('#customer_phone').on('blur', function() {
+            var phone = $(this).val();
+            
+            if(phone.length === 10) {
+                // Show loading
+                $('#customerStatus').html('<span class="badge badge-info"><i class="fas fa-spinner fa-spin"></i> Checking...</span>');
+                
+                // AJAX request to check if customer exists
+                $.ajax({
+                    url: 'vendor/inc/check-customer.php',
+                    method: 'POST',
+                    data: {phone: phone},
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.exists) {
+                            // Customer found - auto-fill name only, suggest address/pincode
+                            $('#customerStatus').html('<span class="badge badge-success"><i class="fas fa-check-circle"></i> Registered Customer Found!</span>');
+                            
+                            // Auto-fill name (readonly)
+                            $('#customer_name').val(response.user.u_fname + ' ' + response.user.u_lname);
+                            $('#customer_name').prop('readonly', true);
+                            
+                            // Store email in hidden field (don't show to admin)
+                            $('#customer_email').val(response.user.u_email);
+                            
+                            // Suggest address but keep editable
+                            if(response.user.u_addr) {
+                                $('#customer_address').val(response.user.u_addr);
+                                $('#addressHint').show();
+                            }
+                            
+                            // Suggest area and pincode but keep editable
+                            if(response.user.u_area) {
+                                $('#customer_area').val(response.user.u_area);
+                            }
+                            if(response.user.u_pincode) {
+                                $('#customer_pincode').val(response.user.u_pincode);
+                                $('#pincodeHint').show();
+                            }
+                            
+                            // Focus on address field for admin to confirm/change
+                            $('#customer_address').focus().select();
+                        } else {
+                            // New customer
+                            $('#customerStatus').html('<span class="badge badge-warning"><i class="fas fa-user-plus"></i> New Customer - Fill Details Below</span>');
+                            
+                            // Clear all fields and make name editable
+                            $('#customer_name').val('').prop('readonly', false);
+                            $('#customer_email').val('');
+                            $('#customer_address').val('');
+                            $('#customer_area').val('');
+                            $('#customer_pincode').val('');
+                            $('#addressHint').hide();
+                            $('#pincodeHint').hide();
+                        }
+                    },
+                    error: function() {
+                        $('#customerStatus').html('<span class="badge badge-danger"><i class="fas fa-times-circle"></i> Error checking customer</span>');
+                    }
+                });
+            } else if(phone.length > 0) {
+                $('#customerStatus').html('<span class="badge badge-danger">Phone must be exactly 10 digits</span>');
+            } else {
+                $('#customerStatus').html('');
+            }
+        });
+    });
+    </script>
 </body>
 </html>

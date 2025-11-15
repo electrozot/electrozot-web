@@ -108,8 +108,9 @@
                                  <input type="text" class="form-control" value="<?php echo $row->u_lname;?>" id="exampleInputEmail1" name="u_lname">
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Contact</label>
-                                 <input type="text" class="form-control" value="<?php echo $row->u_phone;?>" id="exampleInputEmail1" name="u_phone">
+                                 <label for="exampleInputEmail1">Contact <span class="text-danger">*</span></label>
+                                 <input type="tel" class="form-control" value="<?php echo $row->u_phone;?>" id="exampleInputEmail1" name="u_phone" required maxlength="10" pattern="[0-9]{10}" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)" placeholder="10-digit mobile number">
+                                 <small class="form-text text-muted">Enter exactly 10 digits</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Address</label>

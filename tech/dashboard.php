@@ -8,12 +8,25 @@ $t_name = $_SESSION['t_name'];
 $t_id_no = $_SESSION['t_id_no'];
 $page_title = "Technician Dashboard";
 
-// Ensure columns exist
+// Ensure columns and tables exist
 try {
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_phone VARCHAR(20) DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_email VARCHAR(100) DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_addr TEXT DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
+    
+    // Create cancelled bookings table if not exists
+    $create_cancelled_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
+        cb_id INT AUTO_INCREMENT PRIMARY KEY,
+        cb_booking_id INT NOT NULL,
+        cb_technician_id INT NOT NULL,
+        cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
+        cb_reason VARCHAR(255) DEFAULT 'Technician reassigned by admin',
+        cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(cb_booking_id),
+        INDEX(cb_technician_id)
+    )";
+    $mysqli->query($create_cancelled_table);
 } catch(Exception $e) {}
 
 // Get technician details
@@ -63,18 +76,21 @@ if(!empty($search)) {
     $types .= 's';
 }
 
-$bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name 
+// Query to get only active bookings (exclude cancelled ones) - Sort by deadline priority
+$bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name
                    FROM tms_service_booking sb
                    LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                   LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
                    {$where_clause}
-                   ORDER BY sb.sb_booking_date DESC, sb.sb_booking_time DESC";
+                   AND cb.cb_id IS NULL
+                   ORDER BY sb.sb_service_deadline_date ASC, sb.sb_service_deadline_time ASC, sb.sb_created_at ASC";
 
 $stmt_bookings = $mysqli->prepare($bookings_query);
 if(count($params) == 1) {
-    $stmt_bookings->bind_param($types, $params[0]);
+    $stmt_bookings->bind_param('ii', $t_id, $params[0]);
 } else {
-    $stmt_bookings->bind_param($types, $params[0], $params[1]);
+    $stmt_bookings->bind_param('iii', $t_id, $params[0], $params[1]);
 }
 $stmt_bookings->execute();
 $bookings_result = $stmt_bookings->get_result();
@@ -1158,9 +1174,10 @@ $completed_count = $counts->completed_count;
                     </thead>
                     <tbody>
                         <?php 
-                        // Reset result pointer for table
+                        // Show only active bookings (cancelled bookings are already filtered out in query)
                         $bookings_result->data_seek(0);
-                        while($booking = $bookings_result->fetch_object()): 
+                        while($booking = $bookings_result->fetch_object()):
+                            
                             // Get pincode from booking or extract from address
                             $customer_pincode = '';
                             
@@ -1201,7 +1218,7 @@ $completed_count = $counts->completed_count;
                             }
                         ?>
                         <tr>
-                            <td><strong>#<?php echo $booking->sb_id; ?></strong></td>
+                            <td><strong style="color: #ff4757;">#<?php echo $booking->sb_id; ?></strong></td>
                             <td><?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?></td>
                             <td><?php echo $customer_pincode ? $customer_pincode : '-'; ?></td>
                             <td><?php echo htmlspecialchars(substr($booking->u_addr, 0, 50)) . (strlen($booking->u_addr) > 50 ? '...' : ''); ?></td>
@@ -1211,7 +1228,7 @@ $completed_count = $counts->completed_count;
                                         <i class="fas fa-phone"></i> <?php echo $booking->u_phone; ?>
                                     </a>
                                 <?php else: ?>
-                                    -
+                                    <span style="color: #999;">N/A</span>
                                 <?php endif; ?>
                             </td>
                             <td>
@@ -1239,9 +1256,10 @@ $completed_count = $counts->completed_count;
                 
                 <!-- Mobile Card View -->
                 <?php 
-                // Reset result pointer for cards
+                // Show only active bookings (cancelled bookings are already filtered out)
                 $bookings_result->data_seek(0);
-                while($booking = $bookings_result->fetch_object()): 
+                while($booking = $bookings_result->fetch_object()):
+                    
                     // Get pincode from booking or extract from address
                     $customer_pincode = '';
                     
@@ -1277,7 +1295,7 @@ $completed_count = $counts->completed_count;
                 ?>
                 <div class="booking-card">
                     <div class="booking-card-header">
-                        <div class="booking-id-mobile">#<?php echo $booking->sb_id; ?></div>
+                        <div class="booking-id-mobile" style="color: #ff4757;">#<?php echo $booking->sb_id; ?></div>
                         <span class="status-badge <?php echo $status_class; ?>">
                             <?php echo $booking->sb_status; ?>
                         </span>

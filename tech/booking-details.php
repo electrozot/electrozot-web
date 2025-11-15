@@ -6,6 +6,21 @@ include('includes/checklogin.php');
 $t_id = $_SESSION['t_id'];
 $page_title = "Booking Details";
 
+// Create cancelled bookings table if not exists
+try {
+    $create_cancelled_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
+        cb_id INT AUTO_INCREMENT PRIMARY KEY,
+        cb_booking_id INT NOT NULL,
+        cb_technician_id INT NOT NULL,
+        cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
+        cb_reason VARCHAR(255) DEFAULT 'Technician reassigned by admin',
+        cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(cb_booking_id),
+        INDEX(cb_technician_id)
+    )";
+    $mysqli->query($create_cancelled_table);
+} catch(Exception $e) {}
+
 // Get booking ID
 $sb_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -23,23 +38,38 @@ if(isset($_POST['update_status'])){
     }
 }
 
+// Check if this booking was cancelled for this technician
+$cancel_check = "SELECT cb_id, cb_reason, cb_cancelled_at FROM tms_cancelled_bookings 
+                 WHERE cb_booking_id = ? AND cb_technician_id = ?";
+$cancel_stmt = $mysqli->prepare($cancel_check);
+$cancel_stmt->bind_param('ii', $sb_id, $t_id);
+$cancel_stmt->execute();
+$cancel_result = $cancel_stmt->get_result();
+$is_cancelled = $cancel_result->num_rows > 0;
+$cancel_info = $is_cancelled ? $cancel_result->fetch_object() : null;
+
 // Get booking details
 $query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, u.u_addr, s.s_name, s.s_price, s.s_description, s.s_category
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
-          WHERE sb.sb_id = ? AND sb.sb_technician_id = ?";
+          WHERE sb.sb_id = ?";
 $stmt = $mysqli->prepare($query);
-$stmt->bind_param('ii', $sb_id, $t_id);
+$stmt->bind_param('i', $sb_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if($result->num_rows == 0){
-    header('Location: my-bookings.php');
+    header('Location: dashboard.php');
     exit();
 }
 
 $booking = $result->fetch_object();
+
+// Prevent status updates if booking is cancelled for this technician
+if($is_cancelled && isset($_POST['update_status'])){
+    $error = "You cannot update this booking as it has been reassigned to another technician.";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,11 +87,28 @@ $booking = $result->fetch_object();
                     </h2>
                     <p>Booking ID: #<?php echo $sb_id; ?></p>
                 </div>
-                <a href="my-bookings.php" class="btn btn-primary-custom">
-                    <i class="fas fa-arrow-left"></i> Back to Bookings
+                <a href="dashboard.php" class="btn btn-primary-custom">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </a>
             </div>
         </div>
+
+        <?php if($is_cancelled): ?>
+            <div class="alert alert-warning" style="border-left: 5px solid #ff9800; background-color: #fff3e0; padding: 20px;">
+                <h4 style="color: #ff9800; margin-bottom: 15px;">
+                    <i class="fas fa-ban"></i> Booking Cancelled by Admin
+                </h4>
+                <p style="margin-bottom: 10px;">
+                    <strong>Reason:</strong> <?php echo htmlspecialchars($cancel_info->cb_reason); ?>
+                </p>
+                <p style="margin-bottom: 10px;">
+                    <strong>Cancelled At:</strong> <?php echo date('M d, Y h:i A', strtotime($cancel_info->cb_cancelled_at)); ?>
+                </p>
+                <p style="margin-bottom: 0; color: #666;">
+                    <i class="fas fa-info-circle"></i> This booking has been reassigned to another technician. You cannot perform any actions on this booking. You are now available for new bookings.
+                </p>
+            </div>
+        <?php endif; ?>
 
         <?php if(isset($success)): ?>
             <div class="alert-custom alert-success-custom">
@@ -178,6 +225,23 @@ $booking = $result->fetch_object();
                 Update Booking Status
             </h5>
             
+            <?php if($is_cancelled): ?>
+                <div class="alert alert-warning">
+                    <i class="fas fa-lock"></i> <strong>Actions Disabled:</strong> This booking has been cancelled and reassigned. You cannot update its status.
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label style="font-weight: 600; color: #2d3748;">
+                            <i class="fas fa-info-circle"></i> Status
+                        </label>
+                        <div style="margin-top: 10px;">
+                            <span class="badge-status badge-cancelled" style="font-size: 1.1rem; padding: 12px 25px;">
+                                <i class="fas fa-ban"></i> Cancelled by Admin
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
             <form method="POST" class="row align-items-end">
                 <div class="col-md-6 mb-3">
                     <label style="font-weight: 600; color: #2d3748;">
@@ -214,6 +278,7 @@ $booking = $result->fetch_object();
                     </button>
                 </div>
             </form>
+            <?php endif; ?>
         </div>
     </div>
 
