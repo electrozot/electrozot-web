@@ -71,6 +71,48 @@
         <div id="content-wrapper">
 
             <div class="container-fluid">
+                <!-- Notification Marquee -->
+                <div class="notification-marquee-container" style="
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 10px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                    overflow: hidden;
+                    position: relative;
+                    transition: all 0.3s ease;
+                ">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-bell" style="font-size: 20px; animation: bellRing 2s ease-in-out infinite;"></i>
+                        <div style="flex: 1; overflow: hidden;">
+                            <marquee id="notificationMarquee" behavior="scroll" direction="left" scrollamount="5" 
+                                     style="font-weight: 500; cursor: pointer;"
+                                     onmouseover="this.stop();" 
+                                     onmouseout="this.start();">
+                                Loading recent notifications...
+                            </marquee>
+                        </div>
+                        <a href="admin-notifications.php" class="btn btn-light btn-sm" style="white-space: nowrap; font-weight: 600;">
+                            <i class="fas fa-list"></i> View All
+                        </a>
+                    </div>
+                </div>
+                
+                <style>
+                    @keyframes bellRing {
+                        0%, 100% { transform: rotate(0deg); }
+                        10%, 30% { transform: rotate(-10deg); }
+                        20%, 40% { transform: rotate(10deg); }
+                        50% { transform: rotate(0deg); }
+                    }
+                    
+                    .notification-marquee-container:hover {
+                        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+                        transform: translateY(-2px);
+                    }
+                </style>
+
                 <!-- Success/Error Messages -->
                 <?php if(!empty($dashboard_success)): ?>
                     <div class="alert alert-success alert-dismissible fade show">
@@ -648,28 +690,113 @@
 
     <!-- Real-time Booking Notification System -->
     <script>
-        // Create audio element for notification sound
+        // Audio notification setup with fallback
+        let audioContext = null;
+        let customSoundEnabled = false;
         const notificationAudio = new Audio('vendor/sounds/arived.mp3');
-        notificationAudio.volume = 0.7; // Set volume to 70%
+        notificationAudio.volume = 0.7;
         
-        function playNotificationSound() {
-            try {
-                // Reset audio to start if already playing
-                notificationAudio.currentTime = 0;
-                
-                // Play the sound
-                notificationAudio.play()
-                    .then(() => {
-                        console.log('🔊 Notification sound played');
-                    })
-                    .catch((error) => {
-                        console.error('❌ Error playing sound:', error);
-                        console.log('💡 Tip: Click anywhere on the page first to enable audio');
-                    });
-            } catch(e) {
-                console.error('❌ Sound error:', e);
+        // Initialize audio context
+        function initAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('🔊 Audio context initialized');
+                } catch(e) {
+                    console.warn('⚠️ Audio context not supported:', e);
+                }
             }
         }
+        
+        // Play notification sound with fallback
+        function playNotificationSound() {
+            // Try custom sound first
+            try {
+                notificationAudio.currentTime = 0;
+                notificationAudio.play()
+                    .then(() => {
+                        console.log('🔊 Custom notification sound played');
+                        customSoundEnabled = true;
+                    })
+                    .catch((error) => {
+                        console.warn('⚠️ Custom sound failed, using Web API fallback:', error.message);
+                        playWebAPISound();
+                    });
+            } catch(e) {
+                console.warn('⚠️ Custom sound error, using fallback:', e);
+                playWebAPISound();
+            }
+        }
+        
+        // Fallback: Web Audio API beep
+        function playWebAPISound() {
+            try {
+                if (!audioContext) {
+                    initAudioContext();
+                }
+                
+                if (!audioContext) {
+                    console.warn('⚠️ No audio support available');
+                    return;
+                }
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                // Create a pleasant notification sound (two-tone)
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+                
+                // Second tone
+                setTimeout(() => {
+                    const osc2 = audioContext.createOscillator();
+                    const gain2 = audioContext.createGain();
+                    
+                    osc2.connect(gain2);
+                    gain2.connect(audioContext.destination);
+                    
+                    osc2.frequency.value = 1000;
+                    osc2.type = 'sine';
+                    
+                    gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    
+                    osc2.start(audioContext.currentTime);
+                    osc2.stop(audioContext.currentTime + 0.2);
+                }, 150);
+                
+                console.log('🔊 Web API notification sound played');
+            } catch(e) {
+                console.error('❌ Web API sound failed:', e);
+            }
+        }
+        
+        // Initialize audio on first user interaction
+        let audioInitialized = false;
+        document.addEventListener('click', function initOnClick() {
+            if (!audioInitialized) {
+                audioInitialized = true;
+                initAudioContext();
+                console.log('✅ Audio system ready');
+            }
+        }, { once: true });
+        
+        document.addEventListener('keydown', function initOnKey() {
+            if (!audioInitialized) {
+                audioInitialized = true;
+                initAudioContext();
+                console.log('✅ Audio system ready');
+            }
+        }, { once: true });
 
         // Show notification toast
         function showNotification(bookings) {
@@ -806,15 +933,29 @@
                         
                         // Browser notification (if permitted)
                         if ('Notification' in window && Notification.permission === 'granted') {
-                            new Notification('New Booking Received!', {
-                                body: `${response.new_count} new booking(s) received`,
-                                icon: '/vendor/img/icons/icon-192x192.png',
-                                badge: '/vendor/img/icons/icon-72x72.png',
-                                tag: 'new-booking',
-                                requireInteraction: true
-                            });
-                            console.log('🔔 Browser notification sent');
+                            try {
+                                const notification = new Notification('New Booking Received!', {
+                                    body: `${response.new_count} new booking(s) received`,
+                                    icon: 'vendor/img/logo.png',
+                                    badge: 'vendor/img/logo.png',
+                                    tag: 'new-booking',
+                                    requireInteraction: false,
+                                    silent: false
+                                });
+                                
+                                notification.onclick = function() {
+                                    window.focus();
+                                    notification.close();
+                                };
+                                
+                                console.log('🔔 Browser notification sent');
+                            } catch(e) {
+                                console.warn('⚠️ Browser notification failed:', e);
+                            }
                         }
+                        
+                        // Update marquee
+                        updateMarquee(response.bookings, response.updates || []);
                         
                         // Reload page to show new booking in table
                         setTimeout(() => {
@@ -824,6 +965,14 @@
                     } else {
                         console.log('✅ No new bookings (Count: ' + response.new_count + ')');
                     }
+                    
+                    // Update marquee with recent activity
+                    updateMarqueeFromResponse(response);
+                } catch(e) {
+                    console.error('❌ JSON Parse Error:', e);
+                    console.error('Raw response was:', rawResponse);
+                    return;
+                }
                 },
                 error: function(xhr, status, error) {
                     console.error('❌ AJAX Error:', {
@@ -869,8 +1018,53 @@
         `;
         document.head.appendChild(style);
         
+        // Update marquee with notifications
+        function updateMarqueeFromResponse(response) {
+            let marqueeText = '';
+            
+            if(response.bookings && response.bookings.length > 0) {
+                response.bookings.forEach(booking => {
+                    marqueeText += `🆕 New Booking #${booking.id} from ${booking.customer} (${booking.phone}) - ${booking.service} | `;
+                });
+            }
+            
+            if(response.updates && response.updates.length > 0) {
+                response.updates.forEach(update => {
+                    marqueeText += `🔄 Booking #${update.id} updated - ${update.status} | `;
+                });
+            }
+            
+            if(marqueeText) {
+                $('#notificationMarquee').html(marqueeText);
+            }
+        }
+        
+        // Load recent notifications for marquee
+        function loadRecentNotifications() {
+            $.get('get-recent-notifications.php', function(response) {
+                if(response.success && response.notifications.length > 0) {
+                    let marqueeText = '';
+                    response.notifications.forEach(notif => {
+                        marqueeText += `${notif.icon} ${notif.message} | `;
+                    });
+                    $('#notificationMarquee').html(marqueeText);
+                } else {
+                    $('#notificationMarquee').html('No recent notifications. All bookings are up to date! ✅');
+                }
+            }).fail(function() {
+                $('#notificationMarquee').html('📊 Monitoring for new bookings and updates...');
+            });
+        }
+        
+        // Load marquee on page load
+        setTimeout(loadRecentNotifications, 1000);
+        
+        // Auto-refresh marquee every 30 seconds
+        setInterval(loadRecentNotifications, 30000);
+        
         console.log('✅ Real-time notification system activated');
         console.log('🔔 Checking for new bookings every 10 seconds');
+        console.log('📢 Marquee auto-refreshing every 30 seconds');
     </script>
 
 </body>

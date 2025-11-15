@@ -137,7 +137,14 @@
          </div>
      </li>
 
-     <!-- 6. System Logs -->
+     <!-- 6. Notifications -->
+     <li class="nav-item">
+         <a class="nav-link" href="admin-notifications.php">
+             <i class="fas fa-fw fa-bell"></i>
+             <span>Notifications</span></a>
+     </li>
+
+     <!-- 7. System Logs -->
      <li class="nav-item">
          <a class="nav-link" href="admin-view-syslogs.php">
              <i class="fas fa-fw fa-file-alt"></i>
@@ -151,7 +158,7 @@
              <span>Recycle Bin</span></a>
      </li>
 
-     <!-- 7. Settings -->
+     <!-- 8. Settings -->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-cogs"></i>

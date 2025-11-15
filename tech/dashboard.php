@@ -1376,5 +1376,8 @@ $completed_count = $counts->completed_count;
 
     <script src="../admin/vendor/jquery/jquery.min.js"></script>
     <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Technician Notification System -->
+    <?php include('includes/notification-system.php'); ?>
 </body>
 </html>
