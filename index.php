@@ -656,6 +656,94 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
     });
     </script>
 
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Get the base path for the application
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+        const swPath = basePath ? basePath + '/sw.js' : '/sw.js';
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register(swPath)
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered successfully:', registration.scope);
+                        console.log('📍 Service Worker path:', swPath);
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker registration failed:', error);
+                        console.log('Tried path:', swPath);
+                    });
+            });
+        } else {
+            console.log('⚠️ Service Workers not supported in this browser');
+        }
+
+        // PWA Install Prompt with better debugging
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
+        installButton.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            z-index: 9999;
+            display: none;
+            transition: all 0.3s ease;
+        `;
+        installButton.onmouseover = () => {
+            installButton.style.transform = 'translateY(-3px)';
+            installButton.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
+        };
+        installButton.onmouseout = () => {
+            installButton.style.transform = 'translateY(0)';
+            installButton.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
+        };
+        document.body.appendChild(installButton);
+
+        // Debug: Check if PWA is installable
+        console.log('🔍 Checking PWA installability...');
+        console.log('- Service Worker support:', 'serviceWorker' in navigator);
+        console.log('- Manifest link:', document.querySelector('link[rel="manifest"]') ? '✅ Found' : '❌ Missing');
+        console.log('- HTTPS:', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ beforeinstallprompt event fired - App is installable!');
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to install prompt: ${outcome}`);
+                deferredPrompt = null;
+                installButton.style.display = 'none';
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA installed successfully!');
+            installButton.style.display = 'none';
+        });
+
+        // Check if app is installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('✅ Running as installed PWA');
+        }
+    </script>
+
 </body>
 
 </html>

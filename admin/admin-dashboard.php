@@ -646,6 +646,233 @@
         }
     </script>
 
+    <!-- Real-time Booking Notification System -->
+    <script>
+        // Create audio element for notification sound
+        const notificationAudio = new Audio('vendor/sounds/arived.mp3');
+        notificationAudio.volume = 0.7; // Set volume to 70%
+        
+        function playNotificationSound() {
+            try {
+                // Reset audio to start if already playing
+                notificationAudio.currentTime = 0;
+                
+                // Play the sound
+                notificationAudio.play()
+                    .then(() => {
+                        console.log('🔊 Notification sound played');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error playing sound:', error);
+                        console.log('💡 Tip: Click anywhere on the page first to enable audio');
+                    });
+            } catch(e) {
+                console.error('❌ Sound error:', e);
+            }
+        }
+
+        // Show notification toast
+        function showNotification(bookings) {
+            const count = bookings.length;
+            const title = count === 1 ? 'New Booking!' : `${count} New Bookings!`;
+            
+            // Create notification HTML
+            let notificationHTML = `
+                <div class="notification-toast" style="
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    padding: 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                    z-index: 9999;
+                    min-width: 350px;
+                    animation: slideIn 0.5s ease-out;
+                ">
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <i class="fas fa-bell" style="font-size: 24px; margin-right: 10px;"></i>
+                        <h4 style="margin: 0; font-weight: bold;">${title}</h4>
+                        <button onclick="this.parentElement.parentElement.remove()" style="
+                            margin-left: auto;
+                            background: transparent;
+                            border: none;
+                            color: white;
+                            font-size: 20px;
+                            cursor: pointer;
+                        ">&times;</button>
+                    </div>
+            `;
+            
+            bookings.forEach(booking => {
+                notificationHTML += `
+                    <div style="
+                        background: rgba(255,255,255,0.2);
+                        padding: 10px;
+                        border-radius: 5px;
+                        margin-top: 10px;
+                    ">
+                        <strong>Booking #${booking.id}</strong><br>
+                        <small>
+                            👤 ${booking.customer}<br>
+                            📞 ${booking.phone}<br>
+                            🔧 ${booking.service}
+                        </small>
+                    </div>
+                `;
+            });
+            
+            notificationHTML += `
+                    <div style="margin-top: 15px; text-align: center;">
+                        <a href="admin-all-bookings.php" style="
+                            background: white;
+                            color: #667eea;
+                            padding: 8px 20px;
+                            border-radius: 5px;
+                            text-decoration: none;
+                            font-weight: bold;
+                            display: inline-block;
+                        ">View All Bookings</a>
+                    </div>
+                </div>
+            `;
+            
+            // Add to page
+            $('body').append(notificationHTML);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                $('.notification-toast').fadeOut(500, function() {
+                    $(this).remove();
+                });
+            }, 10000);
+        }
+
+        // Check for new bookings
+        function checkNewBookings() {
+            console.log('🔍 Checking for new bookings...');
+            
+            $.ajax({
+                url: 'check-new-bookings.php',
+                method: 'GET',
+                dataType: 'text', // Get as text first to see raw response
+                cache: false,
+                success: function(rawResponse) {
+                    console.log('📡 Raw response:', rawResponse);
+                    
+                    // Try to parse JSON
+                    let response;
+                    try {
+                        response = JSON.parse(rawResponse);
+                        console.log('📊 Parsed response:', response);
+                    } catch(e) {
+                        console.error('❌ JSON Parse Error:', e);
+                        console.error('Raw response was:', rawResponse);
+                        return;
+                    }
+                    
+                    if(response.error) {
+                        console.error('❌ Server error:', response.error);
+                        return;
+                    }
+                    
+                    if(response.has_new && response.new_count > 0) {
+                        console.log('🔔 NEW BOOKINGS DETECTED:', response.new_count);
+                        console.log('📋 Booking details:', response.bookings);
+                        
+                        // Play sound
+                        try {
+                            playNotificationSound();
+                            console.log('🔊 Sound played');
+                        } catch(e) {
+                            console.error('❌ Sound error:', e);
+                        }
+                        
+                        // Show notification toast
+                        try {
+                            showNotification(response.bookings);
+                            console.log('📱 Toast notification shown');
+                        } catch(e) {
+                            console.error('❌ Toast error:', e);
+                        }
+                        
+                        // Update badge
+                        $('#notificationBadge').text(response.new_count).show();
+                        console.log('🔴 Badge updated');
+                        
+                        // Update page title
+                        document.title = `(${response.new_count}) New Booking - Admin Dashboard`;
+                        
+                        // Browser notification (if permitted)
+                        if ('Notification' in window && Notification.permission === 'granted') {
+                            new Notification('New Booking Received!', {
+                                body: `${response.new_count} new booking(s) received`,
+                                icon: '/vendor/img/icons/icon-192x192.png',
+                                badge: '/vendor/img/icons/icon-72x72.png',
+                                tag: 'new-booking',
+                                requireInteraction: true
+                            });
+                            console.log('🔔 Browser notification sent');
+                        }
+                        
+                        // Reload page to show new booking in table
+                        setTimeout(() => {
+                            console.log('🔄 Reloading page to show new bookings...');
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        console.log('✅ No new bookings (Count: ' + response.new_count + ')');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ AJAX Error:', {
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+                }
+            });
+        }
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                console.log('Notification permission:', permission);
+            });
+        }
+
+        // Start checking for new bookings every 10 seconds
+        setInterval(checkNewBookings, 10000);
+        
+        // Check immediately on page load (after 2 seconds)
+        setTimeout(checkNewBookings, 2000);
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .notification-toast:hover {
+                transform: scale(1.02);
+                transition: transform 0.2s;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        console.log('✅ Real-time notification system activated');
+        console.log('🔔 Checking for new bookings every 10 seconds');
+    </script>
+
 </body>
 <!-- Author By: MH RONY
 Author Website: https://developerrony.com

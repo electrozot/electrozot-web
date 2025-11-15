@@ -20,6 +20,21 @@
      
      <!-- Navbar -->
      <ul class="navbar-nav">
+         <!-- Notification Bell -->
+         <li class="nav-item dropdown no-arrow mx-1">
+             <a class="nav-link" href="admin-all-bookings.php" id="notificationBell" style="position: relative;">
+                 <i class="fas fa-bell fa-fw" style="font-size: 20px;"></i>
+                 <span id="notificationBadge" class="badge badge-danger badge-counter" style="
+                     position: absolute;
+                     top: -5px;
+                     right: -5px;
+                     display: none;
+                     padding: 3px 6px;
+                     border-radius: 10px;
+                     font-size: 10px;
+                 ">0</span>
+             </a>
+         </li>
 
          <li class="nav-item dropdown no-arrow">
              <a style="display: flex; align-items: center; gap: 8px;" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
