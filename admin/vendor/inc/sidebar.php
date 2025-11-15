@@ -14,14 +14,7 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item bg-success text-white" href="admin-quick-booking.php"><i class="fas fa-phone-alt"></i> Quick Booking</a>
-             <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-all-bookings.php"><i class="fas fa-list-ul"></i> All Bookings</a>
-             <a class="dropdown-item" href="admin-add-booking.php"><i class="fas fa-plus-circle"></i> Add</a>
-             <a class="dropdown-item" href="admin-view-booking.php"><i class="fas fa-eye"></i> View</a>
-             <a class="dropdown-item" href="admin-manage-booking.php"><i class="fas fa-tasks"></i> Manage</a>
-             <a class="dropdown-item" href="admin-manage-service-booking.php"><i class="fas fa-clipboard-list"></i> Service Bookings</a>
-             <a class="dropdown-item" href="admin-completed-bookings.php"><i class="fas fa-check-double"></i> Completed (Images)</a>
-             <a class="dropdown-item" href="admin-rejected-bookings.php"><i class="fas fa-ban"></i> Rejected</a>
          </div>
      </li>
      

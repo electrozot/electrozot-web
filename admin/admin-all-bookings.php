@@ -8,6 +8,7 @@ $aid = $_SESSION['a_id'];
 // Get filter parameters
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $date_filter = isset($_GET['date']) ? $_GET['date'] : 'all';
+$tech_filter = isset($_GET['technician']) ? $_GET['technician'] : 'all';
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
 // Build query
@@ -19,6 +20,12 @@ if($status_filter != 'all') {
     $where_conditions[] = "sb.sb_status = ?";
     $params[] = $status_filter;
     $types .= 's';
+}
+
+if($tech_filter == 'assigned') {
+    $where_conditions[] = "sb.sb_technician_id IS NOT NULL";
+} elseif($tech_filter == 'unassigned') {
+    $where_conditions[] = "sb.sb_technician_id IS NULL";
 }
 
 if($date_filter != 'all') {
@@ -107,197 +114,145 @@ $stats = $stats_result->fetch_object();
                     <li class="breadcrumb-item active">All Bookings</li>
                 </ol>
 
-                <!-- Statistics Cards -->
-                <div class="row mb-4">
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->total; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                <!-- Compact Statistics Cards - Single Line -->
+                <div class="d-flex flex-wrap mb-2" style="gap: 8px;">
+                    <!-- Total -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #4e73df;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #4e73df; font-weight: 600;">TOTAL</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->total; ?></div>
                         </div>
                     </div>
-
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->pending; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <!-- Pending -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #f6c23e;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #f6c23e; font-weight: 600;">PENDING</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->pending; ?></div>
                         </div>
                     </div>
-
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Confirmed</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->confirmed; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <!-- Confirmed -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #36b9cc;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #36b9cc; font-weight: 600;">CONFIRMED</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->confirmed; ?></div>
                         </div>
                     </div>
-
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">In Progress</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->in_progress; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-spinner fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <!-- In Progress -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #4e73df;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #4e73df; font-weight: 600;">PROGRESS</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->in_progress; ?></div>
                         </div>
                     </div>
-
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->completed; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-double fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <!-- Completed -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #1cc88a;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #1cc88a; font-weight: 600;">COMPLETED</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->completed; ?></div>
                         </div>
                     </div>
-
-                    <div class="col-xl-2 col-md-4 mb-3">
-                        <div class="card border-left-danger shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Cancelled</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $stats->cancelled; ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <!-- Cancelled -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #e74a3b;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #e74a3b; font-weight: 600;">CANCELLED</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #333;"><?php echo $stats->cancelled; ?></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unassigned (Yellow) -->
+                    <?php
+                    $unassigned_count = $mysqli->query("SELECT COUNT(*) as total FROM tms_service_booking WHERE sb_technician_id IS NULL AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')")->fetch_object()->total;
+                    ?>
+                    <div class="card shadow-sm" style="flex: 1; min-width: 120px; border-left: 3px solid #ffc107; background-color: #fff9e6;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #f6a000; font-weight: 600;">UNASSIGNED</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #f6a000;"><?php echo $unassigned_count; ?></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Revenue -->
+                    <div class="card shadow-sm" style="flex: 1; min-width: 140px; border-left: 3px solid #1cc88a;">
+                        <div class="card-body p-2 text-center">
+                            <div style="font-size: 0.65rem; color: #1cc88a; font-weight: 600;">REVENUE</div>
+                            <div style="font-size: 1.3rem; font-weight: 700; color: #1cc88a;">₹<?php echo number_format($stats->total_revenue, 0); ?></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Revenue Card -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card border-left-success shadow">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Revenue</div>
-                                        <div class="h3 mb-0 font-weight-bold text-gray-800">₹<?php echo number_format($stats->total_revenue, 2); ?></div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-rupee-sign fa-3x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Filters -->
-                <div class="card mb-3">
-                    <div class="card-header bg-primary text-white">
-                        <i class="fas fa-filter"></i> Filters & Search
-                    </div>
-                    <div class="card-body">
-                        <form method="GET" action="">
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <label>Status</label>
-                                    <select name="status" class="form-control">
-                                        <option value="all" <?php echo $status_filter == 'all' ? 'selected' : ''; ?>>All Status</option>
-                                        <option value="Pending" <?php echo $status_filter == 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                        <option value="Confirmed" <?php echo $status_filter == 'Confirmed' ? 'selected' : ''; ?>>Confirmed</option>
-                                        <option value="In Progress" <?php echo $status_filter == 'In Progress' ? 'selected' : ''; ?>>In Progress</option>
-                                        <option value="Completed" <?php echo $status_filter == 'Completed' ? 'selected' : ''; ?>>Completed</option>
-                                        <option value="Cancelled" <?php echo $status_filter == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label>Date Range</label>
-                                    <select name="date" class="form-control">
-                                        <option value="all" <?php echo $date_filter == 'all' ? 'selected' : ''; ?>>All Time</option>
-                                        <option value="today" <?php echo $date_filter == 'today' ? 'selected' : ''; ?>>Today</option>
-                                        <option value="week" <?php echo $date_filter == 'week' ? 'selected' : ''; ?>>This Week</option>
-                                        <option value="month" <?php echo $date_filter == 'month' ? 'selected' : ''; ?>>This Month</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label>Search</label>
-                                    <input type="text" name="search" class="form-control" placeholder="Customer, Service, Technician..." value="<?php echo htmlspecialchars($search); ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <label>&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary btn-block">
-                                        <i class="fas fa-search"></i> Filter
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                        <?php if($status_filter != 'all' || $date_filter != 'all' || !empty($search)): ?>
-                            <div class="mt-2">
-                                <a href="admin-all-bookings.php" class="btn btn-sm btn-secondary">
-                                    <i class="fas fa-times"></i> Clear Filters
+                <!-- Simple Filters -->
+                <div class="card mb-2 shadow-sm">
+                    <div class="card-body py-2 px-3">
+                        <form method="GET" action="" class="form-inline" id="filterForm">
+                            <small class="mr-2 text-muted"><i class="fas fa-filter" style="font-size: 0.7rem;"></i></small>
+                            
+                            <select name="status" class="form-control form-control-sm mr-2 mb-1" style="width: 120px; font-size: 0.8rem;" onchange="this.form.submit();">
+                                <option value="all" <?php echo $status_filter == 'all' ? 'selected' : ''; ?>>📋 All Status</option>
+                                <option value="Pending" <?php echo $status_filter == 'Pending' ? 'selected' : ''; ?>>⏳ Pending</option>
+                                <option value="Approved" <?php echo $status_filter == 'Approved' ? 'selected' : ''; ?>>✓ Approved</option>
+                                <option value="Confirmed" <?php echo $status_filter == 'Confirmed' ? 'selected' : ''; ?>>✓ Confirmed</option>
+                                <option value="In Progress" <?php echo $status_filter == 'In Progress' ? 'selected' : ''; ?>>🔧 In Progress</option>
+                                <option value="Completed" <?php echo $status_filter == 'Completed' ? 'selected' : ''; ?>>✅ Completed</option>
+                                <option value="Cancelled" <?php echo $status_filter == 'Cancelled' ? 'selected' : ''; ?>>❌ Cancelled</option>
+                                <option value="Rejected" <?php echo $status_filter == 'Rejected' ? 'selected' : ''; ?>>🚫 Rejected</option>
+                            </select>
+                            
+                            <select name="technician" class="form-control form-control-sm mr-2 mb-1" style="width: 110px; font-size: 0.8rem;" onchange="this.form.submit();">
+                                <option value="all" <?php echo $tech_filter == 'all' ? 'selected' : ''; ?>>👷 All Tech</option>
+                                <option value="assigned" <?php echo $tech_filter == 'assigned' ? 'selected' : ''; ?>>✓ Assigned</option>
+                                <option value="unassigned" <?php echo $tech_filter == 'unassigned' ? 'selected' : ''; ?>>⚠ Unassigned</option>
+                            </select>
+                            
+                            <select name="date" class="form-control form-control-sm mr-2 mb-1" style="width: 110px; font-size: 0.8rem;" onchange="this.form.submit();">
+                                <option value="all" <?php echo $date_filter == 'all' ? 'selected' : ''; ?>>📅 All Time</option>
+                                <option value="today" <?php echo $date_filter == 'today' ? 'selected' : ''; ?>>📅 Today</option>
+                                <option value="week" <?php echo $date_filter == 'week' ? 'selected' : ''; ?>>📅 Week</option>
+                                <option value="month" <?php echo $date_filter == 'month' ? 'selected' : ''; ?>>📅 Month</option>
+                            </select>
+                            
+                            <input type="text" name="search" class="form-control form-control-sm mr-2 mb-1" 
+                                   placeholder="🔍 Search..." value="<?php echo htmlspecialchars($search); ?>" style="width: 200px; font-size: 0.8rem;">
+                            
+                            <button type="submit" class="btn btn-primary btn-sm mr-2 mb-1" style="font-size: 0.75rem; padding: 2px 8px;">
+                                <i class="fas fa-search" style="font-size: 0.7rem;"></i> Go
+                            </button>
+                            
+                            <?php if($status_filter != 'all' || $date_filter != 'all' || $tech_filter != 'all' || !empty($search)): ?>
+                                <a href="admin-all-bookings.php" class="btn btn-outline-secondary btn-sm mb-1" style="font-size: 0.75rem; padding: 2px 8px;">
+                                    <i class="fas fa-times" style="font-size: 0.7rem;"></i> Clear
                                 </a>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </form>
                     </div>
                 </div>
 
                 <!-- Bookings Table -->
                 <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-list"></i> All Bookings
-                            <span class="badge badge-primary ml-2"><?php echo $result->num_rows; ?> Results</span>
+                    <div class="card-header py-3 bg-primary text-white">
+                        <h6 class="m-0 font-weight-bold">
+                            <i class="fas fa-list"></i> All Bookings - Complete Details
+                            <span class="badge badge-light ml-2"><?php echo $result->num_rows; ?> Results</span>
                         </h6>
                     </div>
                     <div class="card-body">
                         <?php if($result->num_rows > 0): ?>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-hover" id="dataTable">
+                                <table class="table table-sm table-bordered table-hover" id="dataTable" style="font-size: 0.85rem;">
                                     <thead class="thead-dark">
                                         <tr>
-                                            <th>ID</th>
-                                            <th>Customer</th>
-                                            <th>Service</th>
-                                            <th>Technician</th>
-                                            <th>Date & Time</th>
-                                            <th>Address</th>
-                                            <th>Price</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
+                                            <th style="width: 50px;">ID</th>
+                                            <th style="width: 150px;">Customer</th>
+                                            <th style="width: 130px;">Service</th>
+                                            <th style="width: 130px;">Technician</th>
+                                            <th style="width: 110px;">Date/Time</th>
+                                            <th style="width: 150px;">Location</th>
+                                            <th style="width: 70px;">Price</th>
+                                            <th style="width: 80px;">Status</th>
+                                            <th style="width: 100px;">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -305,7 +260,7 @@ $stats = $stats_result->fetch_object();
                                         <tr>
                                             <td><strong>#<?php echo $booking->sb_id; ?></strong></td>
                                             <td>
-                                                <strong>
+                                                <strong style="font-size: 0.9rem;">
                                                     <?php 
                                                     if(!empty($booking->u_fname)) {
                                                         echo $booking->u_fname . ' ' . $booking->u_lname;
@@ -315,39 +270,48 @@ $stats = $stats_result->fetch_object();
                                                     ?>
                                                 </strong><br>
                                                 <small class="text-muted">
-                                                    <i class="fas fa-phone"></i> <?php echo $booking->sb_phone; ?><br>
+                                                    <i class="fas fa-phone"></i> <?php echo $booking->sb_phone; ?>
                                                     <?php if(!empty($booking->u_email)): ?>
-                                                    <i class="fas fa-envelope"></i> <?php echo $booking->u_email; ?>
+                                                    <br><i class="fas fa-envelope"></i> <?php echo substr($booking->u_email, 0, 20); ?>
                                                     <?php endif; ?>
                                                 </small>
                                             </td>
                                             <td>
                                                 <strong><?php echo $booking->s_name; ?></strong><br>
-                                                <small class="text-muted">
-                                                    <span class="badge badge-secondary"><?php echo $booking->s_category; ?></span>
+                                                <span class="badge badge-secondary badge-sm"><?php echo $booking->s_category; ?></span>
+                                                <?php if(!empty($booking->sb_description)): ?>
+                                                <br><small class="text-muted" title="<?php echo htmlspecialchars($booking->sb_description); ?>">
+                                                    <i class="fas fa-info-circle"></i> <?php echo substr($booking->sb_description, 0, 20); ?>...
                                                 </small>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php if($booking->t_name): ?>
                                                     <strong><?php echo $booking->t_name; ?></strong><br>
                                                     <small class="text-muted">
-                                                        ID: <?php echo $booking->t_id_no; ?><br>
-                                                        <i class="fas fa-phone"></i> <?php echo $booking->t_phone; ?>
+                                                        ID: <?php echo $booking->t_id_no; ?>
+                                                        <?php if(!empty($booking->t_phone)): ?>
+                                                        <br><i class="fas fa-phone"></i> <?php echo $booking->t_phone; ?>
+                                                        <?php endif; ?>
                                                     </small>
                                                 <?php else: ?>
-                                                    <span class="badge badge-warning">Not Assigned</span>
+                                                    <span class="badge badge-warning">Unassigned</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?><br>
+                                                <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($booking->sb_booking_date)); ?><br>
                                                 <i class="fas fa-clock"></i> <?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?>
                                             </td>
                                             <td>
-                                                <small><?php echo isset($booking->sb_address) ? substr($booking->sb_address, 0, 50) : 'N/A'; ?><?php echo isset($booking->sb_address) && strlen($booking->sb_address) > 50 ? '...' : ''; ?></small><br>
-                                                <small class="text-muted"><i class="fas fa-phone"></i> <?php echo isset($booking->sb_phone) ? $booking->sb_phone : 'N/A'; ?></small>
+                                                <small title="<?php echo htmlspecialchars($booking->sb_address); ?>">
+                                                    <?php echo substr($booking->sb_address, 0, 30); ?><?php echo strlen($booking->sb_address) > 30 ? '...' : ''; ?>
+                                                </small>
+                                                <?php if(!empty($booking->sb_pincode)): ?>
+                                                <br><span class="badge badge-info badge-sm"><?php echo $booking->sb_pincode; ?></span>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
-                                                <strong class="text-success">₹<?php echo isset($booking->sb_total_price) ? number_format($booking->sb_total_price, 2) : '0.00'; ?></strong>
+                                                <strong class="text-success">₹<?php echo number_format($booking->sb_total_price, 0); ?></strong>
                                             </td>
                                             <td>
                                                 <?php
@@ -355,25 +319,32 @@ $stats = $stats_result->fetch_object();
                                                 switch($booking->sb_status) {
                                                     case 'Pending': $status_class = 'warning'; break;
                                                     case 'Confirmed': $status_class = 'info'; break;
+                                                    case 'Approved': $status_class = 'info'; break;
                                                     case 'In Progress': $status_class = 'primary'; break;
                                                     case 'Completed': $status_class = 'success'; break;
                                                     case 'Cancelled': $status_class = 'danger'; break;
+                                                    case 'Rejected': $status_class = 'danger'; break;
                                                     default: $status_class = 'secondary';
                                                 }
                                                 ?>
                                                 <span class="badge badge-<?php echo $status_class; ?>"><?php echo $booking->sb_status; ?></span>
+                                                <?php if($booking->sb_status == 'Rejected' && !empty($booking->sb_rejection_reason)): ?>
+                                                <br><small class="text-danger" title="<?php echo htmlspecialchars($booking->sb_rejection_reason); ?>">
+                                                    <i class="fas fa-exclamation-circle"></i> Reason
+                                                </small>
+                                                <?php endif; ?>
                                             </td>
-                                            <td>
-                                                <button class="btn btn-sm btn-info" onclick="viewDetails(<?php echo $booking->sb_id; ?>)">
-                                                    <i class="fas fa-eye"></i>
+                                            <td style="white-space: nowrap;">
+                                                <button class="btn btn-sm btn-outline-primary" onclick="viewDetails(<?php echo $booking->sb_id; ?>)" title="View Full Details" style="padding: 1px 4px; cursor: pointer;">
+                                                    <i class="fas fa-eye" style="font-size: 0.65rem;"></i>
                                                 </button>
-                                                <?php if($booking->sb_status == 'Pending'): ?>
-                                                    <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-success">
-                                                        <i class="fas fa-user-plus"></i>
+                                                <?php if($booking->sb_status == 'Pending' || $booking->sb_status == 'Approved'): ?>
+                                                    <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-success" title="Assign Technician" style="padding: 1px 4px;">
+                                                        <i class="fas fa-user-plus" style="font-size: 0.65rem;"></i>
                                                     </a>
                                                 <?php endif; ?>
-                                                <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this booking?')">
-                                                    <i class="fas fa-trash"></i>
+                                                <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this booking?')" title="Delete" style="padding: 1px 4px;">
+                                                    <i class="fas fa-trash" style="font-size: 0.65rem;"></i>
                                                 </a>
                                             </td>
                                         </tr>
