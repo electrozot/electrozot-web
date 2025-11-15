@@ -42,46 +42,74 @@
             $t_name=$_POST['t_name'];
             $t_phone = isset($_POST['t_phone']) ? $_POST['t_phone'] : '';
             $t_ez_id = isset($_POST['t_ez_id']) ? $_POST['t_ez_id'] : '';
-            $t_id_no = $_POST['t_id_no'];
+            $t_id_no = $t_ez_id; // Use EZ ID as the ID number
             $t_category=$_POST['t_category'];
             $t_experience=$_POST['t_experience'];
             $t_status=$_POST['t_status'];
             $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
             $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
-            $t_pic=$_FILES["t_pic"]["name"];
-	        move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?,?)";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssssssss', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
-            $stmt->execute();
             
-            if($stmt)
-            {
-                $tech_id = $mysqli->insert_id;
+            // Check for duplicate EZ ID
+            $check_ez = $mysqli->prepare("SELECT t_id FROM tms_technician WHERE t_ez_id = ?");
+            $check_ez->bind_param('s', $t_ez_id);
+            $check_ez->execute();
+            $check_ez->store_result();
+            
+            if($check_ez->num_rows > 0) {
+                $err = "EZ ID already exists! Please use a unique EZ ID.";
+                $check_ez->close();
+            } else {
+                $check_ez->close();
                 
-                // Insert technician service categories and types (only if table exists)
-                $ts_table_check = $mysqli->query("SHOW TABLES LIKE 'tms_technician_services'");
-                if($ts_table_check && $ts_table_check->num_rows > 0) {
-                    if(isset($_POST['service_categories']) && is_array($_POST['service_categories'])) {
-                        foreach($_POST['service_categories'] as $sc_id) {
-                            if(isset($_POST['service_types_'.$sc_id]) && is_array($_POST['service_types_'.$sc_id])) {
-                                foreach($_POST['service_types_'.$sc_id] as $service_type) {
-                                    $insert_service = "INSERT INTO tms_technician_services (t_id, sc_id, service_type) VALUES (?, ?, ?)";
-                                    $stmt_service = $mysqli->prepare($insert_service);
-                                    $stmt_service->bind_param('iis', $tech_id, $sc_id, $service_type);
-                                    $stmt_service->execute();
+                // Check for duplicate Mobile Number
+                $check_phone = $mysqli->prepare("SELECT t_id FROM tms_technician WHERE t_phone = ?");
+                $check_phone->bind_param('s', $t_phone);
+                $check_phone->execute();
+                $check_phone->store_result();
+                
+                if($check_phone->num_rows > 0) {
+                    $err = "Mobile Number already exists! Please use a unique mobile number.";
+                    $check_phone->close();
+                } else {
+                    $check_phone->close();
+                    
+                    // Proceed with insertion
+                    $t_pic=$_FILES["t_pic"]["name"];
+                    move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+                    $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?,?)";
+                    $stmt = $mysqli->prepare($query);
+                    $rc=$stmt->bind_param('sssssssssss', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
+                    $stmt->execute();
+            
+                    if($stmt)
+                    {
+                        $tech_id = $mysqli->insert_id;
+                        
+                        // Insert technician service categories and types (only if table exists)
+                        $ts_table_check = $mysqli->query("SHOW TABLES LIKE 'tms_technician_services'");
+                        if($ts_table_check && $ts_table_check->num_rows > 0) {
+                            if(isset($_POST['service_categories']) && is_array($_POST['service_categories'])) {
+                                foreach($_POST['service_categories'] as $sc_id) {
+                                    if(isset($_POST['service_types_'.$sc_id]) && is_array($_POST['service_types_'.$sc_id])) {
+                                        foreach($_POST['service_types_'.$sc_id] as $service_type) {
+                                            $insert_service = "INSERT INTO tms_technician_services (t_id, sc_id, service_type) VALUES (?, ?, ?)";
+                                            $stmt_service = $mysqli->prepare($insert_service);
+                                            $stmt_service->bind_param('iis', $tech_id, $sc_id, $service_type);
+                                            $stmt_service->execute();
+                                        }
+                                    }
                                 }
                             }
                         }
+                        
+                        $succ = "Technician Added Successfully";
+                    }
+                    else 
+                    {
+                        $err = "Please Try Again Later";
                     }
                 }
-                
-                $succ = "Technician Added Successfully";
-            }
-            else 
-            {
-                $err = "Please Try Again Later";
             }
             }
 ?>
@@ -129,87 +157,122 @@
                      <li class="breadcrumb-item active">Add Technician</li>
                  </ol>
                  <hr>
-                 <div class="card">
-                     <div class="card-header">
-                         Add Technician
+                 <div class="card shadow-sm">
+                     <div class="card-header bg-primary text-white">
+                         <h5 class="mb-0"><i class="fas fa-user-plus"></i> Add New Technician</h5>
                      </div>
-                     <div class="card-body">
+                     <div class="card-body p-4">
                          <!--Add Technician Form-->
                          <form method="POST" enctype="multipart/form-data">
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Technician Name <span class="text-danger">*</span></label>
-                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="t_name">
-                             </div>
-                             <div class="form-group">
-                                 <label for="t_phone">
-                                     <i class="fas fa-mobile-alt"></i> Mobile Number <span class="text-danger">*</span>
-                                     <small class="text-muted">(Used for login)</small>
-                                 </label>
-                                 <input type="tel" class="form-control" id="t_phone" name="t_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
-                                 <small class="form-text text-muted">This mobile number will be used for technician login</small>
-                             </div>
-                             <div class="form-group">
-                                 <label for="t_ez_id">
-                                     <i class="fas fa-id-badge"></i> EZ ID <span class="text-danger">*</span>
-                                 </label>
-                                 <input type="text" class="form-control" id="t_ez_id" name="t_ez_id" placeholder="e.g., EZ0001" required>
-                                 <small class="form-text text-muted">Unique Electrozot ID for the technician (e.g., EZ0001, EZ0023)</small>
-                             </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Technician ID Number (Optional)</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_id_no" placeholder="e.g., TECH001">
-                                 <small class="form-text text-muted">Optional ID for internal reference</small>
-                             </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Years of Experience</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_experience" placeholder="e.g., 5">
-                             </div>
-                             <div class="form-group">
-                                 <label for="t_pwd">Technician Password</label>
-                                 <input type="password" class="form-control" id="t_pwd" name="t_pwd" placeholder="Set login password" required>
-                             </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Specialization</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="t_specialization" placeholder="e.g., Electrical Repairs, Plumbing">
-                             </div>
-
-                             <div class="form-group">
-                                 <label for="t_service_pincode">
-                                     <i class="fas fa-map-marker-alt"></i> Service Pincode
-                                     <small class="text-muted">(Area where technician provides service)</small>
-                                 </label>
-                                 <input type="text" class="form-control" id="t_service_pincode" name="t_service_pincode" 
-                                        placeholder="e.g., 560001" pattern="[0-9]{6}" maxlength="6" required>
-                                 <small class="form-text text-muted">Enter 6-digit pincode for service area</small>
-                             </div>
-
-                             <div class="form-group">
-                                 <label for="t_category">
-                                     <i class="fas fa-tools"></i> Service Category <span class="text-danger">*</span>
-                                 </label>
-                                 <select class="form-control" name="t_category" id="t_category" required onchange="showCategoryDetails(this)">
-                                     <option value="">Select Service Category...</option>
-                                     <?php
-                                     // Get service categories from database
-                                     $services_query = "SELECT s_name, s_description FROM tms_service WHERE s_status = 'Active' ORDER BY s_name";
-                                     $services_result = $mysqli->query($services_query);
-                                     if($services_result) {
-                                         while($service = $services_result->fetch_object()) {
-                                             echo '<option value="'.htmlspecialchars($service->s_name).'" data-description="'.htmlspecialchars($service->s_description).'">';
-                                             echo htmlspecialchars($service->s_name);
-                                             echo '</option>';
-                                         }
-                                     }
-                                     ?>
-                                 </select>
-                                 <small class="form-text text-muted">
-                                     Select the service category this technician specializes in
-                                 </small>
+                             
+                             <!-- Basic Information Section -->
+                             <div class="row">
+                                 <div class="col-12">
+                                     <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-user"></i> Basic Information</h6>
+                                 </div>
                                  
-                                 <!-- Category Details Display -->
-                                 <div id="categoryDetails" class="alert alert-info mt-2" style="display:none;">
-                                     <strong><i class="fas fa-info-circle"></i> This category includes:</strong>
-                                     <p class="mb-0 mt-2" id="categoryDescription"></p>
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label>Technician Name <span class="text-danger">*</span></label>
+                                         <input type="text" required class="form-control" name="t_name" placeholder="Enter full name">
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label><i class="fas fa-mobile-alt text-success"></i> Mobile Number <span class="text-danger">*</span></label>
+                                         <div class="input-group">
+                                             <div class="input-group-prepend">
+                                                 <span class="input-group-text">+91</span>
+                                             </div>
+                                             <input type="tel" class="form-control" name="t_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
+                                         </div>
+                                         <small class="text-success"><i class="fas fa-info-circle"></i> This number will be used for technician login</small>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label><i class="fas fa-id-badge text-primary"></i> EZ ID <span class="text-danger">*</span></label>
+                                         <input type="text" class="form-control" name="t_ez_id" placeholder="EZ0001" required style="text-transform: uppercase;">
+                                         <small class="text-muted">Unique company identification number</small>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-4">
+                                     <div class="form-group">
+                                         <label>Password <span class="text-danger">*</span></label>
+                                         <input type="password" class="form-control" name="t_pwd" placeholder="Login password" required>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- Professional Details Section -->
+                             <div class="row mt-3">
+                                 <div class="col-12">
+                                     <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-briefcase"></i> Professional Details</h6>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label>Service Category <span class="text-danger">*</span></label>
+                                         <select class="form-control" name="t_category" required onchange="showCategoryDetails(this)">
+                                             <option value="">Select Category...</option>
+                                             <?php
+                                             $services_query = "SELECT s_name, s_description FROM tms_service WHERE s_status = 'Active' ORDER BY s_name";
+                                             $services_result = $mysqli->query($services_query);
+                                             if($services_result) {
+                                                 while($service = $services_result->fetch_object()) {
+                                                     echo '<option value="'.htmlspecialchars($service->s_name).'" data-description="'.htmlspecialchars($service->s_description).'">';
+                                                     echo htmlspecialchars($service->s_name);
+                                                     echo '</option>';
+                                                 }
+                                             }
+                                             ?>
+                                         </select>
+                                         <div id="categoryDetails" class="alert alert-info mt-2 py-2" style="display:none; font-size: 0.875rem;">
+                                             <strong>Includes:</strong> <span id="categoryDescription"></span>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label>Specialization</label>
+                                         <input type="text" class="form-control" name="t_specialization" placeholder="e.g., Electrical Repairs">
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-4">
+                                     <div class="form-group">
+                                         <label>Experience (Years)</label>
+                                         <input type="number" class="form-control" name="t_experience" placeholder="e.g., 5" min="0">
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-4">
+                                     <div class="form-group">
+                                         <label>Service Pincode <span class="text-danger">*</span></label>
+                                         <input type="text" class="form-control" name="t_service_pincode" placeholder="6-digit pincode" pattern="[0-9]{6}" maxlength="6" required>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-4">
+                                     <div class="form-group">
+                                         <label>Status <span class="text-danger">*</span></label>
+                                         <select class="form-control" name="t_status" required>
+                                             <option value="Available">Available</option>
+                                             <option value="Booked">Booked</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <label>Profile Picture</label>
+                                         <input type="file" class="form-control-file" name="t_pic" accept="image/*">
+                                         <small class="text-muted">Upload technician photo (optional)</small>
+                                     </div>
                                  </div>
                              </div>
                              
@@ -233,39 +296,53 @@
                              $table_check = $mysqli->query("SHOW TABLES LIKE 'tms_service_categories'");
                              if($table_check && $table_check->num_rows > 0) {
                              ?>
-                             <div class="card mb-3" style="border: 2px solid #667eea;">
-                                 <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                                     <h5 class="mb-0"><i class="fas fa-tools"></i> Service Specializations</h5>
-                                     <small>Select categories and service types this technician can handle</small>
+                             <!-- Additional Services Section (Optional) -->
+                             <div class="row mt-4">
+                                 <div class="col-12">
+                                     <h6 class="border-bottom pb-2 mb-3">
+                                         <i class="fas fa-list-check"></i> Additional Services 
+                                         <small class="text-muted">(Optional - Skip if not needed)</small>
+                                     </h6>
+                                     <div class="alert alert-light border">
+                                         <p class="mb-2"><strong>What is this?</strong></p>
+                                         <p class="mb-0 text-muted" style="font-size: 0.9rem;">
+                                             If this technician can handle multiple service types (like both Installation AND Repair), 
+                                             select them below. Otherwise, you can skip this section.
+                                         </p>
+                                     </div>
                                  </div>
-                                 <div class="card-body">
-                                     <div class="row">
-                                         <?php
-                                         $cat_query = "SELECT * FROM tms_service_categories WHERE sc_status='Active' ORDER BY sc_name ASC";
-                                         $cat_stmt = $mysqli->prepare($cat_query);
-                                         $cat_stmt->execute();
-                                         $cat_res = $cat_stmt->get_result();
-                                         $service_types = ['Installation', 'Repair', 'Servicing', 'Maintenance', 'Other'];
-                                         
-                                         if($cat_res->num_rows > 0) {
-                                             while($cat_row = $cat_res->fetch_object()) {
-                                         ?>
-                                         <div class="col-md-6 mb-3">
-                                             <div class="card" style="border: 1px solid #e2e8f0;">
-                                                 <div class="card-body p-3">
-                                                     <div class="custom-control custom-checkbox mb-2">
-                                                         <input type="checkbox" class="custom-control-input category-checkbox" 
-                                                                id="cat_<?php echo $cat_row->sc_id; ?>" 
-                                                                name="service_categories[]" 
-                                                                value="<?php echo $cat_row->sc_id; ?>"
-                                                                onchange="toggleServiceTypes(<?php echo $cat_row->sc_id; ?>)">
-                                                         <label class="custom-control-label font-weight-bold" for="cat_<?php echo $cat_row->sc_id; ?>">
-                                                             <i class="fas fa-wrench text-primary"></i> <?php echo $cat_row->sc_name; ?>
-                                                         </label>
-                                                     </div>
-                                                     <div id="types_<?php echo $cat_row->sc_id; ?>" style="display: none; margin-left: 25px; margin-top: 10px;">
-                                                         <small class="text-muted d-block mb-2">Select service types:</small>
-                                                         <?php foreach($service_types as $type) { ?>
+                             </div>
+                             
+                             <div class="row">
+                                 <?php
+                                 $cat_query = "SELECT * FROM tms_service_categories WHERE sc_status='Active' ORDER BY sc_name ASC";
+                                 $cat_stmt = $mysqli->prepare($cat_query);
+                                 $cat_stmt->execute();
+                                 $cat_res = $cat_stmt->get_result();
+                                 $service_types = ['Installation', 'Repair', 'Servicing', 'Maintenance', 'Other'];
+                                 
+                                 if($cat_res->num_rows > 0) {
+                                     while($cat_row = $cat_res->fetch_object()) {
+                                 ?>
+                                 <div class="col-md-6 mb-3">
+                                     <div class="card border">
+                                         <div class="card-body p-3">
+                                             <div class="custom-control custom-switch mb-2">
+                                                 <input type="checkbox" class="custom-control-input" 
+                                                        id="cat_<?php echo $cat_row->sc_id; ?>" 
+                                                        name="service_categories[]" 
+                                                        value="<?php echo $cat_row->sc_id; ?>"
+                                                        onchange="toggleServiceTypes(<?php echo $cat_row->sc_id; ?>)">
+                                                 <label class="custom-control-label font-weight-bold" for="cat_<?php echo $cat_row->sc_id; ?>">
+                                                     <?php echo $cat_row->sc_name; ?>
+                                                 </label>
+                                             </div>
+                                             
+                                             <div id="types_<?php echo $cat_row->sc_id; ?>" style="display: none; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                                                 <small class="d-block mb-2 font-weight-bold">Can do:</small>
+                                                 <div class="row">
+                                                     <?php foreach($service_types as $type) { ?>
+                                                     <div class="col-6">
                                                          <div class="custom-control custom-checkbox">
                                                              <input type="checkbox" class="custom-control-input" 
                                                                     id="type_<?php echo $cat_row->sc_id; ?>_<?php echo $type; ?>" 
@@ -275,22 +352,19 @@
                                                                  <?php echo $type; ?>
                                                              </label>
                                                          </div>
-                                                         <?php } ?>
                                                      </div>
+                                                     <?php } ?>
                                                  </div>
                                              </div>
                                          </div>
-                                         <?php 
-                                             }
-                                         } else {
-                                             echo '<div class="col-12"><div class="alert alert-warning">No service categories found. Please add categories first.</div></div>';
-                                         }
-                                         ?>
-                                     </div>
-                                     <div class="alert alert-info mt-3">
-                                         <i class="fas fa-info-circle"></i> <strong>Tip:</strong> Select the categories and types this technician specializes in. This helps match them with appropriate service requests.
                                      </div>
                                  </div>
+                                 <?php 
+                                     }
+                                 } else {
+                                     echo '<div class="col-12"><div class="alert alert-info">No additional service categories available.</div></div>';
+                                 }
+                                 ?>
                              </div>
                              
                              <script>
@@ -303,39 +377,27 @@
                                      typesDiv.style.display = 'block';
                                  } else {
                                      typesDiv.style.display = 'none';
-                                     // Uncheck all type checkboxes
                                      typeCheckboxes.forEach(function(cb) {
                                          cb.checked = false;
                                      });
                                  }
                              }
                              </script>
-                             <?php
-                             } else {
-                             ?>
-                             <div class="alert alert-warning">
-                                 <h5><i class="fas fa-exclamation-triangle"></i> Service Categories System Not Set Up</h5>
-                                 <p>The service categories system needs to be set up first.</p>
-                                 <a href="setup-service-categories.php" class="btn btn-primary">
-                                     <i class="fas fa-cog"></i> Run Setup Now
-                                 </a>
-                             </div>
                              <?php } ?>
 
-                             <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Technician Status</label>
-                                 <select class="form-control" name="t_status" id="exampleFormControlSelect1">
-                                     <option>Booked</option>
-                                     <option>Available</option>
-
-                                 </select>
+                             
+                             <!-- Submit Button -->
+                             <div class="row mt-4">
+                                 <div class="col-12">
+                                     <hr>
+                                     <button type="submit" name="add_tech" class="btn btn-success btn-lg px-5">
+                                         <i class="fas fa-plus-circle"></i> Add Technician
+                                     </button>
+                                     <a href="admin-manage-technician.php" class="btn btn-secondary btn-lg ml-2">
+                                         <i class="fas fa-times"></i> Cancel
+                                     </a>
+                                 </div>
                              </div>
-                             <div class="form-group col-md-12">
-                                 <label for="exampleInputEmail1">Technician Picture</label>
-                                 <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
-                             </div>
-
-                             <button type="submit" name="add_tech" class="btn btn-success">Add Technician</button>
                          </form>
                          <!-- End Form-->
                      </div>

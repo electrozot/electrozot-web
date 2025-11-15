@@ -95,11 +95,11 @@
                 <!-- Icon Cards-->
                 <div class="row">
                     <!-- Bookings first -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-calendar-check" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-calendar-check" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                 // Count all bookings
@@ -119,12 +119,12 @@
 
                                 $total_bookings = $service_book + $legacy_book;
                                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $total_bookings;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">All Bookings</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $total_bookings;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">All Bookings</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-all-bookings.php" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-all-bookings.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -134,11 +134,11 @@
                     </div>
 
                     <!-- Unassigned Bookings -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                 $unassigned_query = "SELECT COUNT(*) FROM tms_service_booking 
@@ -150,12 +150,12 @@
                                 $stmt_unassigned->fetch();
                                 $stmt_unassigned->close();
                                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $unassigned_count;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Unassigned</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $unassigned_count;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Unassigned</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-all-bookings.php?technician=unassigned" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-all-bookings.php?technician=unassigned" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">Assign Now</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -165,11 +165,11 @@
                     </div>
 
                     <!-- Rejected Bookings -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-ban" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-ban" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                 $rejected_query = "SELECT COUNT(*) FROM tms_service_booking 
@@ -180,12 +180,12 @@
                                 $stmt_rejected->fetch();
                                 $stmt_rejected->close();
                                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $rejected_count;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Rejected</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $rejected_count;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Rejected</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-all-bookings.php?status=Rejected" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-all-bookings.php?status=Rejected" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -195,11 +195,11 @@
                     </div>
 
                     <!-- Today's Sales -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-rupee-sign" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-rupee-sign" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                 $today_sales_query = "SELECT SUM(sb_total_price) FROM tms_service_booking 
@@ -211,12 +211,12 @@
                                 $stmt_today->close();
                                 $today_sales = $today_sales ? $today_sales : 0;
                                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 1.5rem; font-weight: 900;">₹<?php echo number_format($today_sales, 0);?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Today's Sales</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.3rem; font-weight: 700;">₹<?php echo number_format($today_sales, 0);?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Today's Sales</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-all-bookings.php?date=today&status=Completed" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-all-bookings.php?date=today&status=Completed" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -226,11 +226,11 @@
                     </div>
 
                     <!-- Services -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-wrench" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-wrench" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                   $result = "SELECT count(*) FROM tms_service";
@@ -240,12 +240,12 @@
                                   $stmt->fetch();
                                   $stmt->close();
                                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $services;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Services</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $services;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Services</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-service.php" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-view-service.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -255,11 +255,11 @@
                     </div>
 
                     <!-- Technicians -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-user-cog" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-user-cog" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                   $result ="SELECT count(*) FROM tms_technician";
@@ -269,12 +269,12 @@
                   $stmt->fetch();
                   $stmt->close();
                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $technician;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Technicians</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $technician;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Technicians</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-technician.php" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-view-technician.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -284,11 +284,11 @@
                     </div>
 
                     <!-- Users -->
-                    <div class="col-xl-2 col-sm-6 mb-3">
-                        <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border: none; border-radius: 15px;">
-                            <div class="card-body">
-                                <div class="card-body-icon" style="opacity: 0.3;">
-                                    <i class="fas fa-users-cog" style="font-size: 3rem;"></i>
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-users-cog" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                   $result ="SELECT count(*) FROM tms_user where u_category = 'User'";
@@ -298,12 +298,12 @@
                   $stmt->fetch();
                   $stmt->close();
                 ?>
-                                <div class="mr-3" style="position: relative; z-index: 2;">
-                                    <h2 class="mb-0" style="font-size: 2rem; font-weight: 900;"><?php echo $user;?></h2>
-                                    <p class="mb-0" style="font-size: 0.85rem; opacity: 0.9;">Users</p>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $user;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Users</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1" href="admin-view-user.php" style="background: rgba(0,0,0,0.2); border: none;">
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-view-user.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
                                 <span class="float-left">View</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
@@ -312,63 +312,47 @@
                         </div>
                     </div>
                 </div>
-                <!--All Bookings-->
-                <?php
-                // Count unassigned bookings
-                $count_unassigned = "SELECT COUNT(*) as total FROM tms_service_booking 
-                                    WHERE sb_technician_id IS NULL 
-                                    AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
-                $stmt_count = $mysqli->prepare($count_unassigned);
-                $stmt_count->execute();
-                $count_result = $stmt_count->get_result();
-                $count_data = $count_result->fetch_object();
-                $unassigned_count = $count_data->total;
-                ?>
-                <div class="card mb-3">
-                    <div class="card-header bg-warning text-dark py-2">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 0.9rem;"></i>
-                        <strong style="font-size: 0.95rem;">Unassigned Bookings</strong>
-                        <span class="badge badge-danger float-right"><?php echo $unassigned_count; ?></span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <div class="form-inline">
-                                <label for="dashboardStatusFilter" class="mr-2 font-weight-bold">Status</label>
-                                <select id="dashboardStatusFilter" class="form-control form-control-sm mr-3">
-                                    <option value="all">All</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Approved">Approved</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                </select>
+                
+                <!--Recent Bookings-->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white border-bottom py-3">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0" style="color: #2d3748;">
+                                    <i class="fas fa-clipboard-list text-primary"></i> Recent Bookings
+                                </h5>
                             </div>
-                            <input id="dashboardSearch" class="form-control form-control-sm" style="max-width:280px;" type="search" placeholder="Search recent bookings...">
+                            <div class="col-md-6 text-right">
+                                <input id="dashboardSearch" class="form-control form-control-sm d-inline-block" style="max-width:250px;" type="search" placeholder="🔍 Search...">
+                            </div>
                         </div>
+                    </div>
+                    <div class="card-body p-2">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
+                            <table class="table table-bordered table-striped table-hover table-sm" id="dataTable" width="100%" cellspacing="0" style="font-size: 0.875rem;">
+                                <thead class="thead-light">
                                     <tr>
-                                        <th>#</th>
+                                        <th style="width: 40px;">#</th>
                                         <th>Name</th>
                                         <th>Phone</th>
-                                        <th>Booking Type</th>
+                                        <th style="width: 120px;">Type</th>
                                         <th>Details</th>
-                                        <th>Booking Date</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th style="width: 110px;">Date</th>
+                                        <th style="width: 90px;">Status</th>
+                                        <th style="width: 80px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // Service Bookings (ALL unassigned bookings)
+                                    // Service Bookings - Unassigned (Pending/Approved) OR Rejected
                                     $ret_service = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name 
                                                     FROM tms_service_booking sb
                                                     LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                                                     LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
-                                                    WHERE sb.sb_technician_id IS NULL 
-                                                    AND sb.sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')
-                                                    ORDER BY sb.sb_created_at DESC";
+                                                    WHERE (sb.sb_technician_id IS NULL AND sb.sb_status NOT IN ('Cancelled', 'Completed'))
+                                                    OR sb.sb_status = 'Rejected'
+                                                    ORDER BY sb.sb_created_at DESC
+                                                    LIMIT 20";
                                     $stmt_service = $mysqli->prepare($ret_service);
                                     $stmt_service->execute();
                                     $res_service = $stmt_service->get_result();
@@ -408,8 +392,11 @@
                                     <?php $cnt++; } ?>
 
                                     <?php
-                                    // Legacy Bookings
-                                    $ret_legacy = "SELECT * FROM tms_user where t_booking_status = 'Approved' || t_booking_status = 'Pending' ORDER BY u_id DESC LIMIT 5";
+                                    // Legacy Bookings - Only Pending (Unapproved) or Rejected
+                                    $ret_legacy = "SELECT * FROM tms_user 
+                                                  WHERE t_booking_status = 'Pending' 
+                                                  OR t_booking_status = 'Rejected' 
+                                                  ORDER BY u_id DESC LIMIT 10";
                                     $stmt_legacy = $mysqli->prepare($ret_legacy);
                                     $stmt_legacy->execute();
                                     $res_legacy = $stmt_legacy->get_result();
@@ -426,13 +413,17 @@
                                             <?php 
                                             if($row_legacy->t_booking_status == "Pending"){
                                                 echo '<span class="badge badge-warning">'.$row_legacy->t_booking_status.'</span>';
+                                            } elseif($row_legacy->t_booking_status == "Rejected"){
+                                                echo '<span class="badge badge-danger">'.$row_legacy->t_booking_status.'</span>';
                                             } else {
-                                                echo '<span class="badge badge-success">'.$row_legacy->t_booking_status.'</span>';
+                                                echo '<span class="badge badge-info">'.$row_legacy->t_booking_status.'</span>';
                                             }
                                             ?>
                                         </td>
                                         <td>
-                                            <a href="admin-approve-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="badge badge-success"><i class="fa fa-check"></i> Approve</a>
+                                            <?php if($row_legacy->t_booking_status == "Pending"): ?>
+                                                <a href="admin-approve-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="badge badge-success"><i class="fa fa-check"></i> Approve</a>
+                                            <?php endif; ?>
                                             <a href="admin-delete-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="badge badge-danger"><i class="fa fa-trash"></i> Delete</a>
                                         </td>
                                     </tr>
@@ -441,10 +432,10 @@
                             </table>
                         </div>
                     </div>
-                    <div class="card-footer small text-muted">
+                    <div class="card-footer small text-muted py-1" style="font-size: 0.75rem;">
                         <?php
                         date_default_timezone_set("Africa/Nairobi");
-                        echo "Generated : " . date("h:i:sa");
+                        echo "Generated: " . date("h:i:sa");
                         ?>
                     </div>
                 </div>
@@ -463,25 +454,25 @@
                 
                 if($rejected_result && $rejected_result->num_rows > 0):
                 ?>
-                <div class="card mb-3">
-                    <div class="card-header bg-danger text-white">
-                        <i class="fas fa-exclamation-triangle"></i> Rejected/Cancelled Bookings - Needs Attention
-                        <span class="badge badge-light float-right"><?php echo $rejected_result->num_rows; ?> Pending</span>
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header bg-danger text-white py-2" style="font-size: 0.95rem;">
+                        <i class="fas fa-exclamation-triangle"></i> Rejected/Cancelled Bookings
+                        <span class="badge badge-light float-right"><?php echo $rejected_result->num_rows; ?></span>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body p-2">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="thead-dark">
+                            <table class="table table-bordered table-hover table-sm" style="font-size: 0.875rem;">
+                                <thead class="thead-light">
                                     <tr>
-                                        <th>ID</th>
+                                        <th style="width: 60px;">ID</th>
                                         <th>Customer</th>
                                         <th>Service</th>
-                                        <th>Category</th>
+                                        <th style="width: 100px;">Category</th>
                                         <th>Technician</th>
-                                        <th>Date</th>
-                                        <th>Status</th>
+                                        <th style="width: 100px;">Date</th>
+                                        <th style="width: 90px;">Status</th>
                                         <th>Reason</th>
-                                        <th>Action</th>
+                                        <th style="width: 100px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>

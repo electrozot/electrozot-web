@@ -10,19 +10,16 @@
          <i class="fas fa-bars"></i>
      </button>
 
-     <!-- Navbar Search -->
-     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-         <!-- <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-        <div class="input-group-append">
-          <button class="btn btn-primary" type="button">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div> -->
-     </form>
+     <!-- Quick Booking Button - Centered -->
+     <div class="mx-auto">
+         <a href="admin-quick-booking.php" class="btn btn-success btn-sm shadow-sm" style="padding: 10px 25px; border-radius: 25px; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
+             <i class="fas fa-phone-alt"></i>
+             <span>Quick Booking</span>
+         </a>
+     </div>
+     
      <!-- Navbar -->
-     <ul class="navbar-nav ml-auto ml-md-0">
+     <ul class="navbar-nav">
 
          <li class="nav-item dropdown no-arrow">
              <a style="display: flex; align-items: center; gap: 8px;" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -196,6 +193,23 @@
      transform: scale(1.05);
  }
  
+ /* Quick Booking Button Styling */
+ .btn-success {
+     background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+     border: none !important;
+     box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+ }
+ 
+ .btn-success:hover {
+     background: linear-gradient(135deg, #218838 0%, #1aa179 100%) !important;
+     transform: translateY(-2px);
+     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+ }
+ 
+ .btn-success:active {
+     transform: translateY(0);
+ }
+ 
  /* Responsive adjustments */
  @media (max-width: 768px) {
      .navbar-brand {
@@ -216,6 +230,14 @@
      .logo-container img {
          width: 100% !important;
          height: 100% !important;
+     }
+     
+     /* Hide Quick Booking text on mobile */
+     .btn-success span {
+         display: none;
+     }
+     .btn-success {
+         padding: 8px 12px !important;
      }
  }
  

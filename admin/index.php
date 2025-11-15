@@ -2,11 +2,30 @@
 <?php
     session_start();
     include('vendor/inc/config.php');//get configuration file
+    
+    // Add phone column if it doesn't exist (run once, outside login check)
+    $alter_result = $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_phone VARCHAR(15) DEFAULT NULL");
+    if($alter_result) {
+        $mysqli->store_result(); // Clear any pending results
+    }
+    
+    // Create syslogs table if it doesn't exist (run once, outside login check)
+    $create_result = $mysqli->query("CREATE TABLE IF NOT EXISTS tms_syslogs (
+        log_id INT AUTO_INCREMENT PRIMARY KEY,
+        u_email VARCHAR(200),
+        u_ip VARCHAR(50),
+        u_city VARCHAR(100),
+        u_country VARCHAR(100),
+        u_logintime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        log_type VARCHAR(50) DEFAULT 'login',
+        user_type VARCHAR(50) DEFAULT 'admin'
+    )");
+    if($create_result) {
+        $mysqli->store_result(); // Clear any pending results
+    }
+    
     if(isset($_POST['admin_login']))
     {
-      // Add phone column if it doesn't exist
-      $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_phone VARCHAR(15) DEFAULT NULL");
-      
       $a_login=$_POST['a_login']; // Can be email or phone
       $a_pwd=($_POST['a_pwd']);//
       $a_pwd= md5($a_pwd);//
@@ -24,11 +43,24 @@
       $stmt->execute();//execute bind
       $stmt -> bind_result($a_email,$a_pwd,$a_id,$a_name,$a_photo);//bind result
       $rs=$stmt->fetch();
+      $stmt->close(); // Close the statement to free the connection
+      
       $_SESSION['a_id']=$a_id;//assaign session to admin id
       $_SESSION['a_name']=$a_name;//assign session to admin name
       $_SESSION['a_photo']=$a_photo;//assign session to admin photo
       if($rs)
       {//if its sucessfull
+        // Log the admin login
+        $user_ip = $_SERVER['REMOTE_ADDR'];
+        $user_city = 'N/A'; // Can be enhanced with IP geolocation API
+        $user_country = 'N/A';
+        
+        // Insert log entry
+        $log_stmt = $mysqli->prepare("INSERT INTO tms_syslogs (u_email, u_ip, u_city, u_country, user_type) VALUES (?, ?, ?, ?, 'admin')");
+        $log_stmt->bind_param('ssss', $a_email, $user_ip, $user_city, $user_country);
+        $log_stmt->execute();
+        $log_stmt->close();
+        
         header("location:admin-dashboard.php");
       }
       else

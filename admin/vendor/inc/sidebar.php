@@ -1,3 +1,68 @@
+ <style>
+ /* Dropdown menu styling for better visibility */
+ .navbar-nav .dropdown-menu {
+     background-color: #4a5568 !important;
+     border: 2px solid #2d3748 !important;
+     box-shadow: 0 6px 16px rgba(0,0,0,0.4) !important;
+     border-radius: 8px !important;
+     margin-top: 5px !important;
+ }
+ 
+ .navbar-nav .dropdown-item {
+     color: #ffffff !important;
+     padding: 0.85rem 1.5rem !important;
+     font-size: 0.95rem !important;
+     font-weight: 500 !important;
+     border-radius: 4px !important;
+     margin: 2px 8px !important;
+ }
+ 
+ .navbar-nav .dropdown-item:hover {
+     background-color: #2d3748 !important;
+     color: #ffffff !important;
+     transform: translateX(3px);
+     transition: all 0.2s ease;
+ }
+ 
+ .navbar-nav .dropdown-item i {
+     margin-right: 8px;
+     width: 20px;
+     text-align: center;
+     color: #a0aec0;
+ }
+ 
+ .navbar-nav .dropdown-item:hover i {
+     color: #ffffff;
+ }
+ 
+ .navbar-nav .dropdown-item.bg-success {
+     background-color: #28a745 !important;
+     color: white !important;
+ }
+ 
+ .navbar-nav .dropdown-item.bg-success:hover {
+     background-color: #218838 !important;
+     color: white !important;
+ }
+ 
+ .navbar-nav .dropdown-divider {
+     border-top: 2px solid #2d3748 !important;
+     margin: 0.5rem 0.5rem !important;
+ }
+ 
+ /* Main sidebar items styling for contrast */
+ .navbar-nav .nav-link {
+     background-color: rgba(255,255,255,0.1);
+     margin: 3px 10px;
+     border-radius: 8px;
+     transition: all 0.3s ease;
+ }
+ 
+ .navbar-nav .nav-link:hover {
+     background-color: rgba(255,255,255,0.2);
+ }
+ </style>
+ 
  <ul class="sidebar navbar-nav">
      <li class="nav-item active">
          <a class="nav-link" href="admin-dashboard.php">
@@ -26,7 +91,6 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add</a>
-             <a class="dropdown-item" href="admin-view-technician.php"><i class="fas fa-id-card"></i> View</a>
              <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-manage-technician-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
@@ -41,7 +105,6 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item" href="admin-add-service.php"><i class="fas fa-plus-square"></i> Add</a>
-             <a class="dropdown-item" href="admin-view-service.php"><i class="fas fa-list"></i> View</a>
              <a class="dropdown-item" href="admin-manage-service.php"><i class="fas fa-edit"></i> Manage</a>
          </div>
      </li>
@@ -54,7 +117,6 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item" href="admin-add-user.php"><i class="fas fa-user-plus"></i> Add</a>
-             <a class="dropdown-item" href="admin-view-user.php"><i class="fas fa-address-book"></i> View</a>
              <a class="dropdown-item" href="admin-manage-user.php"><i class="fas fa-user-edit"></i> Manage</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-manage-user-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
