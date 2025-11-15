@@ -344,8 +344,8 @@ $stats = $stats_result->fetch_object();
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
-                                                    <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-warning" onclick="return confirm('Cancel this booking?')" title="Cancel Booking" style="padding: 1px 4px;">
-                                                        <i class="fas fa-ban" style="font-size: 0.65rem;"></i>
+                                                    <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('DELETE this booking permanently?')" title="Delete Booking" style="padding: 1px 4px;">
+                                                        <i class="fas fa-trash" style="font-size: 0.65rem;"></i>
                                                     </a>
                                                 <?php endif; ?>
                                                 <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this booking permanently?')" title="Delete" style="padding: 1px 4px;">

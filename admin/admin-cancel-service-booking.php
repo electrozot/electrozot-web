@@ -23,50 +23,43 @@ if(isset($_GET['sb_id'])) {
         exit();
     }
     
-    // Check if already cancelled
-    if($booking->sb_status == 'Cancelled') {
-        $_SESSION['error'] = "This booking is already cancelled.";
-        header("Location: admin-all-bookings.php");
-        exit();
+    // Free up the technician if one was assigned
+    if($booking->sb_technician_id) {
+        $free_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
+        $free_stmt = $mysqli->prepare($free_tech);
+        $free_stmt->bind_param('i', $booking->sb_technician_id);
+        $free_stmt->execute();
+        
+        // Add to cancelled bookings table for record keeping
+        $create_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
+            cb_id INT AUTO_INCREMENT PRIMARY KEY,
+            cb_booking_id INT NOT NULL,
+            cb_technician_id INT NOT NULL,
+            cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
+            cb_reason VARCHAR(255) DEFAULT 'Booking deleted by admin',
+            cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX(cb_booking_id),
+            INDEX(cb_technician_id)
+        )";
+        $mysqli->query($create_table);
+        
+        $cancel_reason = "Booking deleted by admin";
+        $insert_cancel = "INSERT INTO tms_cancelled_bookings (cb_booking_id, cb_technician_id, cb_cancelled_by, cb_reason) 
+                         VALUES (?, ?, 'Admin', ?)";
+        $cancel_record_stmt = $mysqli->prepare($insert_cancel);
+        $cancel_record_stmt->bind_param('iis', $sb_id, $booking->sb_technician_id, $cancel_reason);
+        $cancel_record_stmt->execute();
     }
     
-    // Update booking status to Cancelled
-    $cancel_query = "UPDATE tms_service_booking SET sb_status = 'Cancelled' WHERE sb_id = ?";
-    $cancel_stmt = $mysqli->prepare($cancel_query);
-    $cancel_stmt->bind_param('i', $sb_id);
+    // DELETE the booking permanently from database
+    $delete_query = "DELETE FROM tms_service_booking WHERE sb_id = ?";
+    $delete_stmt = $mysqli->prepare($delete_query);
+    $delete_stmt->bind_param('i', $sb_id);
     
-    if($cancel_stmt->execute()) {
-        // Free up the technician if one was assigned
-        if($booking->sb_technician_id) {
-            $free_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
-            $free_stmt = $mysqli->prepare($free_tech);
-            $free_stmt->bind_param('i', $booking->sb_technician_id);
-            $free_stmt->execute();
-            
-            // Add to cancelled bookings table so technician doesn't see it
-            $create_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
-                cb_id INT AUTO_INCREMENT PRIMARY KEY,
-                cb_booking_id INT NOT NULL,
-                cb_technician_id INT NOT NULL,
-                cb_cancelled_by VARCHAR(50) DEFAULT 'Admin',
-                cb_reason VARCHAR(255) DEFAULT 'Cancelled by admin',
-                cb_cancelled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                INDEX(cb_booking_id),
-                INDEX(cb_technician_id)
-            )";
-            $mysqli->query($create_table);
-            
-            $cancel_reason = "Booking cancelled by admin";
-            $insert_cancel = "INSERT INTO tms_cancelled_bookings (cb_booking_id, cb_technician_id, cb_cancelled_by, cb_reason) 
-                             VALUES (?, ?, 'Admin', ?)";
-            $cancel_record_stmt = $mysqli->prepare($insert_cancel);
-            $cancel_record_stmt->bind_param('iis', $sb_id, $booking->sb_technician_id, $cancel_reason);
-            $cancel_record_stmt->execute();
-        }
-        
-        $_SESSION['success'] = "Booking #$sb_id cancelled successfully!";
+    if($delete_stmt->execute()) {
+        $_SESSION['success'] = "Booking #$sb_id deleted successfully!";
     } else {
-        $_SESSION['error'] = "Failed to cancel booking. Please try again.";
+        $_SESSION['error'] = "Failed to delete booking. Please try again.";
     }
     
     // Redirect back

@@ -4,6 +4,9 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  
+  // Auto-cleanup: Keep only 100 most recent system logs
+  include('vendor/inc/cleanup-syslogs.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">

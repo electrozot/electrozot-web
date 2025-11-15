@@ -210,8 +210,8 @@
                          <?php endif; ?>
                          
                          <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
-                         <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Cancel this booking?')">
-                             <i class="fas fa-ban"></i> Cancel Booking
+                         <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to DELETE this booking? This action cannot be undone!')">
+                             <i class="fas fa-trash"></i> Delete Booking
                          </a>
                          <?php endif; ?>
                          

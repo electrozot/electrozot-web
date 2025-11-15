@@ -549,9 +549,9 @@
             // Change slide every 4 seconds
             setInterval(nextSlide, 4000);
 
-            // Initialize Work Carousel with auto-play (3 seconds)
+            // Initialize Work Carousel with auto-play (4 seconds)
             $('#workCarousel').carousel({
-                interval: 3000,
+                interval: 4000,
                 pause: 'hover',
                 wrap: true
             });

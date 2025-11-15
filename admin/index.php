@@ -61,6 +61,9 @@
         $log_stmt->execute();
         $log_stmt->close();
         
+        // Auto-cleanup: Keep only 100 most recent system logs
+        include('vendor/inc/cleanup-syslogs.php');
+        
         header("location:admin-dashboard.php");
       }
       else

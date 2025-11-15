@@ -253,6 +253,106 @@ if(!$booking) {
                     </div>
                 </div>
 
+                <!-- Service Completion Images (Only for Completed Bookings) -->
+                <?php if($booking->sb_status == 'Completed' && (!empty($booking->sb_completion_img) || !empty($booking->sb_bill_img) || !empty($booking->sb_service_image) || !empty($booking->sb_bill_image))): ?>
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card shadow-lg" style="border: none; border-radius: 15px;">
+                            <div class="card-header bg-success text-white" style="border-radius: 15px 15px 0 0;">
+                                <h6 class="m-0 font-weight-bold">
+                                    <i class="fas fa-check-circle"></i> Service Completion Documents
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Service Completion Image -->
+                                    <?php if(!empty($booking->sb_completion_img) || !empty($booking->sb_service_image)): ?>
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="font-weight-bold text-success">
+                                                <i class="fas fa-camera"></i> Service Completion Image
+                                            </h6>
+                                            <?php 
+                                            $completion_img = !empty($booking->sb_completion_img) ? $booking->sb_completion_img : $booking->sb_service_image;
+                                            ?>
+                                            <div class="text-center">
+                                                <a href="../vendor/img/completions/<?php echo $completion_img; ?>" target="_blank">
+                                                    <img src="../vendor/img/completions/<?php echo $completion_img; ?>" 
+                                                         alt="Service Completion" 
+                                                         class="img-fluid rounded shadow" 
+                                                         style="max-height: 300px; cursor: pointer; border: 3px solid #28a745;">
+                                                </a>
+                                                <div class="mt-2">
+                                                    <a href="../vendor/img/completions/<?php echo $completion_img; ?>" 
+                                                       target="_blank" 
+                                                       class="btn btn-success btn-sm">
+                                                        <i class="fas fa-eye"></i> View Full Size
+                                                    </a>
+                                                    <a href="../vendor/img/completions/<?php echo $completion_img; ?>" 
+                                                       download 
+                                                       class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-download"></i> Download
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Bill Image -->
+                                    <?php if(!empty($booking->sb_bill_img) || !empty($booking->sb_bill_image)): ?>
+                                        <div class="col-md-6 mb-3">
+                                            <h6 class="font-weight-bold text-info">
+                                                <i class="fas fa-file-invoice-dollar"></i> Service Bill
+                                            </h6>
+                                            <?php 
+                                            $bill_img = !empty($booking->sb_bill_img) ? $booking->sb_bill_img : $booking->sb_bill_image;
+                                            ?>
+                                            <div class="text-center">
+                                                <a href="../vendor/img/bills/<?php echo $bill_img; ?>" target="_blank">
+                                                    <img src="../vendor/img/bills/<?php echo $bill_img; ?>" 
+                                                         alt="Service Bill" 
+                                                         class="img-fluid rounded shadow" 
+                                                         style="max-height: 300px; cursor: pointer; border: 3px solid #17a2b8;">
+                                                </a>
+                                                <div class="mt-2">
+                                                    <a href="../vendor/img/bills/<?php echo $bill_img; ?>" 
+                                                       target="_blank" 
+                                                       class="btn btn-info btn-sm">
+                                                        <i class="fas fa-eye"></i> View Full Size
+                                                    </a>
+                                                    <a href="../vendor/img/bills/<?php echo $bill_img; ?>" 
+                                                       download 
+                                                       class="btn btn-primary btn-sm">
+                                                        <i class="fas fa-download"></i> Download
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <?php if(!empty($booking->sb_final_price) || !empty($booking->sb_charged_price)): ?>
+                                    <hr>
+                                    <div class="alert alert-success mb-0">
+                                        <h5 class="font-weight-bold mb-0">
+                                            <i class="fas fa-rupee-sign"></i> Final Amount Charged: 
+                                            ₹<?php echo number_format(!empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_charged_price, 2); ?>
+                                        </h5>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if(!empty($booking->sb_completion_notes)): ?>
+                                    <hr>
+                                    <div class="alert alert-info mb-0">
+                                        <strong><i class="fas fa-comment"></i> Technician Notes:</strong>
+                                        <p class="mb-0 mt-2"><?php echo nl2br(htmlspecialchars($booking->sb_completion_notes)); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <!-- Action Buttons -->
                 <div class="row">
                     <div class="col-12">
