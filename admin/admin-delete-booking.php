@@ -104,11 +104,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                         
                          <form method="POST">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">First Name</label>
@@ -146,7 +142,6 @@
                                  <input type="email" readonly placeholder="<?php echo $row->u_car_regno;?>" class="form-control" name="u_car_regno">
                              </div>
 
-
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Booking Date</label>
                                  <input type="text" readonly placeholder="<?php echo $row->t_booking_date;?>" class="form-control" name="t_booking_date">
@@ -156,7 +151,6 @@
                                  <label for="exampleInputEmail1">Booking Status</label>
                                  <input type="text" readonly placeholder="<?php echo $row->t_booking_status;?>" class="form-control" id="exampleInputEmail1" name="t_booking_status">
                              </div>
-
 
                              <button type="submit" name="delete_booking" class="btn btn-danger">Delete Booking</button>
                          </form>

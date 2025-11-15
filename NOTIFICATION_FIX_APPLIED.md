@@ -6,7 +6,7 @@ The AJAX response was showing a parser error because HTML comments were being in
 **Error Message:**
 ```
 parsererror
-Response: <!-- Author By: MH RONY ... --> {...json...}
+Response: <!-- HTML comments ... --> {...json...}
 ```
 
 ## Root Cause

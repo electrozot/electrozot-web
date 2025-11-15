@@ -87,11 +87,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                         
                          <form method="POST">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Client Name</label>

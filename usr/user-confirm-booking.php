@@ -30,11 +30,6 @@
 <html lang="en">
 
 <?php include('vendor/inc/head.php');?>
-<!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
 <body id="page-top">
     <!--Start Navigation Bar-->
@@ -98,11 +93,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
             while($row=$res->fetch_object())
         {
         ?>
-                        <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                        
                         <form method="POST" class="compact-form">
                             <div class="form-group">
                                 <label for="exampleInputEmail1">Technician Category</label>
@@ -129,7 +120,6 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                 </div>
 
                 <hr>
-
 
                 <!-- Sticky Footer -->
                 <?php include("vendor/inc/footer.php");?>

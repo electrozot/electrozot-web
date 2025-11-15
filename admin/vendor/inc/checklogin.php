@@ -1,8 +1,4 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
---><?php
+ <?php
 function check_login()
 {
 if(strlen($_SESSION['a_id'])==0)
@@ -15,8 +11,4 @@ if(strlen($_SESSION['a_id'])==0)
 	}
 }
 ?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+ 

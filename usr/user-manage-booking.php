@@ -62,11 +62,7 @@
                         while($row=$res->fetch_object())
                         {
                 ?>
-                                     <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
+                                     
                                      <tr>
                                          <td><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></td>
                                          <td><?php echo $row->u_phone;?></td>

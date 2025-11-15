@@ -92,11 +92,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                         
                          <form method="POST" enctype="multipart/form-data">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Technician Name</label>
@@ -199,7 +195,6 @@
                  </div>
 
                  <hr>
-
 
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>

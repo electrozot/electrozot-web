@@ -88,11 +88,7 @@
                 while($row=$res->fetch_object())
                      {
             ?>
-                             <!-- Author By: MH RONY
-            Author Website: https://developerrony.com
-            Github Link: https://github.com/dev-mhrony
-            Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-            -->
+                             
                              <div class="form-group">
                                  <label for="exampleInputEmail1">My Name</label>
                                  <input type="text" required readonly class="form-control" value="<?php echo $row->u_fname;?> <?php echo $row->u_lname;?> " id="exampleInputEmail1" name="f_uname">

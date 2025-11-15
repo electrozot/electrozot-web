@@ -35,7 +35,6 @@
 
                  </ol>
 
-
                  <!--Technicians-->
                  <div class="card mb-3">
                      <div class="card-header">
@@ -67,11 +66,7 @@
                   while($row=$res->fetch_object())
                 {
                 ?>
-                                     <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
+                                     
                                      <tr>
                                          <td><?php echo $cnt;?></td>
                                          <td><?php echo $row->t_name;?></td>

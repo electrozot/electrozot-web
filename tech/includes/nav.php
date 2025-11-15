@@ -136,8 +136,20 @@ if($stmt_comp) {
 
             <ul class="navbar-nav ml-auto nav-right-group">
                 <li class="nav-item">
-                    <a class="nav-link nav-btn-compact nav-btn-yellow <?php echo basename($_SERVER['PHP_SELF']) == 'new-bookings.php' ? 'active' : ''; ?>" href="new-bookings.php">
+                    <a class="nav-link nav-btn-compact nav-btn-purple notification-btn <?php echo basename($_SERVER['PHP_SELF']) == 'notifications.php' ? 'active' : ''; ?>" href="notifications.php">
                         <i class="fas fa-bell"></i>
+                        <span class="btn-label">Notifications</span>
+                        <?php 
+                        $total_notifications = $nav_pending + $nav_progress;
+                        if($total_notifications > 0): 
+                        ?>
+                            <span class="nav-badge-compact notification-badge"><?php echo $total_notifications; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-btn-compact nav-btn-yellow <?php echo basename($_SERVER['PHP_SELF']) == 'new-bookings.php' ? 'active' : ''; ?>" href="new-bookings.php">
+                        <i class="fas fa-calendar-plus"></i>
                         <span class="btn-label">New</span>
                         <?php if($nav_pending > 0): ?>
                             <span class="nav-badge-compact"><?php echo $nav_pending; ?></span>
@@ -193,6 +205,13 @@ if($stmt_comp) {
                             <?php endif; ?>
                         </div>
                         <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="notifications.php">
+                            <i class="fas fa-bell"></i> Notifications
+                            <?php if($nav_pending + $nav_progress > 0): ?>
+                                <span class="badge badge-warning ml-2"><?php echo $nav_pending + $nav_progress; ?></span>
+                            <?php endif; ?>
+                        </a>
+                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="profile.php">
                             <i class="fas fa-user-circle"></i> My Profile
                         </a>
@@ -216,9 +235,22 @@ if($stmt_comp) {
 <div class="dashboard-quick-bar">
     <div class="container-fluid">
         <div class="quick-bar-content">
-            <a href="new-bookings.php" class="quick-bar-btn qb-red">
+            <a href="notifications.php" class="quick-bar-btn qb-purple notification-quick-btn">
                 <div class="qb-icon">
                     <i class="fas fa-bell"></i>
+                </div>
+                <div class="qb-info">
+                    <span class="qb-count"><?php echo $nav_total; ?></span>
+                    <span class="qb-label">All Notifications</span>
+                </div>
+                <?php if($nav_pending + $nav_progress > 0): ?>
+                    <span class="quick-badge"><?php echo $nav_pending + $nav_progress; ?></span>
+                <?php endif; ?>
+            </a>
+
+            <a href="new-bookings.php" class="quick-bar-btn qb-red">
+                <div class="qb-icon">
+                    <i class="fas fa-calendar-plus"></i>
                 </div>
                 <div class="qb-info">
                     <span class="qb-count"><?php echo $nav_pending; ?></span>
@@ -443,6 +475,61 @@ if($stmt_comp) {
         border-color: white;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Enhanced Notification Button */
+    .notification-btn {
+        position: relative;
+        animation: bellShake 3s ease-in-out infinite;
+    }
+
+    .notification-btn .fa-bell {
+        font-size: 1.2rem;
+    }
+
+    .notification-badge {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%) !important;
+        color: #ff4757 !important;
+        font-weight: 900 !important;
+        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5) !important;
+        animation: pulse 2s ease-in-out infinite !important;
+    }
+
+    @keyframes bellShake {
+        0%, 90%, 100% { transform: rotate(0deg); }
+        92%, 96% { transform: rotate(-10deg); }
+        94%, 98% { transform: rotate(10deg); }
+    }
+
+    /* Quick Bar Notification Button */
+    .notification-quick-btn {
+        position: relative;
+    }
+
+    .notification-quick-btn .qb-icon {
+        animation: bellRing 2s ease-in-out infinite;
+    }
+
+    @keyframes bellRing {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30% { transform: rotate(-15deg); }
+        20%, 40% { transform: rotate(15deg); }
+        50% { transform: rotate(0deg); }
+    }
+
+    .quick-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        color: #ff4757;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 900;
+        box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
+        animation: pulse 2s ease-in-out infinite;
+        z-index: 10;
     }
 
     .nav-badge {
