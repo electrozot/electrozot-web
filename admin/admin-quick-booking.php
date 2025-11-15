@@ -7,19 +7,33 @@ $aid = $_SESSION['a_id'];
 
 // Handle form submission
 if(isset($_POST['create_booking'])) {
-    $customer_name = $_POST['customer_name'];
-    $customer_phone = $_POST['customer_phone'];
-    $customer_email = $_POST['customer_email'];
-    $customer_address = $_POST['customer_address'];
-    $customer_area = $_POST['customer_area'];
-    $customer_pincode = $_POST['customer_pincode'];
-    $service_id = $_POST['service_id'];
+    // Validate and sanitize inputs
+    $customer_name = isset($_POST['customer_name']) ? trim($_POST['customer_name']) : '';
+    $customer_phone = isset($_POST['customer_phone']) ? preg_replace('/\D/', '', $_POST['customer_phone']) : '';
+    $customer_email = isset($_POST['customer_email']) ? trim($_POST['customer_email']) : '';
+    $customer_address = isset($_POST['customer_address']) ? trim($_POST['customer_address']) : '';
+    $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
+    $customer_pincode = isset($_POST['customer_pincode']) ? preg_replace('/\D/', '', $_POST['customer_pincode']) : '';
+    $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : 0;
+    $notes = isset($_POST['notes']) ? trim($_POST['notes']) : '';
     
-    // Automatically set booking date and time to current timestamp
-    $booking_date = date('Y-m-d');
-    $booking_time = date('H:i:s');
-    
-    $notes = $_POST['notes'];
+    // Validation checks
+    if(empty($customer_name)) {
+        $err = "Customer name is required.";
+    } elseif(strlen($customer_phone) !== 10) {
+        $err = "Please enter a valid 10-digit phone number.";
+    } elseif(strlen($customer_pincode) !== 6) {
+        $err = "Please enter a valid 6-digit pincode.";
+    } elseif(empty($customer_area)) {
+        $err = "Area/locality is required.";
+    } elseif(empty($customer_address)) {
+        $err = "Service address is required.";
+    } elseif($service_id <= 0) {
+        $err = "Please select a service.";
+    } else {
+        // Automatically set booking date and time to current timestamp
+        $booking_date = date('Y-m-d');
+        $booking_time = date('H:i:s');
     
     // Check if user exists by phone
     $check_user = "SELECT u_id FROM tms_user WHERE u_phone = ?";
@@ -59,10 +73,11 @@ if(isset($_POST['create_booking'])) {
     $stmt_booking = $mysqli->prepare($insert_booking);
     $stmt_booking->bind_param('iissssssd', $user_id, $service_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price);
     
-    if($stmt_booking->execute()) {
-        $success = "Booking created successfully! Booking ID: " . $mysqli->insert_id;
-    } else {
-        $err = "Failed to create booking. Please try again.";
+        if($stmt_booking->execute()) {
+            $success = "Booking created successfully! Booking ID: " . $mysqli->insert_id;
+        } else {
+            $err = "Failed to create booking. Please try again.";
+        }
     }
 }
 ?>

@@ -21,12 +21,39 @@ if(isset($_POST['book_service_guest'])) {
         exit();
     }
     $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
-    $sb_service_id = $_POST['sb_service_id'];
+    
+    // Validate service selection
+    $sb_service_id = isset($_POST['sb_service_id']) ? intval($_POST['sb_service_id']) : 0;
+    if($sb_service_id <= 0) {
+        $_SESSION['booking_error'] = "Please select a service.";
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
+    // Validate required fields
+    if(empty(trim($customer_name))) {
+        $_SESSION['booking_error'] = "Please enter your name.";
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
+    if(empty($customer_area)) {
+        $_SESSION['booking_error'] = "Please enter your area/locality.";
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
+    $sb_address = isset($_POST['sb_address']) ? trim($_POST['sb_address']) : '';
+    if(empty($sb_address)) {
+        $_SESSION['booking_error'] = "Please enter service address.";
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
     // Automatically set booking date and time to current timestamp
     $sb_booking_date = date('Y-m-d');
     $sb_booking_time = date('H:i:s');
-    $sb_address = $_POST['sb_address'];
-    $sb_description = isset($_POST['sb_description']) ? $_POST['sb_description'] : '';
+    $sb_description = isset($_POST['sb_description']) ? trim($_POST['sb_description']) : '';
     $sb_status = 'Pending'; // Default status
 
     // Split full name into first and last name
@@ -34,14 +61,29 @@ if(isset($_POST['book_service_guest'])) {
     $u_fname = $name_parts[0];
     $u_lname = isset($name_parts[1]) ? $name_parts[1] : '';
 
-    // Get service price
-    $query_price = "SELECT s_price FROM tms_service WHERE s_id = ?";
+    // Get service price and validate service exists
+    $query_price = "SELECT s_price, s_status FROM tms_service WHERE s_id = ?";
     $stmt_price = $mysqli->prepare($query_price);
     $stmt_price->bind_param('i', $sb_service_id);
     $stmt_price->execute();
     $result = $stmt_price->get_result();
     $service = $result->fetch_object();
-    $sb_total_price = $service ? $service->s_price : 0.00;
+    
+    if(!$service) {
+        $_SESSION['booking_error'] = "Selected service does not exist.";
+        $stmt_price->close();
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
+    if($service->s_status != 'Active') {
+        $_SESSION['booking_error'] = "Selected service is not available.";
+        $stmt_price->close();
+        header("location: index.php#booking-form");
+        exit();
+    }
+    
+    $sb_total_price = $service->s_price;
     $stmt_price->close();
 
     // Ensure registration_type, u_area and u_pincode columns exist
@@ -66,7 +108,15 @@ if(isset($_POST['book_service_guest'])) {
         $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
         $stmt_user = $mysqli->prepare($query_user);
         $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
-        $stmt_user->execute();
+        
+        if(!$stmt_user->execute()) {
+            $_SESSION['booking_error'] = "Failed to create customer profile. Please try again.";
+            $stmt_user->close();
+            $stmt_check->close();
+            header("location: index.php#booking-form");
+            exit();
+        }
+        
         $customer_id = $stmt_user->insert_id;
         $stmt_user->close();
         $stmt_check->close();

@@ -158,8 +158,8 @@
              <span>Settings</span>
          </a>
          <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-             <a class="dropdown-item" href="admin-manage-gallery.php"><i class="fas fa-images"></i> Gallery Images</a>
-             <a class="dropdown-item" href="admin-manage-slider.php"><i class="fas fa-sliders-h"></i> Home Slider</a>
+             <a class="dropdown-item" href="admin-home-slider.php"><i class="fas fa-images"></i> Home Slider</a>
+             <a class="dropdown-item" href="admin-manage-gallery.php"><i class="fas fa-photo-video"></i> Gallery Images</a>
          </div>
      </li>
  </ul>

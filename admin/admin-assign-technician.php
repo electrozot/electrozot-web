@@ -9,16 +9,23 @@
   if(isset($_POST['assign_technician']))
     {
             // Get sb_id from POST (hidden field) or GET
-            $sb_id = isset($_POST['sb_id']) ? $_POST['sb_id'] : (isset($_GET['sb_id']) ? $_GET['sb_id'] : null);
-            $sb_technician_id = $_POST['sb_technician_id'];
-            $sb_status = $_POST['sb_status'];
+            $sb_id = isset($_POST['sb_id']) ? intval($_POST['sb_id']) : (isset($_GET['sb_id']) ? intval($_GET['sb_id']) : 0);
+            $sb_technician_id = isset($_POST['sb_technician_id']) ? intval($_POST['sb_technician_id']) : 0;
+            $sb_status = isset($_POST['sb_status']) ? trim($_POST['sb_status']) : '';
             
             // Get service deadline from form
             $service_deadline_date = isset($_POST['service_deadline_date']) ? $_POST['service_deadline_date'] : null;
             $service_deadline_time = isset($_POST['service_deadline_time']) ? $_POST['service_deadline_time'] : null;
             
-            if(!$sb_id) {
+            // Validation
+            if($sb_id <= 0) {
                 $err = "Booking ID is missing. Please try again.";
+            } elseif($sb_technician_id <= 0) {
+                $err = "Please select a technician.";
+            } elseif(empty($sb_status)) {
+                $err = "Please select a booking status.";
+            } elseif(empty($service_deadline_date) || empty($service_deadline_time)) {
+                $err = "Please set service deadline date and time.";
             } else {
                 // First, get the previously assigned technician (if any) to free them up
                 $get_old_tech = "SELECT sb_technician_id FROM tms_service_booking WHERE sb_id = ?";

@@ -389,65 +389,67 @@
 
                 <div class="row">
                     <div class="col-lg-10 mx-auto">
-                        <div id="workCarousel" class="carousel slide shadow-lg" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
-                            <!-- Indicators -->
-                            <ol class="carousel-indicators">
-                                <li data-target="#workCarousel" data-slide-to="0" class="active"></li>
-                                <li data-target="#workCarousel" data-slide-to="1"></li>
-                                <li data-target="#workCarousel" data-slide-to="2"></li>
-                                <li data-target="#workCarousel" data-slide-to="3"></li>
-                                <li data-target="#workCarousel" data-slide-to="4"></li>
-                            </ol>
+                        <?php
+                        // Get active sliders from database
+                        $slider_query = "SELECT * FROM tms_home_slider WHERE slider_status = 'Active' ORDER BY slider_order ASC, slider_id DESC";
+                        $slider_result = $mysqli->query($slider_query);
+                        $slider_count = $slider_result ? $slider_result->num_rows : 0;
+                        ?>
+                        
+                        <?php if($slider_count > 0): ?>
+                            <div id="workCarousel" class="carousel slide shadow-lg" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
+                                <!-- Indicators -->
+                                <ol class="carousel-indicators">
+                                    <?php 
+                                    $slider_result->data_seek(0);
+                                    $index = 0;
+                                    while($slider = $slider_result->fetch_object()): 
+                                    ?>
+                                        <li data-target="#workCarousel" data-slide-to="<?php echo $index; ?>" class="<?php echo $index == 0 ? 'active' : ''; ?>"></li>
+                                    <?php 
+                                        $index++;
+                                    endwhile; 
+                                    ?>
+                                </ol>
 
-                            <!-- Slides -->
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="vendor/img/completions/sb19_1762849470.jpg" class="d-block w-100" alt="Completed Work 1" style="height: 500px; object-fit: cover;">
-                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                        <h5 class="font-weight-bold">Professional Service Completed</h5>
-                                        <p>Quality work delivered with customer satisfaction</p>
-                                    </div>
+                                <!-- Slides -->
+                                <div class="carousel-inner">
+                                    <?php 
+                                    $slider_result->data_seek(0);
+                                    $index = 0;
+                                    while($slider = $slider_result->fetch_object()): 
+                                    ?>
+                                        <div class="carousel-item <?php echo $index == 0 ? 'active' : ''; ?>">
+                                            <img src="admin/vendor/img/slider/<?php echo $slider->slider_image; ?>" 
+                                                 class="d-block w-100" 
+                                                 alt="<?php echo htmlspecialchars($slider->slider_title); ?>" 
+                                                 style="height: 500px; object-fit: cover;">
+                                            <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
+                                                <h5 class="font-weight-bold"><?php echo htmlspecialchars($slider->slider_title); ?></h5>
+                                                <p><?php echo htmlspecialchars($slider->slider_description); ?></p>
+                                            </div>
+                                        </div>
+                                    <?php 
+                                        $index++;
+                                    endwhile; 
+                                    ?>
                                 </div>
-                                <div class="carousel-item">
-                                    <img src="vendor/img/completions/sb21_1762850637.png" class="d-block w-100" alt="Completed Work 2" style="height: 500px; object-fit: cover;">
-                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                        <h5 class="font-weight-bold">Expert Installation</h5>
-                                        <p>Professional installation with attention to detail</p>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="vendor/img/completions/sb23_1762856579.png" class="d-block w-100" alt="Completed Work 3" style="height: 500px; object-fit: cover;">
-                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                        <h5 class="font-weight-bold">Quality Workmanship</h5>
-                                        <p>Delivering excellence in every project</p>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="vendor/img/completions/sb27_1762875513.jpg" class="d-block w-100" alt="Completed Work 4" style="height: 500px; object-fit: cover;">
-                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                        <h5 class="font-weight-bold">Reliable Service</h5>
-                                        <p>Trusted by hundreds of satisfied customers</p>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="vendor/img/completions/sb30_1762947816.jpg" class="d-block w-100" alt="Completed Work 5" style="height: 500px; object-fit: cover;">
-                                    <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                        <h5 class="font-weight-bold">Professional Results</h5>
-                                        <p>Your satisfaction is our priority</p>
-                                    </div>
-                                </div>
+
+                                <!-- Controls -->
+                                <a class="carousel-control-prev" href="#workCarousel" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#workCarousel" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
                             </div>
-
-                            <!-- Controls -->
-                            <a class="carousel-control-prev" href="#workCarousel" role="button" data-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#workCarousel" role="button" data-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
-                        </div>
+                        <?php else: ?>
+                            <div class="alert alert-info text-center">
+                                <i class="fas fa-info-circle"></i> No portfolio images available at the moment.
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -547,9 +549,9 @@
             // Change slide every 4 seconds
             setInterval(nextSlide, 4000);
 
-            // Initialize Work Carousel with auto-play
+            // Initialize Work Carousel with auto-play (3 seconds)
             $('#workCarousel').carousel({
-                interval: 4000,
+                interval: 3000,
                 pause: 'hover',
                 wrap: true
             });
