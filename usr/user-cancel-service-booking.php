@@ -18,7 +18,7 @@ $booking = $check_result->fetch_object();
 
 if(!$booking) {
     $_SESSION['error'] = "Booking not found or you don't have permission to cancel it.";
-    header("Location: user-view-booking.php");
+    header("Location: user-manage-booking.php");
     exit();
 }
 
@@ -47,7 +47,7 @@ if(isset($_POST['confirm_cancel'])) {
     
     if($update_stmt->execute()) {
         $_SESSION['success'] = "Booking cancelled successfully.";
-        header("Location: user-view-booking.php");
+        header("Location: user-manage-booking.php");
         exit();
     } else {
         $_SESSION['error'] = "Failed to cancel booking. Please try again.";
@@ -67,7 +67,7 @@ if(isset($_POST['confirm_cancel'])) {
             <div class="container-fluid">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="user-dashboard.php">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="user-view-booking.php">My Bookings</a></li>
+                    <li class="breadcrumb-item"><a href="user-manage-booking.php">My Bookings</a></li>
                     <li class="breadcrumb-item active">Cancel Booking</li>
                 </ol>
                 

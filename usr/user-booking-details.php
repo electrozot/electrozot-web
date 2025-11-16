@@ -27,7 +27,7 @@ $result = $stmt->get_result();
 $booking = $result->fetch_object();
 
 if(!$booking) {
-    header("Location: user-view-booking.php");
+    header("Location: user-manage-booking.php");
     exit();
 }
 ?>
@@ -47,7 +47,7 @@ if(!$booking) {
                         <a href="user-dashboard.php">Dashboard</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="user-view-booking.php">My Bookings</a>
+                        <a href="user-manage-booking.php">My Bookings</a>
                     </li>
                     <li class="breadcrumb-item active">Booking #<?php echo $booking->sb_id; ?></li>
                 </ol>
@@ -361,7 +361,7 @@ if(!$booking) {
                                 <a href="user-track-booking.php" class="btn btn-primary btn-lg mx-2">
                                     <i class="fas fa-map-marker-alt"></i> Track Order
                                 </a>
-                                <a href="user-view-booking.php" class="btn btn-info btn-lg mx-2">
+                                <a href="user-manage-booking.php" class="btn btn-info btn-lg mx-2">
                                     <i class="fas fa-list"></i> All Bookings
                                 </a>
                                 <?php if($booking->sb_status == 'Pending' && empty($booking->sb_technician_id)): ?>

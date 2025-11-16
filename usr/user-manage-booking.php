@@ -29,6 +29,17 @@ if (!$user) {
     die("User not found. Please login again.");
 }
 
+// Get ALL bookings from tms_service_booking table
+$bookings_query = "SELECT sb.*, s.s_name, s.s_category, s.s_duration 
+                   FROM tms_service_booking sb 
+                   LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                   WHERE sb.sb_user_id = ? 
+                   ORDER BY sb.sb_created_at DESC";
+$bookings_stmt = $mysqli->prepare($bookings_query);
+$bookings_stmt->bind_param('i', $aid);
+$bookings_stmt->execute();
+$bookings_result = $bookings_stmt->get_result();
+
 // Check for cancel success/error
 $cancel_success = isset($_GET['cancelled']) && $_GET['cancelled'] == 1;
 $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
@@ -401,38 +412,16 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
         <?php endif; ?>
         
         <?php
-        if (!empty($user->t_tech_category) && !empty($user->t_booking_date)) {
-            // Parse booking info
-            $booking_parts = explode('|', $user->t_tech_category);
-            $service_info = isset($booking_parts[0]) ? trim($booking_parts[0]) : 'Service Booking';
-            
-            // Extract service details
-            $service_parts = explode('>', $service_info);
-            $category = isset($service_parts[0]) ? trim($service_parts[0]) : '';
-            $subcategory = isset($service_parts[1]) ? trim($service_parts[1]) : '';
-            $service_name = isset($service_parts[2]) ? trim($service_parts[2]) : 'Service';
-            
-            $pincode = '';
-            $address = '';
-            $phone = '';
-            
-            for ($i = 1; $i < count($booking_parts); $i++) {
-                if (strpos($booking_parts[$i], 'Pincode:') !== false) {
-                    $pincode = trim(str_replace('Pincode:', '', $booking_parts[$i]));
-                } elseif (strpos($booking_parts[$i], 'Address:') !== false) {
-                    $address = trim(str_replace('Address:', '', $booking_parts[$i]));
-                } elseif (strpos($booking_parts[$i], 'Phone:') !== false) {
-                    $phone = trim(str_replace('Phone:', '', $booking_parts[$i]));
-                }
-            }
-            
-            $status = $user->t_booking_status ?? 'Pending';
+        if ($bookings_result->num_rows > 0) {
+            while ($booking = $bookings_result->fetch_object()) {
+                $service_name = $booking->s_name ?? 'Service';
+                $status = $booking->sb_status ?? 'Pending';
         ?>
         
         <div class="booking-card">
             <div class="card-header">
                 <div class="booking-id">
-                    <i class="fas fa-receipt"></i> Booking #<?php echo str_pad($user->u_id, 5, '0', STR_PAD_LEFT); ?>
+                    <i class="fas fa-receipt"></i> Booking #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?>
                 </div>
                 <div class="status-badge">
                     <?php echo $status; ?>
@@ -461,7 +450,7 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                     </div>
                     <div class="info-text">
                         <div class="info-label">Contact</div>
-                        <div class="info-value"><?php echo htmlspecialchars($phone ?: $user->u_phone); ?></div>
+                        <div class="info-value"><?php echo htmlspecialchars($booking->sb_phone); ?></div>
                     </div>
                 </div>
                 
@@ -471,7 +460,17 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                     </div>
                     <div class="info-text">
                         <div class="info-label">Booking Date</div>
-                        <div class="info-value"><?php echo date('d M Y', strtotime($user->t_booking_date)); ?></div>
+                        <div class="info-value"><?php echo date('d M Y', strtotime($booking->sb_booking_date)); ?></div>
+                    </div>
+                </div>
+                
+                <div class="info-row">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-text">
+                        <div class="info-label">Time</div>
+                        <div class="info-value"><?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?></div>
                     </div>
                 </div>
                 
@@ -481,36 +480,36 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                     </div>
                     <div class="info-text">
                         <div class="info-label">Pincode</div>
-                        <div class="info-value"><?php echo htmlspecialchars($pincode ?: 'N/A'); ?></div>
+                        <div class="info-value"><?php echo htmlspecialchars($booking->sb_pincode); ?></div>
                     </div>
                 </div>
                 
-                <?php if (!empty($address)): ?>
+                <?php if (!empty($booking->sb_address)): ?>
                 <div class="info-row">
                     <div class="info-icon">
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <div class="info-text">
                         <div class="info-label">Address</div>
-                        <div class="info-value"><?php echo htmlspecialchars($address); ?></div>
+                        <div class="info-value"><?php echo htmlspecialchars($booking->sb_address); ?></div>
                     </div>
                 </div>
                 <?php endif; ?>
             </div>
             
             <div class="action-buttons">
-                <a href="user-track-booking.php" class="btn btn-track">
+                <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-map-marker-alt"></i> Track
                 </a>
                 <?php if ($status != 'Cancelled' && $status != 'Completed'): ?>
-                <a href="user-delete-booking.php?u_id=<?php echo $user->u_id; ?>" class="btn btn-cancel" onclick="return confirm('Cancel this booking?');">
+                <a href="user-delete-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-cancel" onclick="return confirm('Cancel this booking?');">
                     <i class="fas fa-times"></i> Cancel
                 </a>
                 <?php endif; ?>
             </div>
         </div>
         
-        <?php } else { ?>
+        <?php } } else { ?>
         
         <div class="empty-state">
             <div class="empty-icon">

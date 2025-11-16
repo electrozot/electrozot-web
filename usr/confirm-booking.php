@@ -46,19 +46,33 @@ if (isset($_POST['confirm_booking'])) {
     if ($service_data) {
         $service_id = $service_data->s_id;
     } else {
-        // Create service if it doesn't exist
+        // Create service if it doesn't exist (with default price 0)
+        $default_price = 0;
         $create_service = "INSERT INTO tms_service (s_name, s_category, s_price, s_duration, s_description) VALUES (?, ?, ?, ?, ?)";
         $create_stmt = $mysqli->prepare($create_service);
         $service_desc = "Professional " . $service_name . " service";
-        $create_stmt->bind_param('ssdss', $service_name, $category, $price, $duration, $service_desc);
+        $create_stmt->bind_param('ssdss', $service_name, $category, $default_price, $duration, $service_desc);
         $create_stmt->execute();
         $service_id = $mysqli->insert_id;
     }
     
-    // Insert into tms_service_booking table
+    // Also update tms_user table for backward compatibility
+    $booking_info = $category . " > " . $subcategory . " > " . $service_name . " | Pincode: " . $pincode . " | Address: " . $address . " | Phone: " . $phone;
+    $update_user = "UPDATE tms_user SET t_tech_category = ?, t_booking_date = ?, t_booking_status = 'Pending' WHERE u_id = ?";
+    $update_user_stmt = $mysqli->prepare($update_user);
+    if (!$update_user_stmt) {
+        die("Error preparing user update: " . $mysqli->error);
+    }
+    $update_user_stmt->bind_param('ssi', $booking_info, $booking_date, $aid);
+    if (!$update_user_stmt->execute()) {
+        die("Error updating user: " . $update_user_stmt->error);
+    }
+    
+    // Insert into tms_service_booking table (with default price 0)
+    $default_price = 0;
     $insert_query = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_status, sb_total_price) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', ?)";
     $insert_stmt = $mysqli->prepare($insert_query);
-    $insert_stmt->bind_param('iisssssd', $aid, $service_id, $booking_date, $booking_time, $address, $pincode, $phone, $price);
+    $insert_stmt->bind_param('iisssssd', $aid, $service_id, $booking_date, $booking_time, $address, $pincode, $phone, $default_price);
     
     if ($insert_stmt->execute()) {
         $_SESSION['booking_success'] = true;

@@ -529,7 +529,7 @@ if(isset($_POST['give_feedback'])) {
             <i class="fas fa-calendar-plus"></i>
             <span>Book</span>
         </a>
-        <a href="user-view-booking.php" class="nav-item">
+        <a href="user-manage-booking.php" class="nav-item">
             <i class="fas fa-list-alt"></i>
             <span>Orders</span>
         </a>
