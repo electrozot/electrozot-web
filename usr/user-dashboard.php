@@ -413,7 +413,7 @@ $booking_stats = $booking_result->fetch_object();
                 <div class="action-label">Book Service</div>
             </a>
             
-            <a href="user-view-booking.php" class="action-item">
+            <a href="user-manage-booking.php" class="action-item">
                 <div class="action-icon bg-pink">
                     <i class="fas fa-list-alt"></i>
                 </div>
@@ -445,7 +445,7 @@ $booking_stats = $booking_result->fetch_object();
             <i class="fas fa-calendar-plus"></i>
             <span>Book</span>
         </a>
-        <a href="user-view-booking.php" class="nav-item">
+        <a href="user-manage-booking.php" class="nav-item">
             <i class="fas fa-list-alt"></i>
             <span>Orders</span>
         </a>

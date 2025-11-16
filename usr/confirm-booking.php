@@ -7,7 +7,6 @@ $aid = $_SESSION['u_id'];
 
 // Get service details from URL
 $service_name = isset($_GET['service_name']) ? $_GET['service_name'] : '';
-$price = isset($_GET['price']) ? $_GET['price'] : 0;
 $duration = isset($_GET['duration']) ? $_GET['duration'] : '';
 $category = isset($_GET['category']) ? $_GET['category'] : '';
 $subcategory = isset($_GET['subcategory']) ? $_GET['subcategory'] : '';
@@ -64,7 +63,6 @@ if (isset($_POST['confirm_booking'])) {
     if ($insert_stmt->execute()) {
         $_SESSION['booking_success'] = true;
         $redirect_url = "confirm-booking.php?success=1&service_name=" . urlencode($service_name) . 
-                       "&price=" . urlencode($price) . 
                        "&duration=" . urlencode($duration) . 
                        "&category=" . urlencode($category) . 
                        "&subcategory=" . urlencode($subcategory);

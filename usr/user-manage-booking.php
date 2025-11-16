@@ -17,10 +17,21 @@ $aid = $_SESSION['u_id'];
 // Get user info
 $user_query = "SELECT * FROM tms_user WHERE u_id = ?";
 $user_stmt = $mysqli->prepare($user_query);
+if (!$user_stmt) {
+    die("Database error: " . $mysqli->error);
+}
 $user_stmt->bind_param('i', $aid);
 $user_stmt->execute();
 $user_result = $user_stmt->get_result();
 $user = $user_result->fetch_object();
+
+if (!$user) {
+    die("User not found. Please login again.");
+}
+
+// Check for cancel success/error
+$cancel_success = isset($_GET['cancelled']) && $_GET['cancelled'] == 1;
+$cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -290,6 +301,38 @@ $user = $user_result->fetch_object();
             margin-right: 8px;
         }
         
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -343,6 +386,20 @@ $user = $user_result->fetch_object();
     </div>
 
     <div class="content">
+        <?php if ($cancel_success): ?>
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i>
+            Booking cancelled successfully!
+        </div>
+        <?php endif; ?>
+        
+        <?php if ($cancel_error): ?>
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            Failed to cancel booking. Please try again.
+        </div>
+        <?php endif; ?>
+        
         <?php
         if (!empty($user->t_tech_category) && !empty($user->t_booking_date)) {
             // Parse booking info

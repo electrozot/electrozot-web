@@ -454,7 +454,7 @@ if (isset($services_data[$category][$subcategory])) {
         <?php if (!empty($services)): ?>
             <div class="services-grid">
             <?php foreach ($services as $service): ?>
-            <a href="confirm-booking.php?service_name=<?php echo urlencode($service['name']); ?>&price=<?php echo $service['price']; ?>&duration=<?php echo urlencode($service['duration']); ?>&category=<?php echo urlencode($category); ?>&subcategory=<?php echo urlencode($subcategory); ?>" class="service-card">
+            <a href="confirm-booking.php?service_name=<?php echo urlencode($service['name']); ?>&duration=<?php echo urlencode($service['duration']); ?>&category=<?php echo urlencode($category); ?>&subcategory=<?php echo urlencode($subcategory); ?>" class="service-card">
                 <div class="service-name">
                     <i class="fas fa-check-circle" style="color: #43e97b;"></i>
                     <?php echo htmlspecialchars($service['name']); ?>
