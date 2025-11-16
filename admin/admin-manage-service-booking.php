@@ -184,9 +184,12 @@
                                              ?>
                                          </td>
                                          <td>
-                                             <a href="admin-assign-technician.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-success">Assign Technician</a>
-                                             <a href="admin-view-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-info">View Details</a>
-                                             <a href="admin-delete-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-danger" onclick="return confirm('Are you sure you want to delete this booking?');">Delete</a>
+                                             <a href="admin-view-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-info">View</a>
+                                             <?php if($row->sb_status != 'Cancelled' && $row->sb_status != 'Completed'): ?>
+                                             <a href="admin-assign-technician.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-success">Assign</a>
+                                             <a href="admin-cancel-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-warning" onclick="return confirm('Cancel this booking?');">Cancel</a>
+                                             <?php endif; ?>
+                                             <a href="admin-delete-service-booking.php?sb_id=<?php echo $row->sb_id;?>" class="badge badge-danger" onclick="return confirm('Delete permanently?');">Delete</a>
                                          </td>
                                      </tr>
                                      <?php $cnt = $cnt+1; 

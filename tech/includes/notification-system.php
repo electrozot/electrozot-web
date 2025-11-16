@@ -136,6 +136,15 @@
                         return;
                     }
                     
+                    // Update notification badge count
+                    const notifCountElement = document.getElementById('notificationCount');
+                    if(notifCountElement && response.notification_count > 0) {
+                        notifCountElement.textContent = response.notification_count;
+                        notifCountElement.style.display = 'flex';
+                    } else if(notifCountElement) {
+                        notifCountElement.style.display = 'none';
+                    }
+                    
                     if(response.has_notifications && response.notification_count > 0) {
                         console.log('🔔 NEW NOTIFICATIONS:', response.notification_count);
                         console.log('📋 Details:', response.notifications);
@@ -178,6 +187,43 @@
         Notification.requestPermission();
     }
 
+    // Get initial notification count on page load
+    function getInitialNotificationCount() {
+        $.ajax({
+            url: 'check-technician-notifications.php',
+            method: 'GET',
+            dataType: 'json',
+            cache: false,
+            success: function(response) {
+                if(response && response.notification_count > 0) {
+                    // Show header notification dot
+                    const headerNotifDot = document.getElementById('headerNotifDot');
+                    if(headerNotifDot) {
+                        headerNotifDot.style.display = 'block';
+                    }
+                    
+                    // Show mobile notification alert
+                    const mobileAlert = document.getElementById('mobileNotificationAlert');
+                    const mobileAlertText = document.getElementById('mobileAlertText');
+                    if(mobileAlert && mobileAlertText) {
+                        mobileAlertText.textContent = `You have ${response.notification_count} new notification${response.notification_count > 1 ? 's' : ''}!`;
+                        mobileAlert.style.display = 'flex';
+                    }
+                    
+                    // Update floating button badge
+                    const floatingBadge = document.getElementById('floatingBadge');
+                    if(floatingBadge) {
+                        floatingBadge.textContent = response.notification_count;
+                        floatingBadge.style.display = 'flex';
+                    }
+                }
+            }
+        });
+    }
+    
+    // Get initial count immediately
+    getInitialNotificationCount();
+    
     // Start checking every 10 seconds
     setInterval(checkTechNotifications, 10000);
     

@@ -43,14 +43,15 @@ if($date_filter != 'all') {
 }
 
 if(!empty($search)) {
-    $where_conditions[] = "(u.u_fname LIKE ? OR u.u_lname LIKE ? OR sb.sb_phone LIKE ? OR s.s_name LIKE ? OR t.t_name LIKE ?)";
+    $where_conditions[] = "(u.u_fname LIKE ? OR u.u_lname LIKE ? OR u.u_phone LIKE ? OR s.s_name LIKE ? OR t.t_name LIKE ? OR sb.sb_id LIKE ?)";
     $search_param = "%$search%";
     $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
     $params[] = $search_param;
-    $types .= 'sssss';
+    $params[] = $search_param;
+    $types .= 'ssssss';
 }
 
 $where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
@@ -263,55 +264,67 @@ $stats = $stats_result->fetch_object();
                                                 <strong style="font-size: 0.9rem;">
                                                     <?php 
                                                     if(!empty($booking->u_fname)) {
-                                                        echo $booking->u_fname . ' ' . $booking->u_lname;
+                                                        echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname);
                                                     } else {
-                                                        echo 'Customer';
+                                                        echo '<span class="text-muted">Guest Customer</span>';
                                                     }
                                                     ?>
                                                 </strong><br>
                                                 <small class="text-muted">
-                                                    <i class="fas fa-phone"></i> <?php echo $booking->sb_phone; ?>
+                                                    <i class="fas fa-phone"></i> <?php echo !empty($booking->u_phone) ? $booking->u_phone : (!empty($booking->sb_phone) ? $booking->sb_phone : 'N/A'); ?>
                                                     <?php if(!empty($booking->u_email)): ?>
                                                     <br><i class="fas fa-envelope"></i> <?php echo substr($booking->u_email, 0, 20); ?>
                                                     <?php endif; ?>
                                                 </small>
                                             </td>
                                             <td>
-                                                <strong><?php echo $booking->s_name; ?></strong><br>
-                                                <span class="badge badge-secondary badge-sm"><?php echo $booking->s_category; ?></span>
+                                                <strong><?php echo !empty($booking->s_name) ? htmlspecialchars($booking->s_name) : '<span class="text-muted">Service Deleted</span>'; ?></strong><br>
+                                                <?php if(!empty($booking->s_category)): ?>
+                                                <span class="badge badge-secondary badge-sm"><?php echo htmlspecialchars($booking->s_category); ?></span>
+                                                <?php endif; ?>
                                                 <?php if(!empty($booking->sb_description)): ?>
                                                 <br><small class="text-muted" title="<?php echo htmlspecialchars($booking->sb_description); ?>">
-                                                    <i class="fas fa-info-circle"></i> <?php echo substr($booking->sb_description, 0, 20); ?>...
+                                                    <i class="fas fa-info-circle"></i> <?php echo htmlspecialchars(substr($booking->sb_description, 0, 20)); ?>...
                                                 </small>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php if($booking->t_name): ?>
-                                                    <strong><?php echo $booking->t_name; ?></strong><br>
+                                                <?php if(!empty($booking->t_name)): ?>
+                                                    <strong><?php echo htmlspecialchars($booking->t_name); ?></strong><br>
                                                     <small class="text-muted">
-                                                        ID: <?php echo $booking->t_id_no; ?>
+                                                        <?php if(!empty($booking->t_id_no)): ?>
+                                                        ID: <?php echo htmlspecialchars($booking->t_id_no); ?>
+                                                        <?php endif; ?>
                                                         <?php if(!empty($booking->t_phone)): ?>
-                                                        <br><i class="fas fa-phone"></i> <?php echo $booking->t_phone; ?>
+                                                        <br><i class="fas fa-phone"></i> <?php echo htmlspecialchars($booking->t_phone); ?>
                                                         <?php endif; ?>
                                                     </small>
                                                 <?php else: ?>
-                                                    <span class="badge badge-warning">Unassigned</span>
+                                                    <span class="badge badge-warning">⚠ Unassigned</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
+                                                <?php if(!empty($booking->sb_booking_date)): ?>
                                                 <i class="fas fa-calendar"></i> <?php echo date('d M Y', strtotime($booking->sb_booking_date)); ?><br>
+                                                <?php endif; ?>
+                                                <?php if(!empty($booking->sb_booking_time)): ?>
                                                 <i class="fas fa-clock"></i> <?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?>
-                                            </td>
-                                            <td>
-                                                <small title="<?php echo htmlspecialchars($booking->sb_address); ?>">
-                                                    <?php echo substr($booking->sb_address, 0, 30); ?><?php echo strlen($booking->sb_address) > 30 ? '...' : ''; ?>
-                                                </small>
-                                                <?php if(!empty($booking->sb_pincode)): ?>
-                                                <br><span class="badge badge-info badge-sm"><?php echo $booking->sb_pincode; ?></span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <strong class="text-success">₹<?php echo number_format($booking->sb_total_price, 0); ?></strong>
+                                                <?php if(!empty($booking->sb_address)): ?>
+                                                <small title="<?php echo htmlspecialchars($booking->sb_address); ?>">
+                                                    <?php echo htmlspecialchars(substr($booking->sb_address, 0, 30)); ?><?php echo strlen($booking->sb_address) > 30 ? '...' : ''; ?>
+                                                </small>
+                                                <?php else: ?>
+                                                <small class="text-muted">No address</small>
+                                                <?php endif; ?>
+                                                <?php if(!empty($booking->sb_pincode)): ?>
+                                                <br><span class="badge badge-info badge-sm"><?php echo htmlspecialchars($booking->sb_pincode); ?></span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <strong class="text-success">₹<?php echo isset($booking->sb_total_price) ? number_format($booking->sb_total_price, 0) : '0'; ?></strong>
                                             </td>
                                             <td>
                                                 <?php
@@ -344,11 +357,11 @@ $stats = $stats_result->fetch_object();
                                                     </a>
                                                 <?php endif; ?>
                                                 <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
-                                                    <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('DELETE this booking permanently?')" title="Delete Booking" style="padding: 1px 4px;">
-                                                        <i class="fas fa-trash" style="font-size: 0.65rem;"></i>
+                                                    <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-warning" onclick="return confirm('Cancel this booking? Technician will be freed up.');" title="Cancel Booking" style="padding: 1px 4px;">
+                                                        <i class="fas fa-ban" style="font-size: 0.65rem;"></i>
                                                     </a>
                                                 <?php endif; ?>
-                                                <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this booking permanently?')" title="Delete" style="padding: 1px 4px;">
+                                                <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this booking permanently? This cannot be undone!');" title="Delete Permanently" style="padding: 1px 4px;">
                                                     <i class="fas fa-trash" style="font-size: 0.65rem;"></i>
                                                 </a>
                                             </td>

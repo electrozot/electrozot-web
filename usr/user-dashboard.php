@@ -1,381 +1,458 @@
 <?php
-  session_start();
-  include('vendor/inc/config.php');
-  include('vendor/inc/checklogin.php');
-  check_login();
-  $aid=$_SESSION['u_id'];
+session_start();
+include('vendor/inc/config.php');
+include('vendor/inc/checklogin.php');
+check_login();
+$aid = $_SESSION['u_id'];
+
+// Get user info
+$query = "SELECT * FROM tms_user WHERE u_id = ?";
+$stmt = $mysqli->prepare($query);
+$stmt->bind_param('i', $aid);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_object();
+
+// Get booking stats
+$booking_query = "SELECT COUNT(*) as total FROM tms_service_booking WHERE sb_user_id = ?";
+$booking_stmt = $mysqli->prepare($booking_query);
+$booking_stmt->bind_param('i', $aid);
+$booking_stmt->execute();
+$booking_result = $booking_stmt->get_result();
+$booking_stats = $booking_result->fetch_object();
 ?>
- <!DOCTYPE html>
- <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dashboard - Electrozot</title>
+    <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            padding-bottom: 70px;
+        }
+        
+        .top-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            color: white;
+            padding: 20px 15px 25px;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo {
+            height: 45px;
+            width: auto;
+        }
+        
+        .brand-text h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-text p {
+            font-size: 11px;
+            opacity: 0.85;
+            margin: 2px 0 0 0;
+            font-style: italic;
+        }
+        
+        .user-section {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        .header-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .header-icon:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
+        }
+        
 
- <!--Head-->
- <?php include ('vendor/inc/head.php');?>
- <!--End Head-->
+        .quick-actions {
+            padding: 0 15px 15px;
+        }
+        
+        .section-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #6366f1;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        
+        .action-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+            transition: all 0.3s;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .action-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.2);
+        }
+        
+        .action-item:active {
+            transform: scale(0.95);
+        }
+        
+        .action-icon {
+            width: 55px;
+            height: 55px;
+            margin: 0 auto 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: white;
+        }
+        
+        .action-label {
+            font-size: 13px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .recent-activity {
+            padding: 0 15px 15px;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .activity-card:active {
+            transform: scale(0.98);
+        }
+        
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-right: 15px;
+            color: white;
+        }
+        
+        .activity-content { flex: 1; }
+        
+        .activity-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .activity-subtitle {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .activity-arrow {
+            color: #ccc;
+            font-size: 18px;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 8px;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            color: #999;
+            transition: all 0.3s;
+            padding: 5px;
+        }
+        
+        .nav-item.active { color: #667eea; }
+        
+        .nav-item i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        /* Tablet & Desktop Responsive */
+        @media (min-width: 768px) {
+            body {
+                background: #e9ecef;
+            }
+            
+            .top-header {
+                padding: 30px 20px 35px;
+            }
+            
+            .logo {
+                height: 55px;
+            }
+            
+            .brand-text h2 {
+                font-size: 24px;
+            }
+            
+            .brand-text p {
+                font-size: 13px;
+            }
+            
+            .user-name {
+                font-size: 18px;
+            }
+            
+            .header-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            
 
- <body id="page-top">
-     <!--Navbar-->
-     <?php include ('vendor/inc/nav.php');?>
-     <!--End Navbar-->
+            .quick-actions,
+            .recent-activity {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px 20px;
+            }
+            
+            .section-title {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .action-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            
+            .action-item {
+                padding: 25px 15px;
+            }
+            
+            .action-icon {
+                width: 65px;
+                height: 65px;
+                font-size: 30px;
+            }
+            
+            .action-label {
+                font-size: 14px;
+            }
+            
+            .activity-card {
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .activity-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 26px;
+            }
+            
+            .activity-title {
+                font-size: 17px;
+            }
+            
+            .activity-subtitle {
+                font-size: 14px;
+            }
+            
+            .bottom-nav {
+                max-width: 1200px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 15px 15px 0 0;
+            }
+        }
+        
+        /* Large Desktop */
+        @media (min-width: 1200px) {
+            .action-grid {
+                gap: 25px;
+            }
+            
+            .action-item {
+                padding: 30px 20px;
+            }
+            
+            .action-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+        }
+        
+        .bg-blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .bg-purple { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .bg-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+        .bg-green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .bg-orange { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .bg-teal { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+    </style>
+</head>
+<body>
+    <div class="top-header">
+        <div class="header-content">
+            <div class="brand-section">
+                <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
+                <div class="brand-text">
+                    <h2>Electrozot</h2>
+                    <p>We make perfect</p>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="user-name"><?php echo htmlspecialchars($user->u_fname); ?></div>
+                <div class="header-icons">
+                    <a href="user-view-profile.php" class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                    <a href="user-logout.php" class="header-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-     <div id="wrapper">
 
-         <!-- Sidebar -->
-         <?php include('vendor/inc/sidebar.php');?>
-         <!--End Sidebar-->
-         <div id="content-wrapper">
 
-             <div class="container-fluid">
-                 <!-- Breadcrumbs-->
-                 <ol class="breadcrumb">
-                     <li class="breadcrumb-item">
-                         <a href="user-dashboard.php">Dashboard</a>
-                     </li>
-                     <li class="breadcrumb-item active">Overview</li>
-                 </ol>
+    <div class="quick-actions">
+        <div class="section-title">
+            <i class="fas fa-bolt"></i> Quick Actions
+        </div>
+        <div class="action-grid">
+            <a href="book-service-step1.php" class="action-item">
+                <div class="action-icon bg-blue">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <div class="action-label">Book Service</div>
+            </a>
+            
+            <a href="user-view-booking.php" class="action-item">
+                <div class="action-icon bg-pink">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <div class="action-label">My Orders</div>
+            </a>
+            
+            <a href="user-track-booking.php" class="action-item">
+                <div class="action-icon bg-green">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="action-label">Track</div>
+            </a>
+            
+            <a href="user-give-feedback.php" class="action-item">
+                <div class="action-icon bg-orange">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="action-label">Feedback</div>
+            </a>
+        </div>
+    </div>
 
-                 <!-- Icon Cards-->
-                 <div class="row">
-                     <div class="col-xl-3 col-sm-6 mb-3">
-                         <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 15px;">
-                             <div class="card-body">
-                                 <div class="card-body-icon" style="opacity: 0.3;">
-                                     <i class="fas fa-user-circle" style="font-size: 5rem;"></i>
-                                 </div>
-                                 <div class="mr-5" style="position: relative; z-index: 2;">
-                                     <h4 class="mb-0" style="font-weight: 900;">My Profile</h4>
-                                     <p class="mb-0" style="font-size: 0.9rem; opacity: 0.9;">View & Update</p>
-                                 </div>
-                             </div>
-                             <a class="card-footer text-white clearfix small z-1" href="user-view-profile.php" style="background: rgba(0,0,0,0.2); border: none;">
-                                 <span class="float-left">View Profile</span>
-                                 <span class="float-right">
-                                     <i class="fas fa-arrow-circle-right"></i>
-                                 </span>
-                             </a>
-                         </div>
-                     </div>
-                     <div class="col-xl-3 col-sm-6 mb-3">
-                         <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border: none; border-radius: 15px;">
-                             <div class="card-body">
-                                 <div class="card-body-icon" style="opacity: 0.3;">
-                                     <i class="fas fa-calendar-alt" style="font-size: 5rem;"></i>
-                                 </div>
-                                 <div class="mr-5" style="position: relative; z-index: 2;">
-                                     <h4 class="mb-0" style="font-weight: 900;">My Bookings</h4>
-                                     <p class="mb-0" style="font-size: 0.9rem; opacity: 0.9;">View All</p>
-                                 </div>
-                             </div>
-                             <a class="card-footer text-white clearfix small z-1" href="user-view-booking.php" style="background: rgba(0,0,0,0.2); border: none;">
-                                 <span class="float-left">View Details</span>
-                                 <span class="float-right">
-                                     <i class="fas fa-arrow-circle-right"></i>
-                                 </span>
-                             </a>
-                         </div>
-                     </div>
-                     <div class="col-xl-3 col-sm-6 mb-3">
-                         <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; border-radius: 15px;">
-                             <div class="card-body">
-                                 <div class="card-body-icon" style="opacity: 0.3;">
-                                     <i class="fas fa-wrench" style="font-size: 5rem;"></i>
-                                 </div>
-                                 <div class="mr-5" style="position: relative; z-index: 2;">
-                                     <h4 class="mb-0" style="font-weight: 900;">Book Service</h4>
-                                     <p class="mb-0" style="font-size: 0.9rem; opacity: 0.9;">New Booking</p>
-                                 </div>
-                             </div>
-                             <a class="card-footer text-white clearfix small z-1" href="usr-book-service-simple.php" style="background: rgba(0,0,0,0.2); border: none;">
-                                 <span class="float-left">Book Now</span>
-                                 <span class="float-right">
-                                     <i class="fas fa-arrow-circle-right"></i>
-                                 </span>
-                             </a>
-                         </div>
-                     </div>
-                     <div class="col-xl-3 col-sm-6 mb-3">
-                         <div class="card text-white o-hidden h-100 shadow-lg" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border: none; border-radius: 15px;">
-                             <div class="card-body">
-                                 <div class="card-body-icon" style="opacity: 0.3;">
-                                     <i class="fas fa-comment-dots" style="font-size: 5rem;"></i>
-                                 </div>
-                                 <div class="mr-5" style="position: relative; z-index: 2;">
-                                     <h4 class="mb-0" style="font-weight: 900;">Feedback</h4>
-                                     <p class="mb-0" style="font-size: 0.9rem; opacity: 0.9;">Share Experience</p>
-                                 </div>
-                             </div>
-                             <a class="card-footer text-white clearfix small z-1" href="user-give-feedback.php" style="background: rgba(0,0,0,0.2); border: none;">
-                                 <span class="float-left">Give Feedback</span>
-                                 <span class="float-right">
-                                     <i class="fas fa-arrow-circle-right"></i>
-                                 </span>
-                             </a>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!-- Mobile Quick Actions -->
-                 <div class="mobile-quick-actions d-md-none mb-4">
-                     <a href="usr-book-service-simple.php" class="quick-action-btn">
-                         <i class="fas fa-plus-circle"></i>
-                         <span>Quick Book</span>
-                     </a>
-                     <a href="user-track-booking.php" class="quick-action-btn">
-                         <i class="fas fa-map-marker-alt"></i>
-                         <span>Track</span>
-                     </a>
-                     <a href="user-view-booking.php" class="quick-action-btn">
-                         <i class="fas fa-list"></i>
-                         <span>My Orders</span>
-                     </a>
-                 </div>
-
-                 <style>
-                 .mobile-quick-actions {
-                     display: flex;
-                     gap: 10px;
-                     padding: 0 15px;
-                 }
-                 
-                 .quick-action-btn {
-                     flex: 1;
-                     background: white;
-                     border-radius: 15px;
-                     padding: 20px 10px;
-                     text-align: center;
-                     text-decoration: none;
-                     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                     transition: all 0.3s ease;
-                 }
-                 
-                 .quick-action-btn:hover {
-                     text-decoration: none;
-                     transform: translateY(-3px);
-                     box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-                 }
-                 
-                 .quick-action-btn i {
-                     display: block;
-                     font-size: 28px;
-                     margin-bottom: 8px;
-                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                     -webkit-background-clip: text;
-                     -webkit-text-fill-color: transparent;
-                     background-clip: text;
-                 }
-                 
-                 .quick-action-btn span {
-                     display: block;
-                     font-size: 12px;
-                     font-weight: 700;
-                     color: #495057;
-                 }
-                 
-                 @media (max-width: 768px) {
-                     .card.shadow-lg {
-                         border-radius: 15px !important;
-                         margin-bottom: 15px !important;
-                     }
-                     
-                     .card-body {
-                         padding: 15px !important;
-                     }
-                     
-                     .row > div[class*="col-"] {
-                         padding-left: 10px !important;
-                         padding-right: 10px !important;
-                     }
-                 }
-                 
-                 /* Service Cards Dashboard */
-                 .service-card-dashboard {
-                     background: white;
-                     border-radius: 15px;
-                     padding: 20px;
-                     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                     transition: all 0.3s ease;
-                     border: 3px solid transparent;
-                     height: 100%;
-                     display: flex;
-                     flex-direction: column;
-                 }
-                 
-                 .service-card-dashboard:hover {
-                     transform: translateY(-5px);
-                     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-                     border-color: #667eea;
-                 }
-                 
-                 .service-icon-dash {
-                     width: 60px;
-                     height: 60px;
-                     border-radius: 15px;
-                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                     display: flex;
-                     align-items: center;
-                     justify-content: center;
-                     color: white;
-                     font-size: 28px;
-                     margin-bottom: 15px;
-                 }
-                 
-                 .service-name-dash {
-                     font-size: 18px;
-                     font-weight: 700;
-                     color: #333;
-                     margin-bottom: 10px;
-                 }
-                 
-                 .service-category-dash {
-                     font-size: 14px;
-                     color: #667eea;
-                     font-weight: 600;
-                     margin-bottom: 15px;
-                 }
-                 
-                 .service-details-dash {
-                     display: flex;
-                     justify-content: space-between;
-                     align-items: center;
-                     margin-bottom: 15px;
-                     padding-top: 15px;
-                     border-top: 2px solid #f0f0f0;
-                 }
-                 
-                 .service-price-dash {
-                     font-size: 24px;
-                     font-weight: 900;
-                     color: #28a745;
-                 }
-                 
-                 .service-duration-dash {
-                     font-size: 12px;
-                     color: #6c757d;
-                     font-weight: 600;
-                 }
-                 
-                 .book-now-btn {
-                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                     color: white;
-                     padding: 12px;
-                     border-radius: 10px;
-                     text-align: center;
-                     font-weight: 700;
-                     margin-top: auto;
-                 }
-                 
-                 .service-card-link:hover .book-now-btn {
-                     background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-                 }
-                 </style>
-
-                 <!--Available Services-->
-                 <div class="card mb-3 shadow-lg" style="border: none; border-radius: 15px;">
-                     <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
-                         <h6 class="m-0 font-weight-bold text-white">
-                             <i class="fas fa-wrench"></i> Available Services - Click to Book
-                         </h6>
-                     </div>
-                     <div class="card-body">
-                         <div class="row">
-                             <?php
-                             $services_query = "SELECT * FROM tms_service WHERE s_status = 'Active' ORDER BY s_category, s_name";
-                             $services_result = $mysqli->query($services_query);
-                             
-                             if($services_result->num_rows > 0):
-                                 while($service = $services_result->fetch_object()):
-                             ?>
-                                 <div class="col-md-4 col-sm-6 mb-3">
-                                     <a href="usr-book-service-simple.php?service_id=<?php echo $service->s_id; ?>" class="service-card-link" style="text-decoration: none;">
-                                         <div class="service-card-dashboard">
-                                             <div class="service-icon-dash">
-                                                 <i class="fas fa-tools"></i>
-                                             </div>
-                                             <h5 class="service-name-dash"><?php echo $service->s_name; ?></h5>
-                                             <p class="service-category-dash">
-                                                 <i class="fas fa-tag"></i> <?php echo $service->s_category; ?>
-                                             </p>
-                                             <div class="service-details-dash">
-                                                 <span class="service-price-dash">₹<?php echo number_format($service->s_price, 0); ?></span>
-                                                 <span class="service-duration-dash">
-                                                     <i class="fas fa-clock"></i> <?php echo $service->s_duration; ?>
-                                                 </span>
-                                             </div>
-                                             <div class="book-now-btn">
-                                                 <i class="fas fa-calendar-plus"></i> Book Now
-                                             </div>
-                                         </div>
-                                     </a>
-                                 </div>
-                             <?php 
-                                 endwhile;
-                             else:
-                             ?>
-                                 <div class="col-12 text-center py-5">
-                                     <i class="fas fa-tools fa-4x text-muted mb-3"></i>
-                                     <h4>No Services Available</h4>
-                                     <p class="text-muted">Please check back later</p>
-                                 </div>
-                             <?php endif; ?>
-                         </div>
-                     </div>
-                     <div class="card-footer small text-muted">
-                         <?php
-              date_default_timezone_set("Africa/Nairobi");
-              echo "Generated At : " . date("h:i:sa");
-            ?>
-                     </div>
-                 </div>
-
-             </div>
-             <!-- /.container-fluid -->
-             <!-- Sticky Footer -->
-             <?php include("vendor/inc/footer.php");?>
-
-         </div>
-         <!-- /.content-wrapper -->
-
-     </div>
-     <!-- /#wrapper -->
-
-     <!-- Scroll to Top Button-->
-     <a class="scroll-to-top rounded" href="#page-top">
-         <i class="fas fa-angle-up"></i>
-     </a>
-     <!-- Logout Modal-->
-     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-         <div class="modal-dialog" role="document">
-             <div class="modal-content">
-                 <div class="modal-header">
-                     <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                         <span aria-hidden="true">×</span>
-                     </button>
-                 </div>
-                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                 <div class="modal-footer">
-                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                     <a class="btn btn-danger" href="user-logout.php">Logout</a>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <!-- Bootstrap core JavaScript-->
-     <script src="vendor/jquery/jquery.min.js"></script>
-     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-     <!-- Core plugin JavaScript-->
-     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-     <!-- Page level plugin JavaScript-->
-     <script src="vendor/chart.js/Chart.min.js"></script>
-     <script src="vendor/datatables/jquery.dataTables.js"></script>
-     <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-     <!-- Custom scripts for all pages-->
-     <script src="vendor/js/sb-admin.min.js"></script>
-
-     <!-- Demo scripts for this page-->
-     <script src="vendor/js/demo/datatables-demo.js"></script>
-     <script src="vendor/js/demo/chart-area-demo.js"></script>
-
- </body>
-
- </html>
+    <div class="bottom-nav">
+        <a href="user-dashboard.php" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="book-service-step1.php" class="nav-item">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Book</span>
+        </a>
+        <a href="user-view-booking.php" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Orders</span>
+        </a>
+        <a href="user-view-profile.php" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
+</body>
+</html>

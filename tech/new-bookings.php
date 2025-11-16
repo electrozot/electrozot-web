@@ -39,76 +39,67 @@ $result = $stmt->get_result();
             <div class="row">
                 <?php while($booking = $result->fetch_object()): 
                     $status_class = '';
-                    $status_color = '';
                     if($booking->sb_status == 'Pending') {
                         $status_class = 'badge-pending';
-                        $status_color = '#ffa502';
                     } elseif($booking->sb_status == 'In Progress') {
                         $status_class = 'badge-progress';
-                        $status_color = '#00b4db';
+                    } elseif($booking->sb_status == 'Completed') {
+                        $status_class = 'badge-completed';
                     }
                 ?>
-                <div class="col-lg-6 mb-4">
-                    <div class="booking-card-new">
-                        <div class="booking-card-header" style="background: linear-gradient(135deg, <?php echo $status_color; ?> 0%, <?php echo $status_color; ?>dd 100%);">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="booking-id">#<?php echo $booking->sb_id; ?></span>
-                                <span class="status-badge <?php echo $status_class; ?>">
-                                    <?php echo $booking->sb_status; ?>
-                                </span>
-                            </div>
+                <div class="col-md-6 mb-3">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-id">#<?php echo $booking->sb_id; ?></span>
+                            <span class="badge-status <?php echo $status_class; ?>"><?php echo $booking->sb_status; ?></span>
                         </div>
-                        
-                        <div class="booking-card-body">
-                            <div class="customer-info mb-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="customer-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="mb-0"><?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?></h5>
-                                        <small class="text-muted"><?php echo htmlspecialchars($booking->u_email); ?></small>
-                                    </div>
+                        <div class="order-card-body">
+                            <div class="order-item">
+                                <div class="order-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="order-content">
+                                    <label>CUSTOMER NAME</label>
+                                    <p><?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?></p>
                                 </div>
                             </div>
-
-                            <div class="service-info mb-3">
-                                <div class="info-row">
-                                    <i class="fas fa-tools"></i>
-                                    <span><strong>Service:</strong> <?php echo htmlspecialchars($booking->s_name); ?></span>
+                            
+                            <div class="order-item">
+                                <div class="order-icon">
+                                    <i class="fas fa-map-pin"></i>
                                 </div>
-                                <div class="info-row">
-                                    <i class="fas fa-tag"></i>
-                                    <span><strong>Category:</strong> <?php echo htmlspecialchars($booking->s_category); ?></span>
-                                </div>
-                                <div class="info-row">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    <span><strong>Price:</strong> $<?php echo number_format($booking->sb_total_price, 2); ?></span>
+                                <div class="order-content">
+                                    <label>PINCODE</label>
+                                    <p><?php echo htmlspecialchars($booking->u_pincode ?? 'N/A'); ?></p>
                                 </div>
                             </div>
-
-                            <div class="booking-schedule mb-3">
-                                <div class="schedule-item">
-                                    <i class="fas fa-calendar"></i>
-                                    <span><?php echo date('l, F d, Y', strtotime($booking->sb_booking_date)); ?></span>
+                            
+                            <div class="order-item">
+                                <div class="order-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
                                 </div>
-                                <div class="schedule-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span><?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?></span>
+                                <div class="order-content">
+                                    <label>ADDRESS</label>
+                                    <p><?php echo htmlspecialchars($booking->sb_address); ?></p>
                                 </div>
                             </div>
-
-                            <div class="booking-address mb-3">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span><?php echo htmlspecialchars($booking->sb_address); ?></span>
+                            
+                            <div class="order-item">
+                                <div class="order-icon">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                                <div class="order-content">
+                                    <label>SERVICE</label>
+                                    <p><?php echo htmlspecialchars($booking->s_name); ?></p>
+                                </div>
                             </div>
-
-                            <div class="booking-actions">
-                                <a href="tel:<?php echo $booking->u_phone; ?>" class="btn btn-success-custom btn-sm">
-                                    <i class="fas fa-phone"></i> Call Customer
+                            
+                            <div class="order-actions">
+                                <a href="tel:<?php echo $booking->u_phone; ?>" class="btn btn-success btn-sm">
+                                    <i class="fas fa-phone"></i> Call
                                 </a>
-                                <a href="complete-service.php?id=<?php echo $booking->sb_id; ?>" class="btn btn-primary-custom btn-sm">
-                                    <i class="fas fa-check-circle"></i> Mark as Done
+                                <a href="booking-details.php?id=<?php echo $booking->sb_id; ?>" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> View Details
                                 </a>
                             </div>
                         </div>
@@ -129,112 +120,69 @@ $result = $stmt->get_result();
     </div>
 
     <style>
-        .booking-card-new {
+        .order-card {
             background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
         }
 
-        .booking-card-new:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        .order-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
         }
 
-        .booking-card-header {
+        .order-card-body {
             padding: 20px;
-            color: white;
         }
 
-        .booking-id {
-            font-size: 1.2rem;
-            font-weight: 800;
+        .order-field {
+            margin-bottom: 15px;
         }
 
-        .booking-card-body {
-            padding: 25px;
-        }
-
-        .customer-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        .info-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            color: #4a5568;
-        }
-
-        .info-row i {
-            color: #ffa502;
-            width: 20px;
-        }
-
-        .booking-schedule {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .schedule-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .order-field label {
+            font-size: 0.75rem;
             font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .order-field p {
+            font-size: 0.9rem;
             color: #2d3748;
+            margin: 0;
+            line-height: 1.4;
         }
 
-        .schedule-item i {
-            color: #ff4757;
-        }
-
-        .booking-address {
-            display: flex;
-            align-items: start;
-            gap: 10px;
-            padding: 15px;
-            background: #fff5f0;
-            border-radius: 10px;
-            border-left: 4px solid #ffa502;
-        }
-
-        .booking-address i {
-            color: #ff4757;
-            margin-top: 3px;
-        }
-
-        .booking-actions {
+        .order-actions {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
         }
 
-        .booking-actions .btn {
+        .order-actions .btn {
             flex: 1;
-            min-width: 150px;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 4px 10px;
         }
 
         .badge-progress {
             background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
             color: white;
-            padding: 8px 15px;
+            padding: 4px 10px;
             border-radius: 50px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
     </style>
 

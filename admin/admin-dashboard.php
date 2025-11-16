@@ -211,11 +211,11 @@
                         <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none; border-radius: 10px;">
                             <div class="card-body p-3">
                                 <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
-                                    <i class="fas fa-ban" style="font-size: 2rem;"></i>
+                                    <i class="fas fa-times-circle" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
                                 $rejected_query = "SELECT COUNT(*) FROM tms_service_booking 
-                                                  WHERE sb_status = 'Rejected' OR sb_status = 'Cancelled'";
+                                                  WHERE sb_status IN ('Rejected', 'Not Done', 'Cancelled')";
                                 $stmt_rejected = $mysqli->prepare($rejected_query);
                                 $stmt_rejected->execute();
                                 $stmt_rejected->bind_result($rejected_count);
@@ -224,11 +224,11 @@
                                 ?>
                                 <div style="position: relative; z-index: 2;">
                                     <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $rejected_count;?></h3>
-                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Rejected</p>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Rejected / Not Done</p>
                                 </div>
                             </div>
-                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-all-bookings.php?status=Rejected" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
-                                <span class="float-left">View</span>
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-rejected-bookings.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
+                                <span class="float-left">View & Reassign</span>
                                 <span class="float-right">
                                     <i class="fas fa-arrow-circle-right"></i>
                                 </span>

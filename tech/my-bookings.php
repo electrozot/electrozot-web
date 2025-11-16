@@ -89,70 +89,66 @@ $result = $stmt->get_result();
 
         <!-- Bookings Section -->
         <?php if($result->num_rows > 0): ?>
-            <div class="card-custom">
-                <div class="table-responsive">
-                    <table class="table table-custom">
-                        <thead>
-                            <tr>
-                                <th>Booking ID</th>
-                                <th>Customer</th>
-                                <th>Service</th>
-                                <th>Date & Time</th>
-                                <th>Address</th>
-                                <th>Contact</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $cnt = 1;
-                            while($row = $result->fetch_object()): 
-                                $status_class = '';
-                                if($row->sb_status == 'Pending') {
-                                    $status_class = 'badge-pending';
-                                } elseif($row->sb_status == 'Completed') {
-                                    $status_class = 'badge-completed';
-                                } else {
-                                    $status_class = 'badge-cancelled';
-                                }
-                            ?>
-                            <tr>
-                                <td>
-                                    <strong style="color: var(--primary); font-size: 1.1rem;">#<?php echo $row->sb_id; ?></strong>
-                                </td>
-                                <td>
-                                    <strong><?php echo htmlspecialchars($row->u_fname . ' ' . $row->u_lname); ?></strong><br>
-                                    <small style="color: #6c757d;"><?php echo htmlspecialchars($row->u_email); ?></small>
-                                </td>
-                                <td><?php echo htmlspecialchars($row->s_name); ?></td>
-                                <td>
-                                    <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($row->sb_booking_date)); ?><br>
-                                    <i class="fas fa-clock"></i> <?php echo date('h:i A', strtotime($row->sb_booking_time)); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars(substr($row->sb_address, 0, 30)) . '...'; ?></td>
-                                <td>
-                                    <a href="tel:<?php echo $row->u_phone; ?>" class="btn btn-sm btn-success-custom">
-                                        <i class="fas fa-phone"></i> <?php echo $row->u_phone; ?>
-                                    </a>
-                                </td>
-                                <td><strong>$<?php echo number_format($row->sb_total_price, 2); ?></strong></td>
-                                <td>
-                                    <span class="badge-status <?php echo $status_class; ?>">
-                                        <?php echo $row->sb_status; ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="booking-details.php?id=<?php echo $row->sb_id; ?>" class="btn btn-sm btn-primary-custom">
-                                        <i class="fas fa-eye"></i> Details
-                                    </a>
-                                </td>
-                            </tr>
-                            <?php endwhile; ?>
-                        </tbody>
-                    </table>
+            <div class="row">
+                <?php 
+                while($row = $result->fetch_object()): 
+                    $status_class = '';
+                    if($row->sb_status == 'Pending') {
+                        $status_class = 'badge-pending';
+                    } elseif($row->sb_status == 'Completed') {
+                        $status_class = 'badge-completed';
+                    } else {
+                        $status_class = 'badge-cancelled';
+                    }
+                ?>
+                <div class="col-md-6 mb-3">
+                    <div class="order-card">
+                        <div class="order-card-body">
+                            <div class="row">
+                                <!-- Left Side -->
+                                <div class="col-6">
+                                    <div class="order-field">
+                                        <label>Order ID</label>
+                                        <p><strong>#<?php echo $row->sb_id; ?></strong></p>
+                                    </div>
+                                    <div class="order-field">
+                                        <label>Customer Name</label>
+                                        <p><?php echo htmlspecialchars($row->u_fname . ' ' . $row->u_lname); ?></p>
+                                    </div>
+                                    <div class="order-field">
+                                        <label>Address</label>
+                                        <p><?php echo htmlspecialchars($row->sb_address); ?></p>
+                                    </div>
+                                </div>
+                                <!-- Right Side -->
+                                <div class="col-6">
+                                    <div class="order-field">
+                                        <label>Status</label>
+                                        <p><span class="badge-status <?php echo $status_class; ?>"><?php echo $row->sb_status; ?></span></p>
+                                    </div>
+                                    <div class="order-field">
+                                        <label>Pincode</label>
+                                        <p><?php echo htmlspecialchars($row->u_pincode ?? 'N/A'); ?></p>
+                                    </div>
+                                    <div class="order-field">
+                                        <label>Service</label>
+                                        <p><?php echo htmlspecialchars($row->s_name); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="order-actions">
+                                <a href="tel:<?php echo $row->u_phone; ?>" class="btn btn-success btn-sm">
+                                    <i class="fas fa-phone"></i> Call
+                                </a>
+                                <a href="booking-details.php?id=<?php echo $row->sb_id; ?>" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <?php endwhile; ?>
             </div>
         <?php else: ?>
             <div class="card-custom text-center" style="padding: 60px 30px;">
@@ -162,6 +158,64 @@ $result = $stmt->get_result();
             </div>
         <?php endif; ?>
     </div>
+
+    <style>
+        .order-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+
+        .order-card-body {
+            padding: 20px;
+        }
+
+        .order-field {
+            margin-bottom: 15px;
+        }
+
+        .order-field label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .order-field p {
+            font-size: 0.9rem;
+            color: #2d3748;
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .order-actions .btn {
+            flex: 1;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+
+        .badge-status {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+    </style>
 
     <script src="../admin/vendor/jquery/jquery.min.js"></script>
     <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

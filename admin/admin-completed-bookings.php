@@ -56,7 +56,8 @@ $completed_result = $mysqli->query($completed_query);
                                             <th>ID</th>
                                             <th>Customer</th>
                                             <th>Service</th>
-                                            <th>Price</th>
+                                            <th>Original Price</th>
+                                            <th>Bill Amount</th>
                                             <th>Technician</th>
                                             <th>Date</th>
                                             <th>Bill Image</th>
@@ -76,8 +77,13 @@ $completed_result = $mysqli->query($completed_query);
                                                 </td>
                                                 <td><?php echo htmlspecialchars($booking->s_name); ?></td>
                                                 <td>
-                                                    <strong class="text-success">
+                                                    <strong class="text-muted">
                                                         ₹<?php echo number_format($booking->s_price, 2); ?>
+                                                    </strong>
+                                                </td>
+                                                <td>
+                                                    <strong class="text-success" style="font-size:1.1rem;">
+                                                        ₹<?php echo isset($booking->sb_bill_amount) ? number_format($booking->sb_bill_amount, 2) : '0.00'; ?>
                                                     </strong>
                                                 </td>
                                                 <td><?php echo htmlspecialchars($booking->t_name); ?></td>
@@ -92,34 +98,35 @@ $completed_result = $mysqli->query($completed_query);
                                                     ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <?php if(!empty($booking->sb_bill_image)): ?>
-                                                        <img src="../vendor/img/<?php echo htmlspecialchars($booking->sb_bill_image); ?>" 
+                                                    <?php 
+                                                    $bill_img = !empty($booking->sb_bill_attachment) ? $booking->sb_bill_attachment : $booking->sb_bill_image;
+                                                    if(!empty($bill_img)): 
+                                                    ?>
+                                                        <img src="../<?php echo htmlspecialchars($bill_img); ?>" 
                                                              class="img-thumbnail" 
                                                              style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                                                             onclick="viewImage('../vendor/img/<?php echo htmlspecialchars($booking->sb_bill_image); ?>', 'Bill Image - Booking #<?php echo $booking->sb_id; ?>')">
+                                                             onclick="viewImage('../<?php echo htmlspecialchars($bill_img); ?>', 'Bill Image - Booking #<?php echo $booking->sb_id; ?>')">
                                                     <?php else: ?>
                                                         <span class="badge badge-secondary">No Image</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <?php if(!empty($booking->sb_service_image)): ?>
-                                                        <img src="../vendor/img/<?php echo htmlspecialchars($booking->sb_service_image); ?>" 
+                                                    <?php 
+                                                    $service_img = !empty($booking->sb_completion_image) ? $booking->sb_completion_image : $booking->sb_service_image;
+                                                    if(!empty($service_img)): 
+                                                    ?>
+                                                        <img src="../<?php echo htmlspecialchars($service_img); ?>" 
                                                              class="img-thumbnail" 
                                                              style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
-                                                             onclick="viewImage('../vendor/img/<?php echo htmlspecialchars($booking->sb_service_image); ?>', 'Service Image - Booking #<?php echo $booking->sb_id; ?>')">
+                                                             onclick="viewImage('../<?php echo htmlspecialchars($service_img); ?>', 'Service Image - Booking #<?php echo $booking->sb_id; ?>')">
                                                     <?php else: ?>
                                                         <span class="badge badge-secondary">No Image</span>
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="text-center">
-                                                    <?php if(!empty($booking->sb_bill_image) && !empty($booking->sb_service_image)): ?>
-                                                        <button class="btn btn-primary btn-sm mb-1" 
-                                                                onclick="viewBothImages('<?php echo htmlspecialchars($booking->sb_bill_image); ?>', '<?php echo htmlspecialchars($booking->sb_service_image); ?>', <?php echo $booking->sb_id; ?>)">
-                                                            <i class="fas fa-images"></i> View Both
-                                                        </button>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-warning">Incomplete</span>
-                                                    <?php endif; ?>
+                                                    <a href="admin-view-service-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-info btn-sm mb-1">
+                                                        <i class="fas fa-eye"></i> View Details
+                                                    </a>
                                                 </td>
                                             </tr>
                                         <?php endwhile; ?>

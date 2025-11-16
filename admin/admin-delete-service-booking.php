@@ -20,7 +20,12 @@
     
     // Free up the technician if one was assigned
     if($booking && $booking->sb_technician_id) {
-      $free_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
+      // Update all status fields to ensure technician is fully available
+      $free_tech = "UPDATE tms_technician 
+                   SET t_status='Available', 
+                       t_is_available=1, 
+                       t_current_booking_id=NULL 
+                   WHERE t_id=?";
       $free_stmt = $mysqli->prepare($free_tech);
       $free_stmt->bind_param('i', $booking->sb_technician_id);
       $free_stmt->execute();

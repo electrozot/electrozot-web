@@ -73,25 +73,43 @@ if($is_cancelled && isset($_POST['update_status'])){
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include('includes/head.php'); ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+        .back-btn:hover {
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
 <body>
-    <?php include('includes/nav.php'); ?>
+    <a href="dashboard.php" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
     
-    <div class="container main-content">
-        <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h2>
-                        <i class="fas fa-file-alt" style="color: var(--primary);"></i>
-                        Booking Details
-                    </h2>
-                    <p>Booking ID: #<?php echo $sb_id; ?></p>
-                </div>
-                <a href="dashboard.php" class="btn btn-primary-custom">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
-                </a>
-            </div>
-        </div>
+    <div class="container" style="margin-top: 60px;">
 
         <?php if($is_cancelled): ?>
             <div class="alert alert-warning" style="border-left: 5px solid #ff9800; background-color: #fff3e0; padding: 20px;">
@@ -122,163 +140,58 @@ if($is_cancelled && isset($_POST['update_status'])){
             </div>
         <?php endif; ?>
 
-        <div class="row">
-            <!-- Customer Information -->
-            <div class="col-md-6 mb-4">
-                <div class="card-custom">
-                    <h5 style="font-size: 1.3rem; font-weight: 700; color: #2d3748; margin-bottom: 25px; border-bottom: 3px solid var(--primary); padding-bottom: 15px;">
-                        <i class="fas fa-user" style="color: var(--primary);"></i>
-                        Customer Information
-                    </h5>
-                    
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Name</label>
-                        <p style="font-size: 1.1rem; color: #2d3748; margin: 5px 0;">
-                            <i class="fas fa-user-circle" style="color: var(--primary);"></i>
-                            <?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?>
-                        </p>
-                    </div>
-
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Phone</label>
-                        <p style="font-size: 1.1rem; color: #2d3748; margin: 5px 0;">
-                            <a href="tel:<?php echo $booking->u_phone; ?>" class="btn btn-success-custom btn-sm">
-                                <i class="fas fa-phone"></i> <?php echo htmlspecialchars($booking->u_phone); ?>
-                            </a>
-                        </p>
-                    </div>
-
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Email</label>
-                        <p style="font-size: 1rem; color: #2d3748; margin: 5px 0;">
-                            <i class="fas fa-envelope" style="color: var(--primary);"></i>
-                            <?php echo htmlspecialchars($booking->u_email); ?>
-                        </p>
-                    </div>
-
-                    <div class="info-item">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Address</label>
-                        <p style="font-size: 1rem; color: #2d3748; margin: 5px 0; line-height: 1.6;">
-                            <i class="fas fa-map-marker-alt" style="color: var(--primary);"></i>
-                            <?php echo htmlspecialchars($booking->sb_address); ?>
-                        </p>
-                    </div>
-                </div>
+        <!-- Clean Simple Booking Details -->
+        <div class="card-custom" style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h3 style="color: #3b82f6; font-weight: 700; font-size: 2rem;">Order #<?php echo $sb_id; ?></h3>
             </div>
 
-            <!-- Service Information -->
-            <div class="col-md-6 mb-4">
-                <div class="card-custom">
-                    <h5 style="font-size: 1.3rem; font-weight: 700; color: #2d3748; margin-bottom: 25px; border-bottom: 3px solid var(--primary); padding-bottom: 15px;">
-                        <i class="fas fa-tools" style="color: var(--primary);"></i>
-                        Service Information
-                    </h5>
-                    
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Service Name</label>
-                        <p style="font-size: 1.1rem; color: #2d3748; margin: 5px 0; font-weight: 600;">
-                            <?php echo htmlspecialchars($booking->s_name); ?>
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 12px;">
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Customer Name</label>
+                    <p style="font-size: 1.3rem; color: #1e293b; font-weight: 700; margin: 0;">
+                        <?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?>
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Phone</label>
+                    <p style="margin: 0;">
+                        <a href="tel:<?php echo $booking->u_phone; ?>" style="font-size: 1.2rem; color: #10b981; font-weight: 700; text-decoration: none;">
+                            <i class="fas fa-phone"></i> <?php echo htmlspecialchars($booking->u_phone); ?>
+                        </a>
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Address</label>
+                    <p style="font-size: 1.1rem; color: #1e293b; font-weight: 600; margin: 0; line-height: 1.6;">
+                        <?php echo htmlspecialchars($booking->sb_address); ?>
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Service</label>
+                    <p style="font-size: 1.2rem; color: #1e293b; font-weight: 700; margin: 0;">
+                        <?php echo htmlspecialchars($booking->s_name); ?>
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 20px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Date</label>
+                        <p style="font-size: 1.05rem; color: #1e293b; font-weight: 600; margin: 0;">
+                            <?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?>
                         </p>
                     </div>
-
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Category</label>
-                        <p style="font-size: 1rem; color: #2d3748; margin: 5px 0;">
-                            <span class="badge-status badge-pending"><?php echo htmlspecialchars($booking->s_category); ?></span>
-                        </p>
-                    </div>
-
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Price</label>
-                        <p style="font-size: 1.5rem; color: var(--primary); margin: 5px 0; font-weight: 700;">
-                            $<?php echo number_format($booking->sb_total_price, 2); ?>
-                        </p>
-                    </div>
-
-                    <div class="info-item mb-3">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Scheduled Date & Time</label>
-                        <p style="font-size: 1rem; color: #2d3748; margin: 5px 0;">
-                            <i class="fas fa-calendar" style="color: var(--primary);"></i>
-                            <?php echo date('l, F d, Y', strtotime($booking->sb_booking_date)); ?>
-                            <br>
-                            <i class="fas fa-clock" style="color: var(--primary);"></i>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.8rem; color: #64748b; text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 5px;">Time</label>
+                        <p style="font-size: 1.05rem; color: #1e293b; font-weight: 600; margin: 0;">
                             <?php echo date('h:i A', strtotime($booking->sb_booking_time)); ?>
                         </p>
                     </div>
-
-                    <?php if($booking->sb_description): ?>
-                    <div class="info-item">
-                        <label style="font-weight: 600; color: #6c757d; font-size: 0.9rem;">Additional Notes</label>
-                        <p style="font-size: 1rem; color: #2d3748; margin: 5px 0; line-height: 1.6; background: #f8f9fa; padding: 15px; border-radius: 10px;">
-                            <?php echo nl2br(htmlspecialchars($booking->sb_description)); ?>
-                        </p>
-                    </div>
-                    <?php endif; ?>
                 </div>
             </div>
-        </div>
-
-        <!-- Update Status -->
-        <div class="card-custom">
-            <h5 style="font-size: 1.3rem; font-weight: 700; color: #2d3748; margin-bottom: 25px; border-bottom: 3px solid var(--primary); padding-bottom: 15px;">
-                <i class="fas fa-tasks" style="color: var(--primary);"></i>
-                Update Booking Status
-            </h5>
-            
-            <?php if($is_cancelled): ?>
-                <div class="alert alert-warning">
-                    <i class="fas fa-lock"></i> <strong>Actions Disabled:</strong> This booking has been cancelled and reassigned. You cannot update its status.
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <label style="font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-info-circle"></i> Status
-                        </label>
-                        <div style="margin-top: 10px;">
-                            <span class="badge-status badge-cancelled" style="font-size: 1.1rem; padding: 12px 25px;">
-                                <i class="fas fa-ban"></i> Cancelled by Admin
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            <?php else: ?>
-            <form method="POST" class="row align-items-end">
-                <div class="col-md-6 mb-3">
-                    <label style="font-weight: 600; color: #2d3748;">
-                        <i class="fas fa-info-circle"></i> Current Status
-                    </label>
-                    <div style="margin-top: 10px;">
-                        <?php
-                        $status_class = '';
-                        if($booking->sb_status == 'Pending') $status_class = 'badge-pending';
-                        elseif($booking->sb_status == 'Completed') $status_class = 'badge-completed';
-                        else $status_class = 'badge-cancelled';
-                        ?>
-                        <span class="badge-status <?php echo $status_class; ?>" style="font-size: 1.1rem; padding: 12px 25px;">
-                            <?php echo $booking->sb_status; ?>
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="col-md-4 mb-3">
-                    <label style="font-weight: 600; color: #2d3748;">
-                        <i class="fas fa-edit"></i> Change Status To
-                    </label>
-                    <select name="sb_status" class="form-control" required style="border-radius: 10px; padding: 12px; font-weight: 600;">
-                        <option value="Pending" <?php echo $booking->sb_status == 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                        <option value="In Progress" <?php echo $booking->sb_status == 'In Progress' ? 'selected' : ''; ?>>In Progress</option>
-                        <option value="Completed" <?php echo $booking->sb_status == 'Completed' ? 'selected' : ''; ?>>Completed</option>
-                        <option value="Cancelled" <?php echo $booking->sb_status == 'Cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-2 mb-3">
-                    <button type="submit" name="update_status" class="btn btn-primary-custom btn-block">
-                        <i class="fas fa-save"></i> Update
-                    </button>
-                </div>
-            </form>
-            <?php endif; ?>
         </div>
     </div>
 
