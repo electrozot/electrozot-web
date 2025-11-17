@@ -353,11 +353,12 @@ if(isset($_POST['search_technician'])) {
                         <!-- WhatsApp Instructions -->
                         <div class="alert alert-info mt-3" style="font-size: 0.9rem;">
                             <strong><i class="fab fa-whatsapp"></i> WhatsApp Instructions:</strong><br>
-                            1. Click "Send to WhatsApp" to generate and save ID card files<br>
-                            2. WhatsApp will open with welcome message and download links<br>
-                            3. The PDF file will be saved on server and link shared in message<br>
-                            4. Manually attach the PDF from the provided link in WhatsApp chat<br>
-                            <small class="text-muted">Note: The system saves both Image (PNG) and PDF formats. Share the PDF link or manually attach the downloaded PDF file in WhatsApp.</small>
+                            1. Click "Send to WhatsApp" - PDF and Image will download automatically<br>
+                            2. WhatsApp will open with welcome message ready to send<br>
+                            3. Click the attachment icon (📎) in WhatsApp<br>
+                            4. Select "Document" and choose the downloaded PDF from your Downloads folder<br>
+                            5. Click Send to deliver the ID card with the message<br>
+                            <small class="text-muted">Note: Files download directly to your device. Simply attach the PDF from your Downloads folder in WhatsApp.</small>
                         </div>
                         
                         <input type="hidden" id="techPhone" value="<?php echo htmlspecialchars($technician->t_phone); ?>">
@@ -480,9 +481,6 @@ if(isset($_POST['search_technician'])) {
                 useCORS: true,
                 allowTaint: true
             }).then(canvas => {
-                // Convert canvas to base64
-                const imageData = canvas.toDataURL('image/png');
-                
                 // Generate PDF
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({
@@ -491,126 +489,116 @@ if(isset($_POST['search_technician'])) {
                     format: 'a4'
                 });
                 
+                const imgData = canvas.toDataURL('image/png');
                 const imgWidth = 100;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 const x = (pdf.internal.pageSize.getWidth() - imgWidth) / 2;
                 const y = 20;
                 
-                pdf.addImage(imageData, 'PNG', x, y, imgWidth, imgHeight);
-                const pdfData = pdf.output('dataurlstring');
+                pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
                 
-                // Create form data with both image and PDF
-                const formData = new FormData();
-                formData.append('image_data', imageData);
-                formData.append('pdf_data', pdfData);
-                formData.append('phone', techPhone);
-                formData.append('name', techName);
+                // Download PDF automatically
+                const pdfFilename = `ID_Card_${techName.replace(/\s+/g, '_')}.pdf`;
+                pdf.save(pdfFilename);
                 
-                // Send to server
-                fetch('api-send-id-card-whatsapp.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    swal.close();
-                    if(data.success) {
-                        // Show success with file links
-                        let apiInfo = '';
-                        if(data.api_sent) {
-                            apiInfo = '<p class="text-success"><strong>✅ PDF automatically sent via WhatsApp!</strong></p>';
-                        } else if(data.api_message) {
-                            apiInfo = `<p class="text-warning"><small>${data.api_message}</small></p>`;
+                // Also download image
+                const link = document.createElement('a');
+                link.download = `ID_Card_${techName.replace(/\s+/g, '_')}.png`;
+                link.href = imgData;
+                link.click();
+                
+                // Format phone number for WhatsApp
+                const whatsappNumber = '91' + techPhone;
+                
+                // Create WhatsApp message
+                const message = `Hi ${techName}! 👋\n\n` +
+                    `Welcome to Electrozot! ⚡\n\n` +
+                    `Mohit Choudhary welcomes you to the Electrozot Team! 🎉\n\n` +
+                    `📋 Your Technician ID Card has been generated!\n\n` +
+                    `The PDF and Image files have been downloaded to your device.\n\n` +
+                    `Please save your ID card and keep it with you during service visits.\n\n` +
+                    `We're excited to have you on board! 💪\n\n` +
+                    `Best regards,\n` +
+                    `Mohit Choudhary\n` +
+                    `Electrozot Management\n\n` +
+                    `📞 Contact: 7559606925\n` +
+                    `🌐 Website: www.electrozot.in`;
+                
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                
+                swal.close();
+                
+                // Show success message with instructions
+                swal({
+                    title: "ID Card Downloaded!",
+                    html: `<div style="text-align: left;">
+                           <p><strong>✅ Files downloaded successfully!</strong></p>
+                           <p>📄 <strong>PDF:</strong> ${pdfFilename}</p>
+                           <p>🖼️ <strong>Image:</strong> ID_Card_${techName.replace(/\s+/g, '_')}.png</p>
+                           <hr>
+                           <p><strong>Next Steps:</strong></p>
+                           <ol style="font-size: 0.9rem;">
+                               <li>Click "Open WhatsApp" below</li>
+                               <li>In WhatsApp, click the <strong>📎 attachment icon</strong></li>
+                               <li>Select <strong>"Document"</strong></li>
+                               <li>Choose the downloaded PDF file from your Downloads folder</li>
+                               <li>Click <strong>Send</strong></li>
+                           </ol>
+                           <p class="text-info" style="font-size: 0.85rem; margin-top: 10px;">
+                               <strong>💡 Tip:</strong> Check your Downloads folder for the PDF file.
+                           </p>
+                           </div>`,
+                    icon: "success",
+                    buttons: {
+                        cancel: {
+                            text: "Later",
+                            value: false,
+                            visible: true,
+                            className: "btn-secondary"
+                        },
+                        confirm: {
+                            text: "Open WhatsApp",
+                            value: true,
+                            className: "btn-success"
                         }
-                        
-                        swal({
-                            title: "ID Card Ready!",
-                            html: `<div style="text-align: left;">
-                                   <p><strong>Files saved successfully!</strong></p>
-                                   ${apiInfo}
-                                   <p><strong>📄 PDF File:</strong><br>
-                                   <a href="${data.pdf_url}" target="_blank" class="btn btn-sm btn-danger mt-1">
-                                       <i class="fas fa-file-pdf"></i> Download PDF
-                                   </a></p>
-                                   <p><strong>🖼️ Image File:</strong><br>
-                                   <a href="${data.image_url}" target="_blank" class="btn btn-sm btn-primary mt-1">
-                                       <i class="fas fa-image"></i> Download Image
-                                   </a></p>
-                                   <hr>
-                                   <p class="mb-2"><strong>Next Steps:</strong></p>
-                                   <ol style="font-size: 0.9rem;">
-                                       <li>Click "Open WhatsApp" below</li>
-                                       <li>The welcome message with download links will be ready</li>
-                                       <li>Click the PDF link in the message to download</li>
-                                       <li>Attach the PDF file in WhatsApp chat</li>
-                                       <li>Send the message with attachment</li>
-                                   </ol>
-                                   </div>`,
-                            icon: "success",
-                            buttons: {
-                                cancel: {
-                                    text: "Later",
-                                    value: false,
-                                    visible: true,
-                                    className: "btn-secondary"
-                                },
-                                confirm: {
-                                    text: "Open WhatsApp",
-                                    value: true,
-                                    className: "btn-success"
-                                }
-                            }
-                        }).then((value) => {
-                            if(value) {
-                                // Open WhatsApp
-                                window.open(data.whatsapp_url, '_blank');
-                                
-                                // Show attachment instructions after delay
-                                setTimeout(() => {
-                                    swal({
-                                        title: "📎 Attach PDF in WhatsApp",
-                                        html: `<div style="text-align: left;">
-                                                <p><strong>WhatsApp is now open with your message!</strong></p>
-                                                <hr>
-                                                <p><strong>To attach the PDF ID card:</strong></p>
-                                                <ol>
-                                                    <li>In WhatsApp chat, click the <strong>📎 attachment icon</strong></li>
-                                                    <li>Select <strong>"Document"</strong></li>
-                                                    <li>Click the PDF link in the message to download it first</li>
-                                                    <li>Then attach the downloaded PDF file</li>
-                                                    <li>Click <strong>Send</strong></li>
-                                                </ol>
-                                                <hr>
-                                                <p><strong>Quick Access:</strong></p>
-                                                <p>
-                                                    <a href="${data.pdf_url}" target="_blank" class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-download"></i> Download PDF Now
-                                                    </a>
-                                                </p>
-                                                <p class="text-muted" style="font-size: 0.85rem;">
-                                                    <strong>Tip:</strong> Download the PDF first, then attach it in WhatsApp for best results.
-                                                </p>
-                                               </div>`,
-                                        icon: "info",
-                                        button: {
-                                            text: "Got it!",
-                                            className: "btn-primary"
-                                        }
-                                    });
-                                }, 2000);
-                            }
-                        });
-                    } else {
-                        swal("Error!", data.message || "Failed to prepare ID card", "error");
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    swal("Error!", "Failed to send ID card. Please try again.", "error");
+                }).then((value) => {
+                    if(value) {
+                        // Open WhatsApp
+                        window.open(whatsappUrl, '_blank');
+                        
+                        // Show reminder after delay
+                        setTimeout(() => {
+                            swal({
+                                title: "📎 Attach the PDF",
+                                html: `<div style="text-align: left;">
+                                        <p><strong>WhatsApp is now open!</strong></p>
+                                        <hr>
+                                        <p><strong>To attach the ID card PDF:</strong></p>
+                                        <ol>
+                                            <li>Click the <strong>📎 attachment icon</strong> in WhatsApp</li>
+                                            <li>Select <strong>"Document"</strong></li>
+                                            <li>Browse to your <strong>Downloads</strong> folder</li>
+                                            <li>Select <strong>${pdfFilename}</strong></li>
+                                            <li>Click <strong>Send</strong></li>
+                                        </ol>
+                                        <p class="text-success" style="font-size: 0.9rem; margin-top: 10px;">
+                                            ✅ The welcome message is already in the chat!
+                                        </p>
+                                       </div>`,
+                                icon: "info",
+                                button: {
+                                    text: "Got it!",
+                                    className: "btn-primary"
+                                }
+                            });
+                        }, 1500);
+                    }
                 });
+                
             }).catch(error => {
                 console.error('Error:', error);
-                swal("Error!", "Failed to generate ID card image", "error");
+                swal("Error!", "Failed to generate ID card. Please try again.", "error");
             });
         }
         
