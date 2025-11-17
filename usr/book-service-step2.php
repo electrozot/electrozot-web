@@ -29,7 +29,7 @@ $subcategories_map = [
         ['name' => 'Routine Care', 'icon' => 'fa-broom']
     ],
     'Plumbing Work' => [
-        ['name' => 'Fixtures & Taps', 'icon' => 'fa-faucet']
+        ['name' => 'Fixtures & Taps', 'icon' => 'fa-tint']
     ]
 ];
 

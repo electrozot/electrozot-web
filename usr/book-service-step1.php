@@ -346,7 +346,7 @@ $aid = $_SESSION['u_id'];
 
         <a href="book-service-step2.php?category=<?php echo urlencode('Plumbing Work'); ?>" class="category-card">
             <div class="category-icon bg-orange">
-                <i class="fas fa-faucet"></i>
+                <i class="fas fa-tint"></i>
             </div>
             <div class="category-info">
                 <div class="category-name">Plumbing Work</div>

@@ -722,5 +722,127 @@ $user = $user_result->fetch_object();
             <span>Profile</span>
         </a>
     </div>
+
+    <script>
+        // Auto-refresh booking status every 10 seconds
+        let autoRefreshInterval;
+        let isPageVisible = true;
+        
+        // Detect if page is visible (don't refresh when tab is hidden)
+        document.addEventListener('visibilitychange', function() {
+            isPageVisible = !document.hidden;
+            if (isPageVisible && autoRefreshInterval) {
+                checkForUpdates(); // Check immediately when tab becomes visible
+            }
+        });
+        
+        // Function to check for booking updates
+        function checkForUpdates() {
+            if (!isPageVisible) return; // Don't update if page is hidden
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookingId = urlParams.get('booking_id') || '';
+            
+            // Only auto-refresh if we have a booking to track
+            <?php if(isset($booking) && $booking): ?>
+            fetch('get-booking-status.php?booking_id=<?php echo $booking->sb_id; ?>')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateBookingStatus(data.booking);
+                    }
+                })
+                .catch(error => {
+                    console.log('Auto-refresh error:', error);
+                });
+            <?php endif; ?>
+        }
+        
+        // Function to update the page with new status
+        function updateBookingStatus(booking) {
+            const currentStatus = '<?php echo isset($booking) ? $booking->sb_status : ""; ?>';
+            
+            // Only reload if status has changed
+            if (booking.status !== currentStatus) {
+                // Show notification
+                showUpdateNotification('Order status updated to: ' + booking.status);
+                
+                // Reload page after 2 seconds to show new status
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }
+        }
+        
+        // Show notification when status changes
+        function showUpdateNotification(message) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+                z-index: 9999;
+                font-weight: 600;
+                font-size: 14px;
+                animation: slideDown 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-sync-alt fa-spin"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Start auto-refresh (every 10 seconds)
+        <?php if(isset($booking) && $booking): ?>
+        autoRefreshInterval = setInterval(checkForUpdates, 10000);
+        
+        // Initial check after 5 seconds
+        setTimeout(checkForUpdates, 5000);
+        <?php endif; ?>
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+            }
+            @keyframes slideUp {
+                from {
+                    opacity: 1;
+                    transform: translateX(-50%) translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(-50%) translateY(-20px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

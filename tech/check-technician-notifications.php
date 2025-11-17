@@ -9,9 +9,14 @@ include('includes/checklogin.php');
 // Clear any output that might have been generated
 ob_end_clean();
 
+// Start fresh output buffering
+ob_start();
+
 // Now set the header
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-cache, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 $t_id = $_SESSION['t_id'];
 
@@ -125,8 +130,8 @@ while($booking = $details_result->fetch_assoc()) {
 $current_time = date('Y-m-d H:i:s');
 $_SESSION['tech_last_check'] = $current_time;
 
-// Return response
-echo json_encode([
+// Prepare response
+$response = [
     'success' => true,
     'notification_count' => (int)$new_count,
     'has_notifications' => $new_count > 0,
@@ -134,8 +139,13 @@ echo json_encode([
     'last_check' => $last_check,
     'current_time' => $current_time,
     'technician_id' => $t_id
-]);
+];
 
-// Exit to prevent any trailing output
+// Clear output buffer and send clean JSON
+ob_clean();
+echo json_encode($response, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+// Flush and exit
+ob_end_flush();
 exit;
 ?>

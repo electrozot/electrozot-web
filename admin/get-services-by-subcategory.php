@@ -21,17 +21,18 @@ if(isset($_POST['subcategory'])) {
         $services[] = $row;
     }
     
-    if(count($services) > 0) {
-        echo json_encode([
-            'success' => true,
-            'services' => $services
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'No services found for this subcategory'
-        ]);
-    }
+    // Always add "Other" option at the end
+    $services[] = [
+        'id' => 'other',
+        'name' => 'Other (Service not listed)',
+        'gadget_name' => 'Other - Specify your service',
+        'price' => 0
+    ];
+    
+    echo json_encode([
+        'success' => true,
+        'services' => $services
+    ]);
 } else {
     echo json_encode([
         'success' => false,

@@ -194,6 +194,11 @@
                                                     </select>
                                                     <small class="text-muted"><i class="fas fa-scroll"></i> Scroll to view all options</small>
                                                 </div>
+                                                <div class="form-group mb-2" id="otherServiceDiv" style="display: none;">
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-edit text-warning"></i> Specify Your Service <span style="color: #e74c3c;">*</span></label>
+                                                    <input type="text" class="form-control form-control-sm" name="other_service_name" id="otherServiceInput" placeholder="Enter the service you need">
+                                                    <small class="text-info"><i class="fas fa-info-circle"></i> Please describe the service you need</small>
+                                                </div>
                                                 <div class="form-group mb-2" style="margin-top: 8px;">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-comment text-primary"></i> Additional Notes</label>
                                                     <textarea class="form-control form-control-sm" name="sb_description" rows="3" placeholder="Any special requirements or additional information"></textarea>
@@ -219,6 +224,66 @@
                 </div>
             </div>
         </section>
+
+        <style>
+            /* Fix for service dropdown text truncation */
+            .service-dropdown {
+                width: 100% !important;
+                max-width: 100% !important;
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                padding-right: 30px !important;
+            }
+            
+            .service-dropdown option {
+                white-space: normal !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                padding: 8px 10px !important;
+                line-height: 1.4 !important;
+            }
+            
+            /* Ensure form controls have proper width */
+            .form-control-sm {
+                font-size: 0.95rem !important;
+                padding: 8px 12px !important;
+                height: auto !important;
+                min-height: 38px !important;
+            }
+            
+            /* Fix for select dropdown arrow */
+            select.form-control-sm {
+                background-position: right 8px center !important;
+                background-size: 12px 12px !important;
+            }
+            
+            /* Custom service input styling */
+            #otherServiceDiv {
+                animation: slideDown 0.3s ease-out;
+            }
+            
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            #otherServiceInput {
+                border: 2px solid #ffc107 !important;
+                background-color: #fffbf0 !important;
+            }
+            
+            #otherServiceInput:focus {
+                border-color: #ff9800 !important;
+                box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25) !important;
+            }
+        </style>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -270,6 +335,9 @@
                 var serviceSelect = document.getElementById('guestService');
                 
                 if(subcategorySelect && serviceSelect) {
+                    var otherServiceDiv = document.getElementById('otherServiceDiv');
+                    var otherServiceInput = document.getElementById('otherServiceInput');
+                    
                     // Handle subcategory change - load services via AJAX
                     subcategorySelect.addEventListener('change', function() {
                         var subcategory = this.value;
@@ -278,6 +346,15 @@
                         
                         serviceSelect.innerHTML = '<option value="">Loading...</option>';
                         serviceSelect.disabled = true;
+                        
+                        // Hide other service input when category changes
+                        if(otherServiceDiv) {
+                            otherServiceDiv.style.display = 'none';
+                            if(otherServiceInput) {
+                                otherServiceInput.removeAttribute('required');
+                                otherServiceInput.value = '';
+                            }
+                        }
                         
                         if(subcategory) {
                             fetch('admin/get-services-by-subcategory.php', {
@@ -322,6 +399,31 @@
                         } else {
                             serviceSelect.innerHTML = '<option value="">Select service type first...</option>';
                             serviceSelect.disabled = true;
+                        }
+                    });
+                    
+                    // Handle service selection - show/hide "Other" input
+                    serviceSelect.addEventListener('change', function() {
+                        var selectedValue = this.value;
+                        
+                        if(selectedValue === 'other') {
+                            // Show the custom service input
+                            if(otherServiceDiv) {
+                                otherServiceDiv.style.display = 'block';
+                                if(otherServiceInput) {
+                                    otherServiceInput.setAttribute('required', 'required');
+                                    otherServiceInput.focus();
+                                }
+                            }
+                        } else {
+                            // Hide the custom service input
+                            if(otherServiceDiv) {
+                                otherServiceDiv.style.display = 'none';
+                                if(otherServiceInput) {
+                                    otherServiceInput.removeAttribute('required');
+                                    otherServiceInput.value = '';
+                                }
+                            }
                         }
                     });
                 }

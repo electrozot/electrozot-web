@@ -23,11 +23,27 @@ if(isset($_POST['book_service_guest'])) {
     $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
     
     // Validate service selection
-    $sb_service_id = isset($_POST['sb_service_id']) ? intval($_POST['sb_service_id']) : 0;
-    if($sb_service_id <= 0) {
-        $_SESSION['booking_error'] = "Please select a service.";
-        header("location: index.php#booking-form");
-        exit();
+    $sb_service_id_raw = isset($_POST['sb_service_id']) ? $_POST['sb_service_id'] : '';
+    $is_other_service = ($sb_service_id_raw === 'other');
+    $other_service_name = '';
+    
+    if($is_other_service) {
+        // Handle "Other" service
+        $other_service_name = isset($_POST['other_service_name']) ? trim($_POST['other_service_name']) : '';
+        if(empty($other_service_name)) {
+            $_SESSION['booking_error'] = "Please specify the service you need.";
+            header("location: index.php#booking-form");
+            exit();
+        }
+        // Set service ID to NULL for other services (to avoid foreign key constraint)
+        $sb_service_id = null;
+    } else {
+        $sb_service_id = intval($sb_service_id_raw);
+        if($sb_service_id <= 0) {
+            $_SESSION['booking_error'] = "Please select a service.";
+            header("location: index.php#booking-form");
+            exit();
+        }
     }
     
     // Validate required fields
@@ -62,29 +78,36 @@ if(isset($_POST['book_service_guest'])) {
     $u_lname = isset($name_parts[1]) ? $name_parts[1] : '';
 
     // Get service price and validate service exists
-    $query_price = "SELECT s_price, s_status FROM tms_service WHERE s_id = ?";
-    $stmt_price = $mysqli->prepare($query_price);
-    $stmt_price->bind_param('i', $sb_service_id);
-    $stmt_price->execute();
-    $result = $stmt_price->get_result();
-    $service = $result->fetch_object();
-    
-    if(!$service) {
-        $_SESSION['booking_error'] = "Selected service does not exist.";
+    if($is_other_service) {
+        // For "Other" service, set price to 0 (to be determined by admin)
+        $sb_total_price = 0;
+        // Append the custom service name to description
+        $sb_description = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $sb_description;
+    } else {
+        $query_price = "SELECT s_price, s_status FROM tms_service WHERE s_id = ?";
+        $stmt_price = $mysqli->prepare($query_price);
+        $stmt_price->bind_param('i', $sb_service_id);
+        $stmt_price->execute();
+        $result = $stmt_price->get_result();
+        $service = $result->fetch_object();
+        
+        if(!$service) {
+            $_SESSION['booking_error'] = "Selected service does not exist.";
+            $stmt_price->close();
+            header("location: index.php#booking-form");
+            exit();
+        }
+        
+        if($service->s_status != 'Active') {
+            $_SESSION['booking_error'] = "Selected service is not available.";
+            $stmt_price->close();
+            header("location: index.php#booking-form");
+            exit();
+        }
+        
+        $sb_total_price = $service->s_price;
         $stmt_price->close();
-        header("location: index.php#booking-form");
-        exit();
     }
-    
-    if($service->s_status != 'Active') {
-        $_SESSION['booking_error'] = "Selected service is not available.";
-        $stmt_price->close();
-        header("location: index.php#booking-form");
-        exit();
-    }
-    
-    $sb_total_price = $service->s_price;
-    $stmt_price->close();
 
     // Ensure registration_type, u_area and u_pincode columns exist
     $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS registration_type ENUM('admin', 'self', 'guest') DEFAULT 'admin'");
@@ -123,13 +146,26 @@ if(isset($_POST['book_service_guest'])) {
     }
 
     if($customer_id) {
-        // Ensure sb_pincode column exists
+        // Ensure sb_pincode and sb_custom_service columns exist, and sb_service_id allows NULL
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
+        $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_custom_service VARCHAR(255) DEFAULT NULL");
+        $mysqli->query("ALTER TABLE tms_service_booking MODIFY COLUMN sb_service_id INT NULL");
         
-        // Insert booking into tms_service_booking table with pincode
-        $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt_booking = $mysqli->prepare($query_booking);
-        $stmt_booking->bind_param('iisssssssd', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price);
+        // Insert booking into tms_service_booking table with pincode and custom service
+        if($is_other_service) {
+            // For custom service, use NULL for service_id
+            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt_booking = $mysqli->prepare($query_booking);
+            // Parameters: user_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d), custom_service(s)
+            // Type string: i s s s s s s s d s = 10 parameters
+            $stmt_booking->bind_param('isssssssds', $customer_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price, $other_service_name);
+        } else {
+            // For regular service
+            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)";
+            $stmt_booking = $mysqli->prepare($query_booking);
+            // user_id(i), service_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d)
+            $stmt_booking->bind_param('iisssssssd', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price);
+        }
         
         if($stmt_booking->execute()) {
             $_SESSION['booking_success'] = "Booking submitted successfully! We will contact you shortly.";

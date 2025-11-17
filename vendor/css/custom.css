@@ -657,56 +657,67 @@ select.service-dropdown,
 
 
 /* ========================================
-   ULTRA COMPACT DROPDOWN FOR MOBILE
+   IMPROVED DROPDOWN FOR MOBILE - NO TEXT CUTOFF
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Make the select input itself more compact */
+    /* Make the select input readable */
     select.service-dropdown,
     #guestServiceSubcategory,
     #guestService {
-        font-size: 12px !important;
-        padding: 6px 8px !important;
+        font-size: 14px !important;
+        padding: 10px 12px !important;
         height: auto !important;
+        min-height: 42px !important;
+        width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
     
-    /* Ultra compact options */
+    /* Readable options - NO CUTOFF */
     select.service-dropdown option,
     #guestServiceSubcategory option,
     #guestService option {
-        padding: 5px 4px !important;
-        font-size: 11px !important;
-        line-height: 1.2 !important;
-        min-height: 26px !important;
+        padding: 10px 8px !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        min-height: 44px !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
     }
     
-    /* Ultra compact optgroups */
+    /* Readable optgroups */
     select.service-dropdown optgroup,
     #guestServiceSubcategory optgroup,
     #guestService optgroup {
-        padding: 4px 3px !important;
-        font-size: 9px !important;
-        line-height: 1.1 !important;
+        padding: 8px 6px !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        font-weight: bold !important;
     }
 }
 
 @media (max-width: 400px) {
-    /* Even more compact for small phones */
+    /* Still readable on small phones */
     select.service-dropdown,
     #guestServiceSubcategory,
     #guestService {
-        font-size: 11px !important;
-        padding: 5px 6px !important;
+        font-size: 13px !important;
+        padding: 9px 10px !important;
+        min-height: 40px !important;
     }
     
     select option {
-        padding: 4px 3px !important;
-        font-size: 10px !important;
-        min-height: 24px !important;
+        padding: 9px 7px !important;
+        font-size: 13px !important;
+        min-height: 42px !important;
     }
     
     select optgroup {
-        padding: 3px 2px !important;
-        font-size: 8px !important;
+        padding: 7px 5px !important;
+        font-size: 12px !important;
     }
 }

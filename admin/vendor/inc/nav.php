@@ -22,8 +22,8 @@
      <ul class="navbar-nav">
          <!-- Notification Bell -->
          <li class="nav-item dropdown no-arrow mx-1">
-             <a class="nav-link" href="admin-all-bookings.php" id="notificationBell" style="position: relative;">
-                 <i class="fas fa-bell fa-fw" style="font-size: 20px;"></i>
+             <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative;" title="View All Notifications">
+                 <i class="fas fa-bell fa-fw" style="font-size: 20px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
                  <span id="notificationBadge" class="badge badge-danger badge-counter" style="
                      position: absolute;
                      top: -5px;
@@ -32,6 +32,7 @@
                      padding: 3px 6px;
                      border-radius: 10px;
                      font-size: 10px;
+                     animation: pulse 2s infinite;
                  ">0</span>
              </a>
          </li>

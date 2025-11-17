@@ -451,6 +451,55 @@ $booking_stats = $booking_result->fetch_object();
         </div>
     </div>
 
+    <div class="quick-actions">
+        <div class="section-title">
+            <i class="fas fa-th-large"></i> Our Services
+        </div>
+        <div class="action-grid">
+            <a href="book-service-step2.php?category=<?php echo urlencode('Basic Electrical Work'); ?>" class="action-item">
+                <div class="action-icon bg-blue">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="action-label">Electrical Work</div>
+            </a>
+            
+            <a href="book-service-step2.php?category=<?php echo urlencode('Electronic Repair'); ?>" class="action-item">
+                <div class="action-icon bg-purple">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="action-label">Electronic Repair</div>
+            </a>
+            
+            <a href="book-service-step2.php?category=<?php echo urlencode('Installation & Setup'); ?>" class="action-item">
+                <div class="action-icon bg-pink">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <div class="action-label">Installation</div>
+            </a>
+            
+            <a href="book-service-step2.php?category=<?php echo urlencode('Servicing & Maintenance'); ?>" class="action-item">
+                <div class="action-icon bg-green">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="action-label">Maintenance</div>
+            </a>
+            
+            <a href="book-service-step2.php?category=<?php echo urlencode('Plumbing Work'); ?>" class="action-item">
+                <div class="action-icon bg-orange">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="action-label">Plumbing Work</div>
+            </a>
+            
+            <a href="book-custom-service.php" class="action-item">
+                <div class="action-icon bg-teal">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div class="action-label">Other Service</div>
+            </a>
+        </div>
+    </div>
+
     <div class="bottom-nav">
         <a href="user-dashboard.php" class="nav-item active">
             <i class="fas fa-home"></i>

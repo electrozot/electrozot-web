@@ -15,6 +15,10 @@
       $_SESSION['u_id']=$u_id;//assaign session to user id
       //$uip=$_SERVER['REMOTE_ADDR'];
       //$ldate=date('d/m/Y h:i:s', time());
+      
+      // Close the statement before running other queries
+      $stmt->close();
+      
       if($rs)
       {//if its sucessfull
         // Link any guest bookings with this phone number to this user account

@@ -14,8 +14,22 @@ if(isset($_POST['create_booking'])) {
     $customer_address = isset($_POST['customer_address']) ? trim($_POST['customer_address']) : '';
     $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
     $customer_pincode = isset($_POST['customer_pincode']) ? preg_replace('/\D/', '', $_POST['customer_pincode']) : '';
-    $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : 0;
+    $service_id_raw = isset($_POST['service_id']) ? $_POST['service_id'] : '';
     $notes = isset($_POST['notes']) ? trim($_POST['notes']) : '';
+    
+    // Handle "Other" service
+    $is_other_service = ($service_id_raw === 'other');
+    $other_service_name = '';
+    
+    if($is_other_service) {
+        $other_service_name = isset($_POST['other_service_name']) ? trim($_POST['other_service_name']) : '';
+        if(empty($other_service_name)) {
+            $err = "Please specify the service you need.";
+        }
+        $service_id = null; // Set to NULL for other services (to avoid foreign key constraint)
+    } else {
+        $service_id = intval($service_id_raw);
+    }
     
     // Validation checks
     if(empty($customer_name)) {
@@ -28,8 +42,10 @@ if(isset($_POST['create_booking'])) {
         $err = "Area/locality is required.";
     } elseif(empty($customer_address)) {
         $err = "Service address is required.";
-    } elseif($service_id <= 0) {
+    } elseif(!$is_other_service && $service_id <= 0) {
         $err = "Please select a service.";
+    } elseif($is_other_service && empty($other_service_name)) {
+        $err = "Please specify the custom service you need.";
     } else {
         // Automatically set booking date and time to current timestamp
         $booking_date = date('Y-m-d');
@@ -57,21 +73,45 @@ if(isset($_POST['create_booking'])) {
         $user_id = $mysqli->insert_id;
     }
     
-    // Get service price
-    $price_query = "SELECT s_price FROM tms_service WHERE s_id = ?";
-    $stmt_price = $mysqli->prepare($price_query);
-    $stmt_price->bind_param('i', $service_id);
-    $stmt_price->execute();
-    $price_result = $stmt_price->get_result();
-    $service = $price_result->fetch_object();
-    $total_price = $service->s_price;
+    // Get service price or set to 0 for custom service
+    if($is_other_service) {
+        $total_price = 0;
+        // Prepend custom service name to notes
+        $notes = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $notes;
+    } else {
+        $price_query = "SELECT s_price FROM tms_service WHERE s_id = ?";
+        $stmt_price = $mysqli->prepare($price_query);
+        $stmt_price->bind_param('i', $service_id);
+        $stmt_price->execute();
+        $price_result = $stmt_price->get_result();
+        $service = $price_result->fetch_object();
+        $total_price = $service->s_price;
+    }
     
-    // Create booking with pincode
-    $insert_booking = "INSERT INTO tms_service_booking 
-                      (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_phone, sb_address, sb_pincode, sb_description, sb_status, sb_total_price) 
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?)";
-    $stmt_booking = $mysqli->prepare($insert_booking);
-    $stmt_booking->bind_param('iissssssd', $user_id, $service_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price);
+    // Ensure sb_custom_service column exists and sb_service_id allows NULL
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_custom_service VARCHAR(255) DEFAULT NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking MODIFY COLUMN sb_service_id INT NULL");
+    
+    // Create booking with pincode and custom service
+    if($is_other_service) {
+        // For custom service, use NULL for service_id
+        $insert_booking = "INSERT INTO tms_service_booking 
+                          (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_phone, sb_address, sb_pincode, sb_description, sb_status, sb_total_price, sb_custom_service) 
+                          VALUES (?, NULL, ?, ?, ?, ?, ?, ?, 'Pending', ?, ?)";
+        $stmt_booking = $mysqli->prepare($insert_booking);
+        // Parameters: user_id(i), date(s), time(s), phone(s), address(s), pincode(s), description(s), price(d), custom_service(s)
+        // Type string: i s s s s s s d s = 9 parameters
+        $stmt_booking->bind_param('issssssds', $user_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price, $other_service_name);
+    } else {
+        // For regular service
+        $insert_booking = "INSERT INTO tms_service_booking 
+                          (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_phone, sb_address, sb_pincode, sb_description, sb_status, sb_total_price, sb_custom_service) 
+                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending', ?, NULL)";
+        $stmt_booking = $mysqli->prepare($insert_booking);
+        // Parameters: user_id(i), service_id(i), date(s), time(s), phone(s), address(s), pincode(s), description(s), price(d)
+        // Type string: i i s s s s s s d = 9 parameters
+        $stmt_booking->bind_param('iisssssssd', $user_id, $service_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price);
+    }
     
         if($stmt_booking->execute()) {
             $success = "Booking created successfully! Booking ID: " . $mysqli->insert_id;
@@ -201,6 +241,12 @@ if(isset($_POST['create_booking'])) {
                                         </select>
                                     </div>
                                     
+                                    <div class="form-group" id="quickOtherServiceDiv" style="display: none;">
+                                        <label><i class="fas fa-edit text-warning"></i> Specify Your Service <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" name="other_service_name" id="quickOtherServiceInput" placeholder="Enter the service you need" style="border: 2px solid #ffc107; background-color: #fffbf0;">
+                                        <small class="text-info"><i class="fas fa-info-circle"></i> Please describe the service you need</small>
+                                    </div>
+                                    
                                     <div class="form-group">
                                         <label>Notes / Special Instructions</label>
                                         <textarea name="notes" class="form-control" rows="5" 
@@ -265,6 +311,10 @@ if(isset($_POST['create_booking'])) {
             serviceSelect.html('<option value="">-- Loading... --</option>').prop('disabled', true);
             $('#servicePriceDisplay').text('');
             
+            // Hide other service input when category changes
+            $('#quickOtherServiceDiv').hide();
+            $('#quickOtherServiceInput').removeAttr('required').val('');
+            
             if(subcategory) {
                 $.ajax({
                     url: 'get-services-by-subcategory.php',
@@ -275,10 +325,7 @@ if(isset($_POST['create_booking'])) {
                         if(response.success && response.services.length > 0) {
                             serviceSelect.html('<option value="">-- Select Service --</option>');
                             $.each(response.services, function(index, service) {
-                                var displayName = service.name;
-                                if(service.gadget_name) {
-                                    displayName += ' (' + service.gadget_name + ')';
-                                }
+                                var displayName = service.gadget_name || service.name;
                                 serviceSelect.append('<option value="' + service.id + '">' + displayName + '</option>');
                             });
                             serviceSelect.prop('disabled', false);
@@ -290,6 +337,21 @@ if(isset($_POST['create_booking'])) {
                         serviceSelect.html('<option value="">Error loading services</option>');
                     }
                 });
+            }
+        });
+        
+        // Handle service selection - show/hide "Other" input
+        $('#quickBookService').on('change', function() {
+            var selectedValue = $(this).val();
+            
+            if(selectedValue === 'other') {
+                // Show the custom service input
+                $('#quickOtherServiceDiv').slideDown(300);
+                $('#quickOtherServiceInput').attr('required', 'required').focus();
+            } else {
+                // Hide the custom service input
+                $('#quickOtherServiceDiv').slideUp(300);
+                $('#quickOtherServiceInput').removeAttr('required').val('');
             }
         });
 

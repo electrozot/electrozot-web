@@ -2,17 +2,48 @@
 <script>
     // Create audio element for notification sound
     const techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
-    techNotificationAudio.volume = 0.7;
+    techNotificationAudio.volume = 0.8;
+    
+    // Preload audio
+    techNotificationAudio.load();
+    
+    // Enable audio on first user interaction
+    let audioEnabled = false;
+    function enableAudio() {
+        if (!audioEnabled) {
+            techNotificationAudio.play().then(() => {
+                techNotificationAudio.pause();
+                techNotificationAudio.currentTime = 0;
+                audioEnabled = true;
+                console.log('✅ Audio enabled');
+            }).catch(() => {
+                console.log('⚠️ Audio will be enabled on next interaction');
+            });
+        }
+    }
+    
+    // Enable audio on any user interaction
+    document.addEventListener('click', enableAudio, { once: true });
+    document.addEventListener('touchstart', enableAudio, { once: true });
+    document.addEventListener('keydown', enableAudio, { once: true });
     
     function playTechNotificationSound() {
         try {
             techNotificationAudio.currentTime = 0;
-            techNotificationAudio.play()
-                .then(() => console.log('🔊 Notification sound played'))
-                .catch((error) => {
-                    console.error('❌ Error playing sound:', error);
-                    console.log('💡 Tip: Click anywhere on the page first to enable audio');
-                });
+            const playPromise = techNotificationAudio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('🔊 Notification sound played successfully');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Error playing sound:', error);
+                        console.log('💡 Tip: Click anywhere on the page first to enable audio');
+                        // Try to enable audio for next time
+                        audioEnabled = false;
+                    });
+            }
         } catch(e) {
             console.error('❌ Sound error:', e);
         }
@@ -127,14 +158,21 @@
             method: 'GET',
             dataType: 'text',
             cache: false,
+            timeout: 5000,
             success: function(rawResponse) {
+                console.log('📡 Raw response received:', rawResponse.substring(0, 100));
+                
                 try {
-                    const response = JSON.parse(rawResponse);
+                    // Clean response - remove any whitespace or BOM
+                    const cleanResponse = rawResponse.trim().replace(/^\uFEFF/, '');
+                    const response = JSON.parse(cleanResponse);
                     
                     if(response.error) {
-                        console.error('Server error:', response.error);
+                        console.error('❌ Server error:', response.error);
                         return;
                     }
+                    
+                    console.log('✅ Parsed response:', response);
                     
                     // Update notification badge count
                     const notifCountElement = document.getElementById('notificationCount');
@@ -146,14 +184,29 @@
                     }
                     
                     if(response.has_notifications && response.notification_count > 0) {
-                        console.log('🔔 NEW NOTIFICATIONS:', response.notification_count);
-                        console.log('📋 Details:', response.notifications);
+                        console.log('🔔 NEW NOTIFICATIONS DETECTED:', response.notification_count);
+                        console.log('📋 Notification details:', response.notifications);
                         
-                        // Play sound
+                        // Play sound FIRST
+                        console.log('🔊 Attempting to play sound...');
                         playTechNotificationSound();
                         
-                        // Show notification
+                        // Show visual notification
                         showTechNotification(response.notifications);
+                        
+                        // Update header notification dot
+                        const headerNotifDot = document.getElementById('headerNotifDot');
+                        if(headerNotifDot) {
+                            headerNotifDot.style.display = 'block';
+                        }
+                        
+                        // Show mobile notification alert
+                        const mobileAlert = document.getElementById('mobileNotificationAlert');
+                        const mobileAlertText = document.getElementById('mobileAlertText');
+                        if(mobileAlert && mobileAlertText) {
+                            mobileAlertText.textContent = `You have ${response.notification_count} new notification${response.notification_count > 1 ? 's' : ''}!`;
+                            mobileAlert.style.display = 'flex';
+                        }
                         
                         // Browser notification
                         if ('Notification' in window && Notification.permission === 'granted') {
@@ -161,23 +214,28 @@
                             new Notification(firstNotif.message, {
                                 body: `Booking #${firstNotif.id} - ${firstNotif.service}`,
                                 icon: '/vendor/img/icons/icon-192x192.png',
-                                tag: 'tech-notification'
+                                tag: 'tech-notification-' + firstNotif.id,
+                                requireInteraction: true
                             });
                         }
                         
-                        // Reload page after 3 seconds to show updated data
+                        // Reload page after 5 seconds to show updated data
                         setTimeout(() => {
-                            console.log('🔄 Reloading page...');
+                            console.log('🔄 Reloading page to show new bookings...');
                             location.reload();
-                        }, 3000);
+                        }, 5000);
+                    } else {
+                        console.log('✓ No new notifications (count: ' + response.notification_count + ')');
                     }
                     
                 } catch(e) {
-                    console.error('JSON Parse Error:', e);
+                    console.error('❌ JSON Parse Error:', e);
+                    console.error('Raw response:', rawResponse);
                 }
             },
             error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
+                console.error('❌ AJAX Error:', status, error);
+                console.error('Response:', xhr.responseText);
             }
         });
     }
@@ -224,8 +282,8 @@
     // Get initial count immediately
     getInitialNotificationCount();
     
-    // Start checking every 10 seconds
-    setInterval(checkTechNotifications, 10000);
+    // Start checking every 5 seconds (more frequent for better responsiveness)
+    setInterval(checkTechNotifications, 5000);
     
     // Check immediately after 2 seconds
     setTimeout(checkTechNotifications, 2000);
@@ -254,5 +312,8 @@
         document.head.appendChild(style);
     }
     
-    console.log('✅ Technician notification system active');
+    console.log('✅ Technician notification system initialized');
+    console.log('🔊 Audio file path: ../admin/vendor/sounds/arived.mp3');
+    console.log('⏱️ Checking for notifications every 5 seconds');
+    console.log('💡 Click anywhere on the page to enable sound notifications');
 </script>

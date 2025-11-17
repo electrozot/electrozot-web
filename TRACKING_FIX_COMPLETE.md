@@ -113,6 +113,12 @@ The `user-track-booking.php` page was reading from the **wrong database table**:
 ## Files Modified
 1. `usr/user-track-booking.php` - Fixed to read from correct table
 2. `usr/user-dashboard.php` - Added linked bookings notification
+3. `usr/index.php` - Fixed MySQL "Commands out of sync" error by closing statement before linking bookings
+
+## MySQL Error Fixed
+**Error:** "Commands out of sync; you can't run this command now"
+**Cause:** Login statement wasn't closed before calling linkBookingsByPhone()
+**Fix:** Added `$stmt->close();` before linking bookings
 
 ## Files Already Working (No Changes Needed)
 1. `admin/admin-quick-booking.php` - Creates bookings correctly

@@ -193,8 +193,15 @@
                                  <div class="col-md-6">
                                      <div class="form-group">
                                          <label><i class="fas fa-id-badge text-primary"></i> EZ ID <span class="text-danger">*</span></label>
-                                         <input type="text" class="form-control" name="t_ez_id" placeholder="EZ0001" required style="text-transform: uppercase;">
-                                         <small class="text-muted">Unique company identification number</small>
+                                         <div class="input-group">
+                                             <input type="text" class="form-control" id="t_ez_id" name="t_ez_id" placeholder="EZ0001" required style="text-transform: uppercase;" readonly>
+                                             <div class="input-group-append">
+                                                 <button class="btn btn-success" type="button" onclick="generateNextEZID()">
+                                                     <i class="fas fa-sync-alt"></i> Auto Generate
+                                                 </button>
+                                             </div>
+                                         </div>
+                                         <small class="text-success"><i class="fas fa-info-circle"></i> Click "Auto Generate" to get the next available EZ ID</small>
                                      </div>
                                  </div>
                                  
@@ -654,6 +661,55 @@
          <script src="vendor/js/demo/chart-area-demo.js"></script>
          <!--INject Sweet alert js-->
          <script src="vendor/js/swal.js"></script>
+         
+         <!-- EZ ID Auto Generation Script -->
+         <script>
+         function generateNextEZID() {
+             const ezIdInput = document.getElementById('t_ez_id');
+             const btn = event.target.closest('button');
+             const originalHTML = btn.innerHTML;
+             
+             // Show loading state
+             btn.disabled = true;
+             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+             
+             // Fetch next EZ ID from server
+             fetch('api-generate-ez-id.php')
+                 .then(response => response.json())
+                 .then(data => {
+                     if(data.success) {
+                         ezIdInput.value = data.ez_id;
+                         ezIdInput.style.backgroundColor = '#d4edda';
+                         ezIdInput.style.borderColor = '#28a745';
+                         
+                         // Show success message
+                         swal("Success!", "Generated EZ ID: " + data.ez_id, "success");
+                         
+                         // Reset styling after 2 seconds
+                         setTimeout(() => {
+                             ezIdInput.style.backgroundColor = '';
+                             ezIdInput.style.borderColor = '';
+                         }, 2000);
+                     } else {
+                         swal("Error!", data.message || "Failed to generate EZ ID", "error");
+                     }
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                     swal("Error!", "Failed to generate EZ ID. Please try again.", "error");
+                 })
+                 .finally(() => {
+                     // Restore button state
+                     btn.disabled = false;
+                     btn.innerHTML = originalHTML;
+                 });
+         }
+         
+         // Auto-generate EZ ID on page load
+         window.addEventListener('DOMContentLoaded', function() {
+             generateNextEZID();
+         });
+         </script>
 
  </body>
 

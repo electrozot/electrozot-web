@@ -543,5 +543,91 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
             <span>Profile</span>
         </a>
     </div>
+
+    <script>
+        // Auto-refresh bookings list every 15 seconds to show status updates
+        let refreshInterval;
+        let isPageVisible = true;
+        
+        // Detect if page is visible
+        document.addEventListener('visibilitychange', function() {
+            isPageVisible = !document.hidden;
+        });
+        
+        // Function to check for booking updates
+        function checkForBookingUpdates() {
+            if (!isPageVisible) return;
+            
+            fetch('get-all-bookings-status.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.has_changes) {
+                        // Show notification
+                        showUpdateNotification('Booking status updated!');
+                        
+                        // Reload page after 2 seconds
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                    }
+                })
+                .catch(error => {
+                    console.log('Auto-refresh error:', error);
+                });
+        }
+        
+        // Show notification
+        function showUpdateNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+                z-index: 9999;
+                font-weight: 600;
+                font-size: 14px;
+                animation: slideDown 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            notification.innerHTML = `
+                <i class="fas fa-sync-alt fa-spin"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Start auto-refresh every 15 seconds
+        <?php if ($bookings_result->num_rows > 0): ?>
+        refreshInterval = setInterval(checkForBookingUpdates, 15000);
+        <?php endif; ?>
+        
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+                to { opacity: 1; transform: translateX(-50%) translateY(0); }
+            }
+            @keyframes slideUp {
+                from { opacity: 1; transform: translateX(-50%) translateY(0); }
+                to { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>

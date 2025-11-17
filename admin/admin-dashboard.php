@@ -92,12 +92,15 @@
                     transition: all 0.3s ease;
                 ">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <i class="fas fa-bell" style="font-size: 20px; animation: bellRing 2s ease-in-out infinite;"></i>
+                        <a href="admin-notifications.php" style="text-decoration: none; color: white; cursor: pointer;" title="View All Notifications">
+                            <i class="fas fa-bell" style="font-size: 20px; animation: bellRing 2s ease-in-out infinite; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></i>
+                        </a>
                         <div style="flex: 1; overflow: hidden;">
                             <marquee id="notificationMarquee" behavior="scroll" direction="left" scrollamount="5" 
                                      style="font-weight: 500; cursor: pointer;"
                                      onmouseover="this.stop();" 
-                                     onmouseout="this.start();">
+                                     onmouseout="this.start();"
+                                     onclick="window.location.href='admin-notifications.php'">
                                 Loading recent notifications...
                             </marquee>
                         </div>
