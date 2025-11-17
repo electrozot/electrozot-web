@@ -163,18 +163,23 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-layer-group text-primary"></i> Service Type</label>
+                                                    <select class="p-0 form-control form-control-sm" id="guestServiceSubcategory" required>
+                                                        <option value="">Select service type...</option>
+                                                        <option value="Wiring & Fixtures">Wiring & Fixtures</option>
+                                                        <option value="Safety & Power">Safety & Power</option>
+                                                        <option value="Major Appliances">Major Appliances</option>
+                                                        <option value="Small Gadgets">Small Gadgets</option>
+                                                        <option value="Appliance Setup">Appliance Setup</option>
+                                                        <option value="Tech & Security">Tech & Security</option>
+                                                        <option value="Routine Care">Routine Care</option>
+                                                        <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group mb-2">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Select Service</label>
-                                                    <select class="p-0 form-control form-control-sm" name="sb_service_id" required>
-                                                        <option value="">Choose a service...</option>
-                                                        <?php
-                                                        $ret="SELECT * FROM tms_service WHERE s_status = 'Active'";
-                                                        $stmt= $mysqli->prepare($ret);
-                                                        $stmt->execute();
-                                                        $res=$stmt->get_result();
-                                                        while($row=$res->fetch_object()) {
-                                                            echo '<option value="'.$row->s_id.'">'.$row->s_name.'</option>';
-                                                        }
-                                                        ?>
+                                                    <select class="p-0 form-control form-control-sm" name="sb_service_id" id="guestService" disabled required>
+                                                        <option value="">Select service type first...</option>
                                                     </select>
                                                 </div>
                                                 <div class="form-group mb-2" style="margin-top: 8px;">
@@ -246,6 +251,56 @@
                 // If the page loads with #booking-form hash, adjust to account for fixed header
                 if (bookingAnchor && window.location.hash === '#booking-form') {
                     setTimeout(scrollToBookingForm, 100);
+                }
+                
+                // Simplified Service Dropdowns - Direct Subcategory to Service
+                var subcategorySelect = document.getElementById('guestServiceSubcategory');
+                var serviceSelect = document.getElementById('guestService');
+                
+                if(subcategorySelect && serviceSelect) {
+                    // Handle subcategory change - load services via AJAX
+                    subcategorySelect.addEventListener('change', function() {
+                        var subcategory = this.value;
+                        
+                        serviceSelect.innerHTML = '<option value="">Loading...</option>';
+                        serviceSelect.disabled = true;
+                        
+                        if(subcategory) {
+                            fetch('admin/get-services-by-subcategory.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: 'subcategory=' + encodeURIComponent(subcategory)
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if(data.success && data.services.length > 0) {
+                                    serviceSelect.innerHTML = '<option value="">Select service...</option>';
+                                    data.services.forEach(function(service) {
+                                        var option = document.createElement('option');
+                                        option.value = service.id;
+                                        var displayName = service.name;
+                                        if(service.gadget_name) {
+                                            displayName += ' (' + service.gadget_name + ')';
+                                        }
+                                        option.textContent = displayName;
+                                        serviceSelect.appendChild(option);
+                                    });
+                                    serviceSelect.disabled = false;
+                                } else {
+                                    serviceSelect.innerHTML = '<option value="">No services available</option>';
+                                }
+                            })
+                            .catch(error => {
+                                serviceSelect.innerHTML = '<option value="">Error loading services</option>';
+                                console.error('Error:', error);
+                            });
+                        } else {
+                            serviceSelect.innerHTML = '<option value="">Select service type first...</option>';
+                            serviceSelect.disabled = true;
+                        }
+                    });
                 }
             });
         </script>

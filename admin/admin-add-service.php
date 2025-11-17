@@ -7,19 +7,25 @@
   // Ensure is_popular column exists
   $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
   
+  // Ensure columns exist
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS s_subcategory VARCHAR(200) NULL");
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS s_gadget_name VARCHAR(200) NULL");
+  
   //Add Service
   if(isset($_POST['add_service']))
     {
             $s_name=$_POST['s_name'];
             $s_description = $_POST['s_description'];
             $s_category=$_POST['s_category'];
+            $s_subcategory=$_POST['s_subcategory'];
+            $s_gadget_name=$_POST['s_gadget_name'];
             $s_price=$_POST['s_price'];
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
             $is_popular = isset($_POST['is_popular']) ? 1 : 0;
-            $query="insert into tms_service (s_name, s_description, s_category, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?)";
+            $query="insert into tms_service (s_name, s_description, s_category, s_subcategory, s_gadget_name, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssdssi', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status, $is_popular);
+            $rc=$stmt->bind_param('sssssdssi', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
             $stmt->execute();
                 if($stmt)
                 {
@@ -86,18 +92,27 @@
                                  <textarea class="form-control" required name="s_description" rows="4" placeholder="Enter Service Description"></textarea>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Service Category</label>
-                                 <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
-                                     <option value="">Select Category</option>
-                                     <option>Wiring & Fixtures</option>
-                                     <option>Safety & Power</option>
-                                     <option>Major Appliances</option>
-                                     <option>Small Gadgets</option>
-                                     <option>Appliance Setup</option>
-                                     <option>Tech & Security</option>
-                                     <option>Routine Care</option>
-                                     <option>Fixtures & Taps</option>
+                                 <label for="serviceCategory">Service Category <span class="text-danger">*</span></label>
+                                 <select class="form-control" name="s_category" id="serviceCategory" required>
+                                     <option value="">-- Select Category --</option>
+                                     <option value="Basic Electrical Work">Basic Electrical Work</option>
+                                     <option value="Electronic Repair">Electronic Repair</option>
+                                     <option value="Installation & Setup">Installation & Setup</option>
+                                     <option value="Servicing & Maintenance">Servicing & Maintenance</option>
+                                     <option value="Plumbing Work">Plumbing Work</option>
                                  </select>
+                             </div>
+                             <div class="form-group">
+                                 <label for="serviceSubcategory">Service Subcategory <span class="text-danger">*</span></label>
+                                 <select class="form-control" name="s_subcategory" id="serviceSubcategory" required disabled>
+                                     <option value="">-- Select Category First --</option>
+                                 </select>
+                                 <small class="form-text text-muted">Select a category first to see subcategories</small>
+                             </div>
+                             <div class="form-group">
+                                 <label for="serviceGadget">Gadget/Device Name</label>
+                                 <input type="text" class="form-control" id="serviceGadget" name="s_gadget_name" placeholder="e.g., LED TV, Washing Machine, AC (Optional)">
+                                 <small class="form-text text-muted">Specify the device/gadget this service is for (optional)</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Service Price</label>
@@ -183,6 +198,40 @@
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
          <script src="vendor/js/swal.js"></script>
+         
+         <!-- Cascading Dropdown Script -->
+         <script>
+         $(document).ready(function() {
+             // Category to Subcategory mapping
+             var categorySubcategories = {
+                 'Basic Electrical Work': ['Wiring & Fixtures', 'Safety & Power'],
+                 'Electronic Repair': ['Major Appliances', 'Small Gadgets'],
+                 'Installation & Setup': ['Appliance Setup', 'Tech & Security'],
+                 'Servicing & Maintenance': ['Routine Care'],
+                 'Plumbing Work': ['Fixtures & Taps']
+             };
+             
+             $('#serviceCategory').on('change', function() {
+                 var category = $(this).val();
+                 var subcategorySelect = $('#serviceSubcategory');
+                 
+                 // Clear and disable subcategory
+                 subcategorySelect.html('<option value="">-- Select Subcategory --</option>');
+                 
+                 if(category && categorySubcategories[category]) {
+                     // Enable and populate subcategories
+                     subcategorySelect.prop('disabled', false);
+                     
+                     $.each(categorySubcategories[category], function(index, subcategory) {
+                         subcategorySelect.append('<option value="' + subcategory + '">' + subcategory + '</option>');
+                     });
+                 } else {
+                     subcategorySelect.prop('disabled', true);
+                     subcategorySelect.html('<option value="">-- Select Category First --</option>');
+                 }
+             });
+         });
+         </script>
 
  </body>
 

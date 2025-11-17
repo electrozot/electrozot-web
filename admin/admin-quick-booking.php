@@ -180,20 +180,24 @@ if(isset($_POST['create_booking'])) {
                                     <hr>
                                     
                                     <div class="form-group">
+                                        <label>Service Type <span class="text-danger">*</span></label>
+                                        <select name="service_subcategory" id="quickBookSubcategory" class="form-control" required>
+                                            <option value="">-- Select Service Type --</option>
+                                            <option value="Wiring & Fixtures">Wiring & Fixtures</option>
+                                            <option value="Safety & Power">Safety & Power</option>
+                                            <option value="Major Appliances">Major Appliances</option>
+                                            <option value="Small Gadgets">Small Gadgets</option>
+                                            <option value="Appliance Setup">Appliance Setup</option>
+                                            <option value="Tech & Security">Tech & Security</option>
+                                            <option value="Routine Care">Routine Care</option>
+                                            <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
                                         <label>Service <span class="text-danger">*</span></label>
-                                        <select name="service_id" class="form-control" required>
-                                            <option value="">-- Select Service --</option>
-                                            <?php
-                                            $services = "SELECT * FROM tms_service ORDER BY s_name";
-                                            $stmt_services = $mysqli->prepare($services);
-                                            $stmt_services->execute();
-                                            $res_services = $stmt_services->get_result();
-                                            while($service = $res_services->fetch_object()):
-                                            ?>
-                                            <option value="<?php echo $service->s_id; ?>">
-                                                <?php echo $service->s_name; ?> - ₹<?php echo $service->s_price; ?>
-                                            </option>
-                                            <?php endwhile; ?>
+                                        <select name="service_id" id="quickBookService" class="form-control" required disabled>
+                                            <option value="">-- Select Service Type First --</option>
                                         </select>
                                     </div>
                                     
@@ -253,6 +257,43 @@ if(isset($_POST['create_booking'])) {
     
     <script>
     $(document).ready(function() {
+        // Handle subcategory change - load services directly
+        $('#quickBookSubcategory').on('change', function() {
+            var subcategory = $(this).val();
+            var serviceSelect = $('#quickBookService');
+            
+            serviceSelect.html('<option value="">-- Loading... --</option>').prop('disabled', true);
+            $('#servicePriceDisplay').text('');
+            
+            if(subcategory) {
+                $.ajax({
+                    url: 'get-services-by-subcategory.php',
+                    method: 'POST',
+                    data: {subcategory: subcategory},
+                    dataType: 'json',
+                    success: function(response) {
+                        if(response.success && response.services.length > 0) {
+                            serviceSelect.html('<option value="">-- Select Service --</option>');
+                            $.each(response.services, function(index, service) {
+                                var displayName = service.name;
+                                if(service.gadget_name) {
+                                    displayName += ' (' + service.gadget_name + ')';
+                                }
+                                serviceSelect.append('<option value="' + service.id + '">' + displayName + '</option>');
+                            });
+                            serviceSelect.prop('disabled', false);
+                        } else {
+                            serviceSelect.html('<option value="">No services available</option>');
+                        }
+                    },
+                    error: function() {
+                        serviceSelect.html('<option value="">Error loading services</option>');
+                    }
+                });
+            }
+        });
+
+        
         // Auto-fill customer details when phone number is entered
         $('#customer_phone').on('blur', function() {
             var phone = $(this).val();
