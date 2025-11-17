@@ -163,6 +163,8 @@
              <span>Settings</span>
          </a>
          <div class="dropdown-menu" aria-labelledby="settingsDropdown">
+             <a class="dropdown-item" href="admin-site-settings.php"><i class="fas fa-address-book"></i> Site Contact Info</a>
+             <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-home-slider.php"><i class="fas fa-images"></i> Home Slider</a>
              <a class="dropdown-item" href="admin-manage-gallery.php"><i class="fas fa-photo-video"></i> Gallery</a>
              <div class="dropdown-divider"></div>
