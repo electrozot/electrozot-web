@@ -163,24 +163,36 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-layer-group text-primary"></i> Service Type</label>
-                                                    <select class="p-0 form-control form-control-sm" id="guestServiceSubcategory" required>
-                                                        <option value="">Select service type...</option>
-                                                        <option value="Wiring & Fixtures">Wiring & Fixtures</option>
-                                                        <option value="Safety & Power">Safety & Power</option>
-                                                        <option value="Major Appliances">Major Appliances</option>
-                                                        <option value="Small Gadgets">Small Gadgets</option>
-                                                        <option value="Appliance Setup">Appliance Setup</option>
-                                                        <option value="Tech & Security">Tech & Security</option>
-                                                        <option value="Routine Care">Routine Care</option>
-                                                        <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-layer-group text-primary"></i> Service Category <span style="color: #e74c3c;">*</span></label>
+                                                    <select class="form-control form-control-sm service-dropdown" id="guestServiceSubcategory" required>
+                                                        <option value="">-- Select Category --</option>
+                                                        <optgroup label="⚡ ELECTRICAL">
+                                                            <option value="Wiring & Fixtures">Wiring/Fixtures</option>
+                                                            <option value="Safety & Power">Safety/Power</option>
+                                                        </optgroup>
+                                                        <optgroup label="🔧 REPAIR">
+                                                            <option value="Major Appliances">Major Appliances</option>
+                                                            <option value="Other Gadgets">Other Gadgets</option>
+                                                        </optgroup>
+                                                        <optgroup label="⚙️ INSTALL">
+                                                            <option value="Appliance Setup">Appliance Setup</option>
+                                                            <option value="Tech & Security">Tech/Security</option>
+                                                        </optgroup>
+                                                        <optgroup label="🧹 MAINTAIN">
+                                                            <option value="Routine Care">Routine Care</option>
+                                                        </optgroup>
+                                                        <optgroup label="🚰 PLUMBING">
+                                                            <option value="Fixtures & Taps">Fixtures/Taps</option>
+                                                        </optgroup>
                                                     </select>
+                                                    <small class="text-muted"><i class="fas fa-hand-pointer"></i> Tap to select</small>
                                                 </div>
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Select Service</label>
-                                                    <select class="p-0 form-control form-control-sm" name="sb_service_id" id="guestService" disabled required>
-                                                        <option value="">Select service type first...</option>
+                                                    <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Specific Service <span style="color: #e74c3c;">*</span></label>
+                                                    <select class="form-control form-control-sm service-dropdown" name="sb_service_id" id="guestService" disabled required>
+                                                        <option value="">Select category first...</option>
                                                     </select>
+                                                    <small class="text-muted"><i class="fas fa-scroll"></i> Scroll to view all options</small>
                                                 </div>
                                                 <div class="form-group mb-2" style="margin-top: 8px;">
                                                     <label style="font-size:0.95rem;"><i class="fas fa-comment text-primary"></i> Additional Notes</label>
@@ -262,6 +274,8 @@
                     subcategorySelect.addEventListener('change', function() {
                         var subcategory = this.value;
                         
+                        console.log('Selected subcategory:', subcategory);
+                        
                         serviceSelect.innerHTML = '<option value="">Loading...</option>';
                         serviceSelect.disabled = true;
                         
@@ -273,28 +287,37 @@
                                 },
                                 body: 'subcategory=' + encodeURIComponent(subcategory)
                             })
-                            .then(response => response.json())
+                            .then(response => {
+                                console.log('Response status:', response.status);
+                                return response.json();
+                            })
                             .then(data => {
-                                if(data.success && data.services.length > 0) {
+                                console.log('Response data:', data);
+                                if(data.success && data.services && data.services.length > 0) {
                                     serviceSelect.innerHTML = '<option value="">Select service...</option>';
                                     data.services.forEach(function(service) {
                                         var option = document.createElement('option');
                                         option.value = service.id;
-                                        var displayName = service.name;
-                                        if(service.gadget_name) {
-                                            displayName += ' (' + service.gadget_name + ')';
-                                        }
+                                        
+                                        // Show full service name (gadget_name) as it is
+                                        var displayName = service.gadget_name || service.name;
+                                        
                                         option.textContent = displayName;
+                                        option.title = displayName; // Show full name on hover
                                         serviceSelect.appendChild(option);
                                     });
+                                    // Reset min-width and enable
+                                    serviceSelect.style.minWidth = '';
                                     serviceSelect.disabled = false;
                                 } else {
+                                    console.warn('No services found or error:', data);
                                     serviceSelect.innerHTML = '<option value="">No services available</option>';
+                                    serviceSelect.style.minWidth = '';
                                 }
                             })
                             .catch(error => {
+                                console.error('Fetch error:', error);
                                 serviceSelect.innerHTML = '<option value="">Error loading services</option>';
-                                console.error('Error:', error);
                             });
                         } else {
                             serviceSelect.innerHTML = '<option value="">Select service type first...</option>';

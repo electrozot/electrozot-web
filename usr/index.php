@@ -17,6 +17,12 @@
       //$ldate=date('d/m/Y h:i:s', time());
       if($rs)
       {//if its sucessfull
+        // Link any guest bookings with this phone number to this user account
+        include('link-guest-bookings.php');
+        $linked = linkBookingsByPhone($mysqli, $u_id, $u_phone);
+        if($linked > 0) {
+            $_SESSION['linked_bookings'] = $linked;
+        }
         header("location:user-dashboard.php");
       }
 

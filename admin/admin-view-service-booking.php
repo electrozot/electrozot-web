@@ -102,10 +102,16 @@
                                    <h6 class="mt-3"><i class="fas fa-camera"></i> Service Completion Photo</h6>
                                    <div class="border rounded p-3 mb-3" style="background:#f8f9fa;">
                                      <?php if(!empty($booking->sb_completion_image)): ?>
-                                       <a href="../<?php echo $booking->sb_completion_image; ?>" target="_blank">
-                                         <img src="../<?php echo $booking->sb_completion_image; ?>" alt="Service Completion" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" />
+                                       <?php 
+                                       // Fix path - remove leading ../ if present, images are in root uploads folder
+                                       $service_img_path = str_replace('../', '', $booking->sb_completion_image);
+                                       $service_img_url = '../' . $service_img_path;
+                                       ?>
+                                       <a href="<?php echo $service_img_url; ?>" target="_blank">
+                                         <img src="<?php echo $service_img_url; ?>" alt="Service Completion" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" onerror="this.parentElement.innerHTML='<span class=\'text-danger\'><i class=\'fas fa-exclamation-circle\'></i> Image not found: <?php echo htmlspecialchars($service_img_path); ?></span>';" />
                                        </a>
                                        <p class="text-muted mt-2 mb-0"><small><i class="fas fa-info-circle"></i> Click image to view full size</small></p>
+                                       <p class="text-muted mb-0"><small>Path: <?php echo htmlspecialchars($service_img_path); ?></small></p>
                                      <?php else: ?>
                                        <span class="text-muted"><i class="fas fa-exclamation-triangle"></i> No service image uploaded</span>
                                      <?php endif; ?>
@@ -114,11 +120,17 @@
                                    <h6><i class="fas fa-file-invoice"></i> Bill/Receipt Photo</h6>
                                    <div class="border rounded p-3" style="background:#f8f9fa;">
                                      <?php if(!empty($booking->sb_bill_attachment)): ?>
-                                       <a href="../<?php echo $booking->sb_bill_attachment; ?>" target="_blank">
-                                         <img src="../<?php echo $booking->sb_bill_attachment; ?>" alt="Bill/Receipt" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" />
+                                       <?php 
+                                       // Fix path - remove leading ../ if present, images are in root uploads folder
+                                       $bill_img_path = str_replace('../', '', $booking->sb_bill_attachment);
+                                       $bill_img_url = '../' . $bill_img_path;
+                                       ?>
+                                       <a href="<?php echo $bill_img_url; ?>" target="_blank">
+                                         <img src="<?php echo $bill_img_url; ?>" alt="Bill/Receipt" style="max-width:100%;height:auto;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);cursor:pointer;" onerror="this.parentElement.innerHTML='<span class=\'text-danger\'><i class=\'fas fa-exclamation-circle\'></i> Image not found: <?php echo htmlspecialchars($bill_img_path); ?></span>';" />
                                        </a>
                                        <p class="text-muted mt-2 mb-0"><small><i class="fas fa-info-circle"></i> Click image to view full size</small></p>
-                                       <a href="../<?php echo $booking->sb_bill_attachment; ?>" download class="btn btn-sm btn-primary mt-2">
+                                       <p class="text-muted mb-0"><small>Path: <?php echo htmlspecialchars($bill_img_path); ?></small></p>
+                                       <a href="<?php echo $bill_img_url; ?>" download class="btn btn-sm btn-primary mt-2">
                                          <i class="fas fa-download"></i> Download Bill
                                        </a>
                                      <?php else: ?>

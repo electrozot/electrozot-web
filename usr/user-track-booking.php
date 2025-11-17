@@ -349,6 +349,47 @@ $user = $user_result->fetch_object();
             line-height: 1.5;
         }
         
+        .booking-selector {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+        }
+        
+        .selector-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .selector-title i {
+            margin-right: 8px;
+            color: #6366f1;
+        }
+        
+        .booking-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .booking-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+        }
+        
         .btn-book {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
@@ -420,16 +461,69 @@ $user = $user_result->fetch_object();
 
     <div class="content">
         <?php
-        if (!empty($user->t_tech_category) && !empty($user->t_booking_date)) {
-            // Parse booking info
-            $booking_parts = explode('|', $user->t_tech_category);
-            $service_info = isset($booking_parts[0]) ? trim($booking_parts[0]) : 'Service Booking';
-            
-            // Extract service name
-            $service_parts = explode('>', $service_info);
-            $service_name = isset($service_parts[2]) ? trim($service_parts[2]) : 'Service';
-            
-            $status = $user->t_booking_status ?? 'Pending';
+        // Get all user bookings for dropdown
+        $all_bookings_query = "SELECT sb.sb_id, sb.sb_booking_date, sb.sb_status, s.s_name 
+                               FROM tms_service_booking sb 
+                               LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                               WHERE sb.sb_user_id = ? 
+                               ORDER BY sb.sb_created_at DESC";
+        $all_bookings_stmt = $mysqli->prepare($all_bookings_query);
+        $all_bookings_stmt->bind_param('i', $aid);
+        $all_bookings_stmt->execute();
+        $all_bookings_result = $all_bookings_stmt->get_result();
+        $has_bookings = $all_bookings_result->num_rows > 0;
+        
+        // Get booking to track - either from URL parameter or latest booking
+        $booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
+        
+        if($booking_id > 0) {
+            // Get specific booking
+            $booking_query = "SELECT sb.*, s.s_name, s.s_category 
+                             FROM tms_service_booking sb 
+                             LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                             WHERE sb.sb_id = ? AND sb.sb_user_id = ?";
+            $booking_stmt = $mysqli->prepare($booking_query);
+            $booking_stmt->bind_param('ii', $booking_id, $aid);
+        } else {
+            // Get latest booking
+            $booking_query = "SELECT sb.*, s.s_name, s.s_category 
+                             FROM tms_service_booking sb 
+                             LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                             WHERE sb.sb_user_id = ? 
+                             ORDER BY sb.sb_created_at DESC 
+                             LIMIT 1";
+            $booking_stmt = $mysqli->prepare($booking_query);
+            $booking_stmt->bind_param('i', $aid);
+        }
+        
+        $booking_stmt->execute();
+        $booking_result = $booking_stmt->get_result();
+        $booking = $booking_result->fetch_object();
+        
+        if ($booking) {
+            // Show booking selector if user has multiple bookings
+            if($has_bookings && $all_bookings_result->num_rows > 1) {
+                mysqli_data_seek($all_bookings_result, 0); // Reset pointer
+        ?>
+        <div class="booking-selector">
+            <div class="selector-title">
+                <i class="fas fa-list"></i> Select Booking to Track
+            </div>
+            <select class="booking-select" onchange="window.location.href='user-track-booking.php?booking_id=' + this.value">
+                <?php while($b = $all_bookings_result->fetch_object()): ?>
+                <option value="<?php echo $b->sb_id; ?>" <?php echo ($b->sb_id == $booking->sb_id) ? 'selected' : ''; ?>>
+                    #<?php echo str_pad($b->sb_id, 5, '0', STR_PAD_LEFT); ?> - <?php echo htmlspecialchars($b->s_name); ?> (<?php echo date('d M Y', strtotime($b->sb_booking_date)); ?>) - <?php echo $b->sb_status; ?>
+                </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+        <?php
+            }
+        ?>
+        
+        <?php
+            $service_name = $booking->s_name ?? 'Service';
+            $status = $booking->sb_status ?? 'Pending';
             
             // Determine status display
             $status_icon_bg = '';
@@ -479,7 +573,7 @@ $user = $user_result->fetch_object();
         
         <!-- Status Card -->
         <div class="status-card">
-            <div class="order-number">Order #<?php echo str_pad($user->u_id, 5, '0', STR_PAD_LEFT); ?></div>
+            <div class="order-number">Order #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?></div>
             <div class="service-name"><?php echo htmlspecialchars($service_name); ?></div>
             <div class="status-icon" style="<?php echo $status_icon_bg; ?>">
                 <i class="fas fa-<?php echo $status_icon; ?>"></i>
@@ -504,7 +598,7 @@ $user = $user_result->fetch_object();
                         <div class="step-title">Order Placed</div>
                         <div class="step-desc">Your booking has been received</div>
                         <div class="step-time">
-                            <i class="fas fa-clock"></i> <?php echo date('d M, h:i A', strtotime($user->t_booking_date)); ?>
+                            <i class="fas fa-clock"></i> <?php echo date('d M, h:i A', strtotime($booking->sb_booking_date . ' ' . $booking->sb_booking_time)); ?>
                         </div>
                     </div>
                 </div>
@@ -584,7 +678,7 @@ $user = $user_result->fetch_object();
                 
                 <div class="info-item">
                     <div class="info-label">Date</div>
-                    <div class="info-value"><?php echo date('d M Y', strtotime($user->t_booking_date)); ?></div>
+                    <div class="info-value"><?php echo date('d M Y', strtotime($booking->sb_booking_date)); ?></div>
                 </div>
                 
                 <div class="info-item">

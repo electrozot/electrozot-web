@@ -74,13 +74,15 @@ function checkTechnicianEngagement($technician_id, $mysqli) {
  */
 function getAvailableTechnicians($service_category, $mysqli, $exclude_booking_id = null) {
     // Get all technicians matching the service category
+    // Try exact match first, then partial match (LIKE)
     $query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category, t_status 
               FROM tms_technician 
-              WHERE t_category = ?
+              WHERE t_category = ? OR t_category LIKE ? OR t_specialization LIKE ?
               ORDER BY t_name ASC";
     
     $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('s', $service_category);
+    $like_pattern = '%' . $service_category . '%';
+    $stmt->bind_param('sss', $service_category, $like_pattern, $like_pattern);
     $stmt->execute();
     $result = $stmt->get_result();
     
@@ -109,6 +111,34 @@ function getAvailableTechnicians($service_category, $mysqli, $exclude_booking_id
         }
         
         $available_technicians[] = $tech;
+    }
+    
+    // If no technicians found with category match, get ALL available technicians as fallback
+    if(empty($available_technicians)) {
+        $fallback_query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category, t_status 
+                          FROM tms_technician 
+                          ORDER BY t_name ASC";
+        $fallback_result = $mysqli->query($fallback_query);
+        
+        while($tech = $fallback_result->fetch_assoc()) {
+            $engagement = checkTechnicianEngagement($tech['t_id'], $mysqli);
+            
+            if($engagement['is_engaged']) {
+                if($exclude_booking_id && $engagement['booking_id'] == $exclude_booking_id) {
+                    $tech['is_available'] = true;
+                    $tech['current_booking'] = $engagement['booking_id'];
+                    $tech['availability_note'] = 'Currently assigned to this booking';
+                } else {
+                    continue;
+                }
+            } else {
+                $tech['is_available'] = true;
+                $tech['current_booking'] = null;
+                $tech['availability_note'] = 'Available (No category match)';
+            }
+            
+            $available_technicians[] = $tech;
+        }
     }
     
     return $available_technicians;

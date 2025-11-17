@@ -401,6 +401,21 @@ $booking_stats = $booking_result->fetch_object();
 
 
 
+    <?php if(isset($_SESSION['linked_bookings']) && $_SESSION['linked_bookings'] > 0): ?>
+    <div style="margin: 15px; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-check-circle" style="font-size: 24px;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Welcome Back!</div>
+                <div style="font-size: 13px; opacity: 0.95;">
+                    We found <?php echo $_SESSION['linked_bookings']; ?> previous booking(s) and linked them to your account. 
+                    <a href="user-manage-booking.php" style="color: white; text-decoration: underline; font-weight: 600;">View Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php unset($_SESSION['linked_bookings']); endif; ?>
+
     <div class="quick-actions">
         <div class="section-title">
             <i class="fas fa-bolt"></i> Quick Actions

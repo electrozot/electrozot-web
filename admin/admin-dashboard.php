@@ -6,6 +6,12 @@
   check_login();
   $aid=$_SESSION['a_id'];
   
+  // Auto-setup services on first admin login
+  $services_inserted = include('auto-setup-services.php');
+  if($services_inserted > 0) {
+      $_SESSION['setup_success'] = "System initialized! $services_inserted services added automatically.";
+  }
+  
   // Handle reassignment from dashboard
   if(isset($_POST['reassign_booking'])) {
       $booking_id = intval($_POST['booking_id']);
@@ -31,8 +37,10 @@
   // Get session messages
   $dashboard_success = isset($_SESSION['dashboard_success']) ? $_SESSION['dashboard_success'] : '';
   $dashboard_error = isset($_SESSION['dashboard_error']) ? $_SESSION['dashboard_error'] : '';
+  $setup_success = isset($_SESSION['setup_success']) ? $_SESSION['setup_success'] : '';
   unset($_SESSION['dashboard_success']);
   unset($_SESSION['dashboard_error']);
+  unset($_SESSION['setup_success']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,6 +122,12 @@
                 </style>
 
                 <!-- Success/Error Messages -->
+                <?php if(!empty($setup_success)): ?>
+                    <div class="alert alert-info alert-dismissible fade show" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                        <i class="fas fa-rocket"></i> <strong>System Ready!</strong> <?php echo $setup_success; ?>
+                        <button type="button" class="close" data-dismiss="alert" style="color: white;">&times;</button>
+                    </div>
+                <?php endif; ?>
                 <?php if(!empty($dashboard_success)): ?>
                     <div class="alert alert-success alert-dismissible fade show">
                         <i class="fas fa-check-circle"></i> <?php echo $dashboard_success; ?>
@@ -540,7 +554,7 @@
                                         <td><span class="badge badge-danger"><?php echo $booking->sb_status; ?></span></td>
                                         <td><small><?php echo htmlspecialchars(substr($booking->sb_rejection_reason, 0, 50)); ?></small></td>
                                         <td>
-                                            <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_category); ?>', '<?php echo addslashes($booking->s_name); ?>')">
+                                            <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_category); ?>', '<?php echo addslashes($booking->s_name); ?>', '<?php echo addslashes($booking->s_gadget_name); ?>')">
                                                 <i class="fas fa-user-plus"></i> Reassign
                                             </button>
                                         </td>
@@ -668,19 +682,23 @@
     </div>
     
     <script>
-        function openReassignModal(bookingId, category, serviceName) {
+        function openReassignModal(bookingId, category, serviceName, serviceGadgetName) {
             document.getElementById('booking_id').value = bookingId;
             
-            // Fetch available technicians matching service name OR category (same logic as assignment)
+            // SKILL-BASED FILTERING: Pass service_gadget_name for precise matching
             $.ajax({
                 url: 'vendor/inc/get-technicians.php',
                 method: 'POST',
                 data: { 
+                    service_gadget_name: serviceGadgetName || serviceName,
                     category: category,
                     service_name: serviceName || category
                 },
                 success: function(response) {
                     $('#tech_select').html(response);
+                },
+                error: function() {
+                    $('#tech_select').html('<option disabled>Error loading technicians</option>');
                 }
             });
             

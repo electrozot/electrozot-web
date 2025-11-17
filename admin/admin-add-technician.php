@@ -19,16 +19,15 @@
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_ez_id VARCHAR(20) DEFAULT NULL");
   } catch(Exception $e) { /* ignore */ }
   
-  // Create technician_services table if it doesn't exist
-  $table_check = $mysqli->query("SHOW TABLES LIKE 'tms_technician_services'");
+  // Create technician_skills table if it doesn't exist
+  $table_check = $mysqli->query("SHOW TABLES LIKE 'tms_technician_skills'");
   if($table_check->num_rows == 0) {
-      $create_table = "CREATE TABLE IF NOT EXISTS tms_technician_services (
+      $create_table = "CREATE TABLE IF NOT EXISTS tms_technician_skills (
           ts_id INT AUTO_INCREMENT PRIMARY KEY,
           t_id INT NOT NULL,
-          sc_id INT NOT NULL,
-          service_type ENUM('Installation', 'Repair', 'Servicing', 'Maintenance', 'Other') NOT NULL,
+          skill_name VARCHAR(255) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE KEY unique_tech_service (t_id, sc_id, service_type)
+          UNIQUE KEY unique_tech_skill (t_id, skill_name)
       )";
       $mysqli->query($create_table);
   }
@@ -92,24 +91,17 @@
                     {
                         $tech_id = $mysqli->insert_id;
                         
-                        // Insert technician service categories and types (only if table exists)
-                        $ts_table_check = $mysqli->query("SHOW TABLES LIKE 'tms_technician_services'");
-                        if($ts_table_check && $ts_table_check->num_rows > 0) {
-                            if(isset($_POST['service_categories']) && is_array($_POST['service_categories'])) {
-                                foreach($_POST['service_categories'] as $sc_id) {
-                                    if(isset($_POST['service_types_'.$sc_id]) && is_array($_POST['service_types_'.$sc_id])) {
-                                        foreach($_POST['service_types_'.$sc_id] as $service_type) {
-                                            $insert_service = "INSERT INTO tms_technician_services (t_id, sc_id, service_type) VALUES (?, ?, ?)";
-                                            $stmt_service = $mysqli->prepare($insert_service);
-                                            $stmt_service->bind_param('iis', $tech_id, $sc_id, $service_type);
-                                            $stmt_service->execute();
-                                        }
-                                    }
-                                }
+                        // Insert technician skills
+                        if(isset($_POST['tech_skills']) && is_array($_POST['tech_skills'])) {
+                            foreach($_POST['tech_skills'] as $skill) {
+                                $insert_skill = "INSERT INTO tms_technician_skills (t_id, skill_name) VALUES (?, ?)";
+                                $stmt_skill = $mysqli->prepare($insert_skill);
+                                $stmt_skill->bind_param('is', $tech_id, $skill);
+                                $stmt_skill->execute();
                             }
                         }
                         
-                        $succ = "Technician Added Successfully";
+                        $succ = "Technician Added Successfully with " . (isset($_POST['tech_skills']) ? count($_POST['tech_skills']) : 0) . " skills";
                     }
                     else 
                     {
@@ -222,22 +214,19 @@
                                  
                                  <div class="col-md-6">
                                      <div class="form-group">
-                                         <label>Service Type <span class="text-danger">*</span></label>
+                                         <label>Primary Service Category <span class="text-danger">*</span></label>
                                          <select class="form-control" name="t_category" required onchange="showCategoryDetails(this)">
-                                             <option value="">Select Service Type...</option>
-                                             <option value="Wiring & Fixtures" data-description="Home wiring, switches, lights, fixtures">Wiring & Fixtures</option>
-                                             <option value="Safety & Power" data-description="Circuit breakers, inverters, stabilizers, grounding">Safety & Power</option>
-                                             <option value="Major Appliances" data-description="AC, refrigerator, washing machine, microwave, geyser">Major Appliances</option>
-                                             <option value="Small Gadgets" data-description="TV, fans, heaters, coolers, music systems">Small Gadgets</option>
-                                             <option value="Appliance Setup" data-description="Installation of appliances and devices">Appliance Setup</option>
-                                             <option value="Tech & Security" data-description="CCTV, WiFi, smart devices">Tech & Security</option>
-                                             <option value="Routine Care" data-description="AC servicing, filter cleaning, maintenance">Routine Care</option>
-                                             <option value="Fixtures & Taps" data-description="Plumbing fixtures, taps, pipes">Fixtures & Taps</option>
+                                             <option value="">Select Primary Category...</option>
+                                             <option value="BASIC ELECTRICAL WORK" data-description="Wiring, fixtures, circuit breakers, inverters, electrical repairs">1. BASIC ELECTRICAL WORK</option>
+                                             <option value="ELECTRONIC REPAIR" data-description="AC, refrigerator, washing machine, TV, fans, appliance repairs">2. ELECTRONIC REPAIR</option>
+                                             <option value="INSTALLATION & SETUP" data-description="Appliance installation, CCTV, WiFi, smart home setup">3. INSTALLATION & SETUP</option>
+                                             <option value="SERVICING & MAINTENANCE" data-description="AC servicing, filter cleaning, routine maintenance">4. SERVICING & MAINTENANCE</option>
+                                             <option value="PLUMBING WORK" data-description="Taps, faucets, washbasin, toilet, plumbing fixtures">5. PLUMBING WORK</option>
                                          </select>
                                          <div id="categoryDetails" class="alert alert-info mt-2 py-2" style="display:none; font-size: 0.875rem;">
                                              <strong>Includes:</strong> <span id="categoryDescription"></span>
                                          </div>
-                                         <small class="text-muted">Select the main service type this technician specializes in</small>
+                                         <small class="text-muted">Select the main service category this technician specializes in</small>
                                      </div>
                                  </div>
                                  
@@ -296,63 +285,304 @@
                              }
                              </script>
                              
-                             <?php
-                             // Check if service categories table exists
-                             $table_check = $mysqli->query("SHOW TABLES LIKE 'tms_service_categories'");
-                             if($table_check && $table_check->num_rows > 0) {
-                             ?>
-                             <!-- Additional Services Section (Optional) -->
+                             <!-- Detailed Service Skills Section -->
                              <div class="row mt-4">
                                  <div class="col-12">
                                      <h6 class="border-bottom pb-2 mb-3">
-                                         <i class="fas fa-list-check"></i> Additional Services 
-                                         <small class="text-muted">(Optional - Skip if not needed)</small>
+                                         <i class="fas fa-tools"></i> Detailed Service Skills 
+                                         <small class="text-muted">(Select all services this technician can perform)</small>
                                      </h6>
                                      <div class="alert alert-light border">
-                                         <p class="mb-2"><strong>What is this?</strong></p>
                                          <p class="mb-0 text-muted" style="font-size: 0.9rem;">
-                                             If this technician can handle multiple service types (like both Installation AND Repair), 
-                                             select them below. Otherwise, you can skip this section.
+                                             <i class="fas fa-info-circle text-primary"></i> 
+                                             Check all the specific services this technician is skilled in. This helps in accurate job assignment.
                                          </p>
                                      </div>
                                  </div>
                              </div>
                              
-                             <div class="row">
-                                 <?php
-                                 // Use the 8 service types directly
-                                 $service_types_list = [
-                                     ['id' => 1, 'name' => 'Wiring & Fixtures', 'desc' => 'Electrical wiring, switches, lights'],
-                                     ['id' => 2, 'name' => 'Safety & Power', 'desc' => 'Circuit breakers, inverters, stabilizers'],
-                                     ['id' => 3, 'name' => 'Major Appliances', 'desc' => 'AC, refrigerator, washing machine'],
-                                     ['id' => 4, 'name' => 'Small Gadgets', 'desc' => 'TV, fans, heaters, coolers'],
-                                     ['id' => 5, 'name' => 'Appliance Setup', 'desc' => 'Installation services'],
-                                     ['id' => 6, 'name' => 'Tech & Security', 'desc' => 'CCTV, WiFi, smart devices'],
-                                     ['id' => 7, 'name' => 'Routine Care', 'desc' => 'Servicing and maintenance'],
-                                     ['id' => 8, 'name' => 'Fixtures & Taps', 'desc' => 'Plumbing fixtures and repairs']
-                                 ];
-                                 
-                                 foreach($service_types_list as $service_type) {
-                                 ?>
-                                 <div class="col-md-6 mb-3">
-                                     <div class="card border">
-                                         <div class="card-body p-3">
-                                             <div class="custom-control custom-checkbox">
-                                                 <input type="checkbox" class="custom-control-input" 
-                                                        id="service_<?php echo $service_type['id']; ?>" 
-                                                        name="additional_services[]" 
-                                                        value="<?php echo $service_type['name']; ?>">
-                                                 <label class="custom-control-label font-weight-bold" for="service_<?php echo $service_type['id']; ?>">
-                                                     <?php echo $service_type['name']; ?>
-                                                 </label>
+                             <!-- 1. BASIC ELECTRICAL WORK -->
+                             <div class="row mb-4">
+                                 <div class="col-12">
+                                     <div class="card border-primary">
+                                         <div class="card-header bg-primary text-white">
+                                             <h6 class="mb-0"><i class="fas fa-bolt"></i> 1. BASIC ELECTRICAL WORK</h6>
+                                         </div>
+                                         <div class="card-body">
+                                             <div class="row">
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-primary"><i class="fas fa-lightbulb"></i> Wiring & Fixtures</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_1" name="tech_skills[]" value="Home Wiring (New installation and repair)">
+                                                         <label class="custom-control-label" for="skill_1">Home Wiring (New installation and repair)</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_2" name="tech_skills[]" value="Switch/Socket Installation and Replacement">
+                                                         <label class="custom-control-label" for="skill_2">Switch/Socket Installation and Replacement</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_3" name="tech_skills[]" value="Light Fixture Installation (Tube lights, LED panels, chandeliers)">
+                                                         <label class="custom-control-label" for="skill_3">Light Fixture Installation (Tube lights, LED panels, chandeliers)</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_4" name="tech_skills[]" value="Light Decoration/Festive Lighting Setup">
+                                                         <label class="custom-control-label" for="skill_4">Light Decoration/Festive Lighting Setup</label>
+                                                     </div>
+                                                 </div>
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-primary"><i class="fas fa-shield-alt"></i> Safety & Power</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_5" name="tech_skills[]" value="Circuit Breaker and Fuse Box troubleshooting and repair">
+                                                         <label class="custom-control-label" for="skill_5">Circuit Breaker and Fuse Box troubleshooting</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_6" name="tech_skills[]" value="Inverter, UPS, and Voltage Stabilizer installation/wiring">
+                                                         <label class="custom-control-label" for="skill_6">Inverter, UPS, and Voltage Stabilizer installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_7" name="tech_skills[]" value="Grounding and Earthing system installation">
+                                                         <label class="custom-control-label" for="skill_7">Grounding and Earthing system installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_8" name="tech_skills[]" value="New Electrical Outlet/Point installation">
+                                                         <label class="custom-control-label" for="skill_8">New Electrical Outlet/Point installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_9" name="tech_skills[]" value="Ceiling Fan Regulator repair/replacement">
+                                                         <label class="custom-control-label" for="skill_9">Ceiling Fan Regulator repair/replacement</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_10" name="tech_skills[]" value="Electrical fault finding and short-circuit repair">
+                                                         <label class="custom-control-label" for="skill_10">Electrical fault finding and short-circuit repair</label>
+                                                     </div>
+                                                 </div>
                                              </div>
-                                             <small class="text-muted d-block mt-1"><?php echo $service_type['desc']; ?></small>
                                          </div>
                                      </div>
                                  </div>
-                                 <?php } ?>
                              </div>
-                             <?php } ?>
+                             
+                             <!-- 2. ELECTRONIC REPAIR -->
+                             <div class="row mb-4">
+                                 <div class="col-12">
+                                     <div class="card border-success">
+                                         <div class="card-header bg-success text-white">
+                                             <h6 class="mb-0"><i class="fas fa-wrench"></i> 2. ELECTRONIC REPAIR (GADGET/APPLIANCE)</h6>
+                                         </div>
+                                         <div class="card-body">
+                                             <div class="row">
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-success"><i class="fas fa-snowflake"></i> Major Appliances</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_11" name="tech_skills[]" value="Air Conditioner (AC) Repair (Split, Window, Central)">
+                                                         <label class="custom-control-label" for="skill_11">Air Conditioner (AC) Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_12" name="tech_skills[]" value="Refrigerator Repair and Gas Charging">
+                                                         <label class="custom-control-label" for="skill_12">Refrigerator Repair and Gas Charging</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_13" name="tech_skills[]" value="Washing Machine Repair (Semi/Fully automatic, Front/Top Load)">
+                                                         <label class="custom-control-label" for="skill_13">Washing Machine Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_14" name="tech_skills[]" value="Microwave Oven Repair">
+                                                         <label class="custom-control-label" for="skill_14">Microwave Oven Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_15" name="tech_skills[]" value="Geyser (Water Heater) Repair">
+                                                         <label class="custom-control-label" for="skill_15">Geyser (Water Heater) Repair</label>
+                                                     </div>
+                                                 </div>
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-success"><i class="fas fa-tv"></i> Other Gadgets</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_16" name="tech_skills[]" value="Fan Repair (Ceiling, Table, Exhaust)">
+                                                         <label class="custom-control-label" for="skill_16">Fan Repair (Ceiling, Table, Exhaust)</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_17" name="tech_skills[]" value="Television (TV) Repair and Troubleshooting">
+                                                         <label class="custom-control-label" for="skill_17">Television (TV) Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_18" name="tech_skills[]" value="Electric Iron/Press Repair">
+                                                         <label class="custom-control-label" for="skill_18">Electric Iron/Press Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_19" name="tech_skills[]" value="Music System/Home Theatre Repair">
+                                                         <label class="custom-control-label" for="skill_19">Music System/Home Theatre Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_20" name="tech_skills[]" value="Electric Heater Repair (Room Heaters, Rods)">
+                                                         <label class="custom-control-label" for="skill_20">Electric Heater Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_21" name="tech_skills[]" value="Induction Cooktop and Electric Stove Repair">
+                                                         <label class="custom-control-label" for="skill_21">Induction Cooktop and Electric Stove Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_22" name="tech_skills[]" value="Air Cooler Repair">
+                                                         <label class="custom-control-label" for="skill_22">Air Cooler Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_23" name="tech_skills[]" value="Power Tools Repair (Drills, Cutters, Grinders, etc.)">
+                                                         <label class="custom-control-label" for="skill_23">Power Tools Repair</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_24" name="tech_skills[]" value="Water Filter/Purifier Repair">
+                                                         <label class="custom-control-label" for="skill_24">Water Filter/Purifier Repair</label>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- 3. INSTALLATION & SETUP -->
+                             <div class="row mb-4">
+                                 <div class="col-12">
+                                     <div class="card border-info">
+                                         <div class="card-header bg-info text-white">
+                                             <h6 class="mb-0"><i class="fas fa-cog"></i> 3. INSTALLATION & SETUP</h6>
+                                         </div>
+                                         <div class="card-body">
+                                             <div class="row">
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-info"><i class="fas fa-plug"></i> Appliance Setup</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_25" name="tech_skills[]" value="TV/DTH Dish Installation and Tuning">
+                                                         <label class="custom-control-label" for="skill_25">TV/DTH Dish Installation and Tuning</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_26" name="tech_skills[]" value="Electric Chimney Installation">
+                                                         <label class="custom-control-label" for="skill_26">Electric Chimney Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_27" name="tech_skills[]" value="Ceiling and Wall Fan Installation">
+                                                         <label class="custom-control-label" for="skill_27">Ceiling and Wall Fan Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_28" name="tech_skills[]" value="Washing Machine Installation and Uninstallation">
+                                                         <label class="custom-control-label" for="skill_28">Washing Machine Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_29" name="tech_skills[]" value="Air Cooler Installation">
+                                                         <label class="custom-control-label" for="skill_29">Air Cooler Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_30" name="tech_skills[]" value="Water Filter/Purifier Installation">
+                                                         <label class="custom-control-label" for="skill_30">Water Filter/Purifier Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_31" name="tech_skills[]" value="Geyser/Water Heater Installation">
+                                                         <label class="custom-control-label" for="skill_31">Geyser/Water Heater Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_32" name="tech_skills[]" value="Light Fixture Installation">
+                                                         <label class="custom-control-label" for="skill_32">Light Fixture Installation</label>
+                                                     </div>
+                                                 </div>
+                                                 <div class="col-md-6">
+                                                     <h6 class="text-info"><i class="fas fa-video"></i> Tech & Security</h6>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_33" name="tech_skills[]" value="CCTV and Security Camera Installation">
+                                                         <label class="custom-control-label" for="skill_33">CCTV and Security Camera Installation</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_34" name="tech_skills[]" value="Wi-Fi Router and Modem Setup/Troubleshooting">
+                                                         <label class="custom-control-label" for="skill_34">Wi-Fi Router and Modem Setup</label>
+                                                     </div>
+                                                     <div class="custom-control custom-checkbox mb-2">
+                                                         <input type="checkbox" class="custom-control-input" id="skill_35" name="tech_skills[]" value="Smart Home Device Installation (Smart switches, smart lights)">
+                                                         <label class="custom-control-label" for="skill_35">Smart Home Device Installation</label>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- 4. SERVICING & MAINTENANCE -->
+                             <div class="row mb-4">
+                                 <div class="col-12">
+                                     <div class="card border-warning">
+                                         <div class="card-header bg-warning text-dark">
+                                             <h6 class="mb-0"><i class="fas fa-tools"></i> 4. SERVICING & MAINTENANCE</h6>
+                                         </div>
+                                         <div class="card-body">
+                                             <div class="row">
+                                                 <div class="col-md-12">
+                                                     <h6 class="text-warning"><i class="fas fa-broom"></i> Routine Care</h6>
+                                                     <div class="row">
+                                                         <div class="col-md-6">
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_36" name="tech_skills[]" value="AC Wet and Dry Servicing">
+                                                                 <label class="custom-control-label" for="skill_36">AC Wet and Dry Servicing</label>
+                                                             </div>
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_37" name="tech_skills[]" value="Washing Machine General Maintenance and Cleaning">
+                                                                 <label class="custom-control-label" for="skill_37">Washing Machine Maintenance and Cleaning</label>
+                                                             </div>
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_38" name="tech_skills[]" value="Geyser Descaling and Service">
+                                                                 <label class="custom-control-label" for="skill_38">Geyser Descaling and Service</label>
+                                                             </div>
+                                                         </div>
+                                                         <div class="col-md-6">
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_39" name="tech_skills[]" value="Water Filter Cartridge Replacement and General Service">
+                                                                 <label class="custom-control-label" for="skill_39">Water Filter Cartridge Replacement</label>
+                                                             </div>
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_40" name="tech_skills[]" value="Water Tank Cleaning (Manual and Motorized)">
+                                                                 <label class="custom-control-label" for="skill_40">Water Tank Cleaning</label>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- 5. PLUMBING WORK -->
+                             <div class="row mb-4">
+                                 <div class="col-12">
+                                     <div class="card border-danger">
+                                         <div class="card-header bg-danger text-white">
+                                             <h6 class="mb-0"><i class="fas fa-faucet"></i> 5. PLUMBING WORK</h6>
+                                         </div>
+                                         <div class="card-body">
+                                             <div class="row">
+                                                 <div class="col-md-12">
+                                                     <h6 class="text-danger"><i class="fas fa-wrench"></i> Fixtures & Taps</h6>
+                                                     <div class="row">
+                                                         <div class="col-md-6">
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_41" name="tech_skills[]" value="Tap, Faucet, and Shower Installation/Repair">
+                                                                 <label class="custom-control-label" for="skill_41">Tap, Faucet, and Shower Installation/Repair</label>
+                                                             </div>
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_42" name="tech_skills[]" value="Washbasin and Sink Installation/Repair">
+                                                                 <label class="custom-control-label" for="skill_42">Washbasin and Sink Installation/Repair</label>
+                                                             </div>
+                                                         </div>
+                                                         <div class="col-md-6">
+                                                             <div class="custom-control custom-checkbox mb-2">
+                                                                 <input type="checkbox" class="custom-control-input" id="skill_43" name="tech_skills[]" value="Toilet, Commode, and Flush Tank Installation">
+                                                                 <label class="custom-control-label" for="skill_43">Toilet, Commode, and Flush Tank Installation</label>
+                                                             </div>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
 
                              
                              <!-- Submit Button -->

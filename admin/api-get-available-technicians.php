@@ -1,6 +1,7 @@
 <?php
 /**
  * API: Get available technicians for assignment
+ * Enhanced to match both category and gadget type
  */
 
 session_start();
@@ -17,11 +18,16 @@ require_once('BookingSystem.php');
 $bookingSystem = new BookingSystem($conn);
 
 $service_category = $_GET['category'] ?? null;
+$service_gadget_type = $_GET['gadget_type'] ?? null;
 
-$technicians = $bookingSystem->getAvailableTechnicians($service_category);
+$technicians = $bookingSystem->getAvailableTechnicians($service_category, $service_gadget_type);
 
 echo json_encode([
     'success' => true,
-    'technicians' => $technicians
+    'technicians' => $technicians,
+    'filters' => [
+        'category' => $service_category,
+        'gadget_type' => $service_gadget_type
+    ]
 ]);
 ?>

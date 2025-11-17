@@ -1,18 +1,15 @@
 <?php
-// AJAX endpoint to get services based on selected subcategory
-session_start();
-include('vendor/inc/config.php');
-
 header('Content-Type: application/json');
+include('vendor/inc/config.php');
 
 if(isset($_POST['subcategory'])) {
     $subcategory = $_POST['subcategory'];
     
-    // Get active services for the selected subcategory
-    $query = "SELECT s_id, s_name, s_price, s_gadget_name 
+    // Get services by subcategory
+    $query = "SELECT s_id as id, s_name as name, s_gadget_name as gadget_name, s_price as price 
               FROM tms_service 
               WHERE s_subcategory = ? AND s_status = 'Active' 
-              ORDER BY s_name";
+              ORDER BY s_name ASC";
     
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('s', $subcategory);
@@ -21,16 +18,24 @@ if(isset($_POST['subcategory'])) {
     
     $services = [];
     while($row = $result->fetch_assoc()) {
-        $services[] = [
-            'id' => $row['s_id'],
-            'name' => $row['s_name'],
-            'price' => $row['s_price'],
-            'gadget_name' => $row['s_gadget_name']
-        ];
+        $services[] = $row;
     }
     
-    echo json_encode(['success' => true, 'services' => $services]);
+    if(count($services) > 0) {
+        echo json_encode([
+            'success' => true,
+            'services' => $services
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'No services found for this subcategory'
+        ]);
+    }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Subcategory not provided']);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Subcategory not provided'
+    ]);
 }
 ?>

@@ -356,19 +356,38 @@ class BookingSystem {
 
     /**
      * Get available technicians for assignment
+     * Enhanced to match both category and gadget type/service type
      */
-    public function getAvailableTechnicians($service_category = null) {
+    public function getAvailableTechnicians($service_category = null, $service_gadget_type = null) {
         $sql = "
-            SELECT t_id, t_name, t_specialization, t_current_bookings, t_booking_limit,
+            SELECT t_id, t_name, t_specialization, t_category, t_current_bookings, t_booking_limit,
                    (t_booking_limit - t_current_bookings) as available_slots
             FROM tms_technician 
             WHERE t_status = 'Available'
+              AND t_current_bookings < t_booking_limit
         ";
         
+        $params = [];
+        
+        // Match by service category
         if ($service_category) {
-            $sql .= " AND t_category = ?";
+            $sql .= " AND (t_category = ? OR t_category LIKE ?)";
+            $params[] = $service_category;
+            $params[] = '%' . $service_category . '%';
+        }
+        
+        // Match by gadget type/service type in specialization
+        if ($service_gadget_type) {
+            $sql .= " AND (t_specialization LIKE ? OR t_category LIKE ?)";
+            $params[] = '%' . $service_gadget_type . '%';
+            $params[] = '%' . $service_gadget_type . '%';
+        }
+        
+        $sql .= " ORDER BY available_slots DESC, t_current_bookings ASC";
+        
+        if (!empty($params)) {
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$service_category]);
+            $stmt->execute($params);
         } else {
             $stmt = $this->conn->query($sql);
         }
@@ -466,6 +485,296 @@ class BookingSystem {
             LIMIT 10
         ");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+}
+?>
+
+    /**
+     * Check if technician is available at specific date/time
+     */
+    public function checkTechnicianTimeSlot($technician_id, $date, $start_time, $end_time) {
+        $stmt = $this->conn->prepare("CALL sp_check_technician_availability(?, ?, ?, ?, @available, @message)");
+        $stmt->execute([$technician_id, $date, $start_time, $end_time]);
+        
+        $result = $this->conn->query("SELECT @available as available, @message as message")->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'available' => (bool)$result['available'],
+            'message' => $result['message']
+        ];
+    }
+    
+    /**
+     * Auto-assign booking to best available technician
+     */
+    public function autoAssignBooking($booking_id) {
+        // Get booking details including service category and gadget type
+        $stmt = $this->conn->prepare("
+            SELECT sb.*, s.s_category, s.s_gadget_name, s.s_subcategory 
+            FROM tms_service_booking sb
+            LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+            WHERE sb.sb_id = ?
+        ");
+        $stmt->execute([$booking_id]);
+        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$booking) {
+            return ['success' => false, 'message' => 'Booking not found'];
+        }
+        
+        // Get service gadget type (prefer s_gadget_name, fallback to s_subcategory)
+        $gadget_type = !empty($booking['s_gadget_name']) ? $booking['s_gadget_name'] : $booking['s_subcategory'];
+        
+        // Find best matching technician based on category and gadget type
+        $available_technicians = $this->getAvailableTechnicians($booking['s_category'], $gadget_type);
+        
+        if (!empty($available_technicians)) {
+            // Get the best technician (first one with most available slots)
+            $best_technician = $available_technicians[0];
+            
+            // Assign to found technician
+            return $this->assignBooking($booking_id, $best_technician['t_id'], 0); // 0 = auto-assigned
+        } else {
+            // Try without gadget type filter as fallback
+            $available_technicians = $this->getAvailableTechnicians($booking['s_category'], null);
+            
+            if (!empty($available_technicians)) {
+                $best_technician = $available_technicians[0];
+                return $this->assignBooking($booking_id, $best_technician['t_id'], 0);
+            } else {
+                return ['success' => false, 'message' => 'No available technicians found for this service category'];
+            }
+        }
+    }
+
+    /**
+     * Calculate cancellation charge based on policy
+     */
+    public function calculateCancellationCharge($booking_id) {
+        $stmt = $this->conn->prepare("CALL sp_calculate_cancellation_charge(?, @charge, @percentage)");
+        $stmt->execute([$booking_id]);
+        
+        $result = $this->conn->query("SELECT @charge as charge, @percentage as percentage")->fetch(PDO::FETCH_ASSOC);
+        
+        return [
+            'charge_amount' => $result['charge'],
+            'charge_percentage' => $result['percentage']
+        ];
+    }
+    
+    /**
+     * Set technician on leave
+     */
+    public function setTechnicianLeave($technician_id, $start_date, $end_date, $reason) {
+        $this->conn->beginTransaction();
+        
+        try {
+            // Insert leave record
+            $stmt = $this->conn->prepare("
+                INSERT INTO tms_technician_leaves 
+                (tl_technician_id, tl_start_date, tl_end_date, tl_reason, tl_status)
+                VALUES (?, ?, ?, ?, 'Approved')
+            ");
+            $stmt->execute([$technician_id, $start_date, $end_date, $reason]);
+            
+            // Update technician status
+            $stmt = $this->conn->prepare("
+                UPDATE tms_technician 
+                SET t_is_on_leave = 1,
+                    t_leave_start_date = ?,
+                    t_leave_end_date = ?,
+                    t_leave_reason = ?
+                WHERE t_id = ?
+            ");
+            $stmt->execute([$start_date, $end_date, $reason, $technician_id]);
+            
+            $this->conn->commit();
+            
+            return ['success' => true, 'message' => 'Leave set successfully'];
+            
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Remove technician from leave
+     */
+    public function removeTechnicianLeave($technician_id) {
+        $stmt = $this->conn->prepare("
+            UPDATE tms_technician 
+            SET t_is_on_leave = 0,
+                t_leave_start_date = NULL,
+                t_leave_end_date = NULL,
+                t_leave_reason = NULL
+            WHERE t_id = ?
+        ");
+        $stmt->execute([$technician_id]);
+        
+        return ['success' => true, 'message' => 'Leave removed successfully'];
+    }
+    
+    /**
+     * Add rating and review for technician
+     */
+    public function addTechnicianRating($booking_id, $technician_id, $user_id, $rating, $review = '', $punctuality = null, $professionalism = null, $quality = null) {
+        $this->conn->beginTransaction();
+        
+        try {
+            // Insert rating
+            $stmt = $this->conn->prepare("
+                INSERT INTO tms_technician_ratings 
+                (tr_technician_id, tr_booking_id, tr_user_id, tr_rating, tr_review, 
+                 tr_punctuality, tr_professionalism, tr_quality)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $technician_id, $booking_id, $user_id, $rating, $review,
+                $punctuality, $professionalism, $quality
+            ]);
+            
+            // Update booking with rating
+            $stmt = $this->conn->prepare("
+                UPDATE tms_service_booking 
+                SET sb_rating = ?,
+                    sb_review = ?,
+                    sb_reviewed_at = NOW()
+                WHERE sb_id = ?
+            ");
+            $stmt->execute([$rating, $review, $booking_id]);
+            
+            // Update technician metrics
+            $this->conn->query("CALL sp_update_technician_metrics($technician_id)");
+            
+            $this->conn->commit();
+            
+            return ['success' => true, 'message' => 'Rating submitted successfully'];
+            
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+        }
+    }
+
+    /**
+     * Modify booking details (before technician assignment)
+     */
+    public function modifyBooking($booking_id, $field_name, $new_value, $modified_by, $modified_by_id, $reason = '') {
+        // Check if booking can be modified
+        $stmt = $this->conn->prepare("
+            SELECT sb_status, sb_technician_id 
+            FROM tms_service_booking 
+            WHERE sb_id = ?
+        ");
+        $stmt->execute([$booking_id]);
+        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$booking) {
+            return ['success' => false, 'message' => 'Booking not found'];
+        }
+        
+        // Only allow modification if not assigned or by admin
+        if ($booking['sb_technician_id'] && $modified_by != 'admin') {
+            return ['success' => false, 'message' => 'Cannot modify after technician assigned'];
+        }
+        
+        $this->conn->beginTransaction();
+        
+        try {
+            // Get old value
+            $stmt = $this->conn->prepare("SELECT $field_name as old_value FROM tms_service_booking WHERE sb_id = ?");
+            $stmt->execute([$booking_id]);
+            $old_value = $stmt->fetch(PDO::FETCH_ASSOC)['old_value'];
+            
+            // Update booking
+            $stmt = $this->conn->prepare("UPDATE tms_service_booking SET $field_name = ? WHERE sb_id = ?");
+            $stmt->execute([$new_value, $booking_id]);
+            
+            // Log modification
+            $stmt = $this->conn->prepare("
+                INSERT INTO tms_booking_modifications 
+                (bm_booking_id, bm_field_name, bm_old_value, bm_new_value, 
+                 bm_modified_by, bm_modified_by_id, bm_reason)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+            $stmt->execute([
+                $booking_id, $field_name, $old_value, $new_value,
+                $modified_by, $modified_by_id, $reason
+            ]);
+            
+            $this->conn->commit();
+            
+            return ['success' => true, 'message' => 'Booking modified successfully'];
+            
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+        }
+    }
+    
+    /**
+     * Auto-expire old pending bookings
+     */
+    public function autoExpireBookings() {
+        $this->conn->query("CALL sp_auto_expire_bookings()");
+        
+        $stmt = $this->conn->query("SELECT ROW_COUNT() as count");
+        $count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        return ['success' => true, 'expired_count' => $count];
+    }
+    
+    /**
+     * Get technician performance metrics
+     */
+    public function getTechnicianPerformance($technician_id) {
+        $stmt = $this->conn->prepare("
+            SELECT 
+                t_name,
+                t_avg_rating,
+                t_total_reviews,
+                t_completion_rate,
+                t_current_bookings,
+                t_booking_limit,
+                t_daily_assigned,
+                t_daily_completed,
+                t_daily_rejected
+            FROM tms_technician 
+            WHERE t_id = ?
+        ");
+        $stmt->execute([$technician_id]);
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Get booking reminders to send
+     */
+    public function getPendingReminders() {
+        $stmt = $this->conn->query("
+            SELECT br.*, sb.sb_user_id, sb.sb_technician_id, sb.sb_booking_date, sb.sb_booking_time
+            FROM tms_booking_reminders br
+            JOIN tms_service_booking sb ON br.br_booking_id = sb.sb_id
+            WHERE br.br_is_sent = 0
+              AND br.br_reminder_time <= NOW()
+              AND sb.sb_status = 'Approved'
+            ORDER BY br.br_reminder_time ASC
+        ");
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /**
+     * Mark reminder as sent
+     */
+    public function markReminderSent($reminder_id) {
+        $stmt = $this->conn->prepare("
+            UPDATE tms_booking_reminders 
+            SET br_is_sent = 1, br_sent_at = NOW()
+            WHERE br_id = ?
+        ");
+        $stmt->execute([$reminder_id]);
     }
 }
 ?>
