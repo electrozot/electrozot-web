@@ -1,0 +1,723 @@
+/* WhatsApp Floating Button - Enhanced with Floating Animation */
+.whatsapp-chat-btn {
+    position: fixed;
+    width: 65px;
+    height: 65px;
+    top: 50%;
+    right: 30px;
+    transform: translateY(calc(-50% - 85px));
+    background-color: #25d366;
+    color: #FFF;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 32px;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: float-whatsapp 3s ease-in-out infinite, whatsapp-pulse 2s infinite;
+}
+
+.whatsapp-chat-btn:hover {
+    background-color: #128c7e;
+    color: #FFF;
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 8px 30px rgba(37, 211, 102, 0.7);
+    text-decoration: none;
+}
+
+.whatsapp-chat-btn i {
+    margin-top: 3px;
+}
+
+/* WhatsApp Floating Animation */
+@keyframes float-whatsapp {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* WhatsApp Pulse Animation */
+@keyframes whatsapp-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 20px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
+/* Book Service Floating Button - Enhanced with Gradient and Blinking */
+.book-service-fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
+    color: #FFF;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+    z-index: 1000;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 22px;
+    animation: float-book 3s ease-in-out infinite, blink-book 2s ease-in-out infinite;
+}
+
+.book-service-fab:hover {
+    background: linear-gradient(135deg, #ff006e 0%, #ee5a6f 50%, #ff6b6b 100%);
+    color: #FFF;
+    transform: scale(1.15) translateY(-5px);
+    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.7);
+    text-decoration: none;
+    animation: float-book 3s ease-in-out infinite;
+}
+
+.book-service-fab span {
+    font-size: 10px;
+    font-weight: 700;
+    margin-top: 2px;
+    letter-spacing: 0.5px;
+}
+
+/* Book Button Floating Animation */
+@keyframes float-book {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+/* Book Button Blinking Animation */
+@keyframes blink-book {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+        opacity: 1;
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(255, 107, 107, 0.9), 0 0 0 15px rgba(255, 107, 107, 0);
+        opacity: 0.9;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .whatsapp-chat-btn {
+        width: 55px;
+        height: 55px;
+        top: 50%;
+        right: 20px;
+        transform: translateY(calc(-50% - 75px));
+        font-size: 28px;
+    }
+    
+    .book-service-fab {
+        width: 55px;
+        height: 55px;
+        bottom: 20px;
+        right: 20px;
+        font-size: 20px;
+    }
+    
+    .book-service-fab span {
+        font-size: 9px;
+    }
+}
+
+/* Electrozot Animated Text with Lightning Effect */
+.electrozot-animated {
+    font-weight: 900;
+    display: inline-block;
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #00bfff 10%,
+        #ffd700 20%,
+        #ff6b9d 30%,
+        #a78bfa 40%,
+        #00ff88 50%,
+        #ffffff 60%,
+        #00bfff 70%,
+        #ffd700 80%,
+        #ff6b9d 90%,
+        #ffffff 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: lightningMove 3s linear infinite;
+    text-shadow: none;
+    position: relative;
+}
+
+/* Add glowing effect behind the text */
+.electrozot-animated::before {
+    content: 'Electrozot';
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.5) 0%,
+        rgba(0, 191, 255, 0.5) 10%,
+        rgba(255, 215, 0, 0.5) 20%,
+        rgba(255, 107, 157, 0.5) 30%,
+        rgba(167, 139, 250, 0.5) 40%,
+        rgba(0, 255, 136, 0.5) 50%,
+        rgba(255, 255, 255, 0.5) 60%,
+        rgba(0, 191, 255, 0.5) 70%,
+        rgba(255, 215, 0, 0.5) 80%,
+        rgba(255, 107, 157, 0.5) 90%,
+        rgba(255, 255, 255, 0.5) 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: blur(10px);
+    animation: lightningMove 3s linear infinite;
+}
+
+/* Lightning movement animation - moves from left to right in 3 seconds */
+@keyframes lightningMove {
+    0% {
+        background-position: -200% center;
+        filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    }
+    25% {
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(0, 191, 255, 0.8));
+    }
+    50% {
+        background-position: 0% center;
+        filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 215, 0, 1));
+    }
+    75% {
+        filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 107, 157, 0.8));
+    }
+    100% {
+        background-position: 200% center;
+        filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+    }
+}
+
+/* Pulse effect on hover */
+.hero-title:hover .electrozot-animated {
+    animation: lightningMove 1.5s linear infinite, pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Book Service Now Header Gradient Animation */
+.booking-header {
+    background-size: 200% 200% !important;
+    animation: gradientShift 8s ease infinite !important;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Shine Effect for Header */
+.header-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 70%
+    );
+    animation: shine 3s infinite;
+    z-index: 1;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+/* Feature Card Gradient Backgrounds */
+.feature-gradient-bg,
+.feature-gradient-bg-2,
+.feature-gradient-bg-3,
+.feature-gradient-bg-4 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+.feature-gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.feature-gradient-bg-2 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.feature-gradient-bg-3 {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.feature-gradient-bg-4 {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.feature-card:hover .feature-gradient-bg,
+.feature-card:hover .feature-gradient-bg-2,
+.feature-card:hover .feature-gradient-bg-3,
+.feature-card:hover .feature-gradient-bg-4 {
+    opacity: 0.15;
+}
+
+/* Feature Card Hover Effects */
+.feature-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+/* Feature Icon Bounce Animation */
+.icon-bounce {
+    animation: iconBounce 2s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.feature-icon i {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.feature-card-2 .feature-icon i {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.feature-card-3 .feature-icon i {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.feature-card-4 .feature-icon i {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Hero Content Spacing */
+.hero-content {
+    padding-right: 30px;
+}
+
+.hero-title {
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+/* Responsive adjustments for hero section */
+@media (max-width: 991px) {
+    .hero-content {
+        padding-right: 15px;
+        text-align: center;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* Work Portfolio Responsive Images */
+.work-portfolio-img {
+    height: 500px;
+    object-fit: cover;
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .work-portfolio-img {
+        height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .work-portfolio-img {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .work-portfolio-img {
+        height: 250px;
+    }
+}
+
+/* Carousel caption responsive */
+@media (max-width: 768px) {
+    .carousel-caption {
+        display: block !important;
+        background: rgba(0,0,0,0.8) !important;
+        padding: 10px !important;
+        border-radius: 5px !important;
+        bottom: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    
+    .carousel-caption h5 {
+        font-size: 1rem !important;
+        margin-bottom: 5px !important;
+    }
+    
+    .carousel-caption p {
+        font-size: 0.85rem !important;
+        margin-bottom: 0 !important;
+    }
+}
+
+/* Testimonials Auto-Sliding Animation */
+.testimonials-slider-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.testimonials-slider {
+    display: flex;
+    white-space: nowrap;
+    animation: slideTestimonials 40s linear infinite;
+    will-change: transform;
+}
+
+.testimonial-slide {
+    flex-shrink: 0;
+}
+
+@keyframes slideTestimonials {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.testimonials-slider:hover {
+    animation-play-state: paused;
+}
+
+/* Responsive testimonials */
+@media (max-width: 768px) {
+    .testimonial-slide {
+        width: 300px !important;
+        margin: 0 10px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .testimonial-slide {
+        width: 280px !important;
+        margin: 0 8px !important;
+    }
+    
+    .testimonial-text {
+        font-size: 0.95rem !important;
+        min-height: 100px !important;
+    }
+}
+
+
+/* ========================================
+   SCROLLABLE DROPDOWN FOR SMALL SCREENS
+   ======================================== */
+
+/* Make dropdown scrollable on all devices */
+select.service-dropdown,
+#guestServiceSubcategory,
+#guestService {
+    /* Enable scrolling for long option lists */
+    overflow-y: auto !important;
+    max-height: none !important;
+}
+
+/* Mobile: Add scrollable dropdown with max height */
+@media (max-width: 768px) {
+    /* Make select dropdown scrollable */
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        /* Set maximum height for dropdown - REDUCED */
+        max-height: 180px !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+    }
+    
+    /* Style the scrollbar for better visibility */
+    select.service-dropdown::-webkit-scrollbar,
+    #guestServiceSubcategory::-webkit-scrollbar,
+    #guestService::-webkit-scrollbar {
+        width: 8px !important;
+    }
+    
+    select.service-dropdown::-webkit-scrollbar-track,
+    #guestServiceSubcategory::-webkit-scrollbar-track,
+    #guestService::-webkit-scrollbar-track {
+        background: #f1f1f1 !important;
+        border-radius: 4px !important;
+    }
+    
+    select.service-dropdown::-webkit-scrollbar-thumb,
+    #guestServiceSubcategory::-webkit-scrollbar-thumb,
+    #guestService::-webkit-scrollbar-thumb {
+        background: #888 !important;
+        border-radius: 4px !important;
+    }
+    
+    select.service-dropdown::-webkit-scrollbar-thumb:hover,
+    #guestServiceSubcategory::-webkit-scrollbar-thumb:hover,
+    #guestService::-webkit-scrollbar-thumb:hover {
+        background: #555 !important;
+    }
+}
+
+/* Small phones - even smaller max height */
+@media (max-width: 400px) {
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        max-height: 250px !important;
+    }
+}
+
+/* Very small screens - compact dropdown */
+@media (max-width: 360px) {
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        max-height: 200px !important;
+    }
+}
+
+/* Ensure dropdown options are visible and scrollable */
+@media (max-width: 768px) {
+    /* Make sure options don't get cut off */
+    select option,
+    select optgroup {
+        display: block !important;
+        padding: 10px 8px !important;
+        line-height: 1.4 !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+    
+    /* Add visual indicator for scrollable content */
+    select.service-dropdown::after,
+    #guestServiceSubcategory::after,
+    #guestService::after {
+        content: '' !important;
+        display: block !important;
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 20px !important;
+        background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.9)) !important;
+        pointer-events: none !important;
+    }
+}
+
+/* Native select dropdown styling for better mobile experience */
+@media (max-width: 768px) {
+    /* Use native mobile dropdown for better UX */
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        -webkit-appearance: menulist !important;
+        -moz-appearance: menulist !important;
+        appearance: menulist !important;
+        /* This allows native mobile scrolling */
+    }
+}
+
+/* For browsers that support size attribute */
+@media (max-width: 768px) {
+    select[size] {
+        height: auto !important;
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+}
+
+/* Ensure dropdown popup is scrollable on mobile */
+@media (max-width: 768px) {
+    /* Style for dropdown when opened */
+    select:focus,
+    select:active {
+        outline: 2px solid #667eea !important;
+        outline-offset: -2px !important;
+    }
+    
+    /* Ensure options container is scrollable */
+    select option {
+        padding: 12px 10px !important;
+        min-height: 40px !important; /* Touch-friendly height */
+    }
+    
+    select optgroup {
+        padding: 10px 8px !important;
+        font-weight: bold !important;
+        background-color: #f8f9fa !important;
+    }
+}
+
+/* Add scroll hint for users */
+@media (max-width: 768px) {
+    .form-group:has(select.service-dropdown) small,
+    .form-group:has(#guestServiceSubcategory) small,
+    .form-group:has(#guestService) small {
+        display: block !important;
+        margin-top: 5px !important;
+        font-size: 0.75rem !important;
+        color: #6c757d !important;
+    }
+}
+
+
+/* ========================================
+   IMPROVED DROPDOWN FOR MOBILE - NO TEXT CUTOFF
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Make the select input readable */
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+        height: auto !important;
+        min-height: 42px !important;
+        width: 100% !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    /* Readable options - NO CUTOFF */
+    select.service-dropdown option,
+    #guestServiceSubcategory option,
+    #guestService option {
+        padding: 10px 8px !important;
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        min-height: 44px !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+    }
+    
+    /* Readable optgroups */
+    select.service-dropdown optgroup,
+    #guestServiceSubcategory optgroup,
+    #guestService optgroup {
+        padding: 8px 6px !important;
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        font-weight: bold !important;
+    }
+}
+
+@media (max-width: 400px) {
+    /* Still readable on small phones */
+    select.service-dropdown,
+    #guestServiceSubcategory,
+    #guestService {
+        font-size: 13px !important;
+        padding: 9px 10px !important;
+        min-height: 40px !important;
+    }
+    
+    select option {
+        padding: 9px 7px !important;
+        font-size: 13px !important;
+        min-height: 42px !important;
+    }
+    
+    select optgroup {
+        padding: 7px 5px !important;
+        font-size: 12px !important;
+    }
+}

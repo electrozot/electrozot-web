@@ -92,11 +92,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                         
                          <form method="POST" enctype="multipart/form-data">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Technician Name</label>
@@ -118,15 +114,14 @@
                              </div>
 
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Service Category</label>
-                                 <select class="form-control" name="t_category" id="exampleFormControlSelect1">
-                                     <option>Electrical</option>
-                                     <option>Plumbing</option>
-                                     <option>HVAC</option>
-                                     <option>Appliance</option>
-                                     <option>General</option>
-
-                                 </select>
+                                 <label for="t_category">
+                                     <i class="fas fa-tools"></i> Service Category
+                                 </label>
+                                 <input type="text" class="form-control" value="<?php echo htmlspecialchars($row->t_category);?>" readonly style="background-color: #e9ecef;">
+                                 <input type="hidden" name="t_category" value="<?php echo htmlspecialchars($row->t_category);?>">
+                                 <small class="form-text text-muted">
+                                     <i class="fas fa-info-circle text-primary"></i> Service category is set during technician creation and cannot be changed here. This ensures consistency in technician assignments.
+                                 </small>
                              </div>
 
                              <div class="form-group">
@@ -152,7 +147,6 @@
                  </div>
 
                  <hr>
-
 
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>

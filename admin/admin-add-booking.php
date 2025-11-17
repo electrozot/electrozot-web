@@ -60,11 +60,7 @@
                     while($row=$res->fetch_object())
                 {
                 ?>
-                                 <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
+                                 
                                  <tbody>
                                      <tr>
                                          <td><?php echo $cnt;?></td>
@@ -75,7 +71,7 @@
                                          <td>
                                              <a href="admin-add-booking-usr.php?u_id=<?php echo $row->u_id;?>" class="badge badge-success">
                                                  <i class="fa fa-clipboard"></i>
-                                                 Book Vehicle
+                                                 Book
                                              </a>
                                              <!-- <a href="admin-manage-user.php?del=<?php echo $row->u_id;?>" class="badge badge-danger">Delete</a> -->
                                          </td>

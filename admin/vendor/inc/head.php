@@ -14,6 +14,6 @@
 
     <!-- Custom styles for this template-->
     <link href="vendor/css/sb-admin.css" rel="stylesheet">
-    <link href="../">
+    <link href="vendor/css/custom-admin.css" rel="stylesheet">
 
 </head>

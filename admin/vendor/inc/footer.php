@@ -6,3 +6,6 @@
          </div>
      </div>
  </footer>
+
+ <!-- Universal Notification System -->
+ <?php include('notification-system.php'); ?>

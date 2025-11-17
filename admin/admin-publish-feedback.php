@@ -1,8 +1,4 @@
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
---><?php
+ <?php
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
@@ -13,16 +9,10 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
  <html lang="en">
 
  <?php include('vendor/inc/head.php');?>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  <body id="page-top">
 
      <?php include("vendor/inc/nav.php");?>
-
 
      <div id="wrapper">
 
@@ -41,72 +31,153 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                      </li>
                      <li class="breadcrumb-item active">Manage</li>
                  </ol>
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
-                 <!--Bookings-->
+                 
+                 <?php
+                 // Handle bulk publish
+                 if(isset($_POST['bulk_publish'])) {
+                     if(isset($_POST['selected_feedbacks']) && !empty($_POST['selected_feedbacks'])) {
+                         $selected = $_POST['selected_feedbacks'];
+                         $published_count = 0;
+                         
+                         foreach($selected as $f_id) {
+                             $update_query = "UPDATE tms_feedback SET f_status = 'Published' WHERE f_id = ?";
+                             $update_stmt = $mysqli->prepare($update_query);
+                             $update_stmt->bind_param('i', $f_id);
+                             if($update_stmt->execute()) {
+                                 $published_count++;
+                             }
+                         }
+                         
+                         if($published_count > 0) {
+                             echo '<div class="alert alert-success alert-dismissible fade show">
+                                     <i class="fas fa-check-circle"></i> ' . $published_count . ' feedback(s) published successfully!
+                                     <button type="button" class="close" data-dismiss="alert">&times;</button>
+                                   </div>';
+                         }
+                     } else {
+                         echo '<div class="alert alert-warning alert-dismissible fade show">
+                                 <i class="fas fa-exclamation-triangle"></i> Please select at least one feedback to publish.
+                                 <button type="button" class="close" data-dismiss="alert">&times;</button>
+                               </div>';
+                     }
+                 }
+                 ?>
+                 
+                 <!--Feedbacks-->
                  <div class="card mb-3">
-                     <div class="card-header">
-                         <i class="fas fa fa-comments"></i>
-                         Client Feedbacks
+                     <div class="card-header bg-primary text-white">
+                         <i class="fas fa-comments"></i> Select Feedbacks to Publish
                      </div>
                      <div class="card-body">
-                         <div class="table-responsive">
-                             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                 <thead>
-                                     <tr>
-                                         <th>#</th>
-                                         <th>Name</th>
-                                         <th>Feedback</th>
-                                         <th>Action</th>
-                                     </tr>
-                                 </thead>
+                         <form method="POST" id="publishForm">
+                             <div class="mb-3">
+                                 <button type="button" id="selectAll" class="btn btn-sm btn-secondary">
+                                     <i class="fas fa-check-square"></i> Select All
+                                 </button>
+                                 <button type="button" id="deselectAll" class="btn btn-sm btn-secondary">
+                                     <i class="fas fa-square"></i> Deselect All
+                                 </button>
+                                 <button type="submit" name="bulk_publish" class="btn btn-sm btn-success float-right">
+                                     <i class="fas fa-check-circle"></i> Publish Selected
+                                 </button>
+                             </div>
+                             
+                             <div class="table-responsive">
+                                 <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
+                                     <thead class="thead-light">
+                                         <tr>
+                                             <th width="50px">
+                                                 <input type="checkbox" id="selectAllCheckbox">
+                                             </th>
+                                             <th width="50px">#</th>
+                                             <th>Name</th>
+                                             <th>Feedback</th>
+                                             <th width="100px">Status</th>
+                                         </tr>
+                                     </thead>
 
-                                 <tbody>
-                                     <?php
-
-                    $ret="SELECT * FROM tms_feedback "; 
-                    $stmt= $mysqli->prepare($ret) ;
-                    $stmt->execute() ;//ok
-                    $res=$stmt->get_result();
-                    $cnt=1;
-                    while($row=$res->fetch_object())
-                {
-                ?>
-                                     <!-- Author By: MH RONY
-                Author Website: https://developerrony.com
-                Github Link: https://github.com/dev-mhrony
-                Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-                -->
-                                     <tr>
-                                         <td><?php echo $cnt;?></td>
-                                         <td><?php echo $row->f_uname;?></td>
-                                         <td><?php echo $row->f_content;?></td>
-                                         <td>
-                                             <a href="admin-approve-feedback.php?f_id=<?php echo $row->f_id;?>" class="badge badge-success"><i class="fa fa-check"></i> Publish</a>
-                                         </td>
-                                     </tr>
-                                     <?php  $cnt = $cnt +1; }?>
-
-                                 </tbody>
-                             </table>
-                         </div>
+                                     <tbody>
+                                         <?php
+                                         $ret="SELECT * FROM tms_feedback ORDER BY f_id DESC"; 
+                                         $stmt= $mysqli->prepare($ret) ;
+                                         $stmt->execute();
+                                         $res=$stmt->get_result();
+                                         $cnt=1;
+                                         while($row=$res->fetch_object())
+                                         {
+                                         ?>
+                                         
+                                         <tr>
+                                             <td class="text-center">
+                                                 <input type="checkbox" name="selected_feedbacks[]" value="<?php echo $row->f_id;?>" class="feedback-checkbox">
+                                             </td>
+                                             <td><?php echo $cnt;?></td>
+                                             <td><?php echo $row->f_uname;?></td>
+                                             <td><?php echo $row->f_content;?></td>
+                                             <td class="text-center">
+                                                 <?php if($row->f_status == 'Published'): ?>
+                                                     <span class="badge badge-success">Published</span>
+                                                 <?php else: ?>
+                                                     <span class="badge badge-warning">Pending</span>
+                                                 <?php endif; ?>
+                                             </td>
+                                         </tr>
+                                         <?php  $cnt = $cnt +1; }?>
+                                     </tbody>
+                                 </table>
+                             </div>
+                         </form>
                      </div>
                      <div class="card-footer small text-muted">
                          <?php
-              date_default_timezone_set("Africa/Nairobi");
-              echo "Generated On : " . date("h:i:sa");
-            ?>
+                         date_default_timezone_set("Africa/Nairobi");
+                         echo "Generated On : " . date("h:i:sa");
+                         ?>
                      </div>
                  </div>
+                 
+                 <script>
+                 // Select/Deselect All functionality
+                 document.getElementById('selectAllCheckbox').addEventListener('change', function() {
+                     var checkboxes = document.getElementsByClassName('feedback-checkbox');
+                     for(var i = 0; i < checkboxes.length; i++) {
+                         checkboxes[i].checked = this.checked;
+                     }
+                 });
+                 
+                 document.getElementById('selectAll').addEventListener('click', function() {
+                     var checkboxes = document.getElementsByClassName('feedback-checkbox');
+                     for(var i = 0; i < checkboxes.length; i++) {
+                         checkboxes[i].checked = true;
+                     }
+                     document.getElementById('selectAllCheckbox').checked = true;
+                 });
+                 
+                 document.getElementById('deselectAll').addEventListener('click', function() {
+                     var checkboxes = document.getElementsByClassName('feedback-checkbox');
+                     for(var i = 0; i < checkboxes.length; i++) {
+                         checkboxes[i].checked = false;
+                     }
+                     document.getElementById('selectAllCheckbox').checked = false;
+                 });
+                 
+                 // Confirm before publishing
+                 document.getElementById('publishForm').addEventListener('submit', function(e) {
+                     var checkedBoxes = document.querySelectorAll('.feedback-checkbox:checked');
+                     if(checkedBoxes.length === 0) {
+                         e.preventDefault();
+                         alert('Please select at least one feedback to publish.');
+                         return false;
+                     }
+                     
+                     if(!confirm('Are you sure you want to publish ' + checkedBoxes.length + ' feedback(s)?')) {
+                         e.preventDefault();
+                         return false;
+                     }
+                 });
+                 </script>
                  <!-- /.container-fluid -->
-                 <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+                 
                  <!-- Sticky Footer -->
                  <?php include("vendor/inc/footer.php");?>
              </div>
@@ -119,11 +190,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <a class="scroll-to-top rounded" href="#page-top">
              <i class="fas fa-angle-up"></i>
          </a>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+         
          <!-- Logout Modal-->
          <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
              <div class="modal-dialog" role="document">
@@ -142,11 +209,7 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
                  </div>
              </div>
          </div>
-         <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
+         
          <!-- Bootstrap core JavaScript-->
          <script src="vendor/jquery/jquery.min.js"></script>
          <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -165,10 +228,5 @@ Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
          <script src="js/demo/datatables-demo.js"></script>
 
  </body>
- <!-- Author By: MH RONY
-Author Website: https://developerrony.com
-Github Link: https://github.com/dev-mhrony
-Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
--->
 
  </html>

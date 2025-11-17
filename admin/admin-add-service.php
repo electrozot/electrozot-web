@@ -4,18 +4,28 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  // Ensure is_popular column exists
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
+  
+  // Ensure columns exist
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS s_subcategory VARCHAR(200) NULL");
+  $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS s_gadget_name VARCHAR(200) NULL");
+  
   //Add Service
   if(isset($_POST['add_service']))
     {
             $s_name=$_POST['s_name'];
             $s_description = $_POST['s_description'];
             $s_category=$_POST['s_category'];
+            $s_subcategory=$_POST['s_subcategory'];
+            $s_gadget_name=$_POST['s_gadget_name'];
             $s_price=$_POST['s_price'];
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
-            $query="insert into tms_service (s_name, s_description, s_category, s_price, s_duration, s_status) values(?,?,?,?,?,?)";
+            $is_popular = isset($_POST['is_popular']) ? 1 : 0;
+            $query="insert into tms_service (s_name, s_description, s_category, s_subcategory, s_gadget_name, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?,?,?)";
             $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssdss', $s_name, $s_description, $s_category, $s_price, $s_duration, $s_status);
+            $rc=$stmt->bind_param('sssssdssi', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
             $stmt->execute();
                 if($stmt)
                 {
@@ -82,15 +92,29 @@
                                  <textarea class="form-control" required name="s_description" rows="4" placeholder="Enter Service Description"></textarea>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Service Category</label>
-                                 <select class="form-control" name="s_category" id="exampleFormControlSelect1" required>
-                                     <option value="">Select Category</option>
-                                     <option>Electrical</option>
-                                     <option>Plumbing</option>
-                                     <option>HVAC</option>
-                                     <option>Appliance</option>
-                                     <option>General</option>
+                                 <label for="serviceCategory">Main Service Category <span class="text-danger">*</span></label>
+                                 <select class="form-control" name="s_category" id="serviceCategory" required>
+                                     <option value="">-- Select Main Category --</option>
+                                     <option value="BASIC ELECTRICAL WORK">1. BASIC ELECTRICAL WORK</option>
+                                     <option value="ELECTRONIC REPAIR">2. ELECTRONIC REPAIR (GADGET/APPLIANCE)</option>
+                                     <option value="INSTALLATION & SETUP">3. INSTALLATION & SETUP</option>
+                                     <option value="SERVICING & MAINTENANCE">4. SERVICING & MAINTENANCE</option>
+                                     <option value="PLUMBING WORK">5. PLUMBING WORK</option>
                                  </select>
+                             </div>
+                             <div class="form-group">
+                                 <label for="serviceSubcategory">Service Subcategory <span class="text-danger">*</span></label>
+                                 <select class="form-control" name="s_subcategory" id="serviceSubcategory" required disabled>
+                                     <option value="">-- Select Main Category First --</option>
+                                 </select>
+                                 <small class="form-text text-muted">Select a main category first to see subcategories</small>
+                             </div>
+                             <div class="form-group" id="specificServiceGroup" style="display:none;">
+                                 <label for="serviceGadget">Specific Service/Device <span class="text-danger">*</span></label>
+                                 <select class="form-control" id="serviceGadget" name="s_gadget_name" disabled>
+                                     <option value="">-- Select Subcategory First --</option>
+                                 </select>
+                                 <small class="form-text text-muted">Select the specific service or device type</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Service Price</label>
@@ -106,6 +130,15 @@
                                      <option>Active</option>
                                      <option>Inactive</option>
                                  </select>
+                             </div>
+                             <div class="form-group">
+                                 <div class="custom-control custom-checkbox">
+                                     <input type="checkbox" class="custom-control-input" id="popularCheckbox" name="is_popular" value="1">
+                                     <label class="custom-control-label" for="popularCheckbox">
+                                         <i class="fas fa-star text-warning"></i> Mark as Popular Service (Show on Homepage)
+                                     </label>
+                                     <small class="form-text text-muted">Check this to display this service in the "Our Popular Services" section on the homepage.</small>
+                                 </div>
                              </div>
                              <hr>
                              <button type="submit" name="add_service" class="btn btn-success">Add Service</button>
@@ -167,6 +200,130 @@
          <script src="vendor/js/demo/datatables-demo.js"></script>
          <script src="vendor/js/demo/chart-area-demo.js"></script>
          <script src="vendor/js/swal.js"></script>
+         
+         <!-- Cascading Dropdown Script -->
+         <script>
+         $(document).ready(function() {
+             // Complete service hierarchy
+             var serviceHierarchy = {
+                 'BASIC ELECTRICAL WORK': {
+                     'Wiring & Fixtures': [
+                         'Home Wiring (New installation and repair)',
+                         'Switch/Socket Installation and Replacement',
+                         'Light Fixture Installation (Tube lights, LED panels, chandeliers)',
+                         'Light Decoration/Festive Lighting Setup'
+                     ],
+                     'Safety & Power': [
+                         'Circuit Breaker and Fuse Box (Main Panel) troubleshooting and repair',
+                         'Inverter, UPS, and Voltage Stabilizer installation/wiring',
+                         'Grounding and Earthing system installation',
+                         'New Electrical Outlet/Point installation',
+                         'Ceiling Fan Regulator repair/replacement',
+                         'Electrical fault finding and short-circuit repair'
+                     ]
+                 },
+                 'ELECTRONIC REPAIR': {
+                     'Major Appliances': [
+                         'Air Conditioner (AC) Repair (Split, Window, Central)',
+                         'Refrigerator Repair and Gas Charging',
+                         'Washing Machine Repair (Semi/Fully automatic, Front/Top Load)',
+                         'Microwave Oven Repair',
+                         'Geyser (Water Heater) Repair'
+                     ],
+                     'Other Gadgets': [
+                         'Fan Repair (Ceiling, Table, Exhaust)',
+                         'Television (TV) Repair and Troubleshooting',
+                         'Electric Iron/Press Repair',
+                         'Music System/Home Theatre Repair',
+                         'Electric Heater Repair (Room Heaters, Rods)',
+                         'Induction Cooktop and Electric Stove Repair',
+                         'Air Cooler Repair',
+                         'Power Tools Repair (Drills, Cutters, Grinders, etc.)',
+                         'Water Filter/Purifier Repair'
+                     ]
+                 },
+                 'INSTALLATION & SETUP': {
+                     'Appliance Setup': [
+                         'TV/DTH Dish Installation and Tuning',
+                         'Electric Chimney Installation',
+                         'Ceiling and Wall Fan Installation',
+                         'Washing Machine Installation and Uninstallation',
+                         'Air Cooler Installation',
+                         'Water Filter/Purifier Installation',
+                         'Geyser/Water Heater Installation',
+                         'Light Fixture Installation'
+                     ],
+                     'Tech & Security': [
+                         'CCTV and Security Camera Installation',
+                         'Wi-Fi Router and Modem Setup/Troubleshooting',
+                         'Smart Home Device Installation (Smart switches, smart lights)'
+                     ]
+                 },
+                 'SERVICING & MAINTENANCE': {
+                     'Routine Care': [
+                         'AC Wet and Dry Servicing',
+                         'Washing Machine General Maintenance and Cleaning',
+                         'Geyser Descaling and Service',
+                         'Water Filter Cartridge Replacement and General Service',
+                         'Water Tank Cleaning (Manual and Motorized)'
+                     ]
+                 },
+                 'PLUMBING WORK': {
+                     'Fixtures & Taps': [
+                         'Tap, Faucet, and Shower Installation/Repair',
+                         'Washbasin and Sink Installation/Repair',
+                         'Toilet, Commode, and Flush Tank Installation'
+                     ]
+                 }
+             };
+             
+             // Handle category change
+             $('#serviceCategory').on('change', function() {
+                 var category = $(this).val();
+                 var subcategorySelect = $('#serviceSubcategory');
+                 var specificServiceSelect = $('#serviceGadget');
+                 var specificServiceGroup = $('#specificServiceGroup');
+                 
+                 // Reset subcategory and specific service
+                 subcategorySelect.html('<option value="">-- Select Subcategory --</option>');
+                 specificServiceSelect.html('<option value="">-- Select Subcategory First --</option>');
+                 specificServiceGroup.hide();
+                 specificServiceSelect.prop('disabled', true);
+                 
+                 if(category && serviceHierarchy[category]) {
+                     subcategorySelect.prop('disabled', false);
+                     
+                     $.each(serviceHierarchy[category], function(subcategory, services) {
+                         subcategorySelect.append('<option value="' + subcategory + '">' + subcategory + '</option>');
+                     });
+                 } else {
+                     subcategorySelect.prop('disabled', true);
+                 }
+             });
+             
+             // Handle subcategory change
+             $('#serviceSubcategory').on('change', function() {
+                 var category = $('#serviceCategory').val();
+                 var subcategory = $(this).val();
+                 var specificServiceSelect = $('#serviceGadget');
+                 var specificServiceGroup = $('#specificServiceGroup');
+                 
+                 specificServiceSelect.html('<option value="">-- Select Specific Service --</option>');
+                 
+                 if(category && subcategory && serviceHierarchy[category] && serviceHierarchy[category][subcategory]) {
+                     specificServiceGroup.show();
+                     specificServiceSelect.prop('disabled', false);
+                     
+                     $.each(serviceHierarchy[category][subcategory], function(index, service) {
+                         specificServiceSelect.append('<option value="' + service + '">' + service + '</option>');
+                     });
+                 } else {
+                     specificServiceGroup.hide();
+                     specificServiceSelect.prop('disabled', true);
+                 }
+             });
+         });
+         </script>
 
  </body>
 

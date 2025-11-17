@@ -12,64 +12,49 @@
 <ul class="sidebar navbar-nav">
     <li class="nav-item active">
         <a class="nav-link" href="user-dashboard.php">
-            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <i class="fas fa-fw fa-chart-line"></i>
             <span>Dashboard</span>
         </a>
     </li>
 
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-tools"></i>
-            <span>Technicians</span>
+    <li class="nav-item">
+        <a class="nav-link" href="usr-book-service-simple.php">
+            <i class="fas fa-fw fa-wrench"></i>
+            <span>Book Service</span>
         </a>
-        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-            <h6 class="dropdown-header">Available Technicians:</h6>
-            <a class="dropdown-item" href="usr-book-technician.php">Book</a>
-        </div>
     </li>
 
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-cogs"></i>
-            <span>Services</span>
+    <li class="nav-item">
+        <a class="nav-link" href="user-view-booking.php">
+            <i class="fas fa-fw fa-calendar-check"></i>
+            <span>My Bookings</span>
         </a>
-        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-            <h6 class="dropdown-header">Available Services:</h6>
-            <a class="dropdown-item" href="usr-book-service.php">Book Service</a>
-        </div>
     </li>
 
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-book"></i>
-            <span>Bookings</span>
+    <li class="nav-item">
+        <a class="nav-link" href="user-track-booking.php">
+            <i class="fas fa-fw fa-map-marker-alt"></i>
+            <span>Track Orders</span>
         </a>
-        <div class="dropdown-menu" aria-labelledby="pagesDropdown">
-            <h6 class="dropdown-header">Bookings:</h6>
-            <a class="dropdown-item" href="usr-book-technician.php">Book Technician</a>
-            <a class="dropdown-item" href="usr-book-service.php">Book Service</a>
-            <a class="dropdown-item" href="user-view-booking.php">View</a>
-            <a class="dropdown-item" href="user-manage-booking.php">Manage</a>
-        </div>
     </li>
 
     <li class="nav-item">
         <a class="nav-link" href="user-give-feedback.php">
-            <i class="fas fa-fw fa-comments"></i>
-            <span>Feedbacks</span></a>
+            <i class="fas fa-fw fa-comment-dots"></i>
+            <span>Give Feedback</span>
+        </a>
     </li>
 
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-fw fa-user"></i>
-            <span>Setting</span>
+            <i class="fas fa-fw fa-user-circle"></i>
+            <span>My Account</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
             <h6 class="dropdown-header"><?php echo $row->u_fname;?> <?php echo $row->u_lname;?></h6>
-            <a class="dropdown-item" href="user-view-profile.php">View</a>
-            <a class="dropdown-item" href="user-update-profile.php">Update</a>
-            <a class="dropdown-item" href="user-change-pwd.php">Change Password</a>
-
+            <a class="dropdown-item" href="user-view-profile.php"><i class="fas fa-id-card"></i> View Profile</a>
+            <a class="dropdown-item" href="user-update-profile.php"><i class="fas fa-user-edit"></i> Update Profile</a>
+            <a class="dropdown-item" href="user-change-pwd.php"><i class="fas fa-key"></i> Change Password</a>
         </div>
     </li>
 

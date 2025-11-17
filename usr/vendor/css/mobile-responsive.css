@@ -1,0 +1,303 @@
+/* ========================================
+   MOBILE RESPONSIVE STYLES FOR USER DASHBOARD
+   ======================================== */
+
+/* Global Mobile Optimizations */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Improve touch targets */
+    a, button, .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better spacing */
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Hide desktop-only elements */
+    .d-mobile-none {
+        display: none !important;
+    }
+}
+
+/* Navbar Mobile Optimizations */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 16px !important;
+        padding: 5px 10px !important;
+    }
+    
+    .navbar-brand img {
+        max-width: 35px !important;
+        max-height: 35px !important;
+    }
+    
+    .navbar {
+        padding: 8px 10px !important;
+    }
+}
+
+/* Sidebar Mobile Behavior */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        left: -225px;
+        height: 100vh;
+        z-index: 1050;
+        transition: left 0.3s ease;
+        overflow-y: auto;
+    }
+    
+    .sidebar.show {
+        left: 0;
+    }
+    
+    /* Overlay when sidebar is open */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1040;
+    }
+    
+    .sidebar-overlay.show {
+        display: block;
+    }
+}
+
+/* Card Optimizations */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 15px !important;
+        border-radius: 12px !important;
+    }
+    
+    .card-header {
+        padding: 12px 15px !important;
+        font-size: 14px !important;
+    }
+    
+    .card-body {
+        padding: 15px !important;
+    }
+    
+    .card-footer {
+        padding: 10px 15px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* Table Responsive */
+@media (max-width: 768px) {
+    .table-responsive {
+        border: none;
+        margin-bottom: 15px;
+    }
+    
+    .table {
+        font-size: 13px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px !important;
+        white-space: nowrap;
+    }
+}
+
+/* Form Optimizations */
+@media (max-width: 768px) {
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-control {
+        font-size: 16px !important; /* Prevents zoom on iOS */
+        padding: 12px 15px !important;
+        border-radius: 10px !important;
+    }
+    
+    label {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .btn {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
+        border-radius: 10px !important;
+        font-weight: 600;
+    }
+    
+    .btn-block {
+        width: 100%;
+    }
+}
+
+/* Modal Optimizations */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 10px !important;
+        max-width: calc(100% - 20px) !important;
+    }
+    
+    .modal-content {
+        border-radius: 15px !important;
+    }
+    
+    .modal-header {
+        padding: 15px !important;
+    }
+    
+    .modal-body {
+        padding: 15px !important;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    .modal-footer {
+        padding: 15px !important;
+    }
+}
+
+/* Alert Optimizations */
+@media (max-width: 768px) {
+    .alert {
+        padding: 12px 15px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+/* Badge Optimizations */
+@media (max-width: 768px) {
+    .badge {
+        padding: 6px 10px !important;
+        font-size: 11px !important;
+        border-radius: 8px !important;
+    }
+}
+
+/* Breadcrumb Mobile */
+@media (max-width: 768px) {
+    .breadcrumb {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+/* Scroll to Top Button */
+@media (max-width: 768px) {
+    .scroll-to-top {
+        width: 45px !important;
+        height: 45px !important;
+        bottom: 80px !important; /* Above bottom nav */
+        right: 15px !important;
+    }
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(102, 126, 234, 0.3);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Touch Feedback */
+@media (max-width: 768px) {
+    .touch-feedback:active {
+        transform: scale(0.97);
+        opacity: 0.8;
+    }
+}
+
+/* Improved Text Readability */
+@media (max-width: 768px) {
+    h1 { font-size: 24px !important; }
+    h2 { font-size: 22px !important; }
+    h3 { font-size: 20px !important; }
+    h4 { font-size: 18px !important; }
+    h5 { font-size: 16px !important; }
+    h6 { font-size: 14px !important; }
+    
+    p {
+        line-height: 1.6;
+    }
+}
+
+/* Safe Area for Notched Devices */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        .mobile-bottom-nav {
+            padding-bottom: max(8px, env(safe-area-inset-bottom));
+        }
+        
+        .container-fluid {
+            padding-bottom: calc(80px + max(0px, env(safe-area-inset-bottom))) !important;
+        }
+    }
+}
+
+/* Landscape Mode Adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .mobile-bottom-nav {
+        padding: 5px 0;
+    }
+    
+    .bottom-nav-item i {
+        font-size: 20px;
+    }
+    
+    .bottom-nav-item span {
+        font-size: 10px;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 375px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .btn {
+        padding: 10px 15px !important;
+        font-size: 13px !important;
+    }
+    
+    .card-body {
+        padding: 12px !important;
+    }
+}
+
+/* High DPI Screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card,
+    .btn,
+    .form-control {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}

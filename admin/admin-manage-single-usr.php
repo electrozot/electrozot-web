@@ -65,9 +65,6 @@
                  </script>
 
                  <?php } ?>
-                 <p>
-                     <marquee onMouseOver="this.stop()" onMouseOut="this.start()">This code is not for sale. Its sole owner is Code Camp BD For any need you can message me <a href="https://www.facebook.com/dev.mhrony">MH RONY</a> and don't forget to <a href="https://www.youtube.com/@codecampbdofficial">subscribe</a> the youtube channel.</marquee>
-                 </p>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
                      <li class="breadcrumb-item">
@@ -93,11 +90,7 @@
             while($row=$res->fetch_object())
         {
         ?>
-                         <!-- Author By: MH RONY
-        Author Website: https://developerrony.com
-        Github Link: https://github.com/dev-mhrony
-        Youtube Link: https://www.youtube.com/channel/UChYhUxkwDNialcxj-OFRcDw
-        -->
+                         
                          <form method="POST">
                              <div class="form-group">
                                  <label for="exampleInputEmail1">First Name</label>
