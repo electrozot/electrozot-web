@@ -13,21 +13,17 @@ if (!isset($_SESSION['a_id'])) {
 }
 
 require_once('vendor/inc/config.php');
-require_once('BookingSystem.php');
-
-$bookingSystem = new BookingSystem($conn);
+require_once('vendor/inc/booking-limit-helper.php');
 
 $service_category = $_GET['category'] ?? null;
-$service_gadget_type = $_GET['gadget_type'] ?? null;
 
-$technicians = $bookingSystem->getAvailableTechnicians($service_category, $service_gadget_type);
+$technicians = getAvailableTechniciansWithCapacity($mysqli, $service_category);
 
 echo json_encode([
     'success' => true,
     'technicians' => $technicians,
     'filters' => [
-        'category' => $service_category,
-        'gadget_type' => $service_gadget_type
+        'category' => $service_category
     ]
 ]);
 ?>

@@ -36,6 +36,10 @@
   // Add phone column if it doesn't exist
   $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_phone VARCHAR(15) DEFAULT NULL");
   
+  // Add booking limit columns if they don't exist
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_booking_limit INT NOT NULL DEFAULT 1");
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_current_bookings INT NOT NULL DEFAULT 0");
+  
   if(isset($_POST['add_tech']))
     {
             $t_name=$_POST['t_name'];
@@ -54,6 +58,12 @@
             $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
             $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
+            $t_booking_limit = isset($_POST['t_booking_limit']) ? intval($_POST['t_booking_limit']) : 1;
+            
+            // Validate booking limit (1-5)
+            if($t_booking_limit < 1 || $t_booking_limit > 5) {
+                $t_booking_limit = 1;
+            }
             
             // Check for duplicate EZ ID
             $check_ez = $mysqli->prepare("SELECT t_id FROM tms_technician WHERE t_ez_id = ?");
@@ -82,9 +92,9 @@
                     // Proceed with insertion
                     $t_pic=$_FILES["t_pic"]["name"];
                     move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-                    $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?,?)";
+                    $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode, t_booking_limit, t_current_bookings) values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $stmt = $mysqli->prepare($query);
-                    $rc=$stmt->bind_param('sssssssssss', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
+                    $rc=$stmt->bind_param('sssssssssssii', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode, $t_booking_limit, $t_current_bookings = 0);
                     $stmt->execute();
             
                     if($stmt)
@@ -267,6 +277,38 @@
                                          </select>
                                      </div>
                                  </div>
+                             </div>
+                             
+                             <!-- Booking Capacity Section -->
+                             <div class="row mt-3">
+                                 <div class="col-12">
+                                     <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-tasks"></i> Booking Capacity</h6>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label><i class="fas fa-layer-group text-warning"></i> Maximum Concurrent Bookings <span class="text-danger">*</span></label>
+                                         <select class="form-control" name="t_booking_limit" id="t_booking_limit" required onchange="updateBookingLimitInfo()">
+                                             <option value="1" selected>1 Booking at a time</option>
+                                             <option value="2">2 Bookings at a time</option>
+                                             <option value="3">3 Bookings at a time</option>
+                                             <option value="4">4 Bookings at a time</option>
+                                             <option value="5">5 Bookings at a time</option>
+                                         </select>
+                                         <small class="text-muted">
+                                             <i class="fas fa-info-circle"></i> How many bookings can this technician handle simultaneously?
+                                         </small>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="alert alert-info mt-4" id="bookingLimitInfo">
+                                         <strong><i class="fas fa-lightbulb"></i> Booking Limit:</strong>
+                                         <p class="mb-0" id="limitDescription">
+                                             Technician can take <strong>1 booking</strong> at a time. After completing or rejecting it, they become available for the next booking.
+                                         </p>
+                                     </div>
+                                 </div>
                                  
                                  <div class="col-md-12">
                                      <div class="form-group">
@@ -276,6 +318,19 @@
                                      </div>
                                  </div>
                              </div>
+                             
+                             <script>
+                             function updateBookingLimitInfo() {
+                                 const limit = document.getElementById('t_booking_limit').value;
+                                 const description = document.getElementById('limitDescription');
+                                 
+                                 if(limit == 1) {
+                                     description.innerHTML = 'Technician can take <strong>1 booking</strong> at a time. After completing or rejecting it, they become available for the next booking.';
+                                 } else {
+                                     description.innerHTML = `Technician can handle <strong>${limit} bookings</strong> simultaneously. They must complete or reject at least <strong>${limit - 1}</strong> booking(s) before accepting new ones when at capacity.`;
+                                 }
+                             }
+                             </script>
                              
                              <script>
                              function showCategoryDetails(select) {

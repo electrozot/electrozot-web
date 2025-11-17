@@ -661,7 +661,7 @@ select.service-dropdown,
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Make the select input readable */
+    /* Make the select input readable - full width on mobile */
     select.service-dropdown,
     #guestServiceSubcategory,
     #guestService {
@@ -670,6 +670,7 @@ select.service-dropdown,
         height: auto !important;
         min-height: 42px !important;
         width: 100% !important;
+        max-width: 100% !important;
         white-space: normal !important;
         overflow: visible !important;
         text-overflow: clip !important;

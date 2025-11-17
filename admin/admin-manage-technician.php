@@ -201,14 +201,15 @@
                                  <thead class="thead-light">
                                      <tr>
                                          <th style="width: 3%;">#</th>
-                                         <th style="width: 11%;">Name</th>
-                                         <th style="width: 9%;">ID Number</th>
-                                         <th style="width: 10%;">Mobile (Login)</th>
-                                         <th style="width: 12%;">Category</th>
-                                         <th style="width: 15%;">Specialization</th>
-                                         <th style="width: 9%;">Availability</th>
-                                         <th style="width: 11%;">Booking Status</th>
-                                         <th style="width: 20%;">Actions</th>
+                                         <th style="width: 10%;">Name</th>
+                                         <th style="width: 8%;">ID Number</th>
+                                         <th style="width: 9%;">Mobile (Login)</th>
+                                         <th style="width: 11%;">Category</th>
+                                         <th style="width: 13%;">Specialization</th>
+                                         <th style="width: 8%;">Availability</th>
+                                         <th style="width: 10%;">Booking Status</th>
+                                         <th style="width: 10%;">Capacity</th>
+                                         <th style="width: 18%;">Actions</th>
                                      </tr>
                                  </thead>
                                  <tbody>
@@ -272,6 +273,17 @@
                                          <td class="text-center">
                                              <span class="badge <?php echo $booking_badge;?> badge-pill" style="font-size: 0.75rem; min-width: 60px;">
                                                  <?php echo $booking_status;?>
+                                             </span>
+                                         </td>
+                                         <td class="text-center">
+                                             <?php 
+                                             $current = isset($row->t_current_bookings) ? $row->t_current_bookings : 0;
+                                             $limit = isset($row->t_booking_limit) ? $row->t_booking_limit : 1;
+                                             $percentage = ($limit > 0) ? ($current / $limit) * 100 : 0;
+                                             $capacity_color = ($percentage >= 100) ? 'danger' : (($percentage >= 80) ? 'warning' : 'success');
+                                             ?>
+                                             <span class="badge badge-<?php echo $capacity_color;?> badge-pill" style="font-size: 0.75rem;" title="Current/Maximum bookings">
+                                                 <i class="fas fa-layer-group"></i> <?php echo $current;?>/<?php echo $limit;?>
                                              </span>
                                          </td>
                                          <td class="text-center" style="white-space: nowrap; padding: 0.75rem;">
