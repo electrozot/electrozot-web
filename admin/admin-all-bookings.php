@@ -5,6 +5,12 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
+// Get session messages
+$delete_success = isset($_SESSION['delete_success']) ? $_SESSION['delete_success'] : '';
+$delete_error = isset($_SESSION['delete_error']) ? $_SESSION['delete_error'] : '';
+unset($_SESSION['delete_success']);
+unset($_SESSION['delete_error']);
+
 // Get filter parameters
 $status_filter = isset($_GET['status']) ? $_GET['status'] : 'all';
 $date_filter = isset($_GET['date']) ? $_GET['date'] : 'all';
@@ -108,6 +114,20 @@ $stats = $stats_result->fetch_object();
 
         <div id="content-wrapper">
             <div class="container-fluid">
+                <!-- Success/Error Messages -->
+                <?php if(!empty($delete_success)): ?>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle"></i> <?php echo $delete_success; ?>
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
+                <?php endif; ?>
+                <?php if(!empty($delete_error)): ?>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo $delete_error; ?>
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    </div>
+                <?php endif; ?>
+                
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
                         <a href="admin-dashboard.php">Dashboard</a>

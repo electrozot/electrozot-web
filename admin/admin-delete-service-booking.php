@@ -38,12 +38,12 @@
       $_SESSION['delete_error'] = "Failed to delete booking.";
     }
     
-    // Redirect back to manage bookings page
-    header("Location: admin-manage-service-booking.php");
+    // Redirect back to all bookings page
+    header("Location: admin-all-bookings.php");
     exit();
   } else {
     $_SESSION['delete_error'] = "Booking ID is missing.";
-    header("Location: admin-manage-service-booking.php");
+    header("Location: admin-all-bookings.php");
     exit();
   }
 ?>

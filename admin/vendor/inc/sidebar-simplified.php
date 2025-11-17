@@ -88,7 +88,7 @@
          </div>
      </li>
      
-     <!-- Technicians -->
+     <!-- Technicians (Merged: Add + Manage + Passwords) -->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="techniciansDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-user-cog"></i>
@@ -97,8 +97,6 @@
          <div class="dropdown-menu" aria-labelledby="techniciansDropdown">
              <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add Technician</a>
              <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage All</a>
-             <div class="dropdown-divider"></div>
-             <a class="dropdown-item" href="admin-manage-technician-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      
@@ -114,7 +112,7 @@
          </div>
      </li>
      
-     <!-- Customers -->
+     <!-- Users (Merged: Add + Manage + Passwords) -->
      <li class="nav-item dropdown">
          <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-users"></i>
@@ -123,8 +121,6 @@
          <div class="dropdown-menu" aria-labelledby="usersDropdown">
              <a class="dropdown-item" href="admin-add-user.php"><i class="fas fa-user-plus"></i> Add Customer</a>
              <a class="dropdown-item" href="admin-manage-user.php"><i class="fas fa-user-edit"></i> Manage All</a>
-             <div class="dropdown-divider"></div>
-             <a class="dropdown-item" href="admin-manage-user-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      

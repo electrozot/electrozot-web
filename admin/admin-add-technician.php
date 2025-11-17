@@ -222,24 +222,22 @@
                                  
                                  <div class="col-md-6">
                                      <div class="form-group">
-                                         <label>Service Category <span class="text-danger">*</span></label>
+                                         <label>Service Type <span class="text-danger">*</span></label>
                                          <select class="form-control" name="t_category" required onchange="showCategoryDetails(this)">
-                                             <option value="">Select Category...</option>
-                                             <?php
-                                             $services_query = "SELECT s_name, s_description FROM tms_service WHERE s_status = 'Active' ORDER BY s_name";
-                                             $services_result = $mysqli->query($services_query);
-                                             if($services_result) {
-                                                 while($service = $services_result->fetch_object()) {
-                                                     echo '<option value="'.htmlspecialchars($service->s_name).'" data-description="'.htmlspecialchars($service->s_description).'">';
-                                                     echo htmlspecialchars($service->s_name);
-                                                     echo '</option>';
-                                                 }
-                                             }
-                                             ?>
+                                             <option value="">Select Service Type...</option>
+                                             <option value="Wiring & Fixtures" data-description="Home wiring, switches, lights, fixtures">Wiring & Fixtures</option>
+                                             <option value="Safety & Power" data-description="Circuit breakers, inverters, stabilizers, grounding">Safety & Power</option>
+                                             <option value="Major Appliances" data-description="AC, refrigerator, washing machine, microwave, geyser">Major Appliances</option>
+                                             <option value="Small Gadgets" data-description="TV, fans, heaters, coolers, music systems">Small Gadgets</option>
+                                             <option value="Appliance Setup" data-description="Installation of appliances and devices">Appliance Setup</option>
+                                             <option value="Tech & Security" data-description="CCTV, WiFi, smart devices">Tech & Security</option>
+                                             <option value="Routine Care" data-description="AC servicing, filter cleaning, maintenance">Routine Care</option>
+                                             <option value="Fixtures & Taps" data-description="Plumbing fixtures, taps, pipes">Fixtures & Taps</option>
                                          </select>
                                          <div id="categoryDetails" class="alert alert-info mt-2 py-2" style="display:none; font-size: 0.875rem;">
                                              <strong>Includes:</strong> <span id="categoryDescription"></span>
                                          </div>
+                                         <small class="text-muted">Select the main service type this technician specializes in</small>
                                      </div>
                                  </div>
                                  
@@ -322,74 +320,38 @@
                              
                              <div class="row">
                                  <?php
-                                 $cat_query = "SELECT * FROM tms_service_categories WHERE sc_status='Active' ORDER BY sc_name ASC";
-                                 $cat_stmt = $mysqli->prepare($cat_query);
-                                 $cat_stmt->execute();
-                                 $cat_res = $cat_stmt->get_result();
-                                 $service_types = ['Installation', 'Repair', 'Servicing', 'Maintenance', 'Other'];
+                                 // Use the 8 service types directly
+                                 $service_types_list = [
+                                     ['id' => 1, 'name' => 'Wiring & Fixtures', 'desc' => 'Electrical wiring, switches, lights'],
+                                     ['id' => 2, 'name' => 'Safety & Power', 'desc' => 'Circuit breakers, inverters, stabilizers'],
+                                     ['id' => 3, 'name' => 'Major Appliances', 'desc' => 'AC, refrigerator, washing machine'],
+                                     ['id' => 4, 'name' => 'Small Gadgets', 'desc' => 'TV, fans, heaters, coolers'],
+                                     ['id' => 5, 'name' => 'Appliance Setup', 'desc' => 'Installation services'],
+                                     ['id' => 6, 'name' => 'Tech & Security', 'desc' => 'CCTV, WiFi, smart devices'],
+                                     ['id' => 7, 'name' => 'Routine Care', 'desc' => 'Servicing and maintenance'],
+                                     ['id' => 8, 'name' => 'Fixtures & Taps', 'desc' => 'Plumbing fixtures and repairs']
+                                 ];
                                  
-                                 if($cat_res->num_rows > 0) {
-                                     while($cat_row = $cat_res->fetch_object()) {
+                                 foreach($service_types_list as $service_type) {
                                  ?>
                                  <div class="col-md-6 mb-3">
                                      <div class="card border">
                                          <div class="card-body p-3">
-                                             <div class="custom-control custom-switch mb-2">
+                                             <div class="custom-control custom-checkbox">
                                                  <input type="checkbox" class="custom-control-input" 
-                                                        id="cat_<?php echo $cat_row->sc_id; ?>" 
-                                                        name="service_categories[]" 
-                                                        value="<?php echo $cat_row->sc_id; ?>"
-                                                        onchange="toggleServiceTypes(<?php echo $cat_row->sc_id; ?>)">
-                                                 <label class="custom-control-label font-weight-bold" for="cat_<?php echo $cat_row->sc_id; ?>">
-                                                     <?php echo $cat_row->sc_name; ?>
+                                                        id="service_<?php echo $service_type['id']; ?>" 
+                                                        name="additional_services[]" 
+                                                        value="<?php echo $service_type['name']; ?>">
+                                                 <label class="custom-control-label font-weight-bold" for="service_<?php echo $service_type['id']; ?>">
+                                                     <?php echo $service_type['name']; ?>
                                                  </label>
                                              </div>
-                                             
-                                             <div id="types_<?php echo $cat_row->sc_id; ?>" style="display: none; background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px;">
-                                                 <small class="d-block mb-2 font-weight-bold">Can do:</small>
-                                                 <div class="row">
-                                                     <?php foreach($service_types as $type) { ?>
-                                                     <div class="col-6">
-                                                         <div class="custom-control custom-checkbox">
-                                                             <input type="checkbox" class="custom-control-input" 
-                                                                    id="type_<?php echo $cat_row->sc_id; ?>_<?php echo $type; ?>" 
-                                                                    name="service_types_<?php echo $cat_row->sc_id; ?>[]" 
-                                                                    value="<?php echo $type; ?>">
-                                                             <label class="custom-control-label" for="type_<?php echo $cat_row->sc_id; ?>_<?php echo $type; ?>">
-                                                                 <?php echo $type; ?>
-                                                             </label>
-                                                         </div>
-                                                     </div>
-                                                     <?php } ?>
-                                                 </div>
-                                             </div>
+                                             <small class="text-muted d-block mt-1"><?php echo $service_type['desc']; ?></small>
                                          </div>
                                      </div>
                                  </div>
-                                 <?php 
-                                     }
-                                 } else {
-                                     echo '<div class="col-12"><div class="alert alert-info">No additional service categories available.</div></div>';
-                                 }
-                                 ?>
+                                 <?php } ?>
                              </div>
-                             
-                             <script>
-                             function toggleServiceTypes(catId) {
-                                 var checkbox = document.getElementById('cat_' + catId);
-                                 var typesDiv = document.getElementById('types_' + catId);
-                                 var typeCheckboxes = typesDiv.querySelectorAll('input[type="checkbox"]');
-                                 
-                                 if(checkbox.checked) {
-                                     typesDiv.style.display = 'block';
-                                 } else {
-                                     typesDiv.style.display = 'none';
-                                     typeCheckboxes.forEach(function(cb) {
-                                         cb.checked = false;
-                                     });
-                                 }
-                             }
-                             </script>
                              <?php } ?>
 
                              

@@ -64,109 +64,109 @@
  </style>
  
  <ul class="sidebar navbar-nav">
-     <!-- Dashboard -->
      <li class="nav-item active">
          <a class="nav-link" href="admin-dashboard.php">
-             <i class="fas fa-fw fa-tachometer-alt"></i>
+             <i class="fas fa-fw fa-chart-line"></i>
              <span>Dashboard</span>
          </a>
      </li>
      
-     <!-- Bookings (Merged: All booking management) -->
+     <!-- 1. Bookings -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="bookingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-calendar-check"></i>
              <span>Bookings</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="bookingsDropdown">
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item bg-success text-white" href="admin-quick-booking.php"><i class="fas fa-phone-alt"></i> Quick Booking</a>
-             <div class="dropdown-divider"></div>
-             <a class="dropdown-item" href="admin-all-bookings.php"><i class="fas fa-list"></i> All Bookings</a>
-             <a class="dropdown-item" href="admin-all-bookings.php?technician=unassigned"><i class="fas fa-exclamation-triangle"></i> Unassigned</a>
-             <a class="dropdown-item" href="admin-rejected-bookings.php"><i class="fas fa-times-circle"></i> Rejected / Not Done</a>
-             <a class="dropdown-item" href="admin-completed-bookings.php"><i class="fas fa-check-circle"></i> Completed</a>
+             <a class="dropdown-item" href="admin-all-bookings.php"><i class="fas fa-list-ul"></i> All Bookings</a>
          </div>
      </li>
      
-     <!-- Technicians -->
+     <!-- 2. Technicians -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="techniciansDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-user-cog"></i>
              <span>Technicians</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="techniciansDropdown">
-             <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add Technician</a>
-             <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage All</a>
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add</a>
+             <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-manage-technician-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      
-     <!-- Services (Merged: Add + Manage) -->
+     <!-- 3. Services -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="servicesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-wrench"></i>
              <span>Services</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="servicesDropdown">
-             <a class="dropdown-item" href="admin-add-service.php"><i class="fas fa-plus-square"></i> Add Service</a>
-             <a class="dropdown-item" href="admin-manage-service.php"><i class="fas fa-edit"></i> Manage All</a>
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item" href="admin-add-service.php"><i class="fas fa-plus-square"></i> Add</a>
+             <a class="dropdown-item" href="admin-manage-service.php"><i class="fas fa-edit"></i> Manage</a>
          </div>
      </li>
      
-     <!-- Customers -->
+     <!-- 4. Users -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-users"></i>
-             <span>Customers</span>
+             <span>Users</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="usersDropdown">
-             <a class="dropdown-item" href="admin-add-user.php"><i class="fas fa-user-plus"></i> Add Customer</a>
-             <a class="dropdown-item" href="admin-manage-user.php"><i class="fas fa-user-edit"></i> Manage All</a>
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item" href="admin-add-user.php"><i class="fas fa-user-plus"></i> Add</a>
+             <a class="dropdown-item" href="admin-manage-user.php"><i class="fas fa-user-edit"></i> Manage</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-manage-user-passwords.php"><i class="fas fa-key"></i> Manage Passwords</a>
          </div>
      </li>
      
-     <!-- Feedbacks (Merged: All feedback operations) -->
+     <!-- 5. Feedbacks -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="feedbacksDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-comment-dots"></i>
              <span>Feedbacks</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="feedbacksDropdown">
-             <a class="dropdown-item" href="admin-manage-feedback.php"><i class="fas fa-comments"></i> Manage All</a>
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
+             <a class="dropdown-item" href="admin-add-feedback.php"><i class="fas fa-plus"></i> Add Feedback</a>
+             <a class="dropdown-item" href="admin-manage-feedback.php"><i class="fas fa-edit"></i> Manage Feedbacks</a>
+             <a class="dropdown-item" href="admin-view-feedback.php"><i class="fas fa-comments"></i> View All</a>
              <a class="dropdown-item" href="admin-publish-feedback.php"><i class="fas fa-thumbs-up"></i> Publish</a>
          </div>
      </li>
 
-     <!-- Notifications -->
+     <!-- 6. Notifications -->
      <li class="nav-item">
          <a class="nav-link" href="admin-notifications.php">
              <i class="fas fa-fw fa-bell"></i>
-             <span>Notifications</span>
-         </a>
+             <span>Notifications</span></a>
+     </li>
+
+     <!-- 7. System Logs -->
+     <li class="nav-item">
+         <a class="nav-link" href="admin-view-syslogs.php">
+             <i class="fas fa-fw fa-file-alt"></i>
+             <span>System Logs</span></a>
      </li>
 
      <!-- Recycle Bin -->
      <li class="nav-item">
          <a class="nav-link" href="admin-recycle-bin.php">
              <i class="fas fa-fw fa-trash-restore"></i>
-             <span>Recycle Bin</span>
-         </a>
+             <span>Recycle Bin</span></a>
      </li>
 
-     <!-- Settings (Merged: Slider + Gallery + System) -->
+     <!-- 8. Settings -->
      <li class="nav-item dropdown">
-         <a class="nav-link dropdown-toggle" href="#" id="settingsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         <a class="nav-link dropdown-toggle" href="#" id="pagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-cogs"></i>
              <span>Settings</span>
          </a>
-         <div class="dropdown-menu" aria-labelledby="settingsDropdown">
+         <div class="dropdown-menu" aria-labelledby="pagesDropdown">
              <a class="dropdown-item" href="admin-home-slider.php"><i class="fas fa-images"></i> Home Slider</a>
-             <a class="dropdown-item" href="admin-manage-gallery.php"><i class="fas fa-photo-video"></i> Gallery</a>
-             <div class="dropdown-divider"></div>
-             <a class="dropdown-item" href="admin-view-syslogs.php"><i class="fas fa-file-alt"></i> System Logs</a>
+             <a class="dropdown-item" href="admin-manage-gallery.php"><i class="fas fa-photo-video"></i> Gallery Images</a>
          </div>
      </li>
  </ul>

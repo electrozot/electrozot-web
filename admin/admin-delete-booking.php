@@ -32,12 +32,18 @@
               $stmt->bind_param('i', $u_id);
               $stmt->execute();
               if($stmt->affected_rows >= 0){
-                $succ = "Booking deleted and sent to Recycle Bin";
+                $_SESSION['delete_success'] = "Booking deleted and sent to Recycle Bin";
+                header("Location: admin-all-bookings.php");
+                exit();
               } else {
-                $err = "Failed to delete booking";
+                $_SESSION['delete_error'] = "Failed to delete booking";
+                header("Location: admin-all-bookings.php");
+                exit();
               }
             } else {
-              $err = "Please Try Again Later";
+              $_SESSION['delete_error'] = "Please Try Again Later";
+              header("Location: admin-all-bookings.php");
+              exit();
             }
     }
 ?>

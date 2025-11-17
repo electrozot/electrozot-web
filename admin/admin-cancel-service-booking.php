@@ -20,7 +20,7 @@ if(isset($_GET['sb_id'])) {
     
     if(!$booking) {
         $_SESSION['error'] = "Booking not found.";
-        header("Location: admin-manage-service-booking.php");
+        header("Location: admin-all-bookings.php");
         exit();
     }
     
@@ -82,12 +82,12 @@ if(isset($_GET['sb_id'])) {
     }
     
     // Redirect back
-    $redirect = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'admin-manage-service-booking.php';
+    $redirect = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'admin-all-bookings.php';
     header("Location: $redirect");
     exit();
 } else {
     $_SESSION['error'] = "Booking ID is missing.";
-    header("Location: admin-manage-service-booking.php");
+    header("Location: admin-all-bookings.php");
     exit();
 }
 ?>
