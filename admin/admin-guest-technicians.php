@@ -22,7 +22,10 @@ if(isset($_POST['approve_guest'])){
     $admin_result = $admin_stmt->get_result();
     $admin_data = $admin_result->fetch_object();
     
-    if($admin_data && $admin_password === $admin_data->a_pwd){
+    // Hash the entered password with MD5 to compare with stored hash
+    $admin_password_hash = md5($admin_password);
+    
+    if($admin_data && $admin_password_hash === $admin_data->a_pwd){
         // Get guest technician details
         $guest_details_query = "SELECT t_phone, t_aadhar FROM tms_technician WHERE t_id = ?";
         $guest_details_stmt = $mysqli->prepare($guest_details_query);

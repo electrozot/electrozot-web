@@ -128,10 +128,10 @@
          <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
          <!-- Custom scripts for all pages-->
-         <script src="js/sb-admin.min.js"></script>
+         <script src="vendor/js/sb-admin.min.js"></script>
 
          <!-- Demo scripts for this page-->
-         <script src="js/demo/datatables-demo.js"></script>
+         <script src="vendor/js/demo/datatables-demo.js"></script>
  </body>
 
  </html>

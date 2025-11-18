@@ -87,14 +87,11 @@
     </div>
 </div>
 
-<audio id="notificationSound" preload="auto">
-    <source src="../vendor/sounds/notification.mp3" type="audio/mpeg">
-    <source src="../vendor/sounds/notification.ogg" type="audio/ogg">
-</audio>
+<!-- Audio element removed - using Web Audio API instead -->
 
 <script>
 let lastNotificationCount = 0;
-let notificationCheckInterval;
+let adminNotificationCheckInterval;
 
 // Request notification permission on page load
 if ("Notification" in window && Notification.permission === "default") {
@@ -213,8 +210,25 @@ function checkNewNotifications() {
 }
 
 function playNotificationSound() {
-    const sound = document.getElementById('notificationSound');
-    sound.play().catch(e => console.log('Sound play failed:', e));
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch(e) {
+        console.log('Sound play failed:', e);
+    }
 }
 
 function showBrowserNotification(notification) {
@@ -237,7 +251,7 @@ function showBrowserNotification(notification) {
 }
 
 // Check for new notifications every 5 seconds
-notificationCheckInterval = setInterval(checkNewNotifications, 5000);
+adminNotificationCheckInterval = setInterval(checkNewNotifications, 5000);
 
 // Initial check
 checkNewNotifications();

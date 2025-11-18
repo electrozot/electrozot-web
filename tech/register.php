@@ -54,9 +54,9 @@ if(isset($_POST['register_technician'])){
     $errors = [];
     
     // Check if already registered as regular EZ Technician (approved)
-    $existing_tech_check = "SELECT t_id, t_ez_id, t_name FROM tms_technician 
+    $existing_tech_check = "SELECT t_id, t_ez_id, t_name, t_phone FROM tms_technician 
                            WHERE (t_phone = ? OR t_aadhar = ?) 
-                           AND (t_is_guest = 0 OR t_status = 'Available' OR t_status = 'Booked')";
+                           AND (t_is_guest = 0 OR t_status IN ('Available', 'Booked'))";
     $existing_stmt = $mysqli->prepare($existing_tech_check);
     $existing_stmt->bind_param('ss', $t_phone, $t_aadhar);
     $existing_stmt->execute();
@@ -64,16 +64,20 @@ if(isset($_POST['register_technician'])){
     
     if($existing_result->num_rows > 0){
         $existing_tech = $existing_result->fetch_assoc();
-        $errors[] = "You are already registered as an EZ Technician (EZ ID: " . htmlspecialchars($existing_tech['t_ez_id']) . "). Please login with your existing credentials. If you forgot your password, contact admin.";
+        $match_type = ($existing_tech['t_phone'] == $t_phone) ? 'mobile number' : 'Aadhaar number';
+        $errors[] = "⚠️ Registration Not Allowed: You are already registered as an EZ Technician with this " . $match_type . ". Your EZ ID is: <strong>" . htmlspecialchars($existing_tech['t_ez_id']) . "</strong>. Please use the login page to access your account. If you forgot your password, please contact admin for assistance.";
     }
     
     // Check for duplicate registration attempts (phone, email, or Aadhar)
-    $duplicate_check = "SELECT t_id FROM tms_technician WHERE (t_phone = ? OR t_email = ? OR t_aadhar = ?) AND t_is_guest = 1 AND t_status = 'Pending'";
+    $duplicate_check = "SELECT t_id, t_registered_at FROM tms_technician WHERE (t_phone = ? OR t_email = ? OR t_aadhar = ?) AND t_is_guest = 1 AND t_status = 'Pending'";
     $dup_stmt = $mysqli->prepare($duplicate_check);
     $dup_stmt->bind_param('sss', $t_phone, $t_email, $t_aadhar);
     $dup_stmt->execute();
-    if($dup_stmt->get_result()->num_rows > 0){
-        $errors[] = "A registration request with this phone, email, or Aadhaar is already pending approval. Please wait for admin confirmation.";
+    $dup_result = $dup_stmt->get_result();
+    if($dup_result->num_rows > 0){
+        $pending_data = $dup_result->fetch_assoc();
+        $registered_date = date('d M Y', strtotime($pending_data['t_registered_at']));
+        $errors[] = "⏳ Registration Already Submitted: Your registration request (submitted on " . $registered_date . ") is currently pending admin approval. Please wait for confirmation. You will be notified once your account is approved.";
     }
     
     // Check registration attempts in last 24 hours from this IP
@@ -210,7 +214,7 @@ if(isset($_POST['register_technician'])){
     }
 
     .registration-container {
-      max-width: 800px;
+      max-width: 600px;
       margin: 0 auto;
       background: white;
       border-radius: 20px;

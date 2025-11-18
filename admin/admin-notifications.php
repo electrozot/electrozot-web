@@ -479,23 +479,9 @@ if(!empty($params)) {
             
             // Load custom notification sound
             function loadCustomSound() {
-                fetch('vendor/sounds/notification.mp3')
-                    .then(response => {
-                        if (response.ok) {
-                            return response.arrayBuffer();
-                        }
-                        throw new Error('Sound file not found');
-                    })
-                    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-                    .then(buffer => {
-                        audioBuffer = buffer;
-                        customSoundEnabled = true;
-                        console.log('✅ Custom notification sound loaded');
-                    })
-                    .catch(error => {
-                        console.log('ℹ️ Custom sound not available, will use Web API:', error.message);
-                        customSoundEnabled = false;
-                    });
+                // Skip loading external sound file, use Web Audio API directly
+                console.log('ℹ️ Using Web Audio API for notifications');
+                customSoundEnabled = false;
             }
             
             // Play notification sound (custom or fallback)

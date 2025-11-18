@@ -155,12 +155,13 @@ if(isset($_POST['mark_not_done'])){
     if(empty($reason)){
         $error = 'Please provide a reason for not completing the service';
     } else {
-        // Update booking status to Not Done
+        // Update booking status to Not Done and clear technician assignment
         $update_query = "UPDATE tms_service_booking 
                         SET sb_status = 'Not Done',
                             sb_not_done_reason = ?,
                             sb_not_done_at = NOW(),
-                            sb_updated_at = NOW()
+                            sb_updated_at = NOW(),
+                            sb_technician_id = NULL
                         WHERE sb_id = ? AND sb_technician_id = ?";
         
         $update_stmt = $mysqli->prepare($update_query);
@@ -178,7 +179,64 @@ if(isset($_POST['mark_not_done'])){
             $free_stmt->bind_param('i', $t_id);
             $free_stmt->execute();
             
-            $_SESSION['success'] = "Booking marked as not done.";
+            // Get technician name for notifications
+            $tech_query = "SELECT t_name FROM tms_technician WHERE t_id = ?";
+            $tech_stmt = $mysqli->prepare($tech_query);
+            $tech_stmt->bind_param('i', $t_id);
+            $tech_stmt->execute();
+            $tech_result = $tech_stmt->get_result();
+            $tech_data = $tech_result->fetch_object();
+            $tech_name = $tech_data ? $tech_data->t_name : 'Technician';
+            
+            // Create admin notification table if not exists
+            $mysqli->query("CREATE TABLE IF NOT EXISTS tms_admin_notifications (
+                an_id INT AUTO_INCREMENT PRIMARY KEY,
+                an_type VARCHAR(50) NOT NULL,
+                an_title VARCHAR(255) NOT NULL,
+                an_message TEXT NOT NULL,
+                an_booking_id INT,
+                an_technician_id INT,
+                an_is_read TINYINT(1) DEFAULT 0,
+                an_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_read (an_is_read),
+                INDEX idx_booking (an_booking_id)
+            )");
+            
+            // Create admin notification
+            $notif_title = "Service Not Done - Needs Reassignment";
+            $notif_message = "$tech_name marked Booking #$sb_id as Not Done. Reason: $reason. Please reassign to another technician.";
+            $notif_type = "SERVICE_NOT_DONE";
+            
+            $notif_stmt = $mysqli->prepare("INSERT INTO tms_admin_notifications (an_type, an_title, an_message, an_booking_id, an_technician_id) VALUES (?, ?, ?, ?, ?)");
+            $notif_stmt->bind_param('sssii', $notif_type, $notif_title, $notif_message, $sb_id, $t_id);
+            $notif_stmt->execute();
+            
+            // Create user notification table if not exists
+            $mysqli->query("CREATE TABLE IF NOT EXISTS tms_user_notifications (
+                un_id INT AUTO_INCREMENT PRIMARY KEY,
+                un_user_id INT NOT NULL,
+                un_booking_id INT,
+                un_type VARCHAR(50) NOT NULL,
+                un_title VARCHAR(255) NOT NULL,
+                un_message TEXT NOT NULL,
+                un_is_read TINYINT(1) DEFAULT 0,
+                un_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_user (un_user_id),
+                INDEX idx_read (un_is_read)
+            )");
+            
+            // Create user notification
+            if ($booking->sb_user_id) {
+                $user_notif_title = "Service Status Update";
+                $user_notif_message = "Your booking #$sb_id could not be completed. Don't worry, we'll assign another technician to help you soon!";
+                $user_notif_type = "SERVICE_NOT_DONE";
+                
+                $user_notif_stmt = $mysqli->prepare("INSERT INTO tms_user_notifications (un_user_id, un_booking_id, un_type, un_title, un_message) VALUES (?, ?, ?, ?, ?)");
+                $user_notif_stmt->bind_param('iisss', $booking->sb_user_id, $sb_id, $user_notif_type, $user_notif_title, $user_notif_message);
+                $user_notif_stmt->execute();
+            }
+            
+            $_SESSION['success'] = "Booking marked as not done. Admin has been notified for reassignment.";
             header('Location: dashboard.php');
             exit();
         } else {

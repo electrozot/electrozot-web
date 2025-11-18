@@ -304,7 +304,7 @@ $result = $mysqli->query($query);
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="vendor/datatables/jquery.dataTables.js"></script>
     <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-    <script src="js/sb-admin.min.js"></script>
+    <script src="vendor/js/sb-admin.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#dataTable').DataTable({

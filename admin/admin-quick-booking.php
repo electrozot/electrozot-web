@@ -145,7 +145,7 @@ if(isset($_POST['create_booking'])) {
         $stmt_booking = $mysqli->prepare($insert_booking);
         // Parameters: user_id(i), service_id(i), date(s), time(s), phone(s), address(s), pincode(s), description(s), price(d)
         // Type string: i i s s s s s s d = 9 parameters
-        $stmt_booking->bind_param('iisssssssd', $user_id, $service_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price);
+        $stmt_booking->bind_param('iissssssd', $user_id, $service_id, $booking_date, $booking_time, $customer_phone, $customer_address, $customer_pincode, $notes, $total_price);
     }
     
         if($stmt_booking->execute()) {

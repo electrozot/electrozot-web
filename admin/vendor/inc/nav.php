@@ -32,7 +32,6 @@
                      padding: 3px 6px;
                      border-radius: 10px;
                      font-size: 10px;
-                     animation: pulse 2s infinite;
                  ">0</span>
              </a>
          </li>
@@ -265,121 +264,41 @@
          display: none;
      }
  }
+ 
+ /* Notification Badge Pulse Animation */
+ @keyframes pulse {
+     0% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+     }
+     50% {
+         transform: scale(1.1);
+         box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+     }
+     100% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+     }
+ }
+ 
+ #notificationBadge {
+     animation: pulse 2s infinite;
+ }
+ 
+ /* Bell shake animation when new notification */
+ @keyframes bellShake {
+     0%, 100% { transform: rotate(0deg); }
+     10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+     20%, 40%, 60%, 80% { transform: rotate(10deg); }
+ }
+ 
+ .bell-shake {
+     animation: bellShake 0.5s ease-in-out;
+ }
  </style>
 
-<!-- Real-Time Notification System -->
-<audio id="notificationSound" preload="auto">
-    <source src="../vendor/sounds/notification.mp3" type="audio/mpeg">
-</audio>
-
-<script>
-let lastNotificationCount = 0;
-
-// Request notification permission
-if ("Notification" in window && Notification.permission === "default") {
-    Notification.requestPermission();
-}
-
-function checkNewNotifications() {
-    fetch('api-admin-notifications.php')
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                const count = data.count;
-                const badge = document.getElementById('notificationBadge');
-                
-                if(count > 0) {
-                    badge.textContent = count;
-                    badge.style.display = 'block';
-                    
-                    // New notification arrived
-                    if(count > lastNotificationCount && lastNotificationCount >= 0) {
-                        playNotificationSound();
-                        if(data.notifications && data.notifications.length > 0) {
-                            showBrowserNotification(data.notifications[0]);
-                        }
-                    }
-                } else {
-                    badge.style.display = 'none';
-                }
-                
-                lastNotificationCount = count;
-            }
-        })
-        .catch(error => console.log('Notification check:', error));
-}
-
-function playNotificationSound() {
-    try {
-        // Create Web Audio API context
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Create oscillator for beep sound
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        // Set frequency (800Hz for notification sound)
-        oscillator.frequency.value = 800;
-        oscillator.type = 'sine';
-        
-        // Set volume
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
-        // Play sound
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
-        
-        // Second beep
-        setTimeout(() => {
-            const osc2 = audioContext.createOscillator();
-            const gain2 = audioContext.createGain();
-            osc2.connect(gain2);
-            gain2.connect(audioContext.destination);
-            osc2.frequency.value = 1000;
-            osc2.type = 'sine';
-            gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-            osc2.start(audioContext.currentTime);
-            osc2.stop(audioContext.currentTime + 0.3);
-        }, 200);
-    } catch(e) {
-        console.log('Sound generation failed:', e);
-    }
-}
-
-function showBrowserNotification(notification) {
-    if ("Notification" in window && Notification.permission === "granted") {
-        const notif = new Notification(notification.an_title, {
-            body: notification.an_message,
-            icon: '../vendor/EZlogonew.png',
-            badge: '../vendor/EZlogonew.png',
-            tag: 'booking-' + notification.an_booking_id,
-            requireInteraction: true
-        });
-        
-        notif.onclick = function() {
-            window.focus();
-            window.location.href = 'admin-manage-service-booking.php?highlight=' + notification.an_booking_id;
-            notif.close();
-        };
-    }
-}
-
-// Check every 5 seconds
-setInterval(checkNewNotifications, 5000);
-checkNewNotifications(); // Initial check
-
-// Check when page becomes visible
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        checkNewNotifications();
-    }
-});
-</script>
+<!-- Real-Time Booking Notification System -->
+<?php include('booking-notification-system.php'); ?>
 
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

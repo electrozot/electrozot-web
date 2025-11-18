@@ -240,7 +240,7 @@
                          <?php 
                          // Check if technician is already assigned and booking is not rejected
                          $is_assigned = !empty($booking_data->sb_technician_id);
-                         $is_rejected = ($booking_data->sb_status == 'Rejected' || $booking_data->sb_status == 'Cancelled');
+                         $is_rejected = ($booking_data->sb_status == 'Rejected' || $booking_data->sb_status == 'Rejected by Technician' || $booking_data->sb_status == 'Cancelled' || $booking_data->sb_status == 'Not Done');
                          $can_reassign = $is_rejected || !$is_assigned;
                          
                          // Show warning if trying to reassign when not rejected
