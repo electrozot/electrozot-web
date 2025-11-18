@@ -146,6 +146,26 @@ if(isset($_POST['book_service_guest'])) {
     }
 
     if($customer_id) {
+        // Check active bookings limit (3 bookings per phone number)
+        // Active bookings are those that are NOT 'Rejected', 'Cancelled', or 'Completed'
+        $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                                   WHERE sb_phone = ? 
+                                   AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+        $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+        $stmt_check_limit->bind_param('s', $customer_phone);
+        $stmt_check_limit->execute();
+        $result_limit = $stmt_check_limit->get_result();
+        $limit_data = $result_limit->fetch_object();
+        $active_bookings_count = $limit_data->active_count;
+        $stmt_check_limit->close();
+        
+        // If customer already has 3 or more active bookings, reject the new booking
+        if($active_bookings_count >= 3) {
+            $_SESSION['booking_error'] = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed, cancelled, or rejected before making a new booking.";
+            header("location: index.php#booking-form");
+            exit();
+        }
+        
         // Ensure sb_pincode and sb_custom_service columns exist, and sb_service_id allows NULL
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_custom_service VARCHAR(255) DEFAULT NULL");

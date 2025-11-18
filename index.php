@@ -20,93 +20,134 @@
     <div class="container-fluid px-0">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #F0E5D8 0%, #E8D5C4 100%); padding: 80px 0 80px 0; position: relative; overflow: hidden;">
             
-            <!-- Background Decorative Elements -->
+            <!-- Enhanced Background Decorative Elements -->
             <div class="hero-bg-elements">
-                <!-- Large Circles -->
-                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: rgba(255, 215, 0, 0.08); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 200px; height: 200px; background: rgba(255, 215, 0, 0.05); border-radius: 50%; z-index: 1;"></div>
+                <!-- Animated Large Circles with Glow -->
+                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 8s ease-in-out infinite;"></div>
+                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 550px; height: 550px; background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 10s ease-in-out infinite reverse;"></div>
+                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: pulse 6s ease-in-out infinite;"></div>
+                <div class="hero-circle hero-circle-4" style="position: absolute; top: 20%; left: 15%; width: 180px; height: 180px; background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: float 7s ease-in-out infinite;"></div>
                 
-                <!-- Floating Icons -->
-                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.15;">
-                    <i class="fas fa-bolt" style="font-size: 3rem; color: #7ff4fdff;"></i>
+                <!-- Enhanced Floating Icons with Animation -->
+                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.25; animation: floatIcon 4s ease-in-out infinite;">
+                    <i class="fas fa-bolt" style="font-size: 3.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.12;">
-                    <i class="fas fa-tools" style="font-size: 2.5rem; color: #ffffff;"></i>
+                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.2; animation: floatIcon 5s ease-in-out infinite 1s;">
+                    <i class="fas fa-tools" style="font-size: 3rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.1;">
-                    <i class="fas fa-cog" style="font-size: 2rem; color: #7ff4fdff;"></i>
+                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.18; animation: floatIcon 6s ease-in-out infinite 2s;">
+                    <i class="fas fa-cog" style="font-size: 2.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); animation: rotate 20s linear infinite;"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.08;">
-                    <i class="fas fa-wrench" style="font-size: 2.2rem; color: #ffffff;"></i>
+                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.15; animation: floatIcon 5.5s ease-in-out infinite 1.5s;">
+                    <i class="fas fa-wrench" style="font-size: 2.8rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
+                </div>
+                <div class="floating-icon" style="position: absolute; top: 70%; left: 25%; z-index: 1; opacity: 0.2; animation: floatIcon 4.5s ease-in-out infinite 0.5s;">
+                    <i class="fas fa-plug" style="font-size: 2.3rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
                 </div>
                 
-                <!-- Geometric Shapes -->
-                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 80px; height: 80px; border: 3px solid rgba(255, 215, 0, 0.2); border-radius: 15px; transform: rotate(45deg); z-index: 1;"></div>
-                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 60px; height: 60px; border: 3px solid rgba(255, 255, 255, 0.15); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 40px; height: 40px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; transform: rotate(25deg); z-index: 1;"></div>
+                <!-- Enhanced Geometric Shapes with Glow -->
+                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 90px; height: 90px; border: 4px solid rgba(255, 215, 0, 0.3); border-radius: 18px; transform: rotate(45deg); z-index: 1; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); animation: rotate 15s linear infinite;"></div>
+                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 70px; height: 70px; border: 4px solid rgba(255, 255, 255, 0.25); border-radius: 50%; z-index: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); animation: pulse 4s ease-in-out infinite;"></div>
+                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.15); border-radius: 10px; transform: rotate(25deg); z-index: 1; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); animation: float 6s ease-in-out infinite;"></div>
+                <div class="hero-shape" style="position: absolute; top: 35%; right: 5%; width: 65px; height: 65px; border: 3px solid rgba(255, 255, 255, 0.2); border-radius: 12px; transform: rotate(-30deg); z-index: 1; animation: rotate 12s linear infinite reverse;"></div>
                 
-                <!-- Dots Pattern -->
-                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.2;">
-                    <div style="display: grid; grid-template-columns: repeat(4, 8px); gap: 12px;">
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                <!-- Enhanced Dots Pattern with Glow -->
+                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.3; animation: pulse 3s ease-in-out infinite;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 10px); gap: 15px;">
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
                     </div>
                 </div>
                 
-                <!-- Wave Lines -->
-                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; z-index: 1; opacity: 0.1;" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.3)"></path>
+                <!-- Additional Dots Pattern -->
+                <div class="dots-pattern" style="position: absolute; bottom: 25%; left: 8%; z-index: 1; opacity: 0.25; animation: pulse 4s ease-in-out infinite 1s;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 8px); gap: 12px;">
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Wave Lines with Multiple Layers -->
+                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 180px; z-index: 1; opacity: 0.15;" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.4)"></path>
+                    <path d="M0,70 Q300,40 600,70 T1200,70 L1200,120 L0,120 Z" fill="rgba(255,215,0,0.2)"></path>
                 </svg>
+                
+                <!-- Sparkle Effects -->
+                <div style="position: absolute; top: 18%; right: 12%; width: 4px; height: 4px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 15px #ffd700; animation: sparkle 2s ease-in-out infinite;"></div>
+                <div style="position: absolute; top: 45%; left: 18%; width: 3px; height: 3px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 12px #ffffff; animation: sparkle 3s ease-in-out infinite 1s;"></div>
+                <div style="position: absolute; bottom: 30%; right: 20%; width: 5px; height: 5px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 18px #ffd700; animation: sparkle 2.5s ease-in-out infinite 0.5s;"></div>
             </div>
+            
+            <style>
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                
+                @keyframes floatIcon {
+                    0%, 100% { transform: translateY(0px) translateX(0px); }
+                    25% { transform: translateY(-15px) translateX(5px); }
+                    75% { transform: translateY(15px) translateX(-5px); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 0.3; }
+                    50% { transform: scale(1.1); opacity: 0.5; }
+                }
+                
+                @keyframes rotate {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                @keyframes sparkle {
+                    0%, 100% { opacity: 0; transform: scale(0); }
+                    50% { opacity: 1; transform: scale(1); }
+                }
+            </style>
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
-                    <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-4 font-weight-bold mb-4 hero-title" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
-                            Welcome to <span class="electrozot-animated">Electrozot</span>
+                    <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
+                        <h1 class="display-4 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
+                            Welcome to <span class="electrozot-animated" style="color: #8b0000;">Electrozot</span>
                         </h1>
-                        <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">
-                            Professional Technician Booking System - Book expert technicians for all your electrical, plumbing, HVAC, and appliance repair needs. Fast, reliable, and hassle-free service.
+                        <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; color: #4a5568; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); font-weight: 700;">
+                            Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
                         </p>
-                        <div class="d-flex flex-wrap" style="gap: 15px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge pulse-animation" role="button" aria-label="Book service now" style="text-decoration: none;">
+                        <div class="d-flex flex-wrap" style="gap: 12px;">
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge" role="button" aria-label="Book service now" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 150px; text-align: center;">
                                 <i class="fas fa-bolt"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge pulse-animation" style="animation-delay: 0.2s; text-decoration: none;" aria-label="Call 7559606925">
-                                <i class="fas fa-phone"></i> Call 7559606925
+                            <a href="tel:7559606925" class="feature-badge" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 180px; text-align: center;">
+                                <i class="fas fa-phone"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #ffd700;">
-                                <!-- Sliding Images Background -->
-                                <div class="form-sliding-bg">
-                                    <div class="slide-image active" style="background-image: url('vendor/img/slide_2.jpg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/slide01.jpeg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/p_banner1.jpg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/service1.png');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/service2.png');"></div>
-                                </div>
-                                <div class="form-overlay"></div>
+                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #8b0000;">
                                 
-                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); position: relative; z-index: 3; border-bottom: 3px solid #a78bfa; overflow: hidden;">
-                                    <div class="header-shine"></div>
-                                    <h3 class="mb-0 font-weight-bold" style="color: #ffffff; font-size: 1.4rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2;">
-                                        <i class="fas fa-calendar-check" style="color: #a78bfa; margin-right: 8px;"></i>
+                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #0d7a6f 0%, #2bc569 100%); position: relative; z-index: 3; border-bottom: 3px solid #0d7a6f; overflow: hidden;">
+                                    <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.4rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                                        <i class="fas fa-calendar-check" style="color: white; margin-right: 8px;"></i>
                                         Book Service Now
                                     </h3>
                                 </div>
@@ -208,7 +249,7 @@
                                             </div>
                                         </div>
                                         <div class="text-center mt-2">
-                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" style="background: linear-gradient(135deg, #13b7f8ff 0%, #40ff22ff 50%, #4facfe 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
                                                 <i class="fas fa-paper-plane"></i> Submit Booking
                                             </button>
                                         </div>
@@ -232,7 +273,7 @@
             }
             
             .booking-form-compact .form-label-compact i {
-                color: #667eea !important;
+                color: #dc143c !important;
                 margin-right: 5px !important;
             }
             
@@ -257,9 +298,9 @@
             }
             
             .booking-form-compact .form-control:focus {
-                border-color: #667eea !important;
+                border-color: #dc143c !important;
                 background: #ffffff !important;
-                box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 4px 10px rgba(102, 126, 234, 0.1) !important;
+                box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.15), 0 4px 10px rgba(220, 20, 60, 0.1) !important;
                 outline: none !important;
                 transform: translateY(-1px) !important;
             }
@@ -280,7 +321,7 @@
                 padding: 8px 12px !important;
                 min-height: 40px !important;
                 cursor: pointer !important;
-                background-image: linear-gradient(45deg, transparent 50%, #667eea 50%), linear-gradient(135deg, #667eea 50%, transparent 50%) !important;
+                background-image: linear-gradient(45deg, transparent 50%, #dc143c 50%), linear-gradient(135deg, #dc143c 50%, transparent 50%) !important;
                 background-position: calc(100% - 15px) center, calc(100% - 10px) center !important;
                 background-size: 5px 5px, 5px 5px !important;
                 background-repeat: no-repeat !important;
@@ -375,8 +416,8 @@
             /* Smooth focus effect */
             .service-dropdown:focus {
                 outline: none !important;
-                border-color: #667eea !important;
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+                border-color: #dc143c !important;
+                box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.15) !important;
                 transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
             }
             
@@ -501,6 +542,27 @@
                 #guestService {
                     width: 100% !important;
                     max-width: 100% !important;
+                }
+                
+                /* Smaller service cards on mobile */
+                .service-card {
+                    transform: scale(0.9) !important;
+                }
+                
+                .service-img-wrapper {
+                    height: 150px !important;
+                }
+                
+                .service-card .card-body {
+                    padding: 1rem !important;
+                }
+                
+                .service-card .card-title {
+                    font-size: 1rem !important;
+                }
+                
+                .service-card .card-text {
+                    font-size: 0.85rem !important;
                 }
             }
         </style>
@@ -856,15 +918,15 @@
         </section>
 
         <!-- Testimonials Section with Auto-Sliding -->
-        <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
+        <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #89c9c6 0%, #e8b4c0 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
             <div class="testimonial-overlay"></div>
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row text-center mb-5">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3 text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                        <h2 class="display-5 font-weight-bold mb-3" style="color: #2d3748; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">
                             Client Testimonials
                         </h2>
-                        <p class="lead text-white" style="opacity: 0.95; font-weight: 400;">What our customers say about us</p>
+                        <p class="lead" style="color: #4a5568; font-weight: 400;">What our customers say about us</p>
                     </div>
                 </div>
                 
@@ -891,7 +953,7 @@
                                     <div class="mb-3">
                                         <i class="fas fa-quote-left testimonial-quote" style="font-size: 2.5rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
                                     </div>
-                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #4a5568; font-size: 1.05rem; min-height: 120px;">
+                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #2d3748; font-size: 1.05rem; min-height: 120px;">
                                         "<?php echo $row->f_content; ?>"
                                     </p>
                                     <div class="d-flex align-items-center">
@@ -929,26 +991,6 @@
     <!-- Sliding Images Script for Booking Form -->
     <script>
         $(document).ready(function() {
-            let currentSlide = 0;
-            const slides = $('.slide-image');
-            const totalSlides = slides.length;
-            
-            function showSlide(index) {
-                slides.removeClass('active');
-                slides.eq(index).addClass('active');
-            }
-            
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % totalSlides;
-                showSlide(currentSlide);
-            }
-            
-            // Initialize first slide
-            showSlide(0);
-            
-            // Change slide every 4 seconds
-            setInterval(nextSlide, 4000);
-
             // Initialize Work Carousel with auto-play (4 seconds)
             $('#workCarousel').carousel({
                 interval: 4000,
@@ -1082,7 +1124,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             border: none;
             padding: 15px 25px;

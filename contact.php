@@ -26,7 +26,7 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb contact-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 15px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
                 <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #ff4757; text-decoration: none; font-weight: 500;">
+                    <a href="index.php" style="color: #11998e; text-decoration: none; font-weight: 500;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
@@ -38,7 +38,7 @@
             <!-- Contact Form -->
             <div class="col-lg-8 mb-4">
                 <div class="card contact-form-card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-header contact-form-header text-white text-center py-4" style="background: linear-gradient(135deg, #ffa1fdff 0%, #ff72a1ff 100%);">
+                    <div class="card-header contact-form-header text-white text-center py-4" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
                         <h3 class="mb-0">
                             <i class="fas fa-paper-plane"></i> Send us a Message
                         </h3>
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                             <div id="success"></div>
-                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%); border: none; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; position: relative; overflow: hidden;">
+                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; position: relative; overflow: hidden;">
                                 <span style="position: relative; z-index: 2;">
                                     <i class="fas fa-paper-plane"></i> Send Message
                                 </span>
@@ -99,7 +99,7 @@
             <!-- Contact Details -->
             <div class="col-lg-4 mb-4">
                 <div class="card contact-details-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-header contact-details-header text-white text-center py-4" style="background: linear-gradient(135deg, #f99eedff 0%, #ff4757 100%);">
+                    <div class="card-header contact-details-header text-white text-center py-4" style="background: linear-gradient(135deg, #4facfe 0%, #11998e 100%);">
                         <h3 class="mb-0">
                             <i class="fas fa-address-card"></i> Contact Details
                         </h3>
@@ -110,7 +110,7 @@
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #ff4757;">Address</h5>
+                                <h5 class="font-weight-bold mb-2" style="color: #11998e;">Address</h5>
                                 <p class="mb-0" style="color: #6c757d; line-height: 1.8;">
                                     Electrozot<br>
                                     Dharamshala
@@ -123,7 +123,7 @@
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #ff4757;">Phone</h5>
+                                <h5 class="font-weight-bold mb-2" style="color: #11998e;">Phone
                                 <p class="mb-0" style="color: #6c757d;">
                                     <a href="tel:7559606925" class="contact-link">7559606925</a>
                                 </p>
@@ -135,7 +135,7 @@
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #ff4757;">Email</h5>
+                                <h5 class="font-weight-bold mb-2" style="color: #11998e;">Email</h5>
                                 <p class="mb-0" style="color: #6c757d;">
                                     <a href="mailto:electrozot.in@gmail.com" class="contact-link">electrozot.in@gmail.com</a>
                                 </p>
@@ -147,7 +147,7 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #ff4757;">Business Hours</h5>
+                                <h5 class="font-weight-bold mb-2" style="color: #11998e;">Business Hours</h5>
                                 <p class="mb-0" style="color: #6c757d; line-height: 1.8;">
                                     Monday - Sunday<br>
                                     7:00 AM to 9:00 PM
@@ -206,8 +206,8 @@
         }
 
         .contact-input:focus {
-            border-color: #ff4757;
-            box-shadow: 0 0 0 0.3rem rgba(255, 71, 87, 0.2), 0 4px 15px rgba(255, 71, 87, 0.15);
+            border-color: #11998e;
+            box-shadow: 0 0 0 0.3rem rgba(17, 153, 142, 0.2), 0 4px 15px rgba(17, 153, 142, 0.15);
             transform: translateY(-2px);
             background: #fff;
         }
@@ -226,7 +226,7 @@
         }
 
         .contact-form-group:focus-within .contact-label {
-            color: #ff4757;
+            color: #11998e;
         }
 
         .contact-form-group:focus-within .contact-label i {
@@ -260,7 +260,7 @@
         .contact-submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(255, 71, 87, 0.5);
-            background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%) !important;
+            background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%) !important;
         }
 
         .contact-info-item {
@@ -281,7 +281,7 @@
             width: 50px;
             height: 50px;
             border-radius: 12px;
-            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -303,7 +303,7 @@
         }
 
         .contact-link {
-            color: #ff4757;
+            color: #11998e;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
