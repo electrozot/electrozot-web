@@ -35,6 +35,23 @@ if (isset($_POST['confirm_booking'])) {
     $address = $_POST['address'];
     $phone = $_POST['phone'];
     
+    // Check active bookings limit (3 bookings per user)
+    $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                               WHERE sb_user_id = ? 
+                               AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+    $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+    $stmt_check_limit->bind_param('i', $aid);
+    $stmt_check_limit->execute();
+    $result_limit = $stmt_check_limit->get_result();
+    $limit_data = $result_limit->fetch_object();
+    $active_bookings_count = $limit_data->active_count;
+    $stmt_check_limit->close();
+    
+    // If user already has 3 or more active bookings, reject the new booking
+    if($active_bookings_count >= 3) {
+        $error_msg = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
+    } else {
+    
     // Get service ID from service name, or create service if not exists
     $service_query = "SELECT s_id FROM tms_service WHERE s_name = ? LIMIT 1";
     $service_stmt = $mysqli->prepare($service_query);
@@ -85,6 +102,7 @@ if (isset($_POST['confirm_booking'])) {
     } else {
         $error_msg = "Booking failed. Please try again. Error: " . $mysqli->error;
     }
+    } // Close booking limit check
 }
 
 // Check if booking was successful

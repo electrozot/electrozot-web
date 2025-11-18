@@ -24,7 +24,9 @@ if(isset($_POST['create_booking'])) {
     if($is_other_service) {
         $other_service_name = isset($_POST['other_service_name']) ? trim($_POST['other_service_name']) : '';
         if(empty($other_service_name)) {
-            $err = "Please specify the service you need.";
+            $_SESSION['error'] = "Please specify the service you need.";
+            header("Location: admin-quick-booking.php");
+            exit();
         }
         $service_id = null; // Set to NULL for other services (to avoid foreign key constraint)
     } else {
@@ -33,23 +35,56 @@ if(isset($_POST['create_booking'])) {
     
     // Validation checks
     if(empty($customer_name)) {
-        $err = "Customer name is required.";
+        $_SESSION['error'] = "Customer name is required.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif(strlen($customer_phone) !== 10) {
-        $err = "Please enter a valid 10-digit phone number.";
+        $_SESSION['error'] = "Please enter a valid 10-digit phone number.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif(strlen($customer_pincode) !== 6) {
-        $err = "Please enter a valid 6-digit pincode.";
+        $_SESSION['error'] = "Please enter a valid 6-digit pincode.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif(empty($customer_area)) {
-        $err = "Area/locality is required.";
+        $_SESSION['error'] = "Area/locality is required.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif(empty($customer_address)) {
-        $err = "Service address is required.";
+        $_SESSION['error'] = "Service address is required.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif(!$is_other_service && $service_id <= 0) {
-        $err = "Please select a service.";
+        $_SESSION['error'] = "Please select a service.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } elseif($is_other_service && empty($other_service_name)) {
-        $err = "Please specify the custom service you need.";
+        $_SESSION['error'] = "Please specify the custom service you need.";
+        header("Location: admin-quick-booking.php");
+        exit();
     } else {
         // Automatically set booking date and time to current timestamp
         $booking_date = date('Y-m-d');
         $booking_time = date('H:i:s');
+    
+    // Check active bookings limit (3 bookings per phone number)
+    $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                               WHERE sb_phone = ? 
+                               AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+    $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+    $stmt_check_limit->bind_param('s', $customer_phone);
+    $stmt_check_limit->execute();
+    $result_limit = $stmt_check_limit->get_result();
+    $limit_data = $result_limit->fetch_object();
+    $active_bookings_count = $limit_data->active_count;
+    $stmt_check_limit->close();
+    
+    // If customer already has 3 or more active bookings, reject the new booking
+    if($active_bookings_count >= 3) {
+        $_SESSION['error'] = "This customer has reached the maximum limit of 3 active bookings. Please wait for one booking to be completed.";
+        header("Location: admin-quick-booking.php");
+        exit();
+    }
     
     // Check if user exists by phone
     $check_user = "SELECT u_id FROM tms_user WHERE u_phone = ?";
@@ -114,11 +149,25 @@ if(isset($_POST['create_booking'])) {
     }
     
         if($stmt_booking->execute()) {
-            $success = "Booking created successfully! Booking ID: " . $mysqli->insert_id;
+            $_SESSION['success'] = "Booking created successfully! Booking ID: " . $mysqli->insert_id;
+            header("Location: admin-quick-booking.php");
+            exit();
         } else {
-            $err = "Failed to create booking. Please try again.";
+            $_SESSION['error'] = "Failed to create booking. Please try again.";
+            header("Location: admin-quick-booking.php");
+            exit();
         }
     }
+}
+
+// Get messages from session
+if(isset($_SESSION['success'])) {
+    $success = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
+if(isset($_SESSION['error'])) {
+    $err = $_SESSION['error'];
+    unset($_SESSION['error']);
 }
 ?>
 <!DOCTYPE html>

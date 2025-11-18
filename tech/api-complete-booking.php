@@ -43,6 +43,22 @@ if ($stmt->execute()) {
     // Decrement technician booking count
     decrementTechnicianBookings($mysqli, $technician_id);
     
+    // Create admin notification
+    $get_tech_name = $mysqli->prepare("SELECT t_name FROM tms_technician WHERE t_id = ?");
+    $get_tech_name->bind_param('i', $technician_id);
+    $get_tech_name->execute();
+    $tech_result = $get_tech_name->get_result();
+    $tech_data = $tech_result->fetch_object();
+    $tech_name = $tech_data ? $tech_data->t_name : 'Technician';
+    
+    $notif_title = "Booking Completed";
+    $notif_message = "$tech_name completed Booking #$booking_id successfully!";
+    $notif_type = "BOOKING_COMPLETED";
+    
+    $notif_stmt = $mysqli->prepare("INSERT INTO tms_admin_notifications (an_type, an_title, an_message, an_booking_id, an_technician_id) VALUES (?, ?, ?, ?, ?)");
+    $notif_stmt->bind_param('sssii', $notif_type, $notif_title, $notif_message, $booking_id, $technician_id);
+    $notif_stmt->execute();
+    
     echo json_encode(['success' => true, 'message' => 'Booking completed successfully']);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to complete booking']);

@@ -66,51 +66,100 @@ function checkTechnicianEngagement($technician_id, $mysqli) {
 /**
  * Get all available technicians for a specific service category
  * Only returns technicians who are NOT currently engaged with any booking
+ * Matches by: 1) Detailed Skills, 2) Category, 3) Specialization
  * 
- * @param string $service_category The service category to match
+ * @param string $service_category The service category or service name to match
  * @param mysqli $mysqli Database connection
  * @param int $exclude_booking_id Optional: Exclude technician currently assigned to this booking (for reassignment)
  * @return array List of available technicians
  */
 function getAvailableTechnicians($service_category, $mysqli, $exclude_booking_id = null) {
-    // Get all technicians matching the service category
-    // Try exact match first, then partial match (LIKE)
-    $query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category, t_status 
-              FROM tms_technician 
-              WHERE t_category = ? OR t_category LIKE ? OR t_specialization LIKE ?
-              ORDER BY t_name ASC";
+    // PRIORITY 1: Match by detailed service skills
+    $skill_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_phone, t.t_email, t.t_specialization, t.t_category, t.t_status,
+                    GROUP_CONCAT(ts.skill_name SEPARATOR ', ') as skills
+                    FROM tms_technician t
+                    INNER JOIN tms_technician_skills ts ON t.t_id = ts.t_id
+                    WHERE ts.skill_name LIKE ? OR ts.skill_name LIKE ?
+                    GROUP BY t.t_id
+                    ORDER BY t.t_name ASC";
     
-    $stmt = $mysqli->prepare($query);
+    $stmt = $mysqli->prepare($skill_query);
     $like_pattern = '%' . $service_category . '%';
-    $stmt->bind_param('sss', $service_category, $like_pattern, $like_pattern);
+    $stmt->bind_param('ss', $like_pattern, $service_category);
     $stmt->execute();
-    $result = $stmt->get_result();
+    $skill_result = $stmt->get_result();
     
     $available_technicians = [];
+    $matched_tech_ids = [];
     
-    while($tech = $result->fetch_assoc()) {
+    // Process technicians matched by skills (HIGHEST PRIORITY)
+    while($tech = $skill_result->fetch_assoc()) {
+        $matched_tech_ids[] = $tech['t_id'];
+        
         // Check if this technician is engaged
         $engagement = checkTechnicianEngagement($tech['t_id'], $mysqli);
         
-        // If technician is engaged, check if it's with the excluded booking (for reassignment)
         if($engagement['is_engaged']) {
             if($exclude_booking_id && $engagement['booking_id'] == $exclude_booking_id) {
-                // This technician is assigned to the booking we're reassigning, so include them
                 $tech['is_available'] = true;
                 $tech['current_booking'] = $engagement['booking_id'];
-                $tech['availability_note'] = 'Currently assigned to this booking';
+                $tech['availability_note'] = '✓ Skill Match (Currently assigned to this booking)';
+                $tech['match_type'] = 'skill';
             } else {
-                // Technician is engaged with another booking, skip them
                 continue;
             }
         } else {
-            // Technician is free
             $tech['is_available'] = true;
             $tech['current_booking'] = null;
-            $tech['availability_note'] = 'Available';
+            $tech['availability_note'] = '✓ Skill Match - Available';
+            $tech['match_type'] = 'skill';
         }
         
         $available_technicians[] = $tech;
+    }
+    
+    // PRIORITY 2: Match by category or specialization (if no skill matches found)
+    if(empty($available_technicians)) {
+        $category_query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category, t_status 
+                          FROM tms_technician 
+                          WHERE t_category = ? OR t_category LIKE ? OR t_specialization LIKE ?
+                          ORDER BY t_name ASC";
+        
+        $stmt2 = $mysqli->prepare($category_query);
+        $like_pattern = '%' . $service_category . '%';
+        $stmt2->bind_param('sss', $service_category, $like_pattern, $like_pattern);
+        $stmt2->execute();
+        $category_result = $stmt2->get_result();
+        
+        while($tech = $category_result->fetch_assoc()) {
+            // Skip if already matched by skills
+            if(in_array($tech['t_id'], $matched_tech_ids)) {
+                continue;
+            }
+            
+            // Check if this technician is engaged
+            $engagement = checkTechnicianEngagement($tech['t_id'], $mysqli);
+            
+            if($engagement['is_engaged']) {
+                if($exclude_booking_id && $engagement['booking_id'] == $exclude_booking_id) {
+                    $tech['is_available'] = true;
+                    $tech['current_booking'] = $engagement['booking_id'];
+                    $tech['availability_note'] = 'Category Match (Currently assigned to this booking)';
+                    $tech['match_type'] = 'category';
+                    $tech['skills'] = null;
+                } else {
+                    continue;
+                }
+            } else {
+                $tech['is_available'] = true;
+                $tech['current_booking'] = null;
+                $tech['availability_note'] = 'Category Match - Available';
+                $tech['match_type'] = 'category';
+                $tech['skills'] = null;
+            }
+            
+            $available_technicians[] = $tech;
+        }
     }
     
     // If no technicians found with category match, get ALL available technicians as fallback

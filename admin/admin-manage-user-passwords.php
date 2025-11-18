@@ -21,6 +21,20 @@ try {
     $mysqli->query($create_table);
 } catch(Exception $e) {}
 
+// Create system_logs table if not exists
+try {
+    $create_logs_table = "CREATE TABLE IF NOT EXISTS tms_system_logs (
+        log_id INT AUTO_INCREMENT PRIMARY KEY,
+        log_type VARCHAR(100) NOT NULL,
+        log_message TEXT NOT NULL,
+        log_data TEXT,
+        log_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(log_type),
+        INDEX(log_created_at)
+    )";
+    $mysqli->query($create_logs_table);
+} catch(Exception $e) {}
+
 // Add created_at column if it doesn't exist
 $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
 $mysqli->query("ALTER TABLE tms_user ADD COLUMN IF NOT EXISTS is_deleted TINYINT(1) DEFAULT 0");
@@ -97,46 +111,31 @@ if(isset($_GET['delete'])) {
     $user_data = $get_stmt->get_result()->fetch_assoc();
     
     if($user_data) {
-        // Insert into deleted_items table
-        $insert_query = "INSERT INTO tms_deleted_items (di_item_type, di_item_id, di_item_data, di_deleted_by) VALUES (?, ?, ?, ?)";
-        $insert_stmt = $mysqli->prepare($insert_query);
-        $item_type = 'user';
-        $item_data = json_encode($user_data);
-        $insert_stmt->bind_param('sisi', $item_type, $u_id, $item_data, $aid);
-        
-        if($insert_stmt->execute()) {
-            // Delete from main table
-            $delete_query = "DELETE FROM tms_user WHERE u_id=?";
-            $delete_stmt = $mysqli->prepare($delete_query);
-            $delete_stmt->bind_param('i', $u_id);
-            
-            if($delete_stmt->execute()) {
-                $_SESSION['succ'] = "User moved to recycle bin successfully";
-                header("Location: admin-manage-user-passwords.php");
-                exit();
-            } else {
-                $err = "Failed to delete user from main table: " . $delete_stmt->error;
-            }
-        } else {
-            $err = "Failed to move user to recycle bin: " . $insert_stmt->error;
-        }
+        // USER DELETION - Requires admin password (handled by modal)
+        $err = "Please use the delete button with password confirmation";
     } else {
         $err = "User not found";
     }
 }
 
-// Check for session success message
-if(isset($_SESSION['succ'])) {
-    $succ = $_SESSION['succ'];
-    unset($_SESSION['succ']);
-}
-
-// Bulk delete users
-if(isset($_POST['bulk_delete'])) {
-    if(isset($_POST['selected_users']) && is_array($_POST['selected_users'])) {
-        $deleted_count = 0;
-        foreach($_POST['selected_users'] as $u_id) {
-            // Get user data
+// Handle password-confirmed deletion
+if(isset($_POST['confirm_delete_user'])) {
+    $u_id = intval($_POST['user_id']);
+    $admin_password = $_POST['admin_password'];
+    
+    // Verify admin password
+    $verify_query = "SELECT a_pwd FROM tms_admin WHERE a_id = ?";
+    $verify_stmt = $mysqli->prepare($verify_query);
+    $verify_stmt->bind_param('i', $aid);
+    $verify_stmt->execute();
+    $result = $verify_stmt->get_result();
+    
+    if($result->num_rows > 0) {
+        $admin = $result->fetch_object();
+        
+        // Check if password matches
+        if(md5($admin_password) == $admin->a_pwd) {
+            // Get user data before deletion
             $get_query = "SELECT * FROM tms_user WHERE u_id=?";
             $get_stmt = $mysqli->prepare($get_query);
             $get_stmt->bind_param('i', $u_id);
@@ -156,16 +155,114 @@ if(isset($_POST['bulk_delete'])) {
                     $delete_query = "DELETE FROM tms_user WHERE u_id=?";
                     $delete_stmt = $mysqli->prepare($delete_query);
                     $delete_stmt->bind_param('i', $u_id);
-                    $delete_stmt->execute();
-                    $deleted_count++;
+                    
+                    if($delete_stmt->execute()) {
+                        $_SESSION['succ'] = "User deleted successfully after password verification";
+                        
+                        // Log successful deletion
+                        $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
+                                      VALUES ('USER_DELETED_WITH_PASSWORD', 'Admin deleted user after password confirmation', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
+                        $log_stmt = $mysqli->prepare($log_query);
+                        $log_stmt->bind_param('ii', $u_id, $aid);
+                        $log_stmt->execute();
+                        
+                        header("Location: admin-manage-user-passwords.php");
+                        exit();
+                    } else {
+                        $err = "Failed to delete user from main table";
+                    }
+                } else {
+                    $err = "Failed to move user to recycle bin";
                 }
+            } else {
+                $err = "User not found";
             }
+        } else {
+            $err = "Incorrect admin password. User deletion cancelled.";
+            
+            // Log failed attempt
+            $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
+                          VALUES ('USER_DELETE_FAILED_PASSWORD', 'Admin entered wrong password for user deletion', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
+            $log_stmt = $mysqli->prepare($log_query);
+            $log_stmt->bind_param('ii', $u_id, $aid);
+            $log_stmt->execute();
         }
-        $_SESSION['succ'] = "$deleted_count user(s) moved to recycle bin successfully";
-        header("Location: admin-manage-user-passwords.php");
-        exit();
     } else {
-        $err = "No users selected";
+        $err = "Admin not found";
+    }
+}
+
+// Check for session success message
+if(isset($_SESSION['succ'])) {
+    $succ = $_SESSION['succ'];
+    unset($_SESSION['succ']);
+}
+
+// Bulk delete users - Requires admin password
+if(isset($_POST['bulk_delete_confirm'])) {
+    $admin_password = $_POST['bulk_admin_password'];
+    
+    // Verify admin password
+    $verify_query = "SELECT a_pwd FROM tms_admin WHERE a_id = ?";
+    $verify_stmt = $mysqli->prepare($verify_query);
+    $verify_stmt->bind_param('i', $aid);
+    $verify_stmt->execute();
+    $result = $verify_stmt->get_result();
+    
+    if($result->num_rows > 0) {
+        $admin = $result->fetch_object();
+        
+        if(md5($admin_password) == $admin->a_pwd) {
+            // Password correct - proceed with bulk delete
+            if(isset($_POST['selected_users']) && is_array($_POST['selected_users'])) {
+                $deleted_count = 0;
+                foreach($_POST['selected_users'] as $u_id) {
+                    // Get user data
+                    $get_query = "SELECT * FROM tms_user WHERE u_id=?";
+                    $get_stmt = $mysqli->prepare($get_query);
+                    $get_stmt->bind_param('i', $u_id);
+                    $get_stmt->execute();
+                    $user_data = $get_stmt->get_result()->fetch_assoc();
+                    
+                    if($user_data) {
+                        // Insert into deleted_items table
+                        $insert_query = "INSERT INTO tms_deleted_items (di_item_type, di_item_id, di_item_data, di_deleted_by) VALUES (?, ?, ?, ?)";
+                        $insert_stmt = $mysqli->prepare($insert_query);
+                        $item_type = 'user';
+                        $item_data = json_encode($user_data);
+                        $insert_stmt->bind_param('sisi', $item_type, $u_id, $item_data, $aid);
+                        
+                        if($insert_stmt->execute()) {
+                            // Delete from main table
+                            $delete_query = "DELETE FROM tms_user WHERE u_id=?";
+                            $delete_stmt = $mysqli->prepare($delete_query);
+                            $delete_stmt->bind_param('i', $u_id);
+                            $delete_stmt->execute();
+                            $deleted_count++;
+                        }
+                    }
+                }
+                
+                $_SESSION['succ'] = "$deleted_count user(s) deleted successfully after password verification";
+                
+                // Log bulk deletion
+                $user_ids = implode(', ', $_POST['selected_users']);
+                $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
+                              VALUES ('BULK_USER_DELETED_WITH_PASSWORD', 'Admin bulk deleted users after password confirmation', CONCAT('User IDs: ', ?, ', Admin ID: ', ?))";
+                $log_stmt = $mysqli->prepare($log_query);
+                $log_stmt->bind_param('si', $user_ids, $aid);
+                $log_stmt->execute();
+                
+                header("Location: admin-manage-user-passwords.php");
+                exit();
+            } else {
+                $err = "No users selected";
+            }
+        } else {
+            $err = "Incorrect admin password. Bulk deletion cancelled.";
+        }
+    } else {
+        $err = "Admin not found";
     }
 }
 ?>
@@ -272,7 +369,8 @@ if(isset($_POST['bulk_delete'])) {
                             <div>
                                 <i class="fas fa-key"></i> User Passwords Management
                             </div>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="bulkDelete()" id="bulkDeleteBtn" style="display: none;">
+                            <!-- BULK DELETE BUTTON - Requires Admin Password -->
+                            <button type="button" class="btn btn-danger btn-sm" onclick="showBulkDeleteModal()" id="bulkDeleteBtn" style="display: none;">
                                 <i class="fas fa-trash"></i> Delete Selected
                             </button>
                         </div>
@@ -411,9 +509,10 @@ if(isset($_POST['bulk_delete'])) {
                                                 <button class="btn btn-sm btn-warning" data-toggle="modal" data-target="#changePasswordModal<?php echo $row->u_id; ?>" style="padding: 4px 8px; font-size: 0.8rem;">
                                                     <i class="fas fa-key"></i>
                                                 </button>
-                                                <a href="admin-manage-user-passwords.php?delete=<?php echo $row->u_id; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Move this user to recycle bin?')" style="padding: 4px 8px; font-size: 0.8rem;">
+                                                <!-- DELETE BUTTON - Requires admin password -->
+                                                <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#deleteUserModal<?php echo $row->u_id; ?>" title="Delete user (requires password)" style="padding: 4px 8px; font-size: 0.8rem;">
                                                     <i class="fas fa-trash"></i>
-                                                </a>
+                                                </button>
                                             </td>
                                         </tr>
                                     
@@ -457,6 +556,53 @@ if(isset($_POST['bulk_delete'])) {
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                                         <button type="submit" name="update_user_password" class="btn btn-warning">
                                                             <i class="fas fa-save"></i> Update Password
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Delete User Modal - Requires Admin Password -->
+                                    <div class="modal fade" id="deleteUserModal<?php echo $row->u_id; ?>" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-danger text-white">
+                                                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Delete User - Password Required</h5>
+                                                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <form method="POST">
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="user_id" value="<?php echo $row->u_id; ?>">
+                                                        
+                                                        <div class="alert alert-warning">
+                                                            <i class="fas fa-exclamation-triangle"></i> <strong>Warning!</strong> You are about to delete:
+                                                            <br><strong><?php echo $row->u_fname . ' ' . $row->u_lname; ?></strong>
+                                                            <br>Email: <?php echo $row->u_email; ?>
+                                                            <br>Phone: <?php echo $row->u_phone; ?>
+                                                        </div>
+                                                        
+                                                        <div class="alert alert-info">
+                                                            <i class="fas fa-shield-alt"></i> For security, please enter your admin password to confirm this action.
+                                                        </div>
+                                                        
+                                                        <div class="form-group">
+                                                            <label>Your Admin Password <span class="text-danger">*</span></label>
+                                                            <div class="input-group">
+                                                                <input type="password" class="form-control" name="admin_password" id="adminPwd_<?php echo $row->u_id; ?>" required placeholder="Enter your admin password">
+                                                                <div class="input-group-append">
+                                                                    <button class="btn btn-outline-secondary" type="button" onclick="toggleAdminPassword(<?php echo $row->u_id; ?>)">
+                                                                        <i class="fas fa-eye" id="adminIcon_<?php echo $row->u_id; ?>"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <small class="form-text text-muted">This action will be logged for security audit</small>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        <button type="submit" name="confirm_delete_user" class="btn btn-danger">
+                                                            <i class="fas fa-trash"></i> Confirm Delete
                                                         </button>
                                                     </div>
                                                 </form>
@@ -696,6 +842,135 @@ if(isset($_POST['bulk_delete'])) {
         // Show message if no results
         console.log('Visible rows: ' + visibleCount);
     }
+    
+    // Toggle admin password visibility
+    function toggleAdminPassword(userId) {
+        const input = document.getElementById('adminPwd_' + userId);
+        const icon = document.getElementById('adminIcon_' + userId);
+        
+        if(input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    
+    // Show bulk delete modal
+    function showBulkDeleteModal() {
+        const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+        if(checkboxes.length === 0) {
+            alert('Please select users to delete');
+            return;
+        }
+        
+        // Get selected user IDs
+        const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+        document.getElementById('bulkSelectedIds').value = selectedIds.join(',');
+        document.getElementById('bulkSelectedCount').textContent = checkboxes.length;
+        
+        // Show modal
+        $('#bulkDeleteModal').modal('show');
+    }
+    
+    // Toggle bulk admin password visibility
+    function toggleBulkAdminPassword() {
+        const input = document.getElementById('bulkAdminPassword');
+        const icon = document.getElementById('bulkAdminIcon');
+        
+        if(input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    </script>
+    
+    <!-- Bulk Delete Modal - Requires Admin Password -->
+    <div class="modal fade" id="bulkDeleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Bulk Delete Users - Password Required</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+                </div>
+                <form method="POST" id="bulkDeleteConfirmForm">
+                    <div class="modal-body">
+                        <input type="hidden" id="bulkSelectedIds" name="bulk_selected_ids">
+                        
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> <strong>Warning!</strong> You are about to delete <strong id="bulkSelectedCount">0</strong> user(s).
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-shield-alt"></i> For security, please enter your admin password to confirm this bulk deletion.
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Your Admin Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" name="bulk_admin_password" id="bulkAdminPassword" required placeholder="Enter your admin password">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="toggleBulkAdminPassword()">
+                                        <i class="fas fa-eye" id="bulkAdminIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">This action will be logged for security audit</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" name="bulk_delete_confirm" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Confirm Bulk Delete
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Handle bulk delete form submission
+    document.getElementById('bulkDeleteConfirmForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const selectedIds = document.getElementById('bulkSelectedIds').value.split(',');
+        const form = document.getElementById('bulkDeleteForm');
+        
+        // Add selected user IDs to the main form
+        selectedIds.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_users[]';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        // Add admin password
+        const passwordInput = document.createElement('input');
+        passwordInput.type = 'hidden';
+        passwordInput.name = 'bulk_admin_password';
+        passwordInput.value = document.getElementById('bulkAdminPassword').value;
+        form.appendChild(passwordInput);
+        
+        // Add confirm button
+        const confirmInput = document.createElement('input');
+        confirmInput.type = 'hidden';
+        confirmInput.name = 'bulk_delete_confirm';
+        confirmInput.value = '1';
+        form.appendChild(confirmInput);
+        
+        // Submit the form
+        form.submit();
+    });
     </script>
 </body>
 </html>

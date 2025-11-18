@@ -137,25 +137,43 @@ $completed_count = $counts->completed_count;
         }
         
         html {
-            overflow-y: scroll;
+            overflow-y: auto;
+            overflow-x: hidden;
             height: 100%;
+            scroll-behavior: smooth;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
+            background: linear-gradient(180deg, #e8f4f8 0%, #f8f9fa 50%, #ffffff 100%);
             overflow-x: hidden;
-            overflow-y: scroll;
+            overflow-y: auto;
             min-height: 100vh;
-            height: auto;
+            height: 100%;
             position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(5, 117, 230, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 242, 96, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
         }
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            padding: 15px 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 50%, #0575E6 100%);
+            padding: 8px 20px;
+            box-shadow: 0 4px 20px rgba(5, 117, 230, 0.4);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -166,28 +184,32 @@ $completed_count = $counts->completed_count;
             right: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 2px solid #e2e8f0;
+            border-bottom: 2px solid rgba(0, 242, 96, 0.3);
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
+            height: 70px;
         }
         
         /* Search and Menu Bar */
         .search-menu-bar {
-            background: white;
-            padding: 10px 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-            display: flex;
+            background: linear-gradient(135deg, rgba(5, 117, 230, 0.95) 0%, rgba(0, 242, 96, 0.95) 100%);
+            padding: 8px 20px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            display: flex !important;
             align-items: center;
             gap: 15px;
             position: fixed;
-            top: 75px;
+            top: 80px;
             left: 0;
             right: 0;
             width: 100%;
             z-index: 999;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: 50px;
         }
         
         .search-menu-bar .menu-toggle-btn {
@@ -202,25 +224,56 @@ $completed_count = $counts->completed_count;
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         
         .logo-image {
-            width: 60px;
-            height: 60px;
-            background: white;
+            width: 55px;
+            height: 55px;
+            background: transparent;
             border-radius: 8px;
-            padding: 6px;
+            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
         }
         
         .logo-image img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
         
         .header-search {
@@ -234,30 +287,92 @@ $completed_count = $counts->completed_count;
         
         .header-search input {
             width: 100%;
-            padding: 12px 20px;
-            border: 3px solid #1e293b;
+            padding: 10px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 30px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            background: white;
+            background: rgba(255, 255, 255, 0.2);
             box-sizing: border-box;
+            color: white;
+            backdrop-filter: blur(10px);
         }
         
         .header-search input:focus {
             outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.3);
         }
         
         .header-search input::placeholder {
-            color: #94a3b8;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
+        }
+
+        .search-submit-btn {
+            background: white;
+            color: #0575E6;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+
+        .search-submit-btn:hover {
+            background: #00F260;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 242, 96, 0.5);
+        }
+
+        .search-submit-btn i {
+            font-size: 1rem;
         }
         
         .header-actions {
             display: flex;
-            gap: 6px;
+            gap: 15px;
             align-items: center;
+        }
+
+        .tech-name-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            color: white;
+            font-weight: 800;
+            font-size: 0.95rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .tech-name-display:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .tech-name-display i {
+            font-size: 1.1rem;
+            color: white;
+            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
+        }
+
+        .tech-name-display span {
+            color: white;
         }
         
         .header-btn {
@@ -288,7 +403,7 @@ $completed_count = $counts->completed_count;
         .menu-toggle-btn {
             width: 42px;
             height: 42px;
-            background: white;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             display: flex;
             flex-direction: column;
@@ -296,49 +411,51 @@ $completed_count = $counts->completed_count;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
-            border: 2px solid #667eea;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             padding: 8px;
             gap: 4px;
+            backdrop-filter: blur(10px);
         }
         
         .menu-toggle-btn span {
             width: 100%;
             height: 3px;
-            background: #667eea;
+            background: white;
             border-radius: 2px;
         }
         
         .menu-toggle-btn:hover {
-            background: #f8f9fa;
-            border-color: #764ba2;
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
         }
         
         .menu-toggle-btn:hover span {
-            background: #764ba2;
+            background: white;
         }
         
         .notif-icon-btn {
-            width: 50px;
-            height: 50px;
-            background: #1e293b;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             position: relative;
-            border: 3px solid #1e293b;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 3px 10px rgba(30, 41, 59, 0.3);
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
         
         .notif-icon-btn:hover {
-            background: #3b82f6;
-            border-color: #3b82f6;
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
         }
         
         .notif-icon-btn .notif-dot {
@@ -347,10 +464,11 @@ $completed_count = $counts->completed_count;
             right: 3px;
             width: 12px;
             height: 12px;
-            background: #ff4757;
+            background: #00F260;
             border-radius: 50%;
             border: 2px solid white;
             animation: pulse 2s infinite;
+            box-shadow: 0 2px 8px rgba(0, 242, 96, 0.6);
         }
         
         @keyframes pulse {
@@ -392,7 +510,7 @@ $completed_count = $counts->completed_count;
         }
         
         .sidebar-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
             padding: 20px;
             color: white;
         }
@@ -453,14 +571,15 @@ $completed_count = $counts->completed_count;
         }
         
         .sidebar-pin {
-            background: #ffd700;
-            color: #667eea;
+            background: white;
+            color: #0575E6;
             padding: 5px 15px;
             border-radius: 50px;
             font-size: 0.85rem;
             font-weight: 700;
             display: inline-block;
             margin-top: 5px;
+            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
         }
         
         .sidebar-menu-items {
@@ -480,9 +599,9 @@ $completed_count = $counts->completed_count;
         
         .sidebar-menu-item:hover {
             background: #f8f9fa;
-            border-left-color: #667eea;
+            border-left-color: #0575E6;
             text-decoration: none;
-            color: #667eea;
+            color: #0575E6;
         }
         
         .sidebar-menu-item i {
@@ -547,7 +666,7 @@ $completed_count = $counts->completed_count;
         
         /* Mobile Notification Alert */
         .mobile-notification-alert {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
             color: white;
             padding: 15px 20px;
             margin: 140px 15px 15px 15px;
@@ -555,7 +674,7 @@ $completed_count = $counts->completed_count;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.4);
             animation: slideDown 0.5s ease-out;
         }
         
@@ -596,7 +715,7 @@ $completed_count = $counts->completed_count;
         
         .mobile-alert-btn {
             background: white;
-            color: #667eea;
+            color: #0575E6;
             padding: 10px 25px;
             border-radius: 50px;
             text-decoration: none;
@@ -661,11 +780,18 @@ $completed_count = $counts->completed_count;
         
         /* Control Bar - Compact */
         .control-bar {
-            background: white;
-            padding: 6px 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 15px 20px;
             margin: 0;
-            margin-top: 140px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, #0575E6 0%, #00F260 100%) 1;
+            position: fixed;
+            top: 130px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 998;
         }
         
         .filter-buttons-row {
@@ -680,48 +806,53 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn {
-            padding: 8px 16px;
-            border: 3px solid #1e293b;
+            padding: 10px 20px;
+            border: 2px solid transparent;
             background: white;
-            border-radius: 20px;
-            font-weight: 900;
+            border-radius: 25px;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             color: #1e293b;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 0.85rem;
+            gap: 6px;
+            font-size: 0.9rem;
             white-space: nowrap;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         .filter-btn:hover {
             text-decoration: none;
-            background: #f1f5f9;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
         
         .filter-btn.active {
-            background: #1e293b;
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
             color: white;
-            border-color: #1e293b;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
         }
         
         .filter-btn .badge {
-            background: #ffd700;
-            color: #667eea;
+            background: linear-gradient(135deg, #00F260 0%, #0575E6 100%);
+            color: white;
             padding: 2px 6px;
             border-radius: 50px;
             font-size: 0.7rem;
             font-weight: 900;
             min-width: 18px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 242, 96, 0.3);
         }
         
         .filter-btn.active .badge {
             background: white;
-            color: #667eea;
+            color: #0575E6;
         }
         
         .filter-btn i {
@@ -730,18 +861,27 @@ $completed_count = $counts->completed_count;
         
         /* Main Content */
         .main-container-full {
-            padding: 0 20px 50px 20px;
-            max-width: 900px;
+            padding: 0 20px 20px 20px;
+            padding-top: 200px;
+            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 100vh;
+            position: relative;
         }
         
         .bookings-section-full {
-            background: #f5f5f5;
-            overflow: visible;
+            background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+            overflow-x: auto;
+            overflow-y: visible;
             -webkit-overflow-scrolling: touch;
             position: relative;
-            padding: 8px;
-            padding-bottom: 30px;
+            padding: 20px;
+            padding-bottom: 40px;
+            border-radius: 20px;
+            max-height: calc(100vh - 220px);
         }
         
         /* Custom Scrollbar - Horizontal */
@@ -802,83 +942,101 @@ $completed_count = $counts->completed_count;
         }
         
         .status-badge {
-            padding: 3px 8px;
-            border-radius: 15px;
-            font-weight: 700;
-            font-size: 0.65rem;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.75rem;
             display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .status-new {
-            background: #fff3cd;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
             color: #856404;
         }
         
         .status-pending {
-            background: #e3f2fd;
-            color: #1976d2;
+            background: linear-gradient(135deg, #0575E6 0%, #03a9f4 100%);
+            color: white;
         }
         
         .status-completed {
-            background: #e8f5e9;
-            color: #388e3c;
+            background: linear-gradient(135deg, #00c853 0%, #00F260 100%);
+            color: white;
         }
         
         .call-btn {
-            background: #28a745;
+            background: linear-gradient(135deg, #00c853 0%, #00F260 100%);
             color: white;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 700;
-            display: inline-block;
-            transition: all 0.3s;
-            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 10px rgba(0, 200, 83, 0.3);
+            border: none;
         }
         
         .call-btn:hover {
-            background: #218838;
+            background: linear-gradient(135deg, #00F260 0%, #00c853 100%);
             text-decoration: none;
             color: white;
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4);
         }
         
         .action-btn {
-            background: #ff4757;
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
             color: white;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 700;
-            display: inline-block;
-            transition: all 0.3s;
-            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 10px rgba(5, 117, 230, 0.3);
+            border: none;
         }
         
         .action-btn:hover {
-            background: #ff6b9d;
+            background: linear-gradient(135deg, #00F260 0%, #0575E6 100%);
             text-decoration: none;
             color: white;
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(5, 117, 230, 0.4);
         }
         
         .view-btn {
-            background: #007bff;
+            background: linear-gradient(135deg, #03a9f4 0%, #0575E6 100%);
             color: white;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 50px;
             text-decoration: none;
-            font-weight: 700;
-            display: inline-block;
-            transition: all 0.3s;
-            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            box-shadow: 0 3px 10px rgba(3, 169, 244, 0.3);
+            border: none;
         }
         
         .view-btn:hover {
-            background: #0056b3;
+            background: linear-gradient(135deg, #0575E6 0%, #03a9f4 100%);
             text-decoration: none;
             color: white;
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(3, 169, 244, 0.4);
         }
         
         .empty-state {
@@ -922,6 +1080,11 @@ $completed_count = $counts->completed_count;
         
         /* Large Tablets & Small Desktops (1200px and below) */
         @media (max-width: 1200px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
             .header {
                 padding: 15px 20px;
             }
@@ -936,11 +1099,17 @@ $completed_count = $counts->completed_count;
             
             .control-bar {
                 padding: 15px 20px;
-                margin: 15px 20px;
+                top: 130px;
             }
             
             .main-container-full {
                 padding: 0 20px 20px 20px;
+                padding-top: 200px;
+                overflow-x: hidden;
+            }
+
+            .bookings-section-full {
+                overflow-x: auto;
             }
             
             .bookings-table {
@@ -950,9 +1119,40 @@ $completed_count = $counts->completed_count;
         
         /* Tablets (992px and below) */
         @media (max-width: 992px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 100%;
+            }
+
+            .main-container-full {
+                overflow-x: hidden;
+            }
+
+            .bookings-section-full {
+                overflow-x: auto;
+            }
+
             .logo-image {
-                width: 48px;
-                height: 48px;
+                width: 75px;
+                height: 75px;
+            }
+
+            .brand-title {
+                font-size: 1.6rem;
+            }
+
+            .brand-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .tech-name-display {
+                padding: 10px 16px;
+                font-size: 0.95rem;
+            }
+
+            .tech-name-display i {
+                font-size: 1.2rem;
             }
             
             .dashboard-title {
@@ -998,12 +1198,31 @@ $completed_count = $counts->completed_count;
         /* Mobile Card Layout */
         .booking-card {
             display: block;
-            background: white;
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 6px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-            border: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .booking-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+        }
+
+        .booking-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(5, 117, 230, 0.15);
+            border-color: rgba(5, 117, 230, 0.3);
         }
         
         .booking-card-body {
@@ -1167,10 +1386,23 @@ $completed_count = $counts->completed_count;
         
         /* Mobile Landscape & Small Tablets (768px and below) */
         @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 100%;
+                -webkit-overflow-scrolling: touch;
+            }
+
             body {
                 background: #f5f5f5;
-                overflow-y: scroll;
-                -webkit-overflow-scrolling: touch;
+            }
+
+            .main-container-full {
+                overflow-x: hidden;
+            }
+
+            .bookings-section-full {
+                overflow-x: auto;
             }
             
             .header {
@@ -1180,6 +1412,20 @@ $completed_count = $counts->completed_count;
             .search-menu-bar {
                 top: 65px;
                 padding: 8px 15px;
+            }
+
+            .header-search input {
+                padding: 8px 15px;
+                font-size: 0.85rem;
+            }
+
+            .search-submit-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .search-submit-btn i {
+                font-size: 0.9rem;
             }
             
             .logo-section {
@@ -1256,9 +1502,12 @@ $completed_count = $counts->completed_count;
             .control-bar {
                 flex-direction: column;
                 padding: 15px;
-                margin: 15px;
-                margin-top: 120px;
+                top: 115px;
                 gap: 12px;
+            }
+
+            .main-container-full {
+                padding-top: 220px;
             }
             
             .search-box {
@@ -1307,7 +1556,17 @@ $completed_count = $counts->completed_count;
             }
             
             .main-container-full {
-                padding: 0 15px 60px 15px;
+                padding: 0 10px 60px 10px;
+                padding-top: 220px;
+                width: 100%;
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+
+            .bookings-section-full {
+                padding: 10px;
+                width: 100%;
+                max-width: 100%;
             }
             
             /* Hide table, show cards on mobile */
@@ -1372,6 +1631,21 @@ $completed_count = $counts->completed_count;
         
         /* Mobile Portrait (576px and below) */
         @media (max-width: 576px) {
+            html, body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                height: 100%;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .main-container-full {
+                overflow-x: hidden;
+            }
+
+            .bookings-section-full {
+                overflow-x: auto;
+            }
+
             .header {
                 padding: 10px 12px;
                 gap: 10px;
@@ -1406,8 +1680,11 @@ $completed_count = $counts->completed_count;
             
             .control-bar {
                 padding: 10px;
-                margin: 10px;
-                margin-top: 110px;
+                top: 105px;
+            }
+
+            .main-container-full {
+                padding-top: 200px;
             }
             
             .search-box input {
@@ -1426,7 +1703,10 @@ $completed_count = $counts->completed_count;
             }
             
             .main-container-full {
-                padding: 0 10px 60px 10px;
+                padding: 0 8px 60px 8px;
+                padding-top: 200px;
+                width: 100%;
+                max-width: 100vw;
             }
             
             /* Make table scrollable both directions on very small screens */
@@ -1434,7 +1714,33 @@ $completed_count = $counts->completed_count;
                 overflow: visible;
                 max-height: none;
                 min-height: auto;
+                padding: 8px;
                 padding-bottom: 50px;
+                width: 100%;
+            }
+
+            .booking-card {
+                padding: 10px;
+                padding-left: 16px;
+                margin-bottom: 10px;
+            }
+
+            .order-field-mobile {
+                margin-bottom: 6px;
+            }
+
+            .order-field-mobile p {
+                font-size: 0.9rem;
+            }
+
+            .order-id-mobile {
+                font-size: 1.1rem;
+            }
+
+            .mobile-done-btn,
+            .mobile-notdone-btn {
+                padding: 10px;
+                font-size: 0.85rem;
             }
             
             .bookings-table {
@@ -1537,8 +1843,11 @@ $completed_count = $counts->completed_count;
             
             .control-bar {
                 padding: 10px 15px;
-                margin: 10px 15px;
-                margin-top: 100px;
+                top: 95px;
+            }
+
+            .main-container-full {
+                padding-top: 190px;
             }
         }
     </style>
@@ -1593,9 +1902,17 @@ $completed_count = $counts->completed_count;
             <div class="logo-image">
                 <img src="../vendor/EZlogonew.png" alt="EZ">
             </div>
+            <div class="brand-info">
+                <h1 class="brand-title">Electrozot</h1>
+                <p class="brand-subtitle">We Make Perfect</p>
+            </div>
         </div>
         
         <div class="header-actions">
+            <div class="tech-name-display">
+                <i class="fas fa-user-circle"></i>
+                <span><?php echo htmlspecialchars($t_name); ?></span>
+            </div>
             <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
                 <i class="fas fa-bell"></i>
                 <span class="notif-dot" id="headerNotifDot" style="display: none;"></span>
@@ -1612,11 +1929,14 @@ $completed_count = $counts->completed_count;
         </button>
         
         <div class="header-search">
-            <form action="" method="GET">
-                <input type="search" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($search); ?>">
+            <form action="" method="GET" style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                <input type="search" name="search" placeholder="Search by phone number..." value="<?php echo htmlspecialchars($search); ?>" style="flex: 1;">
                 <?php if($filter != 'all'): ?>
                     <input type="hidden" name="filter" value="<?php echo $filter; ?>">
                 <?php endif; ?>
+                <button type="submit" class="search-submit-btn">
+                    <i class="fas fa-search"></i>
+                </button>
             </form>
         </div>
     </div>
@@ -1633,6 +1953,13 @@ $completed_count = $counts->completed_count;
     <!-- Control Bar -->
     <div class="control-bar">
         <div class="filter-buttons-row">
+            <a href="?" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
+                <i class="fas fa-list"></i> All
+                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
+                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
+                <?php endif; ?>
+            </a>
+            
             <a href="?filter=new" class="filter-btn <?php echo $filter == 'new' ? 'active' : ''; ?>">
                 <i class="fas fa-plus-circle"></i> New
                 <?php if($new_count > 0): ?>
@@ -1654,9 +1981,9 @@ $completed_count = $counts->completed_count;
                 <?php endif; ?>
             </a>
             
-            <?php if($filter != 'all' || !empty($search)): ?>
+            <?php if(!empty($search)): ?>
                 <a href="?" class="filter-btn">
-                    <i class="fas fa-times"></i> Clear
+                    <i class="fas fa-times"></i> Clear Search
                 </a>
             <?php endif; ?>
         </div>
@@ -1932,5 +2259,8 @@ $completed_count = $counts->completed_count;
     
     <!-- Technician Notification System -->
     <?php include('includes/notification-system.php'); ?>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

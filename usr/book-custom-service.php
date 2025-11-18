@@ -23,8 +23,24 @@ if(isset($_POST['submit_custom_booking'])) {
     $pincode = trim($_POST['pincode']);
     $phone = $user->u_phone;
     
+    // Check active bookings limit (3 bookings per user)
+    $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                               WHERE sb_user_id = ? 
+                               AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+    $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+    $stmt_check_limit->bind_param('i', $aid);
+    $stmt_check_limit->execute();
+    $result_limit = $stmt_check_limit->get_result();
+    $limit_data = $result_limit->fetch_object();
+    $active_bookings_count = $limit_data->active_count;
+    $stmt_check_limit->close();
+    
+    // If user already has 3 or more active bookings, reject the new booking
+    if($active_bookings_count >= 3) {
+        $error = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
+    }
     // Validation
-    if(empty($service_name) || empty($service_description) || empty($preferred_date) || empty($address) || empty($pincode)) {
+    elseif(empty($service_name) || empty($service_description) || empty($preferred_date) || empty($address) || empty($pincode)) {
         $error = "Please fill all required fields";
     } else {
         // Check if "Custom Service" exists in tms_service table, if not create it

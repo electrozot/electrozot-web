@@ -25,11 +25,22 @@
                 $t_booking_limit = 1;
             }
             
-            $t_pic=$_FILES["t_pic"]["name"];
-            move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=?, t_booking_limit=? where t_id = ?";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_booking_limit, $t_id);
+            // Check if new photo is uploaded
+            if(!empty($_FILES["t_pic"]["name"])) {
+                // New photo uploaded - update with new photo
+                $t_pic = $_FILES["t_pic"]["name"];
+                move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+                
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_booking_limit, $t_id);
+            } else {
+                // No new photo - update without changing photo
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_status=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_status, $t_booking_limit, $t_id);
+            }
+            
             $stmt->execute();
                 if($stmt)
                 {

@@ -298,16 +298,30 @@
                                              $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
                                              $status_note = '';
                                              
-                                             if($tech['t_id'] == $current_tech_id) {
-                                                 $status_note = ' (Currently Assigned)';
-                                             } elseif($tech['current_booking']) {
-                                                 $status_note = ' (Assigned to this booking)';
+                                             // Show match type and skills
+                                             if(isset($tech['match_type']) && $tech['match_type'] == 'skill') {
+                                                 $status_note = ' ✓ SKILL MATCH';
+                                             } elseif(isset($tech['match_type']) && $tech['match_type'] == 'category') {
+                                                 $status_note = ' - Category Match';
                                              } else {
-                                                 $status_note = ' ✓ Available';
+                                                 $status_note = '';
+                                             }
+                                             
+                                             if($tech['t_id'] == $current_tech_id) {
+                                                 $status_note .= ' (Currently Assigned)';
+                                             } elseif($tech['current_booking']) {
+                                                 $status_note .= ' (Assigned to this booking)';
                                              }
                                              
                                              echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
                                              echo htmlspecialchars($tech['t_name']) . ' - ' . htmlspecialchars($tech['t_specialization']) . $status_note;
+                                             
+                                             // Show matched skills if available
+                                             if(!empty($tech['skills'])) {
+                                                 echo ' | Skills: ' . htmlspecialchars(substr($tech['skills'], 0, 40));
+                                                 if(strlen($tech['skills']) > 40) echo '...';
+                                             }
+                                             
                                              echo '</option>';
                                          }
                                      }

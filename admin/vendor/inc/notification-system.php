@@ -1,210 +1,251 @@
-<!-- Real-time Notification System - Universal -->
+<!-- Admin Real-Time Notification System -->
+<style>
+.notification-bell {
+    position: relative;
+    cursor: pointer;
+    font-size: 20px;
+    color: #fff;
+    margin-right: 20px;
+}
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+.notification-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    width: 350px;
+    max-height: 400px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+.notification-dropdown.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.notification-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    font-weight: bold;
+}
+.notification-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.notification-item:hover {
+    background: #f8f9fa;
+}
+.notification-item.unread {
+    background: #e3f2fd;
+}
+</style>
+
+<div class="notification-bell" id="notificationBell" onclick="toggleNotifications()">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge" id="notificationCount" style="display:none;">0</span>
+</div>
+
+<div class="notification-dropdown" id="notificationDropdown">
+    <div class="notification-header">
+        <i class="fas fa-bell"></i> Notifications
+        <button onclick="markAllRead()" style="float:right; background:none; border:none; color:white; cursor:pointer;">
+            <i class="fas fa-check-double"></i> Mark all read
+        </button>
+    </div>
+    <div class="notification-list" id="notificationList">
+        <div style="padding:20px; text-align:center; color:#999;">
+            <i class="fas fa-inbox"></i><br>No new notifications
+        </div>
+    </div>
+</div>
+
+<audio id="notificationSound" preload="auto">
+    <source src="../vendor/sounds/notification.mp3" type="audio/mpeg">
+    <source src="../vendor/sounds/notification.ogg" type="audio/ogg">
+</audio>
+
 <script>
-    // Create audio element for notification sound
-    const notificationAudio = new Audio('vendor/sounds/arived.mp3');
-    notificationAudio.volume = 0.7; // Set volume to 70%
-    
-    function playNotificationSound() {
-        try {
-            // Reset audio to start if already playing
-            notificationAudio.currentTime = 0;
-            
-            // Play the sound
-            notificationAudio.play()
-                .then(() => {
-                    console.log('🔊 Notification sound played');
-                })
-                .catch((error) => {
-                    console.error('❌ Error playing sound:', error);
-                    console.log('💡 Tip: Click anywhere on the page first to enable audio');
-                });
-        } catch(e) {
-            console.error('❌ Sound error:', e);
-        }
-    }
+let lastNotificationCount = 0;
+let notificationCheckInterval;
 
-    // Show notification toast
-    function showNotification(title, bookings, type = 'new') {
-        const count = bookings.length;
-        const bgColor = type === 'update' ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        const icon = type === 'update' ? 'sync-alt' : 'bell';
-        
-        // Remove existing notifications
-        $('.notification-toast').remove();
-        
-        // Create notification HTML
-        let notificationHTML = `
-            <div class="notification-toast" style="
-                position: fixed;
-                top: 80px;
-                right: 20px;
-                background: ${bgColor};
-                color: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                z-index: 99999;
-                min-width: 350px;
-                max-width: 400px;
-                animation: slideIn 0.5s ease-out;
-            ">
-                <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                    <i class="fas fa-${icon}" style="font-size: 24px; margin-right: 10px;"></i>
-                    <h4 style="margin: 0; font-weight: bold;">${title}</h4>
-                    <button onclick="this.parentElement.parentElement.remove()" style="
-                        margin-left: auto;
-                        background: transparent;
-                        border: none;
-                        color: white;
-                        font-size: 20px;
-                        cursor: pointer;
-                    ">&times;</button>
-                </div>
-        `;
-        
-        bookings.forEach(booking => {
-            notificationHTML += `
-                <div style="
-                    background: rgba(255,255,255,0.2);
-                    padding: 10px;
-                    border-radius: 5px;
-                    margin-top: 10px;
-                ">
-                    <strong>Booking #${booking.id}</strong><br>
-                    <small>
-                        👤 ${booking.customer}<br>
-                        📞 ${booking.phone}<br>
-                        🔧 ${booking.service}<br>
-                        ${booking.status ? '📊 Status: ' + booking.status : ''}
-                    </small>
-                </div>
-            `;
+// Request notification permission on page load
+if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+}
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationDropdown');
+    dropdown.classList.toggle('show');
+    if(dropdown.classList.contains('show')) {
+        loadNotifications();
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const bell = document.getElementById('notificationBell');
+    const dropdown = document.getElementById('notificationDropdown');
+    if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+function loadNotifications() {
+    fetch('api-admin-notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                displayNotifications(data.notifications);
+            }
         });
-        
-        notificationHTML += `
-                <div style="margin-top: 15px; text-align: center;">
-                    <a href="admin-all-bookings.php" style="
-                        background: white;
-                        color: #667eea;
-                        padding: 8px 20px;
-                        border-radius: 5px;
-                        text-decoration: none;
-                        font-weight: bold;
-                        display: inline-block;
-                    ">View All Bookings</a>
-                </div>
+}
+
+function displayNotifications(notifications) {
+    const list = document.getElementById('notificationList');
+    
+    if(notifications.length === 0) {
+        list.innerHTML = '<div style="padding:20px; text-align:center; color:#999;"><i class="fas fa-inbox"></i><br>No new notifications</div>';
+        return;
+    }
+    
+    list.innerHTML = notifications.map(notif => `
+        <div class="notification-item unread" onclick="markAsRead(${notif.an_id}, ${notif.an_booking_id})">
+            <div style="font-weight:bold; color:#333; margin-bottom:5px;">
+                <i class="fas fa-${notif.an_type === 'BOOKING_REJECTED' ? 'times-circle' : notif.an_type === 'BOOKING_COMPLETED' ? 'check-circle' : 'bell'}"></i>
+                ${notif.an_title}
             </div>
-        `;
-        
-        // Add to page
-        $('body').append(notificationHTML);
-        
-        // Auto-remove after 10 seconds
-        setTimeout(() => {
-            $('.notification-toast').fadeOut(500, function() {
-                $(this).remove();
-            });
-        }, 10000);
-    }
+            <div style="font-size:13px; color:#666;">${notif.an_message}</div>
+            <div style="font-size:11px; color:#999; margin-top:5px;">
+                <i class="fas fa-clock"></i> ${formatTime(notif.an_created_at)}
+            </div>
+        </div>
+    `).join('');
+}
 
-    // Check for new bookings and updates
-    function checkNotifications() {
-        $.ajax({
-            url: 'check-new-bookings.php',
-            method: 'GET',
-            dataType: 'text',
-            cache: false,
-            success: function(rawResponse) {
-                try {
-                    const response = JSON.parse(rawResponse);
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = Math.floor((now - date) / 1000); // seconds
+    
+    if(diff < 60) return 'Just now';
+    if(diff < 3600) return Math.floor(diff / 60) + ' min ago';
+    if(diff < 86400) return Math.floor(diff / 3600) + ' hours ago';
+    return date.toLocaleDateString();
+}
+
+function markAsRead(notificationId, bookingId) {
+    fetch('api-mark-notification-read.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: 'notification_id=' + notificationId
+    }).then(() => {
+        checkNewNotifications();
+        if(bookingId) {
+            window.location.href = 'admin-manage-service-booking.php?highlight=' + bookingId;
+        }
+    });
+}
+
+function markAllRead() {
+    fetch('api-mark-notification-read.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: ''
+    }).then(() => {
+        checkNewNotifications();
+        document.getElementById('notificationDropdown').classList.remove('show');
+    });
+}
+
+function checkNewNotifications() {
+    fetch('api-admin-notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                const count = data.count;
+                const badge = document.getElementById('notificationCount');
+                
+                if(count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'block';
                     
-                    if(response.error) {
-                        console.error('Server error:', response.error);
-                        return;
-                    }
-                    
-                    // Check for new bookings
-                    if(response.has_new && response.new_count > 0) {
-                        console.log('🔔 NEW BOOKINGS:', response.new_count);
+                    // New notification arrived
+                    if(count > lastNotificationCount && lastNotificationCount > 0) {
                         playNotificationSound();
-                        showNotification(
-                            response.new_count === 1 ? 'New Booking!' : `${response.new_count} New Bookings!`,
-                            response.bookings,
-                            'new'
-                        );
-                        
-                        // Update badge
-                        $('#notificationBadge').text(response.new_count).show();
-                        
-                        // Browser notification
-                        if ('Notification' in window && Notification.permission === 'granted') {
-                            new Notification('New Booking Received!', {
-                                body: `${response.new_count} new booking(s) received`,
-                                icon: '/vendor/img/icons/icon-192x192.png',
-                                tag: 'new-booking'
-                            });
-                        }
+                        showBrowserNotification(data.notifications[0]);
                     }
-                    
-                    // Check for status updates
-                    if(response.has_updates && response.update_count > 0) {
-                        console.log('🔄 STATUS UPDATES:', response.update_count);
-                        playNotificationSound();
-                        showNotification(
-                            response.update_count === 1 ? 'Booking Updated!' : `${response.update_count} Bookings Updated!`,
-                            response.updates,
-                            'update'
-                        );
-                        
-                        // Update badge
-                        const totalCount = (response.new_count || 0) + response.update_count;
-                        $('#notificationBadge').text(totalCount).show();
-                    }
-                    
-                } catch(e) {
-                    console.error('JSON Parse Error:', e);
+                } else {
+                    badge.style.display = 'none';
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX Error:', error);
+                
+                lastNotificationCount = count;
             }
+        })
+        .catch(error => console.error('Notification check failed:', error));
+}
+
+function playNotificationSound() {
+    const sound = document.getElementById('notificationSound');
+    sound.play().catch(e => console.log('Sound play failed:', e));
+}
+
+function showBrowserNotification(notification) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        const notif = new Notification(notification.an_title, {
+            body: notification.an_message,
+            icon: '../vendor/EZlogonew.png',
+            badge: '../vendor/EZlogonew.png',
+            tag: 'booking-' + notification.an_booking_id,
+            requireInteraction: true,
+            vibrate: [200, 100, 200]
         });
+        
+        notif.onclick = function() {
+            window.focus();
+            markAsRead(notification.an_id, notification.an_booking_id);
+            notif.close();
+        };
     }
+}
 
-    // Request notification permission
-    if ('Notification' in window && Notification.permission === 'default') {
-        Notification.requestPermission();
-    }
+// Check for new notifications every 5 seconds
+notificationCheckInterval = setInterval(checkNewNotifications, 5000);
 
-    // Start checking every 10 seconds
-    setInterval(checkNotifications, 10000);
-    
-    // Check immediately after 2 seconds
-    setTimeout(checkNotifications, 2000);
-    
-    // Add CSS animation
-    if(!document.getElementById('notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'notification-styles';
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            .notification-toast:hover {
-                transform: scale(1.02);
-                transition: transform 0.2s;
-            }
-        `;
-        document.head.appendChild(style);
+// Initial check
+checkNewNotifications();
+
+// Check immediately when page becomes visible
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        checkNewNotifications();
     }
-    
-    console.log('✅ Notification system active on this page');
+});
 </script>

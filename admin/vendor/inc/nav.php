@@ -267,6 +267,120 @@
  }
  </style>
 
+<!-- Real-Time Notification System -->
+<audio id="notificationSound" preload="auto">
+    <source src="../vendor/sounds/notification.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let lastNotificationCount = 0;
+
+// Request notification permission
+if ("Notification" in window && Notification.permission === "default") {
+    Notification.requestPermission();
+}
+
+function checkNewNotifications() {
+    fetch('api-admin-notifications.php')
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                const count = data.count;
+                const badge = document.getElementById('notificationBadge');
+                
+                if(count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'block';
+                    
+                    // New notification arrived
+                    if(count > lastNotificationCount && lastNotificationCount >= 0) {
+                        playNotificationSound();
+                        if(data.notifications && data.notifications.length > 0) {
+                            showBrowserNotification(data.notifications[0]);
+                        }
+                    }
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                lastNotificationCount = count;
+            }
+        })
+        .catch(error => console.log('Notification check:', error));
+}
+
+function playNotificationSound() {
+    try {
+        // Create Web Audio API context
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Create oscillator for beep sound
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Set frequency (800Hz for notification sound)
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        // Set volume
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        // Play sound
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+        
+        // Second beep
+        setTimeout(() => {
+            const osc2 = audioContext.createOscillator();
+            const gain2 = audioContext.createGain();
+            osc2.connect(gain2);
+            gain2.connect(audioContext.destination);
+            osc2.frequency.value = 1000;
+            osc2.type = 'sine';
+            gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            osc2.start(audioContext.currentTime);
+            osc2.stop(audioContext.currentTime + 0.3);
+        }, 200);
+    } catch(e) {
+        console.log('Sound generation failed:', e);
+    }
+}
+
+function showBrowserNotification(notification) {
+    if ("Notification" in window && Notification.permission === "granted") {
+        const notif = new Notification(notification.an_title, {
+            body: notification.an_message,
+            icon: '../vendor/EZlogonew.png',
+            badge: '../vendor/EZlogonew.png',
+            tag: 'booking-' + notification.an_booking_id,
+            requireInteraction: true
+        });
+        
+        notif.onclick = function() {
+            window.focus();
+            window.location.href = 'admin-manage-service-booking.php?highlight=' + notification.an_booking_id;
+            notif.close();
+        };
+    }
+}
+
+// Check every 5 seconds
+setInterval(checkNewNotifications, 5000);
+checkNewNotifications(); // Initial check
+
+// Check when page becomes visible
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        checkNewNotifications();
+    }
+});
+</script>
+
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
      <div class="modal-dialog" role="document">

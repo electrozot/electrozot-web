@@ -161,7 +161,7 @@ if(isset($_POST['book_service_guest'])) {
         
         // If customer already has 3 or more active bookings, reject the new booking
         if($active_bookings_count >= 3) {
-            $_SESSION['booking_error'] = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed, cancelled, or rejected before making a new booking.";
+            $_SESSION['booking_error'] = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
             header("location: index.php#booking-form");
             exit();
         }

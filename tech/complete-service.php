@@ -288,5 +288,8 @@ if(isset($_POST['complete_service'])){
 
     <script src="../admin/vendor/jquery/jquery.min.js"></script>
     <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

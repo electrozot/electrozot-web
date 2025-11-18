@@ -113,7 +113,8 @@ if(isset($_POST['mark_done'])){
                                     sb_completion_image = ?,
                                     sb_bill_attachment = ?,
                                     sb_bill_amount = ?,
-                                    sb_completed_at = NOW()
+                                    sb_completed_at = NOW(),
+                                    sb_updated_at = NOW()
                                 WHERE sb_id = ? AND sb_technician_id = ?";
                 
                 $update_stmt = $mysqli->prepare($update_query);
@@ -158,7 +159,8 @@ if(isset($_POST['mark_not_done'])){
         $update_query = "UPDATE tms_service_booking 
                         SET sb_status = 'Not Done',
                             sb_not_done_reason = ?,
-                            sb_not_done_at = NOW()
+                            sb_not_done_at = NOW(),
+                            sb_updated_at = NOW()
                         WHERE sb_id = ? AND sb_technician_id = ?";
         
         $update_stmt = $mysqli->prepare($update_query);
@@ -567,5 +569,8 @@ if(isset($_POST['mark_not_done'])){
             }
         }
     </script>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

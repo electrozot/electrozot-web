@@ -388,6 +388,48 @@
       font-size: 1.2rem;
     }
     
+    .register-link {
+      text-align: center;
+      margin-top: 20px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(5, 117, 230, 0.1) 0%, rgba(0, 242, 96, 0.1) 100%);
+      border-radius: 15px;
+      border: 2px solid rgba(5, 117, 230, 0.2);
+    }
+
+    .register-link p {
+      margin: 0 0 12px 0;
+      color: #2d3748;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .register-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+      color: white;
+      padding: 12px 30px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
+    }
+
+    .register-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(5, 117, 230, 0.4);
+      color: white;
+      text-decoration: none;
+    }
+
+    .register-btn i {
+      font-size: 1.1rem;
+    }
+
     .back-link {
       text-align: center;
       margin-top: 25px;
@@ -507,6 +549,13 @@
       </div>
       
       <div class="card-body">
+        <?php if(isset($_SESSION['registration_success'])): ?>
+          <div class="alert alert-success" role="alert" id="successAlert">
+            <i class="fas fa-check-circle"></i>
+            <span><?php echo $_SESSION['registration_success']; unset($_SESSION['registration_success']); ?></span>
+          </div>
+        <?php endif; ?>
+
         <?php if(isset($_SESSION['tech_err'])): ?>
           <div class="alert alert-danger" role="alert" id="errorAlert">
             <i class="fas fa-exclamation-circle"></i>
@@ -576,6 +625,14 @@
           </button>
         </form>
         
+        <div class="register-link">
+          <p>New Technician?</p>
+          <a href="register.php" class="register-btn">
+            <i class="fas fa-user-plus"></i>
+            <span>Register as Technician</span>
+          </a>
+        </div>
+
         <div class="back-link">
           <a href="../index.php">
             <i class="fas fa-arrow-left"></i>

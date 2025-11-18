@@ -6,16 +6,55 @@
   check_login();
   $aid=$_SESSION['a_id'];
 
-  if(isset($_GET['del']))
+  // USER DELETION - Requires admin password confirmation
+  if(isset($_POST['confirm_delete']))
   {
-      $id=intval($_GET['del']);
-      $reason = isset($_GET['reason']) ? $_GET['reason'] : 'Deleted by admin';
+      $id = intval($_POST['user_id']);
+      $admin_password = $_POST['admin_password'];
       
-      // Use soft delete function
-      if(softDeleteUser($mysqli, $id, $aid, $reason)) {
-          $succ = "User deleted and sent to Recycle Bin";
+      // Verify admin password
+      $verify_query = "SELECT a_pwd FROM tms_admin WHERE a_id = ?";
+      $verify_stmt = $mysqli->prepare($verify_query);
+      $verify_stmt->bind_param('i', $aid);
+      $verify_stmt->execute();
+      $result = $verify_stmt->get_result();
+      
+      if($result->num_rows > 0) {
+          $admin = $result->fetch_object();
+          
+          // Check if password matches (assuming MD5 hash)
+          if(md5($admin_password) == $admin->a_pwd) {
+              // Password correct - proceed with soft delete
+              $reason = isset($_POST['delete_reason']) ? $_POST['delete_reason'] : 'Deleted by admin after password confirmation';
+              
+              if(function_exists('softDeleteUser')) {
+                  if(softDeleteUser($mysqli, $id, $aid, $reason)) {
+                      $succ = "User deleted successfully after password verification";
+                      
+                      // Log successful deletion
+                      $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
+                                    VALUES ('USER_DELETED_WITH_PASSWORD', 'Admin deleted user after password confirmation', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
+                      $log_stmt = $mysqli->prepare($log_query);
+                      $log_stmt->bind_param('ii', $id, $aid);
+                      $log_stmt->execute();
+                  } else {
+                      $err = "Failed to delete user";
+                  }
+              } else {
+                  $err = "Soft delete function not available";
+              }
+          } else {
+              $err = "Incorrect admin password. User deletion cancelled.";
+              
+              // Log failed attempt
+              $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
+                            VALUES ('USER_DELETE_FAILED_PASSWORD', 'Admin entered wrong password for user deletion', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
+              $log_stmt = $mysqli->prepare($log_query);
+              $log_stmt->bind_param('ii', $id, $aid);
+              $log_stmt->execute();
+          }
       } else {
-          $err = "Failed to delete user";
+          $err = "Admin not found";
       }
   }
 ?>
