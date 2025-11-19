@@ -5,6 +5,9 @@
   check_login();
   $aid=$_SESSION['a_id'];
 
+  // AUTO-FIX: Sync technician slots and availability
+  include('auto-fix-technician-slots.php');
+
   // Include soft delete helper
   include('vendor/inc/soft-delete.php');
 
@@ -221,9 +224,8 @@
                                          <th style="width: 9%;">Mobile (Login)</th>
                                          <th style="width: 11%;">Category</th>
                                          <th style="width: 13%;">Specialization</th>
-                                         <th style="width: 8%;">Availability</th>
-                                         <th style="width: 10%;">Booking Status</th>
-                                         <th style="width: 10%;">Capacity</th>
+                                         <th style="width: 10%;">Availability</th>
+                                         <th style="width: 12%;">Capacity</th>
                                          <th style="width: 18%;">Actions</th>
                                      </tr>
                                  </thead>
@@ -243,17 +245,6 @@
                     $cnt=1;
                     while($row=$res->fetch_object())
                     {
-                        // Determine booking status
-                        $booking_status = '';
-                        $booking_badge = '';
-                        if($row->active_bookings > 0) {
-                            $booking_status = 'Engaged (' . $row->active_bookings . ')';
-                            $booking_badge = 'badge-warning';
-                        } else {
-                            $booking_status = 'Free';
-                            $booking_badge = 'badge-success';
-                        }
-                        
                         // Availability status
                         $avail_badge = '';
                         if($row->t_status == 'Available') {
@@ -265,8 +256,7 @@
                         }
                 ?>
                                      <tr data-category="<?php echo strtolower($row->t_category);?>" 
-                                         data-availability="<?php echo strtolower($row->t_status);?>" 
-                                         data-booking="<?php echo strtolower($booking_status);?>"
+                                         data-availability="<?php echo strtolower($row->t_status);?>"
                                          style="<?php echo (isset($row->t_is_guest) && $row->t_is_guest == 1) ? 'background: linear-gradient(135deg, rgba(5, 117, 230, 0.05) 0%, rgba(0, 242, 96, 0.05) 100%);' : ''; ?>">
                                          <td class="text-center"><?php echo $cnt;?></td>
                                          <td>
@@ -296,11 +286,6 @@
                                          <td class="text-center">
                                              <span class="badge <?php echo $avail_badge;?> badge-pill" style="font-size: 0.75rem; min-width: 70px;">
                                                  <?php echo $row->t_status;?>
-                                             </span>
-                                         </td>
-                                         <td class="text-center">
-                                             <span class="badge <?php echo $booking_badge;?> badge-pill" style="font-size: 0.75rem; min-width: 60px;">
-                                                 <?php echo $booking_status;?>
                                              </span>
                                          </td>
                                          <td class="text-center">

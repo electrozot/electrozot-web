@@ -492,6 +492,16 @@
             
             /* Mobile Responsive Styles for Small Screens */
             @media (max-width: 576px) {
+                /* Reduce booking form width on small screens */
+                .booking-card {
+                    max-width: 95% !important;
+                    margin: 0 auto !important;
+                }
+                
+                .booking-form-card {
+                    margin: 0 auto !important;
+                }
+                
                 /* Compact spacing for mobile - keep text size same */
                 .booking-form-compact .form-label-compact {
                     margin-bottom: 3px !important;
@@ -512,15 +522,15 @@
                 
                 /* Stack columns properly on mobile */
                 .booking-form-compact .col-md-6 {
-                    padding-left: 10px !important;
-                    padding-right: 10px !important;
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
                     flex: 0 0 100% !important;
                     max-width: 100% !important;
                 }
                 
                 .booking-form-compact .row {
-                    margin-left: -10px !important;
-                    margin-right: -10px !important;
+                    margin-left: -8px !important;
+                    margin-right: -8px !important;
                 }
                 
                 /* Ensure all form controls are full width and aligned on mobile */
@@ -532,16 +542,9 @@
                     max-width: 100% !important;
                 }
                 
-                /* Reduce width of service category dropdown on mobile */
-                #guestServiceSubcategory {
-                    width: 100% !important;
-                    max-width: 100% !important;
-                }
-                
-                /* Reduce width of specific service dropdown on mobile */
-                #guestService {
-                    width: 100% !important;
-                    max-width: 100% !important;
+                /* Hide duplicate dropdown error by ensuring proper spacing */
+                .booking-form-compact .form-group + .form-group {
+                    margin-top: 0.6rem !important;
                 }
                 
                 /* Smaller service cards on mobile */

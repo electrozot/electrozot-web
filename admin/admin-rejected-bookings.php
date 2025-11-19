@@ -14,8 +14,10 @@ if(isset($_POST['reassign'])) {
     $mysqli->begin_transaction();
     
     try {
-        // 1. Check if new technician is available
-        $check_query = "SELECT t_is_available, t_current_booking_id, t_name FROM tms_technician WHERE t_id = ?";
+        // 1. Check if new technician has capacity
+        $check_query = "SELECT t_name, t_booking_limit, t_current_bookings,
+                              (t_booking_limit - t_current_bookings) as available_slots
+                       FROM tms_technician WHERE t_id = ?";
         $stmt_check = $mysqli->prepare($check_query);
         $stmt_check->bind_param('i', $new_tech_id);
         $stmt_check->execute();
@@ -26,8 +28,9 @@ if(isset($_POST['reassign'])) {
             throw new Exception("Technician not found");
         }
         
-        if(!$tech['t_is_available'] && $tech['t_current_booking_id']) {
-            throw new Exception("Technician " . $tech['t_name'] . " is already assigned to booking #" . $tech['t_current_booking_id']);
+        // Check if technician has capacity
+        if($tech['t_current_bookings'] >= $tech['t_booking_limit']) {
+            throw new Exception("Technician " . $tech['t_name'] . " is at capacity (" . $tech['t_current_bookings'] . "/" . $tech['t_booking_limit'] . " bookings)");
         }
         
         // 2. Get old technician ID to free them up
@@ -39,11 +42,10 @@ if(isset($_POST['reassign'])) {
         $old_booking = $old_result->fetch_assoc();
         $old_tech_id = $old_booking['sb_technician_id'];
         
-        // 3. Free up old technician (if exists)
+        // 3. Decrement old technician's booking count (if exists)
         if($old_tech_id) {
             $free_old = "UPDATE tms_technician 
-                        SET t_is_available = 1, 
-                            t_current_booking_id = NULL 
+                        SET t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                         WHERE t_id = ?";
             $stmt_free = $mysqli->prepare($free_old);
             $stmt_free->bind_param('i', $old_tech_id);
@@ -71,13 +73,12 @@ if(isset($_POST['reassign'])) {
             // Columns might not exist, ignore error
         }
         
-        // 5. Mark new technician as unavailable
+        // 5. Increment new technician's booking count
         $assign_tech = "UPDATE tms_technician 
-                       SET t_is_available = 0, 
-                           t_current_booking_id = ? 
+                       SET t_current_bookings = t_current_bookings + 1
                        WHERE t_id = ?";
         $stmt_assign = $mysqli->prepare($assign_tech);
-        $stmt_assign->bind_param('ii', $booking_id, $new_tech_id);
+        $stmt_assign->bind_param('i', $new_tech_id);
         $stmt_assign->execute();
         
         // Commit transaction

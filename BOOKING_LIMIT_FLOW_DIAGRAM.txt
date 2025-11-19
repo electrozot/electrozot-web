@@ -1,0 +1,280 @@
+================================================================================
+BOOKING LIMIT COUNTER - FLOW DIAGRAM
+================================================================================
+
+SCENARIO 1: NEW BOOKING ASSIGNMENT
+-----------------------------------
+
+Initial State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+└─────────────────────────────────────┘
+
+Admin assigns Booking #123 to Technician A
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 0 + 1      │
+│ WHERE t_id = A                      │
+└─────────────────────────────────────┘
+                    ↓
+New State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Status: At Capacity ✗             │
+│ - NOT shown in available list       │
+└─────────────────────────────────────┘
+
+
+SCENARIO 2: BOOKING COMPLETION
+-------------------------------
+
+Current State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Active Booking: #123              │
+└─────────────────────────────────────┘
+
+Technician completes Booking #123
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_service_booking          │
+│ SET sb_status = 'Completed'         │
+│ WHERE sb_id = 123                   │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 1 - 1      │
+│ WHERE t_id = A                      │
+└─────────────────────────────────────┘
+                    ↓
+New State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+│ - SHOWN in available list           │
+└─────────────────────────────────────┘
+
+
+SCENARIO 3: BOOKING REASSIGNMENT
+---------------------------------
+
+Initial State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Active Booking: #123              │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Technician B                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+└─────────────────────────────────────┘
+
+Admin reassigns Booking #123 from A to B
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 1 - 1      │
+│ WHERE t_id = A (old technician)     │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 0 + 1      │
+│ WHERE t_id = B (new technician)     │
+└─────────────────────────────────────┘
+                    ↓
+New State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Technician B                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Active Booking: #123              │
+│ - Status: At Capacity ✗             │
+└─────────────────────────────────────┘
+
+
+SCENARIO 4: BOOKING REJECTION
+------------------------------
+
+Current State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Active Booking: #123              │
+└─────────────────────────────────────┘
+
+Technician rejects Booking #123
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_service_booking          │
+│ SET sb_status = 'Rejected'          │
+│     sb_technician_id = NULL         │
+│ WHERE sb_id = 123                   │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 1 - 1      │
+│ WHERE t_id = A                      │
+└─────────────────────────────────────┘
+                    ↓
+New State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Booking #123                        │
+│ - Status: Rejected                  │
+│ - Technician: None                  │
+│ - Ready for reassignment            │
+└─────────────────────────────────────┘
+
+
+SCENARIO 5: ADMIN CANCELS BOOKING
+----------------------------------
+
+Current State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 1               │
+│ - Active Booking: #123              │
+└─────────────────────────────────────┘
+
+Admin cancels Booking #123
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_service_booking          │
+│ SET sb_status = 'Cancelled'         │
+│ WHERE sb_id = 123                   │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ UPDATE tms_technician               │
+│ SET t_current_bookings = 1 - 1      │
+│ WHERE t_id = A                      │
+└─────────────────────────────────────┘
+                    ↓
+New State:
+┌─────────────────────────────────────┐
+│ Technician A                        │
+│ - Booking Limit: 1                  │
+│ - Current Bookings: 0               │
+│ - Status: Available ✓               │
+└─────────────────────────────────────┘
+
+
+AVAILABILITY CHECK LOGIC
+-------------------------
+
+When admin tries to assign a booking:
+
+┌─────────────────────────────────────┐
+│ SELECT * FROM tms_technician        │
+│ WHERE t_current_bookings            │
+│       < t_booking_limit             │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ Technician A: 0 < 1 = TRUE ✓        │
+│ → SHOWN in available list           │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Technician B: 1 < 1 = FALSE ✗       │
+│ → NOT SHOWN in available list       │
+└─────────────────────────────────────┘
+
+┌─────────────────────────────────────┐
+│ Technician C: 2 < 3 = TRUE ✓        │
+│ → SHOWN in available list           │
+│   (has 1 slot available)            │
+└─────────────────────────────────────┘
+
+
+COUNTER SAFETY MECHANISM
+-------------------------
+
+To prevent negative values:
+
+UPDATE tms_technician 
+SET t_current_bookings = GREATEST(t_current_bookings - 1, 0)
+WHERE t_id = ?
+
+Examples:
+- GREATEST(1 - 1, 0) = 0 ✓
+- GREATEST(0 - 1, 0) = 0 ✓ (prevents -1)
+- GREATEST(5 - 1, 0) = 4 ✓
+
+
+DATABASE TRIGGER (OPTIONAL)
+----------------------------
+
+Automatically maintains counter on booking status changes:
+
+┌─────────────────────────────────────┐
+│ TRIGGER: trg_booking_status_update  │
+│ AFTER UPDATE ON tms_service_booking │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ IF status changed to:               │
+│ - Completed                         │
+│ - Cancelled                         │
+│ - Rejected                          │
+│ THEN decrement counter              │
+└─────────────────────────────────────┘
+                    ↓
+┌─────────────────────────────────────┐
+│ IF technician changed:              │
+│ - Decrement old technician          │
+│ - Increment new technician          │
+└─────────────────────────────────────┘
+
+
+SUMMARY OF COUNTER OPERATIONS
+------------------------------
+
+INCREMENT (+1):
+✓ New booking assigned to technician
+✓ Booking reassigned to different technician (new tech)
+
+DECREMENT (-1):
+✓ Booking completed
+✓ Booking rejected by technician
+✓ Booking cancelled by admin
+✓ Booking reassigned to different technician (old tech)
+
+NO CHANGE (0):
+✓ Booking status updated but same technician
+✓ Booking details modified (date, time, etc.)
+✓ Booking viewed or queried
+
+================================================================================

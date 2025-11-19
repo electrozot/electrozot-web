@@ -6,6 +6,9 @@
   check_login();
   $aid=$_SESSION['a_id'];
   
+  // AUTO-FIX: Sync technician slots and availability
+  include('auto-fix-technician-slots.php');
+  
   // Auto-setup services on first admin login
   $services_inserted = include('auto-setup-services.php');
   if($services_inserted > 0) {
@@ -1087,6 +1090,9 @@
         console.log('🔔 Checking for new bookings every 10 seconds');
         console.log('📢 Marquee auto-refreshing every 30 seconds');
     </script>
+
+    <!-- Unified Notification System for Rejected Bookings -->
+    <?php include('vendor/inc/unified-notification-system.php'); ?>
 
 </body>
 

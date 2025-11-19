@@ -8,8 +8,13 @@ $page_title = "Complete Service";
 
 $sb_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Get booking details
-$query = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name
+// Ensure price tracking columns exist
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
+
+// Get booking details with admin price
+$query = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name, s.s_admin_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -25,6 +30,10 @@ if($result->num_rows == 0){
 }
 
 $booking = $result->fetch_object();
+
+// Determine the price to use
+$admin_price_set = ($booking->s_admin_price !== null && $booking->s_admin_price > 0);
+$display_price = $admin_price_set ? $booking->s_admin_price : $booking->sb_total_price;
 
 // Handle form submission
 if(isset($_POST['complete_service'])){
@@ -52,17 +61,33 @@ if(isset($_POST['complete_service'])){
         move_uploaded_file($_FILES["bill_img"]["tmp_name"], $target_file);
     }
     
-    // Update booking
+    // Determine if technician set the price (different from admin price)
+    $price_set_by_tech = 0;
+    $tech_decided_price = null;
+    
+    if(!$admin_price_set) {
+        // No admin price, so technician is setting the price
+        $price_set_by_tech = 1;
+        $tech_decided_price = $final_price;
+    } elseif($final_price != $display_price) {
+        // Admin price exists but technician changed it (shouldn't happen with locked field, but just in case)
+        $price_set_by_tech = 1;
+        $tech_decided_price = $final_price;
+    }
+    
+    // Update booking with price tracking
     $update_query = "UPDATE tms_service_booking 
                      SET sb_status='Completed', 
                          sb_completion_img=?, 
                          sb_bill_img=?, 
                          sb_final_price=?,
+                         sb_tech_decided_price=?,
+                         sb_price_set_by_tech=?,
                          sb_completion_notes=?,
                          sb_completed_date=NOW()
                      WHERE sb_id=? AND sb_technician_id=?";
     $update_stmt = $mysqli->prepare($update_query);
-    $update_stmt->bind_param('ssdsii', $service_img, $bill_img, $final_price, $completion_notes, $sb_id, $t_id);
+    $update_stmt->bind_param('ssddiisii', $service_img, $bill_img, $final_price, $tech_decided_price, $price_set_by_tech, $completion_notes, $sb_id, $t_id);
     
     if($update_stmt->execute()){
         // Set technician status back to Available
@@ -132,8 +157,13 @@ if(isset($_POST['complete_service'])){
                     </div>
                     
                     <div class="info-item">
-                        <label>Original Price</label>
-                        <p style="font-size: 1.5rem; color: #38ef7d; font-weight: 700;">$<?php echo number_format($booking->sb_total_price, 2); ?></p>
+                        <label>Service Price</label>
+                        <p style="font-size: 1.5rem; color: #38ef7d; font-weight: 700;">₹<?php echo number_format($display_price, 2); ?></p>
+                        <?php if($admin_price_set): ?>
+                        <small class="badge badge-success"><i class="fas fa-check-circle"></i> Admin Set Price</small>
+                        <?php else: ?>
+                        <small class="badge badge-warning"><i class="fas fa-edit"></i> You can modify</small>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -179,10 +209,15 @@ if(isset($_POST['complete_service'])){
 
                         <div class="form-group">
                             <label style="font-weight: 600; color: #2d3748;">
-                                <i class="fas fa-dollar-sign"></i> Final Price <span style="color: #ff4757;">*</span>
+                                <i class="fas fa-rupee-sign"></i> Final Price (₹) <span style="color: #ff4757;">*</span>
                             </label>
-                            <input type="number" name="final_price" class="form-control" step="0.01" min="0" value="<?php echo $booking->sb_total_price; ?>" required style="border-radius: 10px; padding: 12px; font-size: 1.1rem; font-weight: 600;">
-                            <small style="color: #6c757d;">Enter the final service price (can be different from original if additional work was done)</small>
+                            <?php if($admin_price_set): ?>
+                            <input type="number" name="final_price" class="form-control" step="0.01" min="0" value="<?php echo $display_price; ?>" readonly style="border-radius: 10px; padding: 12px; font-size: 1.1rem; font-weight: 600; background-color: #e9ecef;">
+                            <small style="color: #28a745;"><i class="fas fa-lock"></i> This price is set by admin and cannot be changed</small>
+                            <?php else: ?>
+                            <input type="number" name="final_price" class="form-control" step="0.01" min="0" value="<?php echo $display_price; ?>" required style="border-radius: 10px; padding: 12px; font-size: 1.1rem; font-weight: 600;">
+                            <small style="color: #6c757d;">Enter the final service price in Indian Rupees (₹). You can modify this as admin hasn't set a fixed price.</small>
+                            <?php endif; ?>
                         </div>
 
                         <div class="form-group">

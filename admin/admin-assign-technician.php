@@ -71,6 +71,12 @@
                     $cancel_stmt->bind_param('iis', $sb_id, $old_tech_id, $cancel_reason);
                     $cancel_stmt->execute();
                     
+                    // Decrement old technician's booking count
+                    $decrement_old = "UPDATE tms_technician SET t_current_bookings = GREATEST(t_current_bookings - 1, 0) WHERE t_id=?";
+                    $decrement_stmt = $mysqli->prepare($decrement_old);
+                    $decrement_stmt->bind_param('i', $old_tech_id);
+                    $decrement_stmt->execute();
+                    
                     // Free up the old technician
                     $free_tech = "UPDATE tms_technician SET t_status='Available' WHERE t_id=?";
                     $free_stmt = $mysqli->prepare($free_tech);
@@ -96,25 +102,48 @@
                         // Update technician status based on booking status
                         if($sb_status == 'Completed' || $sb_status == 'Cancelled' || $sb_status == 'Rejected') {
                             // Free the technician if booking is completed, cancelled, or rejected
+                            // Decrement booking count
                             $update_tech = "UPDATE tms_technician 
                                           SET t_status='Available', 
                                               t_is_available=1, 
-                                              t_current_booking_id=NULL 
+                                              t_current_booking_id=NULL,
+                                              t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                                           WHERE t_id=?";
                         } else if($sb_status == 'In Progress' || $sb_status == 'Approved' || $sb_status == 'Assigned') {
                             // Mark technician as booked if booking is in progress, approved, or assigned
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=? 
-                                          WHERE t_id=?";
+                            // Increment booking count only if this is a new assignment (not reassignment to same tech)
+                            if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
+                                $update_tech = "UPDATE tms_technician 
+                                              SET t_status='Booked', 
+                                                  t_is_available=0, 
+                                                  t_current_booking_id=?,
+                                                  t_current_bookings = t_current_bookings + 1
+                                              WHERE t_id=?";
+                            } else {
+                                // Same technician, just update status without incrementing
+                                $update_tech = "UPDATE tms_technician 
+                                              SET t_status='Booked', 
+                                                  t_is_available=0, 
+                                                  t_current_booking_id=?
+                                              WHERE t_id=?";
+                            }
                         } else {
                             // For pending status, mark as booked but with pending status
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=? 
-                                          WHERE t_id=?";
+                            // Increment booking count only if this is a new assignment
+                            if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
+                                $update_tech = "UPDATE tms_technician 
+                                              SET t_status='Booked', 
+                                                  t_is_available=0, 
+                                                  t_current_booking_id=?,
+                                                  t_current_bookings = t_current_bookings + 1
+                                              WHERE t_id=?";
+                            } else {
+                                $update_tech = "UPDATE tms_technician 
+                                              SET t_status='Booked', 
+                                                  t_is_available=0, 
+                                                  t_current_booking_id=?
+                                              WHERE t_id=?";
+                            }
                         }
                         
                         if($update_tech && $sb_technician_id) {
@@ -279,13 +308,17 @@
                                      // Handle NULL technician_id
                                      $current_tech_id = $booking_data->sb_technician_id ? $booking_data->sb_technician_id : 0;
                                      
-                                     // Get available technicians using the new availability checker
-                                     // This ensures only technicians who are NOT engaged with other bookings are shown
-                                     $available_techs = getAvailableTechnicians($booking_data->s_category, $mysqli, $sb_id);
+                                     // Use skill-based matcher - PRIORITY: Service ID > Service Name > Category
+                                     require_once('vendor/inc/technician-matcher.php');
                                      
-                                     // Also try matching by service name if category doesn't match
-                                     if(empty($available_techs)) {
-                                         $available_techs = getAvailableTechnicians($booking_data->s_name, $mysqli, $sb_id);
+                                     if($booking_data->sb_service_id) {
+                                         // Best method: Match by service ID
+                                         $available_techs = getAvailableTechniciansForService($mysqli, $booking_data->sb_service_id, $sb_id);
+                                     } else if($booking_data->s_name) {
+                                         // Fallback: Match by service name
+                                         $available_techs = getAvailableTechniciansByServiceName($mysqli, $booking_data->s_name, $booking_data->s_category);
+                                     } else {
+                                         $available_techs = [];
                                      }
                                      
                                      if(empty($available_techs)) {
@@ -293,36 +326,53 @@
                                          echo '<option value="" disabled style="color: red;">⚠️ No available technicians for: '.$booking_data->s_category.'</option>';
                                          echo '<option value="" disabled>All technicians are currently engaged with other bookings</option>';
                                      } else {
-                                         // Show only available technicians
-                                         foreach($available_techs as $tech) {
-                                             $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
-                                             $status_note = '';
-                                             
-                                             // Show match type and skills
-                                             if(isset($tech['match_type']) && $tech['match_type'] == 'skill') {
-                                                 $status_note = ' ✓ SKILL MATCH';
-                                             } elseif(isset($tech['match_type']) && $tech['match_type'] == 'category') {
-                                                 $status_note = ' - Category Match';
-                                             } else {
-                                                 $status_note = '';
+                                         // Group technicians by match type
+                                         $exact_matches = array_filter($available_techs, function($t) { return $t['match_type'] === 'exact'; });
+                                         $partial_matches = array_filter($available_techs, function($t) { return $t['match_type'] === 'partial'; });
+                                         $category_matches = array_filter($available_techs, function($t) { return $t['match_type'] === 'category'; });
+                                         
+                                         // Show exact matches first
+                                         if(!empty($exact_matches)) {
+                                             echo '<optgroup label="✅ Perfect Match - Has Required Skill ('.count($exact_matches).')">';
+                                             foreach($exact_matches as $tech) {
+                                                 $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
+                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 $slots = $tech['available_slots'];
+                                                 echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
+                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)';
+                                                 if($tech['skill_name']) echo ' - '.htmlspecialchars($tech['skill_name']);
+                                                 echo '</option>';
                                              }
-                                             
-                                             if($tech['t_id'] == $current_tech_id) {
-                                                 $status_note .= ' (Currently Assigned)';
-                                             } elseif($tech['current_booking']) {
-                                                 $status_note .= ' (Assigned to this booking)';
+                                             echo '</optgroup>';
+                                         }
+                                         
+                                         // Show partial matches
+                                         if(!empty($partial_matches)) {
+                                             echo '<optgroup label="⚠️ Similar Skills ('.count($partial_matches).')">';
+                                             foreach($partial_matches as $tech) {
+                                                 $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
+                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 $slots = $tech['available_slots'];
+                                                 echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
+                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)';
+                                                 if($tech['skill_name']) echo ' - '.htmlspecialchars($tech['skill_name']);
+                                                 echo '</option>';
                                              }
-                                             
-                                             echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
-                                             echo htmlspecialchars($tech['t_name']) . ' - ' . htmlspecialchars($tech['t_specialization']) . $status_note;
-                                             
-                                             // Show matched skills if available
-                                             if(!empty($tech['skills'])) {
-                                                 echo ' | Skills: ' . htmlspecialchars(substr($tech['skills'], 0, 40));
-                                                 if(strlen($tech['skills']) > 40) echo '...';
+                                             echo '</optgroup>';
+                                         }
+                                         
+                                         // Show category matches last
+                                         if(!empty($category_matches)) {
+                                             echo '<optgroup label="📋 Category Match Only ('.count($category_matches).')">';
+                                             foreach($category_matches as $tech) {
+                                                 $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
+                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 $slots = $tech['available_slots'];
+                                                 echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
+                                                 echo htmlspecialchars($tech['t_name']) . ' ('.htmlspecialchars($tech['t_category']).', '.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)';
+                                                 echo '</option>';
                                              }
-                                             
-                                             echo '</option>';
+                                             echo '</optgroup>';
                                          }
                                      }
                                      ?>

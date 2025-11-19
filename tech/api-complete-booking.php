@@ -36,12 +36,23 @@ if (!$booking || $booking->sb_technician_id != $technician_id) {
 }
 
 // Update booking status to completed
-$stmt = $mysqli->prepare("UPDATE tms_service_booking SET sb_status = 'Completed', sb_completed_at = NOW() WHERE sb_id = ?");
+$stmt = $mysqli->prepare("UPDATE tms_service_booking SET sb_status = 'Completed', sb_completed_at = NOW(), sb_updated_at = NOW() WHERE sb_id = ?");
 $stmt->bind_param('i', $booking_id);
 
 if ($stmt->execute()) {
     // Decrement technician booking count
     decrementTechnicianBookings($mysqli, $technician_id);
+    
+    // DIRECT UPDATE: Update technician availability status
+    $update_status_sql = "UPDATE tms_technician 
+                         SET t_status = CASE 
+                             WHEN t_current_bookings >= t_booking_limit THEN 'Busy'
+                             ELSE 'Available'
+                         END
+                         WHERE t_id = ?";
+    $status_stmt = $mysqli->prepare($update_status_sql);
+    $status_stmt->bind_param('i', $technician_id);
+    $status_stmt->execute();
     
     // Create admin notification
     $get_tech_name = $mysqli->prepare("SELECT t_name FROM tms_technician WHERE t_id = ?");

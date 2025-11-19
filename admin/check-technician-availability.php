@@ -83,7 +83,7 @@ function checkTechnicianEngagement($technician_id, $mysqli) {
 function getAvailableTechnicians($service_category, $mysqli, $exclude_booking_id = null) {
     // PRIORITY 1: Match by detailed service skills
     // Now includes booking limit check
-    $skill_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_phone, t.t_email, t.t_specialization, t.t_category, t.t_status,
+    $skill_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_phone, t.t_email, t.t_specialization, t.t_category,
                     t.t_booking_limit, t.t_current_bookings,
                     (t.t_booking_limit - t.t_current_bookings) as available_slots,
                     GROUP_CONCAT(ts.skill_name SEPARATOR ', ') as skills
@@ -118,7 +118,7 @@ function getAvailableTechnicians($service_category, $mysqli, $exclude_booking_id
     
     // PRIORITY 2: Match by category or specialization (if no skill matches found)
     if(empty($available_technicians)) {
-        $category_query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category, t_status,
+        $category_query = "SELECT t_id, t_name, t_phone, t_email, t_specialization, t_category,
                                   t_booking_limit, t_current_bookings,
                                   (t_booking_limit - t_current_bookings) as available_slots
                           FROM tms_technician 

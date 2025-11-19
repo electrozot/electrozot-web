@@ -291,6 +291,16 @@ if($stmt_comp) {
                 </div>
             </a>
 
+            <a href="service-prices.php" class="quick-bar-btn qb-yellow">
+                <div class="qb-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="qb-info">
+                    <span class="qb-count"><i class="fas fa-arrow-right"></i></span>
+                    <span class="qb-label">Service Prices</span>
+                </div>
+            </a>
+
             <a href="change-password.php" class="quick-bar-btn qb-pink">
                 <div class="qb-icon">
                     <i class="fas fa-key"></i>

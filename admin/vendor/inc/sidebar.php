@@ -122,6 +122,7 @@
          <div class="dropdown-menu" aria-labelledby="servicesDropdown">
              <a class="dropdown-item" href="admin-add-service.php"><i class="fas fa-plus-square"></i> Add Service</a>
              <a class="dropdown-item" href="admin-manage-service.php"><i class="fas fa-edit"></i> Manage All</a>
+             <a class="dropdown-item" href="admin-service-prices.php"><i class="fas fa-rupee-sign"></i> Service Prices</a>
          </div>
      </li>
      

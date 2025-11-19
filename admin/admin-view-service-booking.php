@@ -6,7 +6,8 @@
   $aid=$_SESSION['a_id'];
   
   $sb_id=$_GET['sb_id'];
-  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, t.t_name as tech_name, t.t_id_no as tech_id
+  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, s.s_admin_price, 
+        t.t_name as tech_name, t.t_id_no as tech_id
         FROM tms_service_booking sb
         LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
         LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -17,6 +18,11 @@
   $stmt->execute();
   $res=$stmt->get_result();
   $booking = $res->fetch_object();
+  
+  // Ensure price tracking columns exist
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -169,9 +175,20 @@
                                          <td><?php echo $booking->s_category;?></td>
                                      </tr>
                                      <tr>
-                                         <th>Service Price:</th>
-                                         <td>$<?php echo number_format($booking->s_price, 2);?></td>
+                                         <th>Base Service Price:</th>
+                                         <td>₹<?php echo number_format($booking->s_price, 2);?></td>
                                      </tr>
+                                     <?php if($booking->s_admin_price !== null && $booking->s_admin_price > 0): ?>
+                                     <tr>
+                                         <th>Admin Set Price:</th>
+                                         <td>
+                                             <strong style="color: #28a745;">₹<?php echo number_format($booking->s_admin_price, 2);?></strong>
+                                             <span class="badge badge-success ml-2">
+                                                 <i class="fas fa-lock"></i> Fixed by Admin
+                                             </span>
+                                         </td>
+                                     </tr>
+                                     <?php endif; ?>
                                  </table>
                              </div>
                          </div>
@@ -211,9 +228,44 @@
                                          </td>
                                      </tr>
                                      <tr>
-                                         <th>Total Price:</th>
-                                         <td>$<?php echo number_format($booking->sb_total_price, 2);?></td>
+                                         <th>Booking Price:</th>
+                                         <td>₹<?php echo number_format($booking->sb_total_price, 2);?></td>
                                      </tr>
+                                     <?php if($booking->sb_status == 'Completed'): ?>
+                                     <tr>
+                                         <th>Final Charged Price:</th>
+                                         <td>
+                                             <strong style="color: #007bff; font-size: 1.2rem;">
+                                                 ₹<?php echo number_format($booking->sb_final_price ?? $booking->sb_total_price, 2);?>
+                                             </strong>
+                                             <?php if(isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1): ?>
+                                             <br>
+                                             <span class="badge badge-info mt-1">
+                                                 <i class="fas fa-user-cog"></i> Price set by Technician for this booking
+                                             </span>
+                                             <?php elseif($booking->s_admin_price !== null && $booking->s_admin_price > 0): ?>
+                                             <br>
+                                             <span class="badge badge-success mt-1">
+                                                 <i class="fas fa-lock"></i> Admin fixed price applied
+                                             </span>
+                                             <?php endif; ?>
+                                         </td>
+                                     </tr>
+                                     <?php if(isset($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price !== null): ?>
+                                     <tr>
+                                         <th>Technician Decided Price:</th>
+                                         <td>
+                                             <span class="badge badge-warning" style="font-size: 1rem; padding: 8px 12px;">
+                                                 ₹<?php echo number_format($booking->sb_tech_decided_price, 2);?>
+                                             </span>
+                                             <br>
+                                             <small class="text-muted">
+                                                 <i class="fas fa-info-circle"></i> This price was specifically set by the technician for this booking only
+                                             </small>
+                                         </td>
+                                     </tr>
+                                     <?php endif; ?>
+                                     <?php endif; ?>
                                  </table>
                              </div>
                              <div class="col-md-6">

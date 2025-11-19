@@ -1,0 +1,144 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    BOOKING LIMIT FIX - QUICK REFERENCE                       ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PROBLEM                                                                      │
+├──────────────────────────────────────────────────────────────────────────────┤
+│ Technicians with limit=1 showing as available even with active booking      │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ QUICK FIX (Choose One)                                                       │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 🌐 WEB INTERFACE (Easiest)                                                  │
+│    http://your-domain/admin/run-booking-limit-fix.php                       │
+│                                                                              │
+│ 💻 SQL SCRIPT                                                                │
+│    mysql -u user -p db < admin/fix-booking-limit-counter.sql                │
+│                                                                              │
+│ 🔍 DIAGNOSTIC TOOL                                                           │
+│    http://your-domain/admin/check-technician-booking-count.php              │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ VERIFY FIX                                                                   │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 🧪 RUN TESTS                                                                 │
+│    http://your-domain/admin/test-booking-limit-system.php                   │
+│                                                                              │
+│ 📊 CHECK SQL                                                                 │
+│    SELECT t_name, t_booking_limit, t_current_bookings,                      │
+│           (t_booking_limit - t_current_bookings) as available_slots         │
+│    FROM tms_technician;                                                      │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ HOW IT WORKS NOW                                                             │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ ✓ Assign booking → Counter +1                                               │
+│ ✓ Complete booking → Counter -1                                             │
+│ ✓ Reject booking → Counter -1                                               │
+│ ✓ Cancel booking → Counter -1                                               │
+│ ✓ Reassign booking → Old -1, New +1                                         │
+│                                                                              │
+│ ✓ Technician at limit → NOT shown in available list                         │
+│ ✓ Technician below limit → SHOWN in available list                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ FILES CREATED                                                                │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 📄 admin/fix-booking-limit-counter.sql                                       │
+│    SQL migration script                                                      │
+│                                                                              │
+│ 📄 admin/run-booking-limit-fix.php                                           │
+│    Web-based fix with visual report                                          │
+│                                                                              │
+│ 📄 admin/check-technician-booking-count.php                                  │
+│    Diagnostic tool for checking/fixing individual technicians                │
+│                                                                              │
+│ 📄 admin/test-booking-limit-system.php                                       │
+│    Automated test suite                                                      │
+│                                                                              │
+│ 📄 BOOKING_LIMIT_COUNTER_FIX.md                                              │
+│    Detailed technical documentation                                          │
+│                                                                              │
+│ 📄 QUICK_FIX_GUIDE.md                                                        │
+│    Step-by-step instructions                                                 │
+│                                                                              │
+│ 📄 BOOKING_LIMIT_FLOW_DIAGRAM.txt                                            │
+│    Visual flow diagrams                                                      │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ FILES MODIFIED                                                               │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ ✏️  admin/admin-assign-technician.php                                        │
+│    Now increments/decrements counter on assignment                           │
+│                                                                              │
+│ ✏️  admin/admin-cancel-service-booking.php                                   │
+│    Now decrements counter on cancellation                                    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TESTING CHECKLIST                                                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ □ Run fix script                                                             │
+│ □ Run test suite (all tests pass)                                            │
+│ □ Assign booking to tech with limit 1                                        │
+│ □ Verify tech disappears from available list                                 │
+│ □ Complete booking                                                            │
+│ □ Verify tech reappears in available list                                    │
+│ □ Test rejection flow                                                        │
+│ □ Test cancellation flow                                                     │
+│ □ Test reassignment flow                                                     │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ ❓ Counter still wrong after fix?                                            │
+│    → Run fix script again                                                    │
+│    → Check for ongoing transactions                                          │
+│    → Use diagnostic tool to fix individual techs                             │
+│                                                                              │
+│ ❓ Technician still showing as available?                                    │
+│    → Clear browser cache                                                     │
+│    → Verify booking status is actually active                                │
+│    → Check t_booking_limit value                                             │
+│                                                                              │
+│ ❓ Tests failing?                                                            │
+│    → Run fix script first                                                    │
+│    → Check database connection                                               │
+│    → Verify columns exist                                                    │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ SUPPORT RESOURCES                                                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│ 📖 QUICK_FIX_GUIDE.md - Quick start guide                                    │
+│ 📖 BOOKING_LIMIT_COUNTER_FIX.md - Technical details                          │
+│ 📖 BOOKING_LIMIT_FLOW_DIAGRAM.txt - Visual diagrams                          │
+│ 📖 BOOKING_LIMIT_FIX_SUMMARY.txt - Complete summary                          │
+│                                                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           FIX READY TO DEPLOY                                ║
+╚══════════════════════════════════════════════════════════════════════════════╝

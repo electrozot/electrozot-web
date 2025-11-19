@@ -5,6 +5,33 @@
  */
 
 /**
+ * Update technician availability status based on current bookings
+ */
+function updateTechnicianAvailabilityStatus($mysqli, $technician_id) {
+    // Get technician's current bookings and limit
+    $stmt = $mysqli->prepare("SELECT t_current_bookings, t_booking_limit FROM tms_technician WHERE t_id = ?");
+    $stmt->bind_param('i', $technician_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $tech = $result->fetch_object();
+    
+    if (!$tech) {
+        return false;
+    }
+    
+    $current = isset($tech->t_current_bookings) ? $tech->t_current_bookings : 0;
+    $limit = isset($tech->t_booking_limit) ? $tech->t_booking_limit : 1;
+    
+    // Determine new status
+    $new_status = ($current >= $limit) ? 'Busy' : 'Available';
+    
+    // Update status
+    $update_stmt = $mysqli->prepare("UPDATE tms_technician SET t_status = ? WHERE t_id = ?");
+    $update_stmt->bind_param('si', $new_status, $technician_id);
+    return $update_stmt->execute();
+}
+
+/**
  * Check if technician can accept new booking
  */
 function canAssignToTechnician($mysqli, $technician_id) {
@@ -37,21 +64,35 @@ function canAssignToTechnician($mysqli, $technician_id) {
 }
 
 /**
- * Increment technician booking count
+ * Increment technician booking count and update availability
  */
 function incrementTechnicianBookings($mysqli, $technician_id) {
     $stmt = $mysqli->prepare("UPDATE tms_technician SET t_current_bookings = t_current_bookings + 1 WHERE t_id = ?");
     $stmt->bind_param('i', $technician_id);
-    return $stmt->execute();
+    $result = $stmt->execute();
+    
+    // Update technician availability status
+    if ($result) {
+        updateTechnicianAvailabilityStatus($mysqli, $technician_id);
+    }
+    
+    return $result;
 }
 
 /**
- * Decrement technician booking count
+ * Decrement technician booking count and update availability
  */
 function decrementTechnicianBookings($mysqli, $technician_id) {
     $stmt = $mysqli->prepare("UPDATE tms_technician SET t_current_bookings = GREATEST(t_current_bookings - 1, 0) WHERE t_id = ?");
     $stmt->bind_param('i', $technician_id);
-    return $stmt->execute();
+    $result = $stmt->execute();
+    
+    // Update technician availability status
+    if ($result) {
+        updateTechnicianAvailabilityStatus($mysqli, $technician_id);
+    }
+    
+    return $result;
 }
 
 /**
@@ -141,4 +182,59 @@ function assignBookingToTechnician($mysqli, $booking_id, $technician_id, $admin_
         return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
     }
 }
-?>
+
+/**
+ * Recalculate and sync technician booking counts from actual bookings
+ */
+function syncTechnicianBookingCounts($mysqli, $technician_id = null) {
+    if ($technician_id) {
+        // Sync specific technician
+        $count_query = "SELECT COUNT(*) as active_count 
+                       FROM tms_service_booking 
+                       WHERE sb_technician_id = ? 
+                       AND sb_status IN ('Pending', 'Approved', 'In Progress')";
+        $stmt = $mysqli->prepare($count_query);
+        $stmt->bind_param('i', $technician_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_object();
+        $actual_count = $row->active_count;
+        
+        // Update technician's current bookings
+        $update_stmt = $mysqli->prepare("UPDATE tms_technician SET t_current_bookings = ? WHERE t_id = ?");
+        $update_stmt->bind_param('ii', $actual_count, $technician_id);
+        $update_stmt->execute();
+        
+        // Update availability status
+        updateTechnicianAvailabilityStatus($mysqli, $technician_id);
+        
+        return ['success' => true, 'technician_id' => $technician_id, 'count' => $actual_count];
+    } else {
+        // Sync all technicians
+        $techs_query = "SELECT t_id FROM tms_technician";
+        $result = $mysqli->query($techs_query);
+        
+        $synced = 0;
+        while ($tech = $result->fetch_object()) {
+            syncTechnicianBookingCounts($mysqli, $tech->t_id);
+            $synced++;
+        }
+        
+        return ['success' => true, 'synced_count' => $synced];
+    }
+}
+
+/**
+ * Get technician's actual active booking count
+ */
+function getTechnicianActiveBookingCount($mysqli, $technician_id) {
+    $stmt = $mysqli->prepare("SELECT COUNT(*) as active_count 
+                             FROM tms_service_booking 
+                             WHERE sb_technician_id = ? 
+                             AND sb_status IN ('Pending', 'Approved', 'In Progress')");
+    $stmt->bind_param('i', $technician_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_object();
+    return $row ? $row->active_count : 0;
+}

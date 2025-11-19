@@ -84,7 +84,7 @@ if(isset($_POST['book_service_guest'])) {
         // Append the custom service name to description
         $sb_description = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $sb_description;
     } else {
-        $query_price = "SELECT s_price, s_status FROM tms_service WHERE s_id = ?";
+        $query_price = "SELECT s_price, s_admin_price, s_status FROM tms_service WHERE s_id = ?";
         $stmt_price = $mysqli->prepare($query_price);
         $stmt_price->bind_param('i', $sb_service_id);
         $stmt_price->execute();
@@ -105,7 +105,10 @@ if(isset($_POST['book_service_guest'])) {
             exit();
         }
         
-        $sb_total_price = $service->s_price;
+        // Use admin price if set, otherwise use default service price
+        $sb_total_price = ($service->s_admin_price !== null && $service->s_admin_price > 0) 
+                         ? $service->s_admin_price 
+                         : $service->s_price;
         $stmt_price->close();
     }
 

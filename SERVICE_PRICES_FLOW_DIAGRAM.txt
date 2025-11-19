@@ -1,0 +1,258 @@
+================================================================================
+SERVICE PRICES MANAGEMENT - SYSTEM FLOW DIAGRAM
+================================================================================
+
+1. ADMIN SETS SERVICE PRICES
+=============================
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │                    ADMIN DASHBOARD                          │
+    │                                                             │
+    │  Services → Service Prices                                  │
+    │                                                             │
+    │  ┌───────────────────────────────────────────────────┐    │
+    │  │  Service Name              Admin Price (₹)        │    │
+    │  ├───────────────────────────────────────────────────┤    │
+    │  │  AC Repair                 [  500.00  ]  ✓       │    │
+    │  │  Fan Installation          [  200.00  ]  ✓       │    │
+    │  │  Custom Electrical Work    [  empty   ]  ✏️       │    │
+    │  │  Washing Machine Repair    [  800.00  ]  ✓       │    │
+    │  └───────────────────────────────────────────────────┘    │
+    │                                                             │
+    │              [Update All Prices]                            │
+    └─────────────────────────────────────────────────────────────┘
+                              ↓
+                    ┌─────────────────┐
+                    │   DATABASE      │
+                    │  tms_service    │
+                    │                 │
+                    │ s_admin_price   │
+                    │   updated       │
+                    └─────────────────┘
+                              ↓
+              ┌───────────────┴───────────────┐
+              ↓                               ↓
+    ┌──────────────────┐           ┌──────────────────┐
+    │  NEW BOOKINGS    │           │ PENDING BOOKINGS │
+    │  Use admin price │           │ Updated to new   │
+    │  automatically   │           │ admin price      │
+    └──────────────────┘           └──────────────────┘
+
+
+2. BOOKING CREATION FLOW
+=========================
+
+    Customer Books Service
+            ↓
+    ┌─────────────────────────────────┐
+    │  System Checks Service Price    │
+    └─────────────────────────────────┘
+            ↓
+    ┌─────────────────────────────────┐
+    │  Is s_admin_price set?          │
+    └─────────────────────────────────┘
+            ↓
+    ┌───────┴───────┐
+    │               │
+   YES             NO
+    │               │
+    ↓               ↓
+┌─────────┐   ┌─────────┐
+│ Use     │   │ Use     │
+│ Admin   │   │ Default │
+│ Price   │   │ Price   │
+└─────────┘   └─────────┘
+    │               │
+    └───────┬───────┘
+            ↓
+    ┌─────────────────────────────────┐
+    │  Booking Created with Price     │
+    │  sb_total_price = selected price│
+    └─────────────────────────────────┘
+
+
+3. TECHNICIAN VIEWS SERVICE PRICES
+===================================
+
+    ┌─────────────────────────────────────────────────────────────┐
+    │              TECHNICIAN DASHBOARD                           │
+    │                                                             │
+    │  [Service Prices] Button in Quick Bar                       │
+    │                                                             │
+    │  ┌───────────────────────────────────────────────────┐    │
+    │  │  Service Name              Price      Status       │    │
+    │  ├───────────────────────────────────────────────────┤    │
+    │  │  AC Repair                 ₹500.00   🔒 Admin Set │    │
+    │  │  Fan Installation          ₹200.00   🔒 Admin Set │    │
+    │  │  Custom Electrical Work    Flexible  ✏️ Editable  │    │
+    │  │  Washing Machine Repair    ₹800.00   🔒 Admin Set │    │
+    │  └───────────────────────────────────────────────────┘    │
+    │                                                             │
+    │  Legend:                                                    │
+    │  🔒 Admin Set = Price is locked, cannot change             │
+    │  ✏️ Flexible = You can set price during completion         │
+    └─────────────────────────────────────────────────────────────┘
+
+
+4. SERVICE COMPLETION FLOW
+===========================
+
+    Technician Completes Service
+            ↓
+    ┌─────────────────────────────────┐
+    │  Complete Service Page          │
+    └─────────────────────────────────┘
+            ↓
+    ┌─────────────────────────────────┐
+    │  System Checks s_admin_price    │
+    └─────────────────────────────────┘
+            ↓
+    ┌───────┴───────┐
+    │               │
+   YES             NO
+    │               │
+    ↓               ↓
+┌─────────────┐   ┌─────────────┐
+│ Price Field │   │ Price Field │
+│ LOCKED      │   │ EDITABLE    │
+│ ₹500.00 🔒  │   │ [____] ✏️   │
+│ Cannot      │   │ Technician  │
+│ Change      │   │ Can Modify  │
+└─────────────┘   └─────────────┘
+    │               │
+    └───────┬───────┘
+            ↓
+    ┌─────────────────────────────────┐
+    │  Upload Images & Complete       │
+    │  sb_final_price = entered price │
+    └─────────────────────────────────┘
+
+
+5. PRICE UPDATE PROPAGATION
+============================
+
+    Admin Changes Price: AC Repair ₹500 → ₹600
+            ↓
+    ┌─────────────────────────────────┐
+    │  Database Updated               │
+    │  s_admin_price = 600            │
+    └─────────────────────────────────┘
+            ↓
+    ┌───────────────────────────────────────────────────┐
+    │  Automatic Updates                                │
+    ├───────────────────────────────────────────────────┤
+    │  ✓ New bookings use ₹600                         │
+    │  ✓ Pending bookings updated to ₹600              │
+    │  ✓ In Progress bookings updated to ₹600          │
+    │  ✗ Completed bookings remain at original price   │
+    │  ✗ Cancelled bookings not affected               │
+    └───────────────────────────────────────────────────┘
+
+
+6. PRICING DECISION TREE
+=========================
+
+                    Service Selected
+                          ↓
+              ┌───────────────────────┐
+              │ Check s_admin_price   │
+              └───────────────────────┘
+                          ↓
+        ┌─────────────────┴─────────────────┐
+        │                                   │
+    Is NULL?                           Has Value?
+        │                                   │
+        ↓                                   ↓
+┌───────────────────┐           ┌───────────────────┐
+│ Admin hasn't set  │           │ Admin has set     │
+│ fixed price       │           │ fixed price       │
+└───────────────────┘           └───────────────────┘
+        ↓                                   ↓
+┌───────────────────┐           ┌───────────────────┐
+│ Use default       │           │ Use admin price   │
+│ s_price           │           │ s_admin_price     │
+└───────────────────┘           └───────────────────┘
+        ↓                                   ↓
+┌───────────────────┐           ┌───────────────────┐
+│ Technician can    │           │ Price is locked   │
+│ modify during     │           │ Cannot be changed │
+│ completion        │           │ by technician     │
+└───────────────────┘           └───────────────────┘
+
+
+7. DATA FLOW SUMMARY
+=====================
+
+┌──────────────┐
+│    ADMIN     │
+│  Sets Price  │
+└──────┬───────┘
+       │
+       ↓
+┌──────────────────────┐
+│    DATABASE          │
+│  tms_service         │
+│  s_admin_price       │
+└──────┬───────────────┘
+       │
+       ├─────────────────────────────────────┐
+       │                                     │
+       ↓                                     ↓
+┌──────────────────┐              ┌──────────────────┐
+│  BOOKING SYSTEM  │              │   TECHNICIAN     │
+│  Uses admin      │              │   Views price    │
+│  price for new   │              │   info           │
+│  bookings        │              └──────────────────┘
+└──────┬───────────┘
+       │
+       ↓
+┌──────────────────┐
+│  SERVICE         │
+│  COMPLETION      │
+│  Applies price   │
+│  rules           │
+└──────────────────┘
+
+
+8. USER INTERFACE FLOW
+=======================
+
+ADMIN VIEW:
+┌─────────────────────────────────────────────────────────┐
+│  Services Menu                                          │
+│  ├─ Add Service                                         │
+│  ├─ Manage All                                          │
+│  └─ Service Prices ← NEW                                │
+│                                                          │
+│  Service Prices Page:                                   │
+│  ┌────────────────────────────────────────────────┐   │
+│  │ Statistics:                                     │   │
+│  │ • Total Services: 43                            │   │
+│  │ • Priced by Admin: 25                           │   │
+│  │ • Technician Pricing: 18                        │   │
+│  └────────────────────────────────────────────────┘   │
+│                                                          │
+│  [Service List with Price Input Fields]                 │
+│  [Update All Prices Button]                             │
+└─────────────────────────────────────────────────────────┘
+
+TECHNICIAN VIEW:
+┌─────────────────────────────────────────────────────────┐
+│  Dashboard Quick Bar                                    │
+│  [Notifications] [New] [Pending] [Completed]            │
+│  [Service Prices] ← NEW [Profile] [Security]            │
+│                                                          │
+│  Service Prices Page:                                   │
+│  ┌────────────────────────────────────────────────┐   │
+│  │ Legend:                                         │   │
+│  │ 🔒 Admin Set - Price is locked                 │   │
+│  │ ✏️ Flexible - You can set price                │   │
+│  └────────────────────────────────────────────────┘   │
+│                                                          │
+│  [Service List with Prices and Status Badges]           │
+└─────────────────────────────────────────────────────────┘
+
+
+================================================================================
+END OF FLOW DIAGRAM
+================================================================================
