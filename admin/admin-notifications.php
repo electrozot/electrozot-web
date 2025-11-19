@@ -20,9 +20,14 @@ $params = [];
 $types = '';
 
 if($filter != 'all') {
-    $where_conditions[] = "sb.sb_status = ?";
-    $params[] = $filter;
-    $types .= 's';
+    // Handle Rejected filter to include both Rejected and Cancelled statuses
+    if($filter == 'Rejected') {
+        $where_conditions[] = "(sb.sb_status = 'Rejected' OR sb.sb_status = 'Cancelled')";
+    } else {
+        $where_conditions[] = "sb.sb_status = ?";
+        $params[] = $filter;
+        $types .= 's';
+    }
 }
 
 if(!empty($search)) {
@@ -173,96 +178,7 @@ if(!empty($params)) {
                     </div>
                 </div>
 
-                <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $pending_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Pending'";
-                                            $pending_result = $mysqli->query($pending_query);
-                                            echo $pending_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">In Progress</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $progress_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'In Progress'";
-                                            $progress_result = $mysqli->query($progress_query);
-                                            echo $progress_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-cog fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $completed_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Completed'";
-                                            $completed_result = $mysqli->query($completed_query);
-                                            echo $completed_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-danger shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $rejected_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Rejected' OR sb_status = 'Cancelled'";
-                                            $rejected_result = $mysqli->query($rejected_query);
-                                            echo $rejected_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Stats Cards - Removed to clean up interface -->
 
                 <!-- Filters -->
                 <div class="card shadow mb-4">

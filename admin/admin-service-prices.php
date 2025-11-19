@@ -5,22 +5,19 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
-// Add admin_price column if it doesn't exist
-$mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS s_admin_price DECIMAL(10,2) DEFAULT NULL");
-
 // Handle single price update via AJAX
 if(isset($_POST['update_single_price'])) {
     header('Content-Type: application/json');
     $service_id = intval($_POST['service_id']);
     $price = ($_POST['price'] === '' || $_POST['price'] === null) ? null : floatval($_POST['price']);
     
-    $query = "UPDATE tms_service SET s_admin_price = ? WHERE s_id = ?";
+    $query = "UPDATE tms_service SET s_price = ? WHERE s_id = ?";
     $stmt = $mysqli->prepare($query);
     $stmt->bind_param('di', $price, $service_id);
     
     if($stmt->execute()) {
         // If admin sets a price, update all existing bookings with this service
-        if($price !== null) {
+        if($price !== null && $price > 0) {
             $update_bookings = "UPDATE tms_service_booking 
                                SET sb_total_price = ? 
                                WHERE sb_service_id = ? 
@@ -45,7 +42,7 @@ if(isset($_POST['update_prices'])) {
         $service_id = intval($service_id);
         $price = ($price === '' || $price === null) ? null : floatval($price);
         
-        $query = "UPDATE tms_service SET s_admin_price = ? WHERE s_id = ?";
+        $query = "UPDATE tms_service SET s_price = ? WHERE s_id = ?";
         $stmt = $mysqli->prepare($query);
         $stmt->bind_param('di', $price, $service_id);
         
@@ -53,7 +50,7 @@ if(isset($_POST['update_prices'])) {
             $success_count++;
             
             // If admin sets a price, update all existing bookings with this service
-            if($price !== null) {
+            if($price !== null && $price > 0) {
                 $update_bookings = "UPDATE tms_service_booking 
                                    SET sb_total_price = ? 
                                    WHERE sb_service_id = ? 
@@ -119,7 +116,7 @@ while($row = $result->fetch_object()) {
                 <div class="row mb-4">
                     <?php
                     $total_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service")->fetch_object()->count;
-                    $priced_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service WHERE s_admin_price IS NOT NULL")->fetch_object()->count;
+                    $priced_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service WHERE s_price IS NOT NULL AND s_price > 0")->fetch_object()->count;
                     $unpriced_services = $total_services - $priced_services;
                     ?>
                     <div class="col-md-4">
@@ -216,8 +213,8 @@ while($row = $result->fetch_object()) {
                                                            data-service-id="<?php echo $service->s_id; ?>"
                                                            step="0.01" 
                                                            min="0"
-                                                           value="<?php echo $service->s_admin_price !== null ? $service->s_admin_price : ''; ?>"
-                                                           placeholder="Leave empty for tech pricing">
+                                                           value="<?php echo ($service->s_price !== null && $service->s_price > 0) ? $service->s_price : ''; ?>"
+                                                           placeholder="Leave empty if price varies">
                                                     <div class="input-group-append">
                                                         <button type="button" 
                                                                 class="btn btn-sm btn-success update-single-btn" 
@@ -237,13 +234,13 @@ while($row = $result->fetch_object()) {
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php if($service->s_admin_price !== null): ?>
+                                                <?php if($service->s_price !== null && $service->s_price > 0): ?>
                                                 <span class="badge badge-success">
-                                                    <i class="fas fa-check"></i> Admin Set
+                                                    <i class="fas fa-check"></i> Fixed Price
                                                 </span>
                                                 <?php else: ?>
                                                 <span class="badge badge-warning">
-                                                    <i class="fas fa-user-cog"></i> Tech Pricing
+                                                    <i class="fas fa-user-cog"></i> Tech Sets Price
                                                 </span>
                                                 <?php endif; ?>
                                             </td>

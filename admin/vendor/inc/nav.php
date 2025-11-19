@@ -297,8 +297,8 @@
  }
  </style>
 
-<!-- Real-Time Booking Notification System -->
-<?php include('booking-notification-system.php'); ?>
+<!-- Unified Notification System - Works on ALL admin pages -->
+<?php include('unified-notification-system.php'); ?>
 
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

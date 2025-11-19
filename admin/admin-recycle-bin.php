@@ -94,17 +94,12 @@ if(isset($_POST['bulk_restore'])) {
                         $sb_description = isset($data['sb_description']) ? $data['sb_description'] : '';
                         $sb_total_price = isset($data['sb_total_price']) ? $data['sb_total_price'] : 0.00;
                         
-                        if($sb_technician_id === null) {
-                            $restore_stmt->bind_param('iiissssssd', 
-                                $data['sb_id'], $data['sb_user_id'], $data['sb_service_id'], 
-                                $sb_technician_id, $data['sb_booking_date'], $data['sb_booking_time'], 
-                                $sb_address, $sb_phone, $sb_description, $data['sb_status'], $sb_total_price);
-                        } else {
-                            $restore_stmt->bind_param('iiiissssssd', 
-                                $data['sb_id'], $data['sb_user_id'], $data['sb_service_id'], 
-                                $sb_technician_id, $data['sb_booking_date'], $data['sb_booking_time'], 
-                                $sb_address, $sb_phone, $sb_description, $data['sb_status'], $sb_total_price);
-                        }
+                        // 11 parameters: i,i,i,i,s,s,s,s,s,s,d
+                        $restore_stmt->bind_param('iiiissssssd', 
+                            $data['sb_id'], $data['sb_user_id'], $data['sb_service_id'], 
+                            $sb_technician_id, $data['sb_booking_date'], $data['sb_booking_time'], 
+                            $sb_address, $sb_phone, $sb_description, $data['sb_status'], $sb_total_price);
+                        
                         $restored = $restore_stmt->execute();
                         break;
                 }
@@ -194,35 +189,20 @@ if(isset($_POST['restore'])) {
                 $sb_description = isset($data['sb_description']) ? $data['sb_description'] : '';
                 $sb_total_price = isset($data['sb_total_price']) ? $data['sb_total_price'] : 0.00;
                 
-                if($sb_technician_id === null) {
-                    $restore_stmt->bind_param('iiissssssd', 
-                        $data['sb_id'], 
-                        $data['sb_user_id'], 
-                        $data['sb_service_id'], 
-                        $sb_technician_id,
-                        $data['sb_booking_date'], 
-                        $data['sb_booking_time'], 
-                        $sb_address,
-                        $sb_phone,
-                        $sb_description,
-                        $data['sb_status'],
-                        $sb_total_price
-                    );
-                } else {
-                    $restore_stmt->bind_param('iiiissssssd', 
-                        $data['sb_id'], 
-                        $data['sb_user_id'], 
-                        $data['sb_service_id'], 
-                        $sb_technician_id,
-                        $data['sb_booking_date'], 
-                        $data['sb_booking_time'], 
-                        $sb_address,
-                        $sb_phone,
-                        $sb_description,
-                        $data['sb_status'],
-                        $sb_total_price
-                    );
-                }
+                // 11 parameters: i,i,i,i,s,s,s,s,s,s,d
+                $restore_stmt->bind_param('iiiissssssd', 
+                    $data['sb_id'], 
+                    $data['sb_user_id'], 
+                    $data['sb_service_id'], 
+                    $sb_technician_id,
+                    $data['sb_booking_date'], 
+                    $data['sb_booking_time'], 
+                    $sb_address,
+                    $sb_phone,
+                    $sb_description,
+                    $data['sb_status'],
+                    $sb_total_price
+                );
                 $restored = $restore_stmt->execute();
                 break;
                 

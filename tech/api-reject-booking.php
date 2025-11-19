@@ -35,8 +35,9 @@ if (!$booking || $booking->sb_technician_id != $technician_id) {
     exit;
 }
 
-// Update booking status to rejected
-$stmt = $mysqli->prepare("UPDATE tms_service_booking SET sb_status = 'Rejected by Technician', sb_rejected_at = NOW(), sb_rejection_reason = ?, sb_technician_id = NULL, sb_updated_at = NOW() WHERE sb_id = ?");
+// Update booking status to "Not Completed" (technician rejected/couldn't complete)
+// Remove technician assignment so admin can reassign
+$stmt = $mysqli->prepare("UPDATE tms_service_booking SET sb_status = 'Not Completed', sb_rejected_at = NOW(), sb_rejection_reason = ?, sb_technician_id = NULL, sb_updated_at = NOW() WHERE sb_id = ?");
 $stmt->bind_param('si', $reason, $booking_id);
 
 if ($stmt->execute()) {

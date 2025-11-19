@@ -498,6 +498,9 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
             </div>
             
             <div class="action-buttons">
+                <a href="live-booking-status.php?booking_id=<?php echo $booking->sb_id; ?>&phone=<?php echo urlencode($booking->sb_phone); ?>" class="btn btn-track" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-eye"></i> Live Status
+                </a>
                 <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-map-marker-alt"></i> Track
                 </a>

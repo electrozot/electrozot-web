@@ -15,7 +15,7 @@
             $t_name=$_POST['t_name'];
             $t_id_no = $_POST['t_id_no'];
             $t_category=$_POST['t_category'];
-            $t_status=$_POST['t_status'];
+            // Status is now auto-managed, no longer accepting manual input
             $t_specialization=$_POST['t_specialization'];
             $t_experience=$_POST['t_experience'];
             $t_booking_limit = isset($_POST['t_booking_limit']) ? intval($_POST['t_booking_limit']) : 1;
@@ -31,15 +31,18 @@
                 $t_pic = $_FILES["t_pic"]["name"];
                 move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
                 
-                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=?, t_booking_limit=? where t_id = ?";
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_booking_limit=? where t_id = ?";
                 $stmt = $mysqli->prepare($query);
-                $rc=$stmt->bind_param('sssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_booking_limit, $t_id);
+                $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_booking_limit, $t_id);
             } else {
                 // No new photo - update without changing photo
-                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_status=?, t_booking_limit=? where t_id = ?";
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_booking_limit=? where t_id = ?";
                 $stmt = $mysqli->prepare($query);
-                $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_status, $t_booking_limit, $t_id);
+                $rc=$stmt->bind_param('sssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_booking_limit, $t_id);
             }
+            
+            // After update, automatically sync technician status
+            include('auto-update-technician-status.php');
             
             $stmt->execute();
                 if($stmt)
@@ -147,11 +150,21 @@
                              </div>
 
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Technician Status</label>
-                                 <select class="form-control" name="t_status" id="exampleFormControlSelect1">
-                                     <option>Booked</option>
-                                     <option>Available</option>
-                                 </select>
+                                 <label for="techStatus">
+                                     <i class="fas fa-sync-alt text-success"></i> Technician Status (Auto-Managed)
+                                 </label>
+                                 <div class="input-group">
+                                     <input type="text" class="form-control" id="techStatus" value="<?php echo $row->t_status; ?>" readonly style="background-color: <?php echo ($row->t_status == 'Available') ? '#e8f5e9' : '#fff3e0'; ?>; color: <?php echo ($row->t_status == 'Available') ? '#2e7d32' : '#e65100'; ?>; font-weight: 600;">
+                                     <div class="input-group-append">
+                                         <span class="input-group-text" style="background-color: <?php echo ($row->t_status == 'Available') ? '#4caf50' : '#ff9800'; ?>; color: white;">
+                                             <i class="fas <?php echo ($row->t_status == 'Available') ? 'fa-check-circle' : 'fa-clock'; ?>"></i>
+                                         </span>
+                                     </div>
+                                 </div>
+                                 <small class="text-muted">
+                                     <i class="fas fa-info-circle text-primary"></i> Status automatically updates based on active bookings. 
+                                     Current: <strong><?php echo isset($row->t_current_bookings) ? $row->t_current_bookings : 0; ?></strong> / <strong><?php echo isset($row->t_booking_limit) ? $row->t_booking_limit : 1; ?></strong> bookings
+                                 </small>
                              </div>
                              
                              <div class="form-group">

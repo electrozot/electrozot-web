@@ -76,7 +76,7 @@
             $t_id_no = $t_ez_id; // Use EZ ID as the ID number
             $t_category=$_POST['t_category'];
             $t_experience=$_POST['t_experience'];
-            $t_status=$_POST['t_status'];
+            $t_status='Available'; // Auto-set to Available (will be updated automatically based on bookings)
             $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
             $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
@@ -305,11 +305,11 @@
                                  
                                  <div class="col-md-4">
                                      <div class="form-group">
-                                         <label>Status <span class="text-danger">*</span></label>
-                                         <select class="form-control" name="t_status" required>
-                                             <option value="Available">Available</option>
-                                             <option value="Booked">Booked</option>
-                                         </select>
+                                         <label><i class="fas fa-info-circle text-success"></i> Status</label>
+                                         <input type="text" class="form-control" value="Available (Auto-managed)" readonly style="background-color: #e8f5e9; color: #2e7d32; font-weight: 600;">
+                                         <small class="text-success">
+                                             <i class="fas fa-magic"></i> Status is automatically updated based on active bookings
+                                         </small>
                                      </div>
                                  </div>
                              </div>

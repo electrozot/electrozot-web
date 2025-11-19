@@ -79,12 +79,12 @@ if(isset($_POST['book_service_guest'])) {
 
     // Get service price and validate service exists
     if($is_other_service) {
-        // For "Other" service, set price to 0 (to be determined by admin)
+        // For "Other" service, set price to 0 (to be filled by technician during completion)
         $sb_total_price = 0;
         // Append the custom service name to description
         $sb_description = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $sb_description;
     } else {
-        $query_price = "SELECT s_price, s_admin_price, s_status FROM tms_service WHERE s_id = ?";
+        $query_price = "SELECT s_price, s_status FROM tms_service WHERE s_id = ?";
         $stmt_price = $mysqli->prepare($query_price);
         $stmt_price->bind_param('i', $sb_service_id);
         $stmt_price->execute();
@@ -105,10 +105,10 @@ if(isset($_POST['book_service_guest'])) {
             exit();
         }
         
-        // Use admin price if set, otherwise use default service price
-        $sb_total_price = ($service->s_admin_price !== null && $service->s_admin_price > 0) 
-                         ? $service->s_admin_price 
-                         : $service->s_price;
+        // Use admin-set price if available, otherwise set to 0 (technician will fill during completion)
+        $sb_total_price = ($service->s_price !== null && $service->s_price > 0) 
+                         ? $service->s_price 
+                         : 0;
         $stmt_price->close();
     }
 

@@ -1,0 +1,131 @@
+═══════════════════════════════════════════════════════════════════
+  QUICK REFERENCE - AUTOMATED BOOKING SYSTEM
+═══════════════════════════════════════════════════════════════════
+
+📋 BOOKING STATUS (Automatic)
+─────────────────────────────
+Pending       → No technician assigned
+Approved      → Technician assigned
+Not Completed → Technician rejected/couldn't complete
+Completed     → Service done successfully
+Cancelled     → Booking cancelled
+
+👤 TECHNICIAN STATUS (Automatic)
+────────────────────────────────
+Available → Has capacity (bookings < limit)
+Booked    → At capacity (bookings >= limit)
+
+🔔 NOTIFICATIONS (Fixed)
+────────────────────────
+✓ Shows once per booking
+✓ Sound plays once
+✓ No repeats
+
+═══════════════════════════════════════════════════════════════════
+  CUSTOMER FEATURES
+═══════════════════════════════════════════════════════════════════
+
+VIEW LIVE STATUS:
+usr/live-booking-status.php?booking_id=123&phone=1234567890
+
+WHAT THEY SEE:
+✓ Current booking status
+✓ Assigned technician details
+✓ Booking timeline
+✓ Auto-refresh every 10 seconds
+✓ Cancel button (if applicable)
+
+═══════════════════════════════════════════════════════════════════
+  ADMIN FEATURES
+═══════════════════════════════════════════════════════════════════
+
+AUTOMATIC ACTIONS:
+✓ Booking status updates when technician assigned
+✓ Technician status updates based on bookings
+✓ No manual status changes needed
+
+LIVE MONITORING:
+admin/api-get-live-booking-status.php?booking_id=123
+
+DASHBOARD CARDS:
+📋 Pending    → Need to assign technician
+✅ Approved   → Technician assigned, awaiting completion
+⚠️ Not Done   → Need to reassign
+✓ Completed   → Finalized
+
+═══════════════════════════════════════════════════════════════════
+  TECHNICIAN FEATURES
+═══════════════════════════════════════════════════════════════════
+
+AUTOMATIC STATUS:
+✓ Status updates based on active bookings
+✓ Prevents over-booking
+✓ Clear capacity indicator
+
+ACTIONS:
+Complete → Booking status: Completed
+Reject   → Booking status: Not Completed (admin reassigns)
+
+═══════════════════════════════════════════════════════════════════
+  STATUS WORKFLOW
+═══════════════════════════════════════════════════════════════════
+
+1. Customer books → Pending
+2. Admin assigns tech → Approved
+3. Tech completes → Completed ✓
+
+OR if tech rejects:
+3. Tech rejects → Not Completed
+4. Admin reassigns → Approved
+5. New tech completes → Completed ✓
+
+═══════════════════════════════════════════════════════════════════
+  KEY FILES
+═══════════════════════════════════════════════════════════════════
+
+BOOKING STATUS:
+- admin/auto-update-booking-status.php
+- usr/api-get-booking-status.php
+- usr/live-booking-status.php
+
+TECHNICIAN STATUS:
+- admin/auto-update-technician-status.php
+- admin/api-update-technician-status.php
+
+NOTIFICATIONS:
+- admin/api-unified-notifications.php
+- admin/vendor/inc/unified-notification-system.php
+
+DOCUMENTATION:
+- COMPLETE_AUTOMATION_SUMMARY.txt
+- BOOKING_STATUS_AUTOMATION.md
+- TECHNICIAN_STATUS_AUTO_UPDATE.md
+- BOOKING_STATUS_VISUAL_GUIDE.txt
+
+═══════════════════════════════════════════════════════════════════
+  TESTING
+═══════════════════════════════════════════════════════════════════
+
+1. Create booking → Check status: Pending
+2. Assign tech → Check status: Approved
+3. Tech rejects → Check status: Not Completed
+4. Reassign tech → Check status: Approved
+5. Complete → Check status: Completed
+
+6. Open customer live status page
+7. Verify auto-refresh works
+8. Check technician details display
+
+═══════════════════════════════════════════════════════════════════
+  BENEFITS
+═══════════════════════════════════════════════════════════════════
+
+✅ No manual status updates
+✅ Real-time tracking for customers
+✅ Automatic capacity management
+✅ Clear workflow visibility
+✅ Professional appearance
+✅ Reduced support calls
+✅ Better customer satisfaction
+
+═══════════════════════════════════════════════════════════════════

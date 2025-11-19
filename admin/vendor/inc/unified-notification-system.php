@@ -253,12 +253,6 @@
 }
 </style>
 
-<!-- Notification Bell -->
-<div class="unified-notification-bell" id="unifiedNotificationBell" title="Notifications" onclick="testNotificationSound()">
-    <i class="fas fa-bell"></i>
-    <span class="unified-notification-badge" id="unifiedNotificationBadge" style="display:none;">0</span>
-</div>
-
 <!-- Notification Container for Popups -->
 <div id="unifiedNotificationContainer" style="position: fixed; top: 0; right: 0; z-index: 99999;"></div>
 
@@ -284,6 +278,7 @@
     let notificationCount = 0;
     let checkInterval = null;
     let soundElement = null;
+    let shownNotifications = new Set(); // Track shown notification IDs
     
     // Initialize
     function init() {
@@ -348,18 +343,41 @@
     function handleNotifications(notifications) {
         if (!notifications || notifications.length === 0) return;
         
-        // Ring the bell icon
-        const bell = document.getElementById('unifiedNotificationBell');
-        if (bell) {
-            bell.classList.add('ringing');
-            setTimeout(() => bell.classList.remove('ringing'), 500);
+        // Filter out already shown notifications
+        const newNotifications = notifications.filter(notif => {
+            if (shownNotifications.has(notif.id)) {
+                return false; // Already shown
+            }
+            shownNotifications.add(notif.id);
+            return true;
+        });
+        
+        if (newNotifications.length === 0) return;
+        
+        // Ring the bell icon in nav
+        const bellIcon = document.querySelector('#notificationBell i');
+        if (bellIcon) {
+            bellIcon.classList.add('bell-shake');
+            setTimeout(() => bellIcon.classList.remove('bell-shake'), 500);
         }
         
-        notifications.forEach(notification => {
+        // Play sound only once for batch of notifications
+        let soundPlayed = false;
+        
+        newNotifications.forEach(notification => {
             showNotification(notification);
-            playSound();
+            if (!soundPlayed) {
+                playSound();
+                soundPlayed = true;
+            }
             showBrowserNotification(notification);
         });
+        
+        // Clean up old notification IDs (keep last 100)
+        if (shownNotifications.size > 100) {
+            const arr = Array.from(shownNotifications);
+            shownNotifications = new Set(arr.slice(-100));
+        }
     }
     
     // Show popup notification
@@ -518,9 +536,9 @@
         setTimeout(() => notification.close(), 8000);
     }
     
-    // Update notification badge
+    // Update notification badge (uses existing nav badge)
     function updateBadge(count) {
-        const badge = document.getElementById('unifiedNotificationBadge');
+        const badge = document.getElementById('notificationBadge');
         if (!badge) return;
         
         notificationCount = count;
@@ -528,6 +546,13 @@
         if (count > 0) {
             badge.textContent = count > 99 ? '99+' : count;
             badge.style.display = 'block';
+            
+            // Ring the bell icon in nav
+            const bellIcon = document.querySelector('#notificationBell i');
+            if (bellIcon) {
+                bellIcon.classList.add('bell-shake');
+                setTimeout(() => bellIcon.classList.remove('bell-shake'), 500);
+            }
         } else {
             badge.style.display = 'none';
         }
@@ -549,12 +574,14 @@
             sound.play()
                 .then(() => {
                     console.log('🔊 Test sound played successfully');
-                    // Show brief confirmation
-                    const bell = document.getElementById('unifiedNotificationBell');
-                    bell.style.color = '#10b981';
-                    setTimeout(() => {
-                        bell.style.color = '#fff';
-                    }, 500);
+                    // Show brief confirmation on nav bell
+                    const bellIcon = document.querySelector('#notificationBell i');
+                    if (bellIcon) {
+                        bellIcon.style.color = '#10b981';
+                        setTimeout(() => {
+                            bellIcon.style.color = '';
+                        }, 500);
+                    }
                 })
                 .catch(error => {
                     console.error('❌ Sound test failed:', error);

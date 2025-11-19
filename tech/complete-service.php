@@ -13,8 +13,8 @@ $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pric
 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
 
-// Get booking details with admin price
-$query = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name, s.s_admin_price
+// Get booking details with service price
+$query = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name, s.s_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -32,8 +32,8 @@ if($result->num_rows == 0){
 $booking = $result->fetch_object();
 
 // Determine the price to use
-$admin_price_set = ($booking->s_admin_price !== null && $booking->s_admin_price > 0);
-$display_price = $admin_price_set ? $booking->s_admin_price : $booking->sb_total_price;
+$admin_price_set = ($booking->s_price !== null && $booking->s_price > 0);
+$display_price = $admin_price_set ? $booking->s_price : $booking->sb_total_price;
 
 // Handle form submission
 if(isset($_POST['complete_service'])){
@@ -61,7 +61,7 @@ if(isset($_POST['complete_service'])){
         move_uploaded_file($_FILES["bill_img"]["tmp_name"], $target_file);
     }
     
-    // Determine if technician set the price (different from admin price)
+    // Determine if technician set the price (when admin didn't set one)
     $price_set_by_tech = 0;
     $tech_decided_price = null;
     

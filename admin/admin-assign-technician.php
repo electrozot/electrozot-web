@@ -88,6 +88,11 @@
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_date DATE DEFAULT NULL");
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_time TIME DEFAULT NULL");
                 
+                // Auto-set status based on technician assignment
+                // If technician is assigned, status should be 'Approved'
+                // If no technician, status should be 'Pending'
+                $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
+                
                 // Update the booking with new technician and service deadline
                 $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=? WHERE sb_id=?";
                 $stmt = $mysqli->prepare($query);
@@ -95,7 +100,7 @@
                 if(!$stmt) {
                     $err = "Database error: " . $mysqli->error;
                 } else {
-                    $stmt->bind_param('isssi', $sb_technician_id, $sb_status, $service_deadline_date, $service_deadline_time, $sb_id);
+                    $stmt->bind_param('isssi', $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     $result = $stmt->execute();
                     
                     if($result && $stmt->affected_rows > 0) {
@@ -158,6 +163,9 @@
                                 $tech_stmt->execute();
                             }
                         }
+                        
+                        // Auto-update all technician statuses after assignment
+                        include_once('auto-update-technician-status.php');
                         
                         $succ = "Technician Assigned Successfully";
                         // Redirect to prevent form resubmission

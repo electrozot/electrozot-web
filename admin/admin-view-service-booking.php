@@ -6,7 +6,7 @@
   $aid=$_SESSION['a_id'];
   
   $sb_id=$_GET['sb_id'];
-  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, s.s_admin_price, 
+  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, 
         t.t_name as tech_name, t.t_id_no as tech_id
         FROM tms_service_booking sb
         LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
@@ -174,17 +174,13 @@
                                          <th>Category:</th>
                                          <td><?php echo $booking->s_category;?></td>
                                      </tr>
+                                     <?php if($booking->s_price !== null && $booking->s_price > 0): ?>
                                      <tr>
-                                         <th>Base Service Price:</th>
-                                         <td>₹<?php echo number_format($booking->s_price, 2);?></td>
-                                     </tr>
-                                     <?php if($booking->s_admin_price !== null && $booking->s_admin_price > 0): ?>
-                                     <tr>
-                                         <th>Admin Set Price:</th>
+                                         <th>Service Price:</th>
                                          <td>
-                                             <strong style="color: #28a745;">₹<?php echo number_format($booking->s_admin_price, 2);?></strong>
+                                             <strong style="color: #28a745;">₹<?php echo number_format($booking->s_price, 2);?></strong>
                                              <span class="badge badge-success ml-2">
-                                                 <i class="fas fa-lock"></i> Fixed by Admin
+                                                 <i class="fas fa-check"></i> Fixed Price
                                              </span>
                                          </td>
                                      </tr>
@@ -243,10 +239,10 @@
                                              <span class="badge badge-info mt-1">
                                                  <i class="fas fa-user-cog"></i> Price set by Technician for this booking
                                              </span>
-                                             <?php elseif($booking->s_admin_price !== null && $booking->s_admin_price > 0): ?>
+                                             <?php elseif($booking->s_price !== null && $booking->s_price > 0): ?>
                                              <br>
                                              <span class="badge badge-success mt-1">
-                                                 <i class="fas fa-lock"></i> Admin fixed price applied
+                                                 <i class="fas fa-check"></i> Fixed price applied
                                              </span>
                                              <?php endif; ?>
                                          </td>

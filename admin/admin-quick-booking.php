@@ -114,16 +114,16 @@ if(isset($_POST['create_booking'])) {
         // Prepend custom service name to notes
         $notes = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $notes;
     } else {
-        $price_query = "SELECT s_price, s_admin_price FROM tms_service WHERE s_id = ?";
+        $price_query = "SELECT s_price FROM tms_service WHERE s_id = ?";
         $stmt_price = $mysqli->prepare($price_query);
         $stmt_price->bind_param('i', $service_id);
         $stmt_price->execute();
         $price_result = $stmt_price->get_result();
         $service = $price_result->fetch_object();
-        // Use admin price if set, otherwise use default service price
-        $total_price = ($service->s_admin_price !== null && $service->s_admin_price > 0) 
-                      ? $service->s_admin_price 
-                      : $service->s_price;
+        // Use admin-set price if available, otherwise set to 0 (technician will fill during completion)
+        $total_price = ($service->s_price !== null && $service->s_price > 0) 
+                      ? $service->s_price 
+                      : 0;
     }
     
     // Ensure sb_custom_service column exists and sb_service_id allows NULL

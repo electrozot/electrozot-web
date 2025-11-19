@@ -3,32 +3,27 @@
  * AUTO-FIX: Technician Slots
  * This file automatically syncs technician data when included
  * Include this at the top of admin-dashboard.php or admin-manage-technicians.php
+ * 
+ * Updated: Now runs every 30 seconds instead of once per session for real-time updates
  */
 
-// Only run if not already run in this session
+// Run if not synced yet OR if last sync was more than 30 seconds ago
+$should_sync = false;
+
 if (!isset($_SESSION['technician_slots_synced'])) {
+    $should_sync = true;
+} elseif (isset($_SESSION['technician_slots_synced_time'])) {
+    $time_since_sync = time() - $_SESSION['technician_slots_synced_time'];
+    if ($time_since_sync > 30) { // Re-sync every 30 seconds
+        $should_sync = true;
+    }
+}
+
+if ($should_sync) {
+    // Use the centralized auto-update script
+    include_once('auto-update-technician-status.php');
     
-    // Sync all technician booking counts
-    $sync_sql = "UPDATE tms_technician t
-                SET t_current_bookings = (
-                    SELECT COUNT(*)
-                    FROM tms_service_booking sb
-                    WHERE sb.sb_technician_id = t.t_id
-                    AND sb.sb_status IN ('Pending', 'Approved', 'In Progress')
-                )";
-    
-    $mysqli->query($sync_sql);
-    
-    // Update all technician statuses
-    $status_sql = "UPDATE tms_technician
-                  SET t_status = CASE
-                      WHEN t_current_bookings >= t_booking_limit THEN 'Busy'
-                      ELSE 'Available'
-                  END";
-    
-    $mysqli->query($status_sql);
-    
-    // Mark as synced for this session
+    // Mark as synced
     $_SESSION['technician_slots_synced'] = true;
     $_SESSION['technician_slots_synced_time'] = time();
 }

@@ -6,8 +6,8 @@ include('includes/checklogin.php');
 $t_id = $_SESSION['t_id'];
 $page_title = "Service Prices";
 
-// Get all services with admin prices
-$query = "SELECT s_id, s_name, s_category, s_subcategory, s_price, s_admin_price, s_status 
+// Get all services with prices
+$query = "SELECT s_id, s_name, s_category, s_subcategory, s_price, s_status 
           FROM tms_service 
           WHERE s_status = 'Active'
           ORDER BY s_category, s_name";
@@ -81,9 +81,9 @@ while($row = $result->fetch_object()) {
                                 <small class="text-muted"><?php echo htmlspecialchars($service->s_subcategory ?: '-'); ?></small>
                             </td>
                             <td style="text-align: center;">
-                                <?php if($service->s_admin_price !== null && $service->s_admin_price > 0): ?>
+                                <?php if($service->s_price !== null && $service->s_price > 0): ?>
                                 <span style="font-size: 1.3rem; color: #28a745; font-weight: 700;">
-                                    ₹<?php echo number_format($service->s_admin_price, 2); ?>
+                                    ₹<?php echo number_format($service->s_price, 2); ?>
                                 </span>
                                 <?php else: ?>
                                 <span style="font-size: 1.1rem; color: #6c757d; font-style: italic;">
@@ -92,9 +92,9 @@ while($row = $result->fetch_object()) {
                                 <?php endif; ?>
                             </td>
                             <td style="text-align: center;">
-                                <?php if($service->s_admin_price !== null && $service->s_admin_price > 0): ?>
+                                <?php if($service->s_price !== null && $service->s_price > 0): ?>
                                 <span class="badge badge-success" style="padding: 8px 12px; font-size: 0.9rem;">
-                                    <i class="fas fa-lock"></i> Admin Set
+                                    <i class="fas fa-lock"></i> Fixed Price
                                 </span>
                                 <?php else: ?>
                                 <span class="badge badge-warning" style="padding: 8px 12px; font-size: 0.9rem;">
