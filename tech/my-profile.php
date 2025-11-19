@@ -305,6 +305,32 @@ if(!empty($display_pincode)) {
             color: white;
         }
         
+        .btn-call-admin {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+        }
+        
+        .btn-call-admin:hover {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .btn-whatsapp-admin {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+        }
+        
+        .btn-whatsapp-admin:hover {
+            background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
         .profile-details {
             padding: 40px;
         }
@@ -434,6 +460,14 @@ if(!empty($display_pincode)) {
                 justify-content: center;
             }
             
+            .profile-actions {
+                flex-direction: column;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+            
             .detail-row {
                 flex-direction: column;
                 gap: 10px;
@@ -505,6 +539,12 @@ if(!empty($display_pincode)) {
             
             <!-- Action Buttons -->
             <div class="profile-actions">
+                <a href="tel:7559606925" class="action-btn btn-call-admin">
+                    <i class="fas fa-phone-alt"></i> Call Admin
+                </a>
+                <a href="https://wa.me/917559606925?text=Hi%20Admin,%20I%20am%20<?php echo urlencode($t_name); ?>%20(ID:%20<?php echo urlencode($t_id_no); ?>).%20I%20need%20assistance." target="_blank" class="action-btn btn-whatsapp-admin">
+                    <i class="fab fa-whatsapp"></i> WhatsApp Admin
+                </a>
                 <a href="change-password.php" class="action-btn btn-change-password">
                     <i class="fas fa-key"></i> Change Password
                 </a>

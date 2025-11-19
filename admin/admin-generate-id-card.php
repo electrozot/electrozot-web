@@ -309,20 +309,6 @@ if(isset($_POST['search_technician'])) {
                                         </div>
                                         <?php endif; ?>
                                         
-                                            <?php if(!empty($technician->t_phone)): ?>
-                                            <div class="id-card-field">
-                                                <div class="id-card-label">Mobile</div>
-                                                <div class="id-card-value"><?php echo htmlspecialchars($technician->t_phone); ?></div>
-                                            </div>
-                                            <?php endif; ?>
-                                            
-                                            <?php if(!empty($technician->t_aadhar)): ?>
-                                            <div class="id-card-field">
-                                                <div class="id-card-label">Aadhaar No.</div>
-                                                <div class="id-card-value"><?php echo htmlspecialchars($technician->t_aadhar); ?></div>
-                                            </div>
-                                            <?php endif; ?>
-                                        
                                             <?php if(!empty($technician->t_addr)): ?>
                                             <div class="id-card-field">
                                                 <div class="id-card-label">Address</div>
