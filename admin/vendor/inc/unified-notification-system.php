@@ -283,25 +283,33 @@
     // Initialize
     function init() {
         soundElement = document.getElementById('unifiedNotificationSound');
+        let audioEnabled = false;
         
         // Enable sound on first user interaction (to bypass autoplay policy)
         const enableSoundOnInteraction = function() {
-            if (soundElement) {
+            if (soundElement && !audioEnabled) {
                 // Preload and prepare audio
                 soundElement.load();
                 soundElement.volume = 0.8;
-                console.log('✅ Sound ready for playback');
+                
+                // Try to play and immediately pause to unlock audio
+                soundElement.play().then(() => {
+                    soundElement.pause();
+                    soundElement.currentTime = 0;
+                    audioEnabled = true;
+                    console.log('✅ Sound enabled and ready for playback');
+                }).catch(() => {
+                    console.log('⚠️ Audio will be enabled on next interaction');
+                });
             }
-            // Remove listeners after first interaction
-            document.removeEventListener('click', enableSoundOnInteraction);
-            document.removeEventListener('keydown', enableSoundOnInteraction);
-            document.removeEventListener('touchstart', enableSoundOnInteraction);
         };
         
         // Listen for any user interaction
         document.addEventListener('click', enableSoundOnInteraction, { once: true });
         document.addEventListener('keydown', enableSoundOnInteraction, { once: true });
         document.addEventListener('touchstart', enableSoundOnInteraction, { once: true });
+        document.addEventListener('scroll', enableSoundOnInteraction, { once: true });
+        document.addEventListener('mousemove', enableSoundOnInteraction, { once: true });
         
         // Request notification permission
         if ('Notification' in window && Notification.permission === 'default') {
@@ -320,7 +328,7 @@
         });
         
         console.log('✅ Unified Notification System initialized');
-        console.log('💡 Click anywhere on page to enable notification sound');
+        console.log('💡 Audio will be enabled automatically on first interaction');
     }
     
     // Check for new notifications
@@ -478,18 +486,13 @@
                         console.log('🔊 Notification sound played successfully');
                     })
                     .catch(error => {
-                        console.warn('⚠️ Sound autoplay blocked. Click anywhere on page to enable sound.');
-                        // Enable sound on first user interaction
-                        document.addEventListener('click', function enableSound() {
-                            soundElement.play().then(() => {
-                                console.log('✅ Sound enabled after user interaction');
-                            }).catch(() => {});
-                            document.removeEventListener('click', enableSound);
-                        }, { once: true });
+                        // Silently handle autoplay block - audio will work after user interaction
+                        console.log('ℹ️ Audio will play after user interaction');
                     });
             }
         } catch (e) {
-            console.error('Sound error:', e);
+            // Silently handle errors
+            console.log('ℹ️ Audio playback pending user interaction');
         }
     }
     

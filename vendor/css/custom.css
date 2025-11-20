@@ -58,7 +58,7 @@
 /* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    bottom: 30px;
+    bottom: 100px;
     right: 30px;
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
@@ -70,7 +70,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
-    z-index: 1000;
+    z-index: 10000;
     transition: all 0.3s ease;
     text-decoration: none;
     font-size: 22px;

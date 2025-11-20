@@ -7,7 +7,7 @@
     <?php include("vendor/inc/nav.php");?>
     
     <!-- Hero Section -->
-    <section class="contact-hero" style="background: linear-gradient(135deg, #e0f29fff 0%, #fc8cb1ff 25%, #aef198ff 50%, #ff6b9d 75%, #ff4757 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 100px 0 60px 0; position: relative; overflow: hidden;">
+    <section class="contact-hero" style="background: linear-gradient(135deg, #e0f29fff 0%, #fc8cb1ff 25%, #aef198ff 50%, #ff6b9d 75%, #ff4757 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 156px 0 60px 0; margin-top: -56px; position: relative; overflow: hidden;">
         <div class="contact-hero-overlay"></div>
         <div class="container" style="position: relative; z-index: 2;">
             <div class="text-center text-white">
@@ -342,6 +342,9 @@
             }
         }
     </style>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
 
 </body>
 

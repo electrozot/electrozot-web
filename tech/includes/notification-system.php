@@ -1,47 +1,93 @@
 <!-- Technician Notification System -->
 <script>
     // Create audio element for notification sound
-    const techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
-    techNotificationAudio.volume = 0.8;
+    let techNotificationAudio = null;
+    let audioEnabled = false;
+    let audioInitialized = false;
     
-    // Preload audio
-    techNotificationAudio.load();
+    // Initialize audio
+    function initializeAudio() {
+        if (!audioInitialized) {
+            try {
+                techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
+                techNotificationAudio.volume = 1.0; // Maximum volume
+                techNotificationAudio.preload = 'auto';
+                techNotificationAudio.load();
+                audioInitialized = true;
+                console.log('✅ Audio initialized');
+            } catch(e) {
+                console.error('❌ Audio initialization error:', e);
+            }
+        }
+    }
     
     // Enable audio on first user interaction
-    let audioEnabled = false;
     function enableAudio() {
-        if (!audioEnabled) {
+        if (!audioEnabled && audioInitialized) {
             techNotificationAudio.play().then(() => {
                 techNotificationAudio.pause();
                 techNotificationAudio.currentTime = 0;
                 audioEnabled = true;
-                console.log('✅ Audio enabled');
-            }).catch(() => {
-                console.log('⚠️ Audio will be enabled on next interaction');
+                console.log('✅ Audio enabled and ready');
+            }).catch((err) => {
+                console.log('⚠️ Audio will be enabled on next interaction:', err);
             });
         }
     }
     
+    // Initialize audio immediately
+    initializeAudio();
+    
     // Enable audio on any user interaction
-    document.addEventListener('click', enableAudio, { once: true });
-    document.addEventListener('touchstart', enableAudio, { once: true });
-    document.addEventListener('keydown', enableAudio, { once: true });
+    ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'].forEach(event => {
+        document.addEventListener(event, function() {
+            if (!audioEnabled) {
+                enableAudio();
+            }
+        }, { once: true, passive: true });
+    });
+    
+    // Force enable audio after 1 second
+    setTimeout(() => {
+        if (!audioEnabled) {
+            enableAudio();
+        }
+    }, 1000);
     
     function playTechNotificationSound() {
         try {
+            if (!audioInitialized) {
+                initializeAudio();
+            }
+            
+            if (!techNotificationAudio) {
+                console.error('❌ Audio not initialized');
+                return;
+            }
+            
+            // Reset and play
             techNotificationAudio.currentTime = 0;
+            techNotificationAudio.volume = 1.0;
+            
             const playPromise = techNotificationAudio.play();
             
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
-                        console.log('🔊 Notification sound played successfully');
+                        console.log('🔊 Notification sound played successfully!');
+                        audioEnabled = true;
                     })
                     .catch((error) => {
                         console.error('❌ Error playing sound:', error);
-                        console.log('💡 Tip: Click anywhere on the page first to enable audio');
-                        // Try to enable audio for next time
-                        audioEnabled = false;
+                        console.log('💡 Trying to enable audio...');
+                        
+                        // Try to enable audio and play again
+                        enableAudio();
+                        setTimeout(() => {
+                            techNotificationAudio.play().catch(e => {
+                                console.error('❌ Still cannot play:', e);
+                            });
+                        }, 100);
                     });
             }
         } catch(e) {

@@ -111,79 +111,194 @@ if(!empty($display_pincode)) {
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            padding: 30px 15px;
+            padding: 20px 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
         }
         
         .profile-container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .back-btn {
-            background: white;
-            color: #2d3748;
-            padding: 10px 25px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #667eea;
+            padding: 12px 30px;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 700;
-            display: inline-block;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 2px solid #e2e8f0;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .back-btn:hover {
-            background: #f7fafc;
+            background: white;
             text-decoration: none;
-            color: #2d3748;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            color: #764ba2;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+        
+        .back-btn i {
+            transition: transform 0.3s;
+        }
+        
+        .back-btn:hover i {
+            transform: translateX(-5px);
         }
         
         .profile-card {
             background: white;
-            border-radius: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             overflow: hidden;
             margin-bottom: 30px;
+            animation: slideIn 0.8s ease-out 0.2s both;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         .profile-header {
-            background: linear-gradient(135deg, #c0fa87ff 0%, #667eea 100%);
-            padding: 40px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 50px 40px;
             color: white;
             position: relative;
+            overflow: hidden;
         }
         
         .profile-header::before {
             content: '';
             position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .profile-header::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
             background: rgba(255,255,255,0.08);
             border-radius: 50%;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
         }
         
         .service-pincode-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
             border-radius: 50px;
             display: inline-block;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.25);
+            margin-bottom: 25px;
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            }
+            50% {
+                box-shadow: 0 8px 35px rgba(0,0,0,0.15);
+            }
+        }
+        
+        .service-pincode-badge:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.25);
         }
         
         .service-pincode-badge h5 {
             margin: 0;
             font-weight: 800;
             font-size: 1.2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .service-pincode-badge .badge {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
         }
         
         .profile-main {
@@ -195,45 +310,106 @@ if(!empty($display_pincode)) {
         }
         
         .profile-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 20px;
-            border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 160px;
+            height: 160px;
+            border-radius: 25px;
+            border: 6px solid white;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             object-fit: cover;
             background: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: photoZoom 0.8s ease-out 0.4s both;
+        }
+        
+        @keyframes photoZoom {
+            from {
+                opacity: 0;
+                transform: scale(0.8) rotate(-5deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+        
+        .profile-photo:hover {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
         }
         
         .profile-photo-placeholder {
-            width: 150px;
-            height: 150px;
-            border-radius: 20px;
-            border: 5px solid white;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            width: 160px;
+            height: 160px;
+            border-radius: 25px;
+            border: 6px solid white;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4rem;
+            font-size: 4.5rem;
             color: white;
+            transition: all 0.4s;
+            animation: photoZoom 0.8s ease-out 0.4s both;
+        }
+        
+        .profile-photo-placeholder:hover {
+            transform: scale(1.08) rotate(-2deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+        
+        .profile-photo-placeholder i {
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
         
         .profile-info h2 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: slideInRight 0.8s ease-out 0.6s both;
+            letter-spacing: -1px;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
         .tech-id-badge {
-            background: rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.3);
             color: white;
-            padding: 8px 20px;
+            padding: 10px 25px;
             border-radius: 50px;
             font-weight: 900;
             display: inline-block;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+            font-size: 1.15rem;
+            border: 2px solid rgba(255,255,255,0.4);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+            animation: slideInRight 0.8s ease-out 0.7s both;
+            transition: all 0.3s;
+        }
+        
+        .tech-id-badge:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.4);
         }
         
         .contact-info {
@@ -245,49 +421,108 @@ if(!empty($display_pincode)) {
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.15);
-            padding: 10px 20px;
+            gap: 12px;
+            background: rgba(255,255,255,0.2);
+            padding: 12px 25px;
             border-radius: 50px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.8s ease-out 0.8s both;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .contact-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .contact-item i {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
         }
         
         .profile-actions {
-            padding: 30px 40px;
-            background: #f7fafc;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            border-top: 1px solid #e2e8f0;
+            padding: 35px 40px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            border-top: 3px solid #e2e8f0;
         }
         
         .action-btn {
-            flex: 1;
-            padding: 15px 30px;
+            padding: 18px 35px;
             border-radius: 50px;
             font-weight: 700;
             text-decoration: none;
             text-align: center;
-            transition: all 0.3s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.05rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .action-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .action-btn i {
+            margin-right: 8px;
+            transition: transform 0.3s;
+        }
+        
+        .action-btn:hover i {
+            transform: scale(1.2) rotate(5deg);
         }
         
         .btn-change-password {
             background: linear-gradient(135deg, #4299e1 0%, #667eea 100%);
             color: white;
+            position: relative;
+            z-index: 1;
         }
         
         .btn-change-password:hover {
             background: linear-gradient(135deg, #3182ce 0%, #5a67d8 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.4);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(66, 153, 225, 0.5);
             text-decoration: none;
             color: white;
         }
@@ -295,12 +530,14 @@ if(!empty($display_pincode)) {
         .btn-logout {
             background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
             color: white;
+            position: relative;
+            z-index: 1;
         }
         
         .btn-logout:hover {
-            background: linear-gradient(135deg, #be13eeff 0%, #e53ea8ff 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(245, 101, 101, 0.4);
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(245, 101, 101, 0.5);
             text-decoration: none;
             color: white;
         }
@@ -308,12 +545,14 @@ if(!empty($display_pincode)) {
         .btn-call-admin {
             background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
+            position: relative;
+            z-index: 1;
         }
         
         .btn-call-admin:hover {
             background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.4);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(72, 187, 120, 0.5);
             text-decoration: none;
             color: white;
         }
@@ -321,72 +560,126 @@ if(!empty($display_pincode)) {
         .btn-whatsapp-admin {
             background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
             color: white;
+            position: relative;
+            z-index: 1;
         }
         
         .btn-whatsapp-admin:hover {
             background: linear-gradient(135deg, #128C7E 0%, #075E54 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.5);
             text-decoration: none;
             color: white;
         }
         
         .profile-details {
-            padding: 40px;
+            padding: 45px;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
         }
         
         .detail-row {
             display: flex;
-            padding: 20px 0;
-            border-bottom: 2px solid #f0f0f0;
+            padding: 25px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInLeft 0.6s ease-out both;
         }
         
-        .detail-row:last-child {
-            border-bottom: none;
+        .detail-row:nth-child(1) { animation-delay: 0.1s; }
+        .detail-row:nth-child(2) { animation-delay: 0.2s; }
+        .detail-row:nth-child(3) { animation-delay: 0.3s; }
+        .detail-row:nth-child(4) { animation-delay: 0.4s; }
+        .detail-row:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .detail-row:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         }
         
         .detail-label {
             font-weight: 700;
-            color: #666;
-            width: 200px;
+            color: #555;
+            width: 220px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.05rem;
         }
         
         .detail-label i {
-            color: #4299e1;
-            width: 25px;
+            color: #667eea;
+            width: 30px;
+            font-size: 1.3rem;
+            transition: transform 0.3s;
+        }
+        
+        .detail-row:hover .detail-label i {
+            transform: scale(1.2) rotate(5deg);
         }
         
         .detail-value {
-            color: #333;
+            color: #2d3748;
             flex: 1;
             font-weight: 600;
+            font-size: 1.05rem;
         }
         
         .stats-section {
             background: white;
-            border-radius: 25px;
-            padding: 40px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-radius: 30px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: slideIn 0.8s ease-out 0.4s both;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .stats-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease-out 0.6s both;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .stats-header h3 {
-            font-size: 2rem;
+            font-size: 2.3rem;
             font-weight: 900;
-            color: #333;
-            margin-bottom: 10px;
+            color: #2d3748;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .stats-header p {
-            color: #666;
-            font-size: 1.1rem;
+            color: #718096;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
         
         .stats-grid {
@@ -397,53 +690,110 @@ if(!empty($display_pincode)) {
         
         .stat-card {
             background: linear-gradient(135deg, #f85959ff 0%, #fc9484ff 100%);
-            padding: 30px;
-            border-radius: 20px;
+            padding: 40px 30px;
+            border-radius: 25px;
             color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            animation: scaleIn 0.6s ease-out both;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.8s; }
+        .stat-card:nth-child(2) { animation-delay: 0.9s; }
+        .stat-card:nth-child(3) { animation-delay: 1s; }
+        
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
         
         .stat-card::before {
             content: '';
             position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.6s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        
+        .stat-card:hover::before {
             top: -50px;
             right: -50px;
-            width: 150px;
-            height: 150px;
-            background: rgba(255,255,255,0.08);
-            border-radius: 50%;
+            width: 250px;
+            height: 250px;
         }
         
         .stat-card.stat-orders {
-            background: linear-gradient(135deg, #f75af7ff 0%, #f4e18cff 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .stat-card.stat-earnings {
-            background: linear-gradient(135deg, #60f3e4ff 0%, #d368a3ff 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
         }
         
         .stat-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            opacity: 0.9;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.95;
+            animation: iconBounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes iconBounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
         }
         
         .stat-value {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             position: relative;
             z-index: 2;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            animation: countUp 1s ease-out;
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .stat-label {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.2rem;
+            font-weight: 700;
             opacity: 0.95;
             position: relative;
             z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         @media (max-width: 768px) {

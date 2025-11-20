@@ -13,7 +13,7 @@
     <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="about-hero" style="background: linear-gradient(135deg, #e0f7f4 0%, #f0fdf9 50%, #e0f7f4 100%); padding: 100px 0 80px 0; position: relative; overflow: hidden;">
+    <section class="about-hero" style="background: linear-gradient(135deg, #e0f7f4 0%, #f0fdf9 50%, #e0f7f4 100%); padding: 156px 0 80px 0; margin-top: -56px; position: relative; overflow: hidden;">
         <!-- Decorative Elements -->
         <div style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: rgba(17, 153, 142, 0.1); border-radius: 50%; z-index: 1;"></div>
         <div style="position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px; background: rgba(56, 239, 125, 0.08); border-radius: 50%; z-index: 1;"></div>
@@ -501,6 +501,9 @@
             }
         }
     </style>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
 
 </body>
 </html>

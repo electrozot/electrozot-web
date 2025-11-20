@@ -30,8 +30,8 @@ foreach($columns_to_add as $sql) {
     try { $mysqli->query($sql); } catch(Exception $e) {}
 }
 
-// Get booking details
-$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_category
+// Get booking details with service price
+$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_category, s.s_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -48,6 +48,10 @@ if($result->num_rows == 0){
 }
 
 $booking = $result->fetch_object();
+
+// Check if admin has set a fixed price
+$admin_price_set = ($booking->s_price !== null && $booking->s_price > 0);
+$display_price = $admin_price_set ? $booking->s_price : $booking->sb_total_price;
 
 // Check if already completed or not done
 if($booking->sb_status == 'Completed' || $booking->sb_status == 'Not Done'){
@@ -66,8 +70,8 @@ $debug_mode = isset($_GET['debug']);
 if(isset($_POST['mark_done'])){
     $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
     
-    // Validate inputs
-    if($bill_amount <= 0){
+    // Validate inputs (skip validation if admin has set fixed price)
+    if($bill_amount <= 0 && !$admin_price_set){
         $error = 'Please enter a valid bill amount greater than 0';
     }
     elseif(!isset($_FILES['service_image']) || $_FILES['service_image']['error'] == 4){
@@ -535,10 +539,23 @@ if(isset($_POST['mark_not_done'])){
                 </div>
                 
                 <!-- Bill Amount -->
+                <?php if(!$admin_price_set): ?>
                 <div class="form-group">
                     <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
-                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount" step="0.01" min="0.01" required>
+                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
                 </div>
+                <?php else: ?>
+                <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
+                <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
+                        <div>
+                            <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
+                            <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
                 
                 <button type="submit" name="mark_done" class="btn-submit">
                     <i class="fas fa-check-circle"></i> Complete Service

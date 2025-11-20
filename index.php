@@ -17,10 +17,10 @@
     <!--End Navigation-->
 
     <!-- Page Content -->
-    <div class="container-fluid px-0">
+    <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #F0E5D8 0%, #E8D5C4 100%); padding: 80px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #F0E5D8 0%, #E8D5C4 100%); padding: 136px 0 80px 0; position: relative; overflow: hidden;">
             
             <!-- Enhanced Background Decorative Elements -->
             <div class="hero-bg-elements">
@@ -1196,6 +1196,9 @@
             console.log('✅ Running as installed PWA');
         }
     </script>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
 
 </body>
 

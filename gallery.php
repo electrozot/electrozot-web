@@ -17,7 +17,7 @@
      <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="gallery-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 60px 0 40px 0;">
+    <section class="gallery-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 116px 0 40px 0; margin-top: -56px;">
      <div class="container">
             <div class="text-center">
                 <h1 class="gallery-title" style="font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 10px;">
