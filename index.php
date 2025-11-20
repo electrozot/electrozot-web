@@ -121,13 +121,26 @@
                     0%, 100% { opacity: 0; transform: scale(0); }
                     50% { opacity: 1; transform: scale(1); }
                 }
+                
+                /* Mobile responsive heading */
+                @media (max-width: 768px) {
+                    .hero-title {
+                        font-size: 3.5rem !important;
+                    }
+                }
+                
+                @media (max-width: 576px) {
+                    .hero-title {
+                        font-size: 3rem !important;
+                    }
+                }
             </style>
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-4 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
-                            Welcome to <span class="electrozot-animated" style="color: #8b0000;">Electrozot</span>
+                        <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); font-size: 4.5rem;">
+                            <span class="electrozot-animated" style="color: #8b0000; -webkit-text-stroke: 0.5px #4a0000; text-stroke: 0.5px #4a0000;">Electrozot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; color: #4a5568; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); font-weight: 700;">
                             Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.

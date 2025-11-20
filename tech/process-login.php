@@ -1,4 +1,6 @@
 <?php
+  // Configure persistent session (30 days) BEFORE starting session
+  include('../admin/vendor/inc/session-config.php');
   session_start();
   include('../admin/vendor/inc/config.php');
 
@@ -65,6 +67,10 @@
   $_SESSION['t_id'] = $row->t_id;
   $_SESSION['t_name'] = $row->t_name;
   $_SESSION['t_id_no'] = $row->t_id_no;
+  
+  // Regenerate session ID for security
+  session_regenerate_id(true);
+  
   header('Location: dashboard.php');
   exit();
 ?>

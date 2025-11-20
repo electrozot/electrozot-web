@@ -2257,6 +2257,9 @@ $completed_count = $counts->completed_count;
         });
     </script>
     
+    <!-- Push Notification Setup -->
+    <?php include('includes/push-notification-setup.php'); ?>
+    
     <!-- Technician Notification System -->
     <?php include('includes/notification-system.php'); ?>
     

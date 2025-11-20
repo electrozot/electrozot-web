@@ -2,6 +2,7 @@
 session_start();
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
+include('../admin/vendor/inc/image-visibility-helper.php');
 check_login();
 $aid = $_SESSION['u_id'];
 
@@ -254,7 +255,14 @@ if(!$booking) {
                 </div>
 
                 <!-- Service Completion Images (Only for Completed Bookings) -->
-                <?php if($booking->sb_status == 'Completed' && (!empty($booking->sb_completion_img) || !empty($booking->sb_bill_img) || !empty($booking->sb_service_image) || !empty($booking->sb_bill_image))): ?>
+                <?php 
+                // Check if images should be visible (31 days for customers)
+                $show_images = $booking->sb_status == 'Completed' && 
+                               !empty($booking->sb_completed_date) && 
+                               isImageVisible($booking->sb_completed_date, 'customer') &&
+                               (!empty($booking->sb_completion_img) || !empty($booking->sb_bill_img) || !empty($booking->sb_service_image) || !empty($booking->sb_bill_image));
+                ?>
+                <?php if($show_images): ?>
                 <div class="row">
                     <div class="col-12 mb-4">
                         <div class="card shadow-lg" style="border: none; border-radius: 15px;">
@@ -266,14 +274,14 @@ if(!$booking) {
                             <div class="card-body">
                                 <div class="row">
                                     <!-- Service Completion Image -->
-                                    <?php if(!empty($booking->sb_completion_img) || !empty($booking->sb_service_image)): ?>
+                                    <?php 
+                                    $completion_img = !empty($booking->sb_completion_img) ? $booking->sb_completion_img : (!empty($booking->sb_service_image) ? $booking->sb_service_image : '');
+                                    if(!empty($completion_img) && shouldDisplayImage($completion_img, $booking->sb_completed_date, 'customer')): 
+                                    ?>
                                         <div class="col-md-6 mb-3">
                                             <h6 class="font-weight-bold text-success">
                                                 <i class="fas fa-camera"></i> Service Completion Image
                                             </h6>
-                                            <?php 
-                                            $completion_img = !empty($booking->sb_completion_img) ? $booking->sb_completion_img : $booking->sb_service_image;
-                                            ?>
                                             <div class="text-center">
                                                 <a href="../vendor/img/completions/<?php echo $completion_img; ?>" target="_blank">
                                                     <img src="../vendor/img/completions/<?php echo $completion_img; ?>" 
@@ -298,14 +306,14 @@ if(!$booking) {
                                     <?php endif; ?>
 
                                     <!-- Bill Image -->
-                                    <?php if(!empty($booking->sb_bill_img) || !empty($booking->sb_bill_image)): ?>
+                                    <?php 
+                                    $bill_img = !empty($booking->sb_bill_img) ? $booking->sb_bill_img : (!empty($booking->sb_bill_image) ? $booking->sb_bill_image : '');
+                                    if(!empty($bill_img) && shouldDisplayImage($bill_img, $booking->sb_completed_date, 'customer')): 
+                                    ?>
                                         <div class="col-md-6 mb-3">
                                             <h6 class="font-weight-bold text-info">
                                                 <i class="fas fa-file-invoice-dollar"></i> Service Bill
                                             </h6>
-                                            <?php 
-                                            $bill_img = !empty($booking->sb_bill_img) ? $booking->sb_bill_img : $booking->sb_bill_image;
-                                            ?>
                                             <div class="text-center">
                                                 <a href="../vendor/img/bills/<?php echo $bill_img; ?>" target="_blank">
                                                     <img src="../vendor/img/bills/<?php echo $bill_img; ?>" 

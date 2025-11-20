@@ -208,8 +208,23 @@
                             mobileAlert.style.display = 'flex';
                         }
                         
-                        // Browser notification
-                        if ('Notification' in window && Notification.permission === 'granted') {
+                        // Browser notification (works even when tab is not active)
+                        if (typeof showBrowserNotification === 'function') {
+                            const firstNotif = response.notifications[0];
+                            showBrowserNotification(firstNotif.message, {
+                                body: `Booking #${firstNotif.id} - ${firstNotif.service}\nCustomer: ${firstNotif.customer}\nPhone: ${firstNotif.phone}`,
+                                icon: '/vendor/img/icons/icon-192x192.png',
+                                badge: '/vendor/img/icons/badge-72x72.png',
+                                vibrate: [200, 100, 200, 100, 200],
+                                tag: 'tech-notification-' + firstNotif.id,
+                                requireInteraction: true,
+                                data: {
+                                    url: '/tech/dashboard.php',
+                                    booking_id: firstNotif.id
+                                }
+                            });
+                        } else if ('Notification' in window && Notification.permission === 'granted') {
+                            // Fallback to regular notification
                             const firstNotif = response.notifications[0];
                             new Notification(firstNotif.message, {
                                 body: `Booking #${firstNotif.id} - ${firstNotif.service}`,

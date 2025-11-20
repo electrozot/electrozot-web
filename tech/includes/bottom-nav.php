@@ -48,9 +48,9 @@ if($tech_id > 0) {
         <i class="fas fa-user"></i>
         <span>Profile</span>
     </a>
-    <a href="logout.php" class="nav-item">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
+    <a href="tel:7559606925" class="nav-item">
+        <i class="fas fa-phone-alt"></i>
+        <span>Call Admin</span>
     </a>
 </div>
 

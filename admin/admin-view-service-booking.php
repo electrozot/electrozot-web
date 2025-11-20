@@ -2,6 +2,7 @@
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
+  include('vendor/inc/image-visibility-helper.php');
   check_login();
   $aid=$_SESSION['a_id'];
   
@@ -105,9 +106,14 @@
                                      </tr>
                                    </table>
                                    
+                                   <?php 
+                                   // Check if images should be visible (40 days for admin)
+                                   $show_images_admin = !empty($booking->sb_completed_date) && isImageVisible($booking->sb_completed_date, 'admin');
+                                   ?>
+                                   
                                    <h6 class="mt-3"><i class="fas fa-camera"></i> Service Completion Photo</h6>
                                    <div class="border rounded p-3 mb-3" style="background:#f8f9fa;">
-                                     <?php if(!empty($booking->sb_completion_image)): ?>
+                                     <?php if(!empty($booking->sb_completion_image) && $show_images_admin): ?>
                                        <?php 
                                        // Fix path - remove leading ../ if present, images are in root uploads folder
                                        $service_img_path = str_replace('../', '', $booking->sb_completion_image);
@@ -118,6 +124,8 @@
                                        </a>
                                        <p class="text-muted mt-2 mb-0"><small><i class="fas fa-info-circle"></i> Click image to view full size</small></p>
                                        <p class="text-muted mb-0"><small>Path: <?php echo htmlspecialchars($service_img_path); ?></small></p>
+                                     <?php elseif(!empty($booking->sb_completion_image) && !$show_images_admin): ?>
+                                       <span class="text-muted"><i class="fas fa-clock"></i> Image has been archived (older than 40 days)</span>
                                      <?php else: ?>
                                        <span class="text-muted"><i class="fas fa-exclamation-triangle"></i> No service image uploaded</span>
                                      <?php endif; ?>
@@ -125,7 +133,7 @@
                                    
                                    <h6><i class="fas fa-file-invoice"></i> Bill/Receipt Photo</h6>
                                    <div class="border rounded p-3" style="background:#f8f9fa;">
-                                     <?php if(!empty($booking->sb_bill_attachment)): ?>
+                                     <?php if(!empty($booking->sb_bill_attachment) && $show_images_admin): ?>
                                        <?php 
                                        // Fix path - remove leading ../ if present, images are in root uploads folder
                                        $bill_img_path = str_replace('../', '', $booking->sb_bill_attachment);
@@ -139,6 +147,8 @@
                                        <a href="<?php echo $bill_img_url; ?>" download class="btn btn-sm btn-primary mt-2">
                                          <i class="fas fa-download"></i> Download Bill
                                        </a>
+                                     <?php elseif(!empty($booking->sb_bill_attachment) && !$show_images_admin): ?>
+                                       <span class="text-muted"><i class="fas fa-clock"></i> Image has been archived (older than 40 days)</span>
                                      <?php else: ?>
                                        <span class="text-muted"><i class="fas fa-exclamation-triangle"></i> No bill attachment uploaded</span>
                                      <?php endif; ?>

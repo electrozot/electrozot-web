@@ -1,5 +1,7 @@
 <!--Server Side Scripting Language to inject login code-->
 <?php
+    // Configure persistent session (30 days) BEFORE starting session
+    include('vendor/inc/session-config.php');
     session_start();
     include('vendor/inc/config.php');//get configuration file
     if(isset($_POST['user_login']))
@@ -21,6 +23,9 @@
       
       if($rs)
       {//if its sucessfull
+        // Regenerate session ID for security
+        session_regenerate_id(true);
+        
         // Link any guest bookings with this phone number to this user account
         include('link-guest-bookings.php');
         $linked = linkBookingsByPhone($mysqli, $u_id, $u_phone);

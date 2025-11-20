@@ -88,13 +88,19 @@
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_date DATE DEFAULT NULL");
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_time TIME DEFAULT NULL");
                 
+                // Ensure timestamp columns exist for notification system
+                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_assigned_at TIMESTAMP NULL DEFAULT NULL");
+                
                 // Auto-set status based on technician assignment
                 // If technician is assigned, status should be 'Approved'
                 // If no technician, status should be 'Pending'
                 $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
                 
-                // Update the booking with new technician and service deadline
-                $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=? WHERE sb_id=?";
+                // Update the booking with new technician, service deadline, and assignment timestamp
+                // This will trigger sb_updated_at to update automatically
+                $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
                 $stmt = $mysqli->prepare($query);
                 
                 if(!$stmt) {
