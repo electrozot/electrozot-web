@@ -158,8 +158,8 @@
                 <div class="row">
                     <!-- Bookings first -->
                     <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
-                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px;">
-                            <div class="card-body p-3">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px; height: 100%;">
+                            <div class="card-body p-3" style="min-height: 85px; display: flex; flex-direction: column; justify-content: center;">
                                 <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
                                     <i class="fas fa-calendar-check" style="font-size: 2rem;"></i>
                                 </div>
@@ -197,8 +197,8 @@
 
                     <!-- Unassigned Bookings -->
                     <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
-                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); border: none; border-radius: 10px;">
-                            <div class="card-body p-3">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff9966 0%, #ff5e62 100%); border: none; border-radius: 10px; height: 100%;">
+                            <div class="card-body p-3" style="min-height: 85px; display: flex; flex-direction: column; justify-content: center;">
                                 <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
                                     <i class="fas fa-exclamation-triangle" style="font-size: 2rem;"></i>
                                 </div>
@@ -228,8 +228,8 @@
 
                     <!-- Rejected Bookings -->
                     <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
-                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none; border-radius: 10px;">
-                            <div class="card-body p-3">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none; border-radius: 10px; height: 100%;">
+                            <div class="card-body p-3" style="min-height: 85px; display: flex; flex-direction: column; justify-content: center;">
                                 <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
                                     <i class="fas fa-times-circle" style="font-size: 2rem;"></i>
                                 </div>
@@ -244,7 +244,7 @@
                                 ?>
                                 <div style="position: relative; z-index: 2;">
                                     <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $rejected_count;?></h3>
-                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">Rejected / Not Done</p>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9; white-space: nowrap;">Rejected / Not Done</p>
                                 </div>
                             </div>
                             <a class="card-footer text-white clearfix small z-1 py-1" href="admin-rejected-bookings.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">

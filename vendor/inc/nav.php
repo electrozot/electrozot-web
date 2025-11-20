@@ -9,12 +9,12 @@
             </div>
         </a>
         <!-- Mobile Login Button (visible only on mobile) - Direct to Client Login -->
-        <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 6px;">
+        <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 12px;">
             <a href="usr/" class="btn mobile-login-btn" style="background: #ffffff; border: 1px solid #ffffff; color: #8b0000; font-weight: 600; padding: 5px 11px; border-radius: 6px; box-shadow: 0 2px 8px rgba(255, 255, 255, 0.25); text-decoration: none; font-size: 0.78rem; transition: all 0.3s ease;">
                 <i class="fas fa-user" style="font-size: 0.72rem;"></i> Login
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: 1px solid rgba(255,255,255,0.7); padding: 5px 9px; background: rgba(255,255,255,0.1);">
-                <span class="navbar-toggler-icon" style="width: 19px; height: 19px; background-size: 100%;"></span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: 2px solid #ffffff; padding: 2px 5px; background: #ffffff; box-shadow: 0 2px 8px rgba(255, 255, 255, 0.5); border-radius: 4px;">
+                <span class="navbar-toggler-icon" style="width: 12px; height: 12px; background-size: 100%; filter: brightness(0);"></span>
             </button>
         </div>
         
