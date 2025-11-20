@@ -28,28 +28,50 @@
             } elseif(empty($service_deadline_date) || empty($service_deadline_time)) {
                 $err = "Please set service deadline date and time.";
             } else {
-                // STEP 1: Check if the new technician is available (not engaged with another booking)
-                $new_tech_engagement = checkTechnicianEngagement($sb_technician_id, $mysqli);
+                // START TRANSACTION to prevent race conditions
+                $mysqli->begin_transaction();
                 
-                // Get the previously assigned technician (if any)
-                $get_old_tech = "SELECT sb_technician_id FROM tms_service_booking WHERE sb_id = ?";
-                $old_tech_stmt = $mysqli->prepare($get_old_tech);
-                $old_tech_stmt->bind_param('i', $sb_id);
-                $old_tech_stmt->execute();
-                $old_tech_result = $old_tech_stmt->get_result();
-                $old_booking = $old_tech_result->fetch_object();
-                $old_tech_id = $old_booking ? $old_booking->sb_technician_id : null;
-                
-                // STEP 2: Validate technician availability
-                // If new technician is engaged with a different booking, reject the assignment
-                if($new_tech_engagement['is_engaged'] && $new_tech_engagement['booking_id'] != $sb_id) {
-                    $err = "Technician is currently engaged with Booking #" . $new_tech_engagement['booking_id'] . 
-                           " (Status: " . $new_tech_engagement['booking_status'] . "). " .
-                           "Please wait until they complete or reject that booking.";
-                } else {
-                
-                // If technician is being changed (not first assignment)
-                if($old_tech_id && $old_tech_id != $sb_technician_id) {
+                try {
+                    // STEP 1: Lock technician row and check availability (prevents concurrent assignments)
+                    $check_tech_query = "SELECT t_id, t_name, t_current_bookings, t_booking_limit 
+                                        FROM tms_technician 
+                                        WHERE t_id = ? FOR UPDATE";
+                    $tech_lock_stmt = $mysqli->prepare($check_tech_query);
+                    $tech_lock_stmt->bind_param('i', $sb_technician_id);
+                    $tech_lock_stmt->execute();
+                    $tech_result = $tech_lock_stmt->get_result();
+                    $tech_data = $tech_result->fetch_object();
+                    
+                    if(!$tech_data) {
+                        throw new Exception("Technician not found");
+                    }
+                    
+                    // Check if technician has available slots
+                    if($tech_data->t_current_bookings >= $tech_data->t_booking_limit) {
+                        throw new Exception("Technician {$tech_data->t_name} is at capacity ({$tech_data->t_current_bookings}/{$tech_data->t_booking_limit}). Please select another technician.");
+                    }
+                    
+                    // STEP 2: Get the previously assigned technician (if any) and lock booking row
+                    $get_old_tech = "SELECT sb_id, sb_technician_id, sb_status FROM tms_service_booking WHERE sb_id = ? FOR UPDATE";
+                    $old_tech_stmt = $mysqli->prepare($get_old_tech);
+                    $old_tech_stmt->bind_param('i', $sb_id);
+                    $old_tech_stmt->execute();
+                    $old_tech_result = $old_tech_stmt->get_result();
+                    $old_booking = $old_tech_result->fetch_object();
+                    
+                    if(!$old_booking) {
+                        throw new Exception("Booking not found");
+                    }
+                    
+                    // STEP 3: Validate booking status
+                    if(in_array($old_booking->sb_status, ['Completed', 'Cancelled'])) {
+                        throw new Exception("Cannot assign technician to {$old_booking->sb_status} booking");
+                    }
+                    
+                    $old_tech_id = $old_booking->sb_technician_id;
+                    
+                    // STEP 4: If technician is being changed (not first assignment)
+                    if($old_tech_id && $old_tech_id != $sb_technician_id) {
                     // Create cancelled booking table if not exists
                     $create_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
                         cb_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -82,108 +104,117 @@
                     $free_stmt = $mysqli->prepare($free_tech);
                     $free_stmt->bind_param('i', $old_tech_id);
                     $free_stmt->execute();
-                }
-                
-                // Add deadline columns if they don't exist
+                    }
+                    
+                    // STEP 5: Add deadline columns if they don't exist
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_date DATE DEFAULT NULL");
                 $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_service_deadline_time TIME DEFAULT NULL");
                 
                 // Ensure timestamp columns exist for notification system
-                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
-                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
-                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_assigned_at TIMESTAMP NULL DEFAULT NULL");
-                
-                // Auto-set status based on technician assignment
-                // If technician is assigned, status should be 'Approved'
-                // If no technician, status should be 'Pending'
-                $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
-                
-                // Update the booking with new technician, service deadline, and assignment timestamp
-                // This will trigger sb_updated_at to update automatically
-                $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
-                $stmt = $mysqli->prepare($query);
-                
-                if(!$stmt) {
-                    $err = "Database error: " . $mysqli->error;
-                } else {
+                    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+                    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
+                    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_assigned_at TIMESTAMP NULL DEFAULT NULL");
+                    
+                    // STEP 6: Auto-set status based on technician assignment
+                    $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
+                    
+                    // STEP 7: Update the booking with new technician, service deadline, and assignment timestamp
+                    $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
+                    $stmt = $mysqli->prepare($query);
+                    
+                    if(!$stmt) {
+                        throw new Exception("Database error: " . $mysqli->error);
+                    }
+                    
                     $stmt->bind_param('isssi', $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     $result = $stmt->execute();
                     
-                    if($result && $stmt->affected_rows > 0) {
-                        // Update technician status based on booking status
-                        if($sb_status == 'Completed' || $sb_status == 'Cancelled' || $sb_status == 'Rejected') {
-                            // Free the technician if booking is completed, cancelled, or rejected
-                            // Decrement booking count
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Available', 
-                                              t_is_available=1, 
-                                              t_current_booking_id=NULL,
-                                              t_current_bookings = GREATEST(t_current_bookings - 1, 0)
-                                          WHERE t_id=?";
-                        } else if($sb_status == 'In Progress' || $sb_status == 'Approved' || $sb_status == 'Assigned') {
-                            // Mark technician as booked if booking is in progress, approved, or assigned
-                            // Increment booking count only if this is a new assignment (not reassignment to same tech)
-                            if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
-                                $update_tech = "UPDATE tms_technician 
-                                              SET t_status='Booked', 
-                                                  t_is_available=0, 
-                                                  t_current_booking_id=?,
-                                                  t_current_bookings = t_current_bookings + 1
-                                              WHERE t_id=?";
-                            } else {
-                                // Same technician, just update status without incrementing
-                                $update_tech = "UPDATE tms_technician 
-                                              SET t_status='Booked', 
-                                                  t_is_available=0, 
-                                                  t_current_booking_id=?
-                                              WHERE t_id=?";
-                            }
-                        } else {
-                            // For pending status, mark as booked but with pending status
-                            // Increment booking count only if this is a new assignment
-                            if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
-                                $update_tech = "UPDATE tms_technician 
-                                              SET t_status='Booked', 
-                                                  t_is_available=0, 
-                                                  t_current_booking_id=?,
-                                                  t_current_bookings = t_current_bookings + 1
-                                              WHERE t_id=?";
-                            } else {
-                                $update_tech = "UPDATE tms_technician 
-                                              SET t_status='Booked', 
-                                                  t_is_available=0, 
-                                                  t_current_booking_id=?
-                                              WHERE t_id=?";
-                            }
-                        }
-                        
-                        if($update_tech && $sb_technician_id) {
-                            $tech_stmt = $mysqli->prepare($update_tech);
-                            if($tech_stmt) {
-                                // Check if query needs booking_id parameter
-                                if(strpos($update_tech, 't_current_booking_id=?') !== false) {
-                                    $tech_stmt->bind_param('ii', $sb_id, $sb_technician_id);
-                                } else {
-                                    $tech_stmt->bind_param('i', $sb_technician_id);
-                                }
-                                $tech_stmt->execute();
-                            }
-                        }
-                        
-                        // Auto-update all technician statuses after assignment
-                        include_once('auto-update-technician-status.php');
-                        
-                        $succ = "Technician Assigned Successfully";
-                        // Redirect to prevent form resubmission
-                        header("Location: admin-assign-technician.php?sb_id=" . $sb_id . "&success=1");
-                        exit();
-                    } else {
-                        $err = "Failed to assign technician. " . ($stmt->error ? $stmt->error : "No rows were updated.");
+                    if(!$result || $stmt->affected_rows == 0) {
+                        throw new Exception("Failed to update booking");
                     }
+                    // STEP 8: Update technician status based on booking status
+                    if($sb_status == 'Completed' || $sb_status == 'Cancelled' || $sb_status == 'Rejected') {
+                        // Free the technician if booking is completed, cancelled, or rejected
+                        // Decrement booking count
+                        $update_tech = "UPDATE tms_technician 
+                                      SET t_status='Available', 
+                                          t_is_available=1, 
+                                          t_current_booking_id=NULL,
+                                          t_current_bookings = GREATEST(t_current_bookings - 1, 0)
+                                      WHERE t_id=?";
+                    } else if($sb_status == 'In Progress' || $sb_status == 'Approved' || $sb_status == 'Assigned') {
+                        // Mark technician as booked if booking is in progress, approved, or assigned
+                        // Increment booking count only if this is a new assignment (not reassignment to same tech)
+                        if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
+                            $update_tech = "UPDATE tms_technician 
+                                          SET t_status='Booked', 
+                                              t_is_available=0, 
+                                              t_current_booking_id=?,
+                                              t_current_bookings = t_current_bookings + 1
+                                          WHERE t_id=?";
+                        } else {
+                            // Same technician, just update status without incrementing
+                            $update_tech = "UPDATE tms_technician 
+                                          SET t_status='Booked', 
+                                              t_is_available=0, 
+                                              t_current_booking_id=?
+                                          WHERE t_id=?";
+                        }
+                    } else {
+                        // For pending status, mark as booked but with pending status
+                        // Increment booking count only if this is a new assignment
+                        if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
+                            $update_tech = "UPDATE tms_technician 
+                                          SET t_status='Booked', 
+                                              t_is_available=0, 
+                                              t_current_booking_id=?,
+                                              t_current_bookings = t_current_bookings + 1
+                                          WHERE t_id=?";
+                        } else {
+                            $update_tech = "UPDATE tms_technician 
+                                          SET t_status='Booked', 
+                                              t_is_available=0, 
+                                              t_current_booking_id=?
+                                          WHERE t_id=?";
+                        }
+                    }
+                    
+                    if($update_tech && $sb_technician_id) {
+                        $tech_stmt = $mysqli->prepare($update_tech);
+                        if(!$tech_stmt) {
+                            throw new Exception("Failed to prepare technician update");
+                        }
+                        
+                        // Check if query needs booking_id parameter
+                        if(strpos($update_tech, 't_current_booking_id=?') !== false) {
+                            $tech_stmt->bind_param('ii', $sb_id, $sb_technician_id);
+                        } else {
+                            $tech_stmt->bind_param('i', $sb_technician_id);
+                        }
+                        
+                        if(!$tech_stmt->execute()) {
+                            throw new Exception("Failed to update technician status");
+                        }
+                    }
+                    
+                    // COMMIT TRANSACTION - All operations successful
+                    $mysqli->commit();
+                    
+                    // Auto-update all technician statuses after assignment
+                    include_once('auto-update-technician-status.php');
+                    
+                    $succ = "Technician Assigned Successfully";
+                    // Redirect to prevent form resubmission
+                    header("Location: admin-assign-technician.php?sb_id=" . $sb_id . "&success=1");
+                    exit();
+                    
+                } catch(Exception $e) {
+                    // ROLLBACK on any error
+                    $mysqli->rollback();
+                    $err = $e->getMessage();
                 }
-                } // End of availability check
-            }
-    }
+            } // End of else (validation passed)
+    } // End of if(isset($_POST['assign_technician']))
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -203,22 +234,20 @@
 
              <div class="container-fluid">
                  <?php if(isset($succ) || isset($_GET['success'])) {?>
-                 <script>
-                 setTimeout(function() {
-                         swal("Success!", "Technician Assigned Successfully!", "success");
-                     },
-                     100);
-                 </script>
-
+                 <div class="alert alert-success alert-dismissible fade show" role="alert">
+                     <strong><i class="fas fa-check-circle"></i> Success!</strong> Technician Assigned Successfully!
+                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                 </div>
                  <?php } ?>
                  <?php if(isset($err)) {?>
-                 <script>
-                 setTimeout(function() {
-                         swal("Failed!", "<?php echo $err;?>!", "error");
-                     },
-                     100);
-                 </script>
-
+                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                     <strong><i class="fas fa-exclamation-circle"></i> Failed!</strong> <?php echo htmlspecialchars($err);?>
+                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+                 </div>
                  <?php } ?>
                  <!-- Breadcrumbs-->
                  <ol class="breadcrumb">
@@ -523,22 +552,27 @@
          <!-- Bootstrap core JavaScript-->
          <script src="vendor/jquery/jquery.min.js"></script>
          <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-         <!-- Core plugin JavaScript-->
          <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-         <!-- Page level plugin JavaScript-->
-         <script src="vendor/chart.js/Chart.min.js"></script>
-         <script src="vendor/datatables/jquery.dataTables.js"></script>
-         <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-
-         <!-- Custom scripts for all pages-->
          <script src="vendor/js/sb-admin.min.js"></script>
-
-         <!-- Demo scripts for this page-->
-         <script src="vendor/js/demo/datatables-demo.js"></script>
-         <script src="vendor/js/demo/chart-area-demo.js"></script>
-         <script src="vendor/js/swal.js"></script>
+         
+         <script>
+         // Toggle reassignment form enable/disable
+         function toggleReassignment() {
+             const checkbox = document.getElementById('force_reassign');
+             const fieldset = document.getElementById('formFieldset');
+             
+             if(checkbox && fieldset) {
+                 fieldset.disabled = !checkbox.checked;
+             }
+         }
+         
+         // Auto-hide alerts after 5 seconds
+         $(document).ready(function() {
+             setTimeout(function() {
+                 $('.alert').fadeOut('slow');
+             }, 5000);
+         });
+         </script>
 
  </body>
 

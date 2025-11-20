@@ -173,11 +173,19 @@ if(isset($_POST['mark_not_done'])){
         
         if($update_stmt->execute() && $update_stmt->affected_rows > 0){
             // CRITICAL: Free up technician for next booking (rejection case)
-            // Update all status fields to ensure technician is fully available
+            // Decrement counter and update all status fields to ensure technician is fully available
             $free_tech = "UPDATE tms_technician 
-                         SET t_status = 'Available', 
-                             t_is_available = 1, 
-                             t_current_booking_id = NULL 
+                         SET t_status = CASE 
+                             WHEN t_current_bookings - 1 >= t_booking_limit THEN 'Busy'
+                             WHEN t_current_bookings - 1 > 0 THEN 'Booked'
+                             ELSE 'Available'
+                         END,
+                         t_is_available = CASE 
+                             WHEN t_current_bookings - 1 < t_booking_limit THEN 1 
+                             ELSE 0 
+                         END,
+                         t_current_booking_id = NULL,
+                         t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                          WHERE t_id = ?";
             $free_stmt = $mysqli->prepare($free_tech);
             $free_stmt->bind_param('i', $t_id);
