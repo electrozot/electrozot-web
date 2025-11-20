@@ -150,6 +150,32 @@
             .gallery-title {
                 font-size: 1.5rem !important;
             }
+            
+            /* Horizontal sliding gallery on mobile */
+            .gallery-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                gap: 15px !important;
+                padding: 10px 5px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                -webkit-overflow-scrolling: touch !important;
+                scroll-snap-type: x mandatory !important;
+            }
+            
+            .gallery-grid > div {
+                flex: 0 0 auto !important;
+                width: 80% !important;
+                min-width: 280px !important;
+                max-width: 350px !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                scroll-snap-align: center !important;
+                margin-bottom: 0 !important;
+            }
         }
 
         /* Animation for gallery items */
