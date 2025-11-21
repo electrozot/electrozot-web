@@ -431,6 +431,25 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
             while ($booking = $bookings_result->fetch_object()) {
                 $service_name = $booking->s_name ?? 'Service';
                 $status = $booking->sb_status ?? 'Pending';
+                $has_technician = !empty($booking->sb_technician_id);
+                
+                // If technician is assigned (Approved status), show as "In Progress" to customer
+                $display_status = $status;
+                if($status == 'Approved' && $has_technician) {
+                    $display_status = 'In Progress';
+                }
+                
+                // Determine badge styling
+                $badge_style = '';
+                if($display_status == 'Completed') {
+                    $badge_style = 'background: #10b981; color: white;';
+                } elseif($display_status == 'In Progress') {
+                    $badge_style = 'background: #8b5cf6; color: white;';
+                } elseif($display_status == 'Pending') {
+                    $badge_style = 'background: #f59e0b; color: white;';
+                } elseif(in_array($display_status, ['Cancelled', 'Rejected', 'Not Done'])) {
+                    $badge_style = 'background: #ef4444; color: white;';
+                }
         ?>
         
         <div class="booking-card">
@@ -438,8 +457,8 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                 <div class="booking-id">
                     <i class="fas fa-receipt"></i> Booking #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?>
                 </div>
-                <div class="status-badge" style="<?php echo ($status == 'Completed') ? 'background: #10b981; color: white;' : ''; ?>">
-                    <?php echo $status; ?>
+                <div class="status-badge" style="<?php echo $badge_style; ?>">
+                    <?php echo $display_status; ?>
                 </div>
             </div>
             

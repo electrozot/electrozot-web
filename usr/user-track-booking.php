@@ -128,11 +128,18 @@ $user = $user_result->fetch_object();
         }
         
         .timeline-step.active::before {
-            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+            background: #e5e7eb;
         }
         
+        /* Hide line only for the last step */
         .timeline-step:last-child::before {
             display: none;
+        }
+        
+        /* Show line for active step if it's not the last one */
+        .timeline-step.active:not(:last-child)::before {
+            display: block;
+            background: #e5e7eb;
         }
         
         .step-icon {
@@ -410,6 +417,13 @@ $user = $user_result->fetch_object();
         <?php
             $service_name = $booking->s_name ?? 'Service';
             $status = $booking->sb_status ?? 'Pending';
+            $has_technician = !empty($booking->sb_technician_id);
+            
+            // If technician is assigned (Approved status), show as "In Progress" to customer
+            $display_status = $status;
+            if($status == 'Approved' && $has_technician) {
+                $display_status = 'In Progress';
+            }
             
             // Determine status display
             $status_icon_bg = '';
@@ -417,12 +431,18 @@ $user = $user_result->fetch_object();
             $status_color = '';
             $status_message = '';
             
-            switch($status) {
+            switch($display_status) {
                 case 'Pending':
                     $status_icon_bg = 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);';
                     $status_icon = 'clock';
                     $status_color = '#f59e0b';
-                    $status_message = 'Waiting for confirmation';
+                    $status_message = 'Waiting for technician assignment';
+                    break;
+                case 'Approved':
+                    $status_icon_bg = 'background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);';
+                    $status_icon = 'check-circle';
+                    $status_color = '#3b82f6';
+                    $status_message = 'Booking confirmed - Technician assigned';
                     break;
                 case 'Confirmed':
                     $status_icon_bg = 'background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);';
@@ -434,7 +454,7 @@ $user = $user_result->fetch_object();
                     $status_icon_bg = 'background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);';
                     $status_icon = 'tools';
                     $status_color = '#8b5cf6';
-                    $status_message = 'Technician is working';
+                    $status_message = 'Technician is working on your service';
                     break;
                 case 'Completed':
                     $status_icon_bg = 'background: linear-gradient(135deg, #10b981 0%, #059669 100%);';
@@ -448,13 +468,26 @@ $user = $user_result->fetch_object();
                     $status_color = '#ef4444';
                     $status_message = 'Booking cancelled';
                     break;
+                case 'Rejected':
+                case 'Rejected by Technician':
+                case 'Not Done':
+                    $status_icon_bg = 'background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);';
+                    $status_icon = 'exclamation-triangle';
+                    $status_color = '#ef4444';
+                    $status_message = 'Service could not be completed - Contact support';
+                    break;
+                default:
+                    $status_icon_bg = 'background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);';
+                    $status_icon = 'info-circle';
+                    $status_color = '#6b7280';
+                    $status_message = 'Status: ' . $status;
             }
             
             // Timeline steps
             $step_pending = true;
-            $step_confirmed = in_array($status, ['Confirmed', 'In Progress', 'Completed']);
-            $step_progress = in_array($status, ['In Progress', 'Completed']);
-            $step_completed = ($status == 'Completed');
+            $step_confirmed = in_array($display_status, ['Approved', 'Confirmed', 'In Progress', 'Completed']) || $has_technician;
+            $step_progress = in_array($display_status, ['In Progress', 'Completed']);
+            $step_completed = ($display_status == 'Completed');
         ?>
         
         <!-- Status Card -->
@@ -464,7 +497,7 @@ $user = $user_result->fetch_object();
             <div class="status-icon" style="<?php echo $status_icon_bg; ?>">
                 <i class="fas fa-<?php echo $status_icon; ?>"></i>
             </div>
-            <div class="status-text" style="color: <?php echo $status_color; ?>;"><?php echo $status; ?></div>
+            <div class="status-text" style="color: <?php echo $status_color; ?>;"><?php echo $display_status; ?></div>
             <div class="status-desc"><?php echo $status_message; ?></div>
         </div>
         
