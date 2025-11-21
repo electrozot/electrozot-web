@@ -241,7 +241,7 @@
                                          <div class="input-group">
                                              <input type="text" class="form-control" id="t_ez_id" name="t_ez_id" placeholder="EZ0001" required style="text-transform: uppercase;" readonly>
                                              <div class="input-group-append">
-                                                 <button class="btn btn-success" type="button" onclick="generateNextEZID()">
+                                                 <button class="btn btn-success" type="button" onclick="generateNextEZID(event)">
                                                      <i class="fas fa-sync-alt"></i> Auto Generate
                                                  </button>
                                              </div>
@@ -739,22 +739,12 @@
          <!-- Core plugin JavaScript-->
          <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-         <!-- Page level plugin JavaScript-->
-         <script src="vendor/chart.js/Chart.min.js"></script>
-         <script src="vendor/datatables/jquery.dataTables.js"></script>
-         <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-
          <!-- Custom scripts for all pages-->
          <script src="vendor/js/sb-admin.min.js"></script>
-         <!-- Demo scripts for this page-->
-         <script src="vendor/js/demo/datatables-demo.js"></script>
-         <script src="vendor/js/demo/chart-area-demo.js"></script>
-         <!--INject Sweet alert js-->
-         <script src="vendor/js/swal.js"></script>
          
          <!-- EZ ID Auto Generation Script -->
          <script>
-         function generateNextEZID() {
+         function generateNextEZID(event) {
              const ezIdInput = document.getElementById('t_ez_id');
              const btn = event.target.closest('button');
              const originalHTML = btn.innerHTML;

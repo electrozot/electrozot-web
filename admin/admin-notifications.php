@@ -20,9 +20,9 @@ $params = [];
 $types = '';
 
 if($filter != 'all') {
-    // Handle Rejected filter to include both Rejected and Cancelled statuses
+    // Handle Rejected filter to include all rejection statuses
     if($filter == 'Rejected') {
-        $where_conditions[] = "(sb.sb_status = 'Rejected' OR sb.sb_status = 'Cancelled')";
+        $where_conditions[] = "(sb.sb_status = 'Rejected' OR sb.sb_status = 'Rejected by Technician' OR sb.sb_status = 'Cancelled' OR sb.sb_status = 'Not Done' OR sb.sb_status = 'Not Completed')";
     } else {
         $where_conditions[] = "sb.sb_status = ?";
         $params[] = $filter;
@@ -59,17 +59,30 @@ if(!empty($params)) {
 
 $total_pages = ceil($total_records / $per_page);
 
-// Get notifications
+// Get notifications with priority ordering:
+// 1. Rejected/Cancelled (highest priority)
+// 2. Pending (new bookings)
+// 3. Approved/Assigned
+// 4. In Progress
+// 5. Completed (lowest priority)
 $query = "SELECT sb.*, 
                  u.u_fname, u.u_lname, u.u_phone, u.u_email,
                  s.s_name, s.s_category, s.s_price,
-                 t.t_name as technician_name, t.t_phone as technician_phone
+                 t.t_name as technician_name, t.t_phone as technician_phone,
+                 CASE 
+                     WHEN sb.sb_status IN ('Rejected', 'Rejected by Technician', 'Cancelled', 'Not Done', 'Not Completed') THEN 1
+                     WHEN sb.sb_status = 'Pending' THEN 2
+                     WHEN sb.sb_status IN ('Approved', 'Assigned') THEN 3
+                     WHEN sb.sb_status = 'In Progress' THEN 4
+                     WHEN sb.sb_status = 'Completed' THEN 5
+                     ELSE 6
+                 END as priority_order
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
           $where_clause
-          ORDER BY sb.sb_created_at DESC
+          ORDER BY priority_order ASC, sb.sb_created_at DESC
           LIMIT ? OFFSET ?";
 
 if(!empty($params)) {
@@ -236,7 +249,10 @@ if(!empty($params)) {
                                     $status_badge = 'badge-success';
                                     break;
                                 case 'Rejected':
+                                case 'Rejected by Technician':
                                 case 'Cancelled':
+                                case 'Not Done':
+                                case 'Not Completed':
                                     $icon = 'fa-times-circle';
                                     $icon_bg = 'bg-danger';
                                     $status_badge = 'badge-danger';
@@ -380,12 +396,16 @@ if(!empty($params)) {
             let audioBuffer = null;
             let customSoundEnabled = false;
             
-            // Initialize audio context on first user interaction
+            // Initialize audio context on first user interaction (silently)
             function initAudioContext() {
                 if (!audioContext) {
                     try {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        console.log('🔊 Audio context initialized');
+                        // Suspend context immediately to prevent any sound during initialization
+                        if (audioContext.state === 'running') {
+                            audioContext.suspend();
+                        }
+                        console.log('🔊 Audio context initialized (suspended)');
                         loadCustomSound();
                     } catch(e) {
                         console.warn('⚠️ Audio context not supported:', e);
@@ -405,6 +425,11 @@ if(!empty($params)) {
                 // Try custom sound first
                 if (customSoundEnabled && audioContext && audioBuffer) {
                     try {
+                        // Resume context if suspended
+                        if (audioContext.state === 'suspended') {
+                            audioContext.resume();
+                        }
+                        
                         const source = audioContext.createBufferSource();
                         source.buffer = audioBuffer;
                         source.connect(audioContext.destination);
@@ -420,6 +445,11 @@ if(!empty($params)) {
                 try {
                     if (!audioContext) {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    
+                    // Resume context if suspended
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
                     }
                     
                     const oscillator = audioContext.createOscillator();

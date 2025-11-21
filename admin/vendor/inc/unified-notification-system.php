@@ -290,15 +290,17 @@
             if (soundElement && !audioEnabled) {
                 // Preload and prepare audio
                 soundElement.load();
-                soundElement.volume = 0.8;
+                soundElement.volume = 0; // Set to 0 during initialization to prevent audible sound
                 
-                // Try to play and immediately pause to unlock audio
+                // Try to play and immediately pause to unlock audio (silently)
                 soundElement.play().then(() => {
                     soundElement.pause();
                     soundElement.currentTime = 0;
+                    soundElement.volume = 0.8; // Restore volume after unlock
                     audioEnabled = true;
-                    console.log('✅ Sound enabled and ready for playback');
+                    console.log('✅ Sound enabled and ready for playback (silent unlock)');
                 }).catch(() => {
+                    soundElement.volume = 0.8; // Restore volume even if unlock fails
                     console.log('⚠️ Audio will be enabled on next interaction');
                 });
             }

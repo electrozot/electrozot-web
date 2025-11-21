@@ -76,14 +76,17 @@ if(!empty($search)) {
     $types .= 's';
 }
 
-// Query to get only active bookings (exclude cancelled ones) - Sort by status priority then date
+// Query to get only active bookings (exclude cancelled ones)
+// Sort: New bookings at top, Completed at bottom
 $bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name,
                    CASE 
                        WHEN sb.sb_status = 'Pending' THEN 1
-                       WHEN sb.sb_status = 'In Progress' THEN 2
-                       WHEN sb.sb_status = 'Completed' THEN 3
+                       WHEN sb.sb_status = 'Approved' THEN 2
+                       WHEN sb.sb_status = 'In Progress' THEN 3
                        WHEN sb.sb_status = 'Not Done' THEN 4
-                       ELSE 5
+                       WHEN sb.sb_status = 'Not Completed' THEN 5
+                       WHEN sb.sb_status = 'Completed' THEN 6
+                       ELSE 7
                    END as status_priority
                    FROM tms_service_booking sb
                    LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
@@ -91,7 +94,7 @@ $bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_n
                    LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
                    {$where_clause}
                    AND cb.cb_id IS NULL
-                   ORDER BY status_priority ASC, sb.sb_created_at DESC, sb.sb_service_deadline_date ASC";
+                   ORDER BY status_priority ASC, sb.sb_created_at DESC";
 
 $stmt_bookings = $mysqli->prepare($bookings_query);
 if(count($params) == 1) {

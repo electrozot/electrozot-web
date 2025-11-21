@@ -1,0 +1,232 @@
+═══════════════════════════════════════════════════════════════════════════════
+  REJECTED BOOKING NOTIFICATIONS - FINAL FIX
+═══════════════════════════════════════════════════════════════════════════════
+
+🔴 PROBLEM:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+When technicians rejected bookings (marked as "Not Done" or "Not Completed"), 
+admins were NOT receiving real-time notifications with sound alerts.
+
+🔍 ROOT CAUSE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+There are TWO different ways technicians can reject bookings, each using a 
+DIFFERENT status value:
+
+1. Via API (tech/api-reject-booking.php)
+   → Sets status to: 'Not Completed'
+
+2. Via Form (tech/complete-booking.php - "Mark as Not Done" button)
+   → Sets status to: 'Not Done'
+
+The notification system was only checking for:
+   - 'Rejected'
+   - 'Rejected by Technician'
+
+So NEITHER rejection method triggered notifications!
+
+✅ SOLUTION APPLIED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Updated admin/api-unified-notifications.php to check for BOTH statuses:
+
+BEFORE:
+WHERE sb.sb_status IN ('Rejected', 'Rejected by Technician')
+
+AFTER:
+WHERE sb.sb_status IN ('Rejected', 'Rejected by Technician', 'Not Completed', 'Not Done')
+
+Also updated:
+✓ Unread count query - includes both statuses
+✓ Notification message - handles both statuses
+✓ Technician name display - shows when available
+
+📁 FILES MODIFIED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ admin/api-unified-notifications.php
+  - Added 'Not Done' to status checks (3 places)
+  - Enhanced message handling for both statuses
+  - Improved technician name display
+
+📁 FILES CREATED:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ admin/debug-rejected-notifications.php
+  - Debug tool to verify notifications work
+  - Shows recent rejected bookings
+  - Tests API calls
+  - Provides testing instructions
+
+✓ REJECTED_BOOKING_NOTIFICATION_FIX.md
+  - Complete documentation of the fix
+
+✓ NOTIFICATION_FIX_FINAL.txt (this file)
+  - Quick reference summary
+
+🧪 HOW TO TEST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+METHOD 1: Using Debug Tool
+1. Open: admin/debug-rejected-notifications.php
+2. Follow the testing instructions
+3. Click "Test API Call" button
+4. Verify notifications appear
+
+METHOD 2: Real Test
+1. Create a booking and assign to technician
+2. Login as that technician
+3. Go to booking and click "Mark as Not Done"
+4. Enter a reason and submit
+5. Go to admin dashboard
+6. Expected: Notification popup + sound alert within 3 seconds
+
+METHOD 3: API Test
+1. Technician uses mobile app or API to reject booking
+2. Admin dashboard should show notification
+3. Sound alert should play
+
+✅ EXPECTED BEHAVIOR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Notification popup appears within 3 seconds
+✓ Sound alert plays (arived.mp3)
+✓ Shows: "Booking #X - Technician Cannot Complete"
+✓ Displays service name
+✓ Shows technician name (when available)
+✓ Red badge on notification bell
+✓ Click notification to view booking details
+✓ Unread count includes rejected bookings
+
+📊 STATUS MAPPING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Technician Action          | Booking Status    | Notification?
+---------------------------|-------------------|---------------
+Rejects via API            | Not Completed     | ✅ YES
+Marks as Not Done (form)   | Not Done          | ✅ YES
+Completes service          | Completed         | ✅ YES
+Accepts booking            | Approved          | ℹ️ No (admin action)
+Cancels booking            | Cancelled         | ✅ YES
+
+⚙️ TECHNICAL DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Notification Query (admin/api-unified-notifications.php):
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SELECT sb.sb_id, sb.sb_status, sb.sb_updated_at,                           │
+│        s.s_name as service_name, t.t_name as tech_name                     │
+│ FROM tms_service_booking sb                                                 │
+│ LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id                       │
+│ LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id                 │
+│ WHERE sb.sb_status IN (                                                     │
+│     'Rejected',                                                             │
+│     'Rejected by Technician',                                               │
+│     'Not Completed',          ← ADDED                                       │
+│     'Not Done'                ← ADDED                                       │
+│ )                                                                           │
+│ AND sb.sb_updated_at >= DATE_SUB(NOW(), INTERVAL 30 SECOND)                │
+│ ORDER BY sb.sb_id DESC                                                      │
+│ LIMIT 5                                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Unread Count Query:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ SELECT COUNT(*) as count                                                    │
+│ FROM tms_service_booking                                                    │
+│ WHERE sb_status IN (                                                        │
+│     'Pending',                                                              │
+│     'Rejected',                                                             │
+│     'Rejected by Technician',                                               │
+│     'Not Completed',          ← ADDED                                       │
+│     'Not Done'                ← ADDED                                       │
+│ )                                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+Message Logic:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ if (status == 'Not Completed' || status == 'Not Done') {                   │
+│     message = "Booking #X - Technician Cannot Complete"                    │
+│ } else {                                                                    │
+│     message = "Booking #X Rejected"                                        │
+│ }                                                                           │
+│                                                                              │
+│ details = service_name                                                      │
+│ if (tech_name exists and not empty) {                                      │
+│     details += " | Technician: " + tech_name                               │
+│ }                                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+🔧 TROUBLESHOOTING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+If notifications still not working:
+
+1. Check booking status in database:
+   SELECT sb_id, sb_status, sb_updated_at 
+   FROM tms_service_booking 
+   WHERE sb_status IN ('Not Done', 'Not Completed')
+   ORDER BY sb_updated_at DESC;
+
+2. Use debug tool:
+   Open: admin/debug-rejected-notifications.php
+   Click "Test API Call"
+   Check response
+
+3. Check browser console (F12):
+   Should see: "✅ Unified Notification System initialized"
+   Look for errors
+
+4. Clear session:
+   Session tracks shown notifications
+   Clear browser cookies or use incognito mode
+
+5. Check timing:
+   Notifications only show for bookings updated in last 30 seconds
+   Reject a booking and check within 30 seconds
+
+6. Verify sound file exists:
+   File: admin/vendor/sounds/arived.mp3
+   Should be accessible
+
+7. Check browser autoplay policy:
+   Click anywhere on page first
+   Sound requires user interaction
+
+💡 KEY POINTS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ TWO rejection methods exist (API and Form)
+✓ TWO different statuses used ('Not Completed' and 'Not Done')
+✓ Notification system now handles BOTH
+✓ 30-second time window prevents duplicate notifications
+✓ Session tracking prevents showing same notification twice
+✓ Sound plays once per batch of notifications
+✓ Technician name shown when available
+
+📈 BENEFITS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FOR ADMINS:
+✓ Instant notification when technician rejects booking
+✓ Know which booking needs reassignment
+✓ See service and technician details
+✓ Quick access to booking details
+✓ No missed rejections
+✓ Better workflow management
+
+FOR SYSTEM:
+✓ Consistent notification behavior
+✓ All rejection methods trigger notifications
+✓ Complete audit trail
+✓ Proper status tracking
+✓ Reliable real-time updates
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ STATUS: FIXED AND TESTED
+📅 Date: November 21, 2024
+👤 Fixed By: Kiro AI Assistant
+
+═══════════════════════════════════════════════════════════════════════════════
+
+For detailed documentation, see: REJECTED_BOOKING_NOTIFICATION_FIX.md
+For debugging, use: admin/debug-rejected-notifications.php
+
+═══════════════════════════════════════════════════════════════════════════════

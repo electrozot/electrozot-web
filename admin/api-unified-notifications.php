@@ -38,13 +38,15 @@ try {
         $_SESSION['shown_notifications'] = [];
     }
     
-    // Clean up old shown notifications (older than 1 hour)
-    $oneHourAgo = $currentTimestamp - 3600;
-    $_SESSION['shown_notifications'] = array_filter($_SESSION['shown_notifications'], function($timestamp) use ($oneHourAgo) {
-        return $timestamp > $oneHourAgo;
+    // Clean up old shown notifications (older than 10 minutes to prevent memory buildup)
+    // Reduced from 1 hour to 10 minutes for better memory management
+    $tenMinutesAgo = $currentTimestamp - 600;
+    $_SESSION['shown_notifications'] = array_filter($_SESSION['shown_notifications'], function($timestamp) use ($tenMinutesAgo) {
+        return $timestamp > $tenMinutesAgo;
     });
 
-    // Get NEW pending bookings (created in last 2 minutes and not shown yet)
+    // Get NEW pending bookings (created in last 30 seconds and not shown yet)
+    // Reduced from 2 minutes to 30 seconds to prevent repeated notifications
     $query = "SELECT 
                 sb.sb_id,
                 sb.sb_status,
@@ -55,7 +57,8 @@ try {
               LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
               LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
               WHERE sb.sb_status = 'Pending'
-              AND (sb.sb_created_at IS NULL OR sb.sb_created_at >= DATE_SUB(NOW(), INTERVAL 2 MINUTE))
+              AND sb.sb_created_at IS NOT NULL
+              AND sb.sb_created_at >= DATE_SUB(NOW(), INTERVAL 30 SECOND)
               ORDER BY sb.sb_id DESC
               LIMIT 10";
 
@@ -81,16 +84,21 @@ try {
         }
     }
 
-    // Get NEW rejected bookings (updated in last 2 minutes and not shown yet)
+    // Get NEW rejected bookings (updated in last 30 seconds and not shown yet)
+    // Reduced from 2 minutes to 30 seconds to prevent repeated notifications
+    // Note: Checking for both 'Not Completed' and 'Not Done' (different rejection methods)
     $query2 = "SELECT 
                 sb.sb_id,
                 sb.sb_status,
                 COALESCE(sb.sb_updated_at, NOW()) as sb_updated_at,
-                COALESCE(s.s_name, 'Service') as service_name
+                COALESCE(s.s_name, 'Service') as service_name,
+                COALESCE(t.t_name, 'Technician') as tech_name
                FROM tms_service_booking sb
                LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
-               WHERE sb.sb_status IN ('Rejected', 'Rejected by Technician')
-               AND (sb.sb_updated_at IS NULL OR sb.sb_updated_at >= DATE_SUB(NOW(), INTERVAL 2 MINUTE))
+               LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+               WHERE sb.sb_status IN ('Rejected', 'Rejected by Technician', 'Not Completed', 'Not Done')
+               AND sb.sb_updated_at IS NOT NULL
+               AND sb.sb_updated_at >= DATE_SUB(NOW(), INTERVAL 30 SECOND)
                ORDER BY sb.sb_id DESC
                LIMIT 5";
 
@@ -101,12 +109,24 @@ try {
             
             // Only add if not already shown
             if (!isset($_SESSION['shown_notifications'][$notifId])) {
+                // Handle different rejection statuses
+                if ($row['sb_status'] == 'Not Completed' || $row['sb_status'] == 'Not Done') {
+                    $message = 'Booking #' . $row['sb_id'] . ' - Technician Cannot Complete';
+                } else {
+                    $message = 'Booking #' . $row['sb_id'] . ' Rejected';
+                }
+                
+                $details = $row['service_name'];
+                if (isset($row['tech_name']) && $row['tech_name'] != 'Technician' && !empty($row['tech_name'])) {
+                    $details .= ' | Technician: ' . $row['tech_name'];
+                }
+                
                 $notifications[] = [
                     'id' => $notifId,
                     'type' => 'BOOKING_REJECTED',
                     'booking_id' => $row['sb_id'],
-                    'message' => 'Booking #' . $row['sb_id'] . ' Rejected',
-                    'details' => $row['service_name'],
+                    'message' => $message,
+                    'details' => $details,
                     'timestamp' => $currentTimestamp
                 ];
                 
@@ -116,10 +136,60 @@ try {
         }
     }
 
-    // Get unread count
+    // Get NEW completed bookings (updated in last 30 seconds and not shown yet)
+    $query3 = "SELECT 
+                sb.sb_id,
+                sb.sb_status,
+                COALESCE(sb.sb_updated_at, NOW()) as sb_updated_at,
+                COALESCE(s.s_name, 'Service') as service_name,
+                COALESCE(t.t_name, 'Technician') as tech_name,
+                COALESCE(CONCAT(u.u_fname, ' ', u.u_lname), 'Customer') as customer_name
+               FROM tms_service_booking sb
+               LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+               LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+               LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
+               WHERE sb.sb_status = 'Completed'
+               AND sb.sb_updated_at IS NOT NULL
+               AND sb.sb_updated_at >= DATE_SUB(NOW(), INTERVAL 30 SECOND)
+               ORDER BY sb.sb_id DESC
+               LIMIT 5";
+
+    $result3 = $mysqli->query($query3);
+    if ($result3) {
+        while ($row = $result3->fetch_assoc()) {
+            $notifId = 'completed_' . $row['sb_id'];
+            
+            // Only add if not already shown
+            if (!isset($_SESSION['shown_notifications'][$notifId])) {
+                $message = 'Booking #' . $row['sb_id'] . ' - Service Completed Successfully';
+                
+                $details = $row['service_name'];
+                if (isset($row['tech_name']) && !empty($row['tech_name'])) {
+                    $details .= ' | Technician: ' . $row['tech_name'];
+                }
+                if (isset($row['customer_name']) && !empty($row['customer_name'])) {
+                    $details .= ' | Customer: ' . $row['customer_name'];
+                }
+                
+                $notifications[] = [
+                    'id' => $notifId,
+                    'type' => 'BOOKING_COMPLETED',
+                    'booking_id' => $row['sb_id'],
+                    'message' => $message,
+                    'details' => $details,
+                    'timestamp' => $currentTimestamp
+                ];
+                
+                // Mark as shown
+                $_SESSION['shown_notifications'][$notifId] = $currentTimestamp;
+            }
+        }
+    }
+
+    // Get unread count (includes both 'Not Completed' and 'Not Done')
     $count_query = "SELECT COUNT(*) as count 
                     FROM tms_service_booking 
-                    WHERE sb_status IN ('Pending', 'Rejected', 'Rejected by Technician')";
+                    WHERE sb_status IN ('Pending', 'Rejected', 'Rejected by Technician', 'Not Completed', 'Not Done')";
     $count_result = $mysqli->query($count_query);
     $unread_count = 0;
     if ($count_result) {
@@ -128,12 +198,17 @@ try {
     }
 
     // Return success response
+    // Only return notifications array if there are new ones
     echo json_encode([
         'success' => true,
-        'notifications' => $notifications,
+        'notifications' => $notifications, // Will be empty array if no new notifications
         'unread_count' => $unread_count,
         'current_timestamp' => $currentTimestamp,
-        'new_count' => count($notifications)
+        'new_count' => count($notifications),
+        'debug' => [
+            'last_check' => $lastCheck,
+            'session_tracked' => count($_SESSION['shown_notifications'])
+        ]
     ]);
 
 } catch (Exception $e) {
