@@ -164,6 +164,13 @@
     animation: lightningMove 3s linear infinite;
     text-shadow: none;
     position: relative;
+    /* Remove any text stroke to prevent overlapping */
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+    /* Improve rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 /* Add glowing effect behind the text */
@@ -193,6 +200,12 @@
     background-clip: text;
     filter: blur(10px);
     animation: lightningMove 3s linear infinite;
+    /* Remove any text stroke from glow layer */
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+    /* Improve rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Lightning movement animation - moves from left to right in 3 seconds */

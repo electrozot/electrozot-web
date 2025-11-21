@@ -31,63 +31,73 @@ $user = $user_result->fetch_object();
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 70px;
         }
         
         .top-bar {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
+            padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
             position: sticky;
             top: 0;
             z-index: 100;
         }
         
-        .back-btn {
-            width: 40px;
-            height: 40px;
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            height: 55px;
+            width: auto;
+        }
+        
+        .brand-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-text p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin: 3px 0 0 0;
+            font-style: italic;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.25);
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-decoration: none;
-            font-size: 18px;
-            margin-right: 15px;
-        }
-        
-        .brand-section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-        
-        .brand-logo {
-            height: 40px;
-            width: auto;
-            margin-right: 12px;
-        }
-        
-        .brand-text {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .brand-name {
-            font-size: 18px;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        
-        .brand-tagline {
-            font-size: 11px;
-            font-weight: 400;
-            opacity: 0.9;
-            letter-spacing: 0.5px;
+            font-size: 14px;
         }
         
         .content {
@@ -309,15 +319,16 @@ $user = $user_result->fetch_object();
         
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             background: white;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             display: flex;
             justify-content: space-around;
-            z-index: 100;
+            padding: 6px 0;
+            z-index: 1000;
+            border-radius: 20px;
         }
         
         .nav-item {
@@ -325,39 +336,42 @@ $user = $user_result->fetch_object();
             text-align: center;
             text-decoration: none;
             color: #999;
-            padding: 8px;
             transition: all 0.3s;
+            padding: 4px;
         }
         
-        .nav-item.active {
-            color: #6366f1;
-        }
+        .nav-item.active { color: #667eea; }
         
         .nav-item i {
             font-size: 20px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         
         .nav-item span {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
         }
     </style>
 </head>
 <body>
     <div class="top-bar">
-        <a href="user-dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <div class="brand-section">
-            <img src="../vendor/EZlogonew.png" alt="Electrozot" class="brand-logo">
-            <div class="brand-text">
-                <div class="brand-name">Electrozot</div>
-                <div class="brand-tagline">We Make Perfect</div>
+        <div class="header-content">
+            <div class="brand-section">
+                <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
+                <div class="brand-text">
+                    <h2>Electrozot</h2>
+                    <p>We make perfect</p>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="header-icons">
+                    <a href="user-view-profile.php" class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
             </div>
         </div>
-        <div style="width: 40px;"></div>
     </div>
 
     <div class="profile-header">
@@ -496,13 +510,13 @@ $user = $user_result->fetch_object();
             <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="user-manage-booking.php" class="nav-item">
-            <i class="fas fa-clipboard-list"></i>
-            <span>Bookings</span>
+        <a href="book-service-step1.php" class="nav-item">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Book</span>
         </a>
-        <a href="user-track-booking.php" class="nav-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Track</span>
+        <a href="user-manage-booking.php" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Orders</span>
         </a>
         <a href="user-view-profile.php" class="nav-item active">
             <i class="fas fa-user"></i>

@@ -140,12 +140,12 @@
         }
         
         .logo-section img {
-            height: 40px;
+            height: 55px;
             width: auto;
         }
         
         .logo-section .brand-name {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
@@ -409,11 +409,11 @@
             }
             
             .logo-section img {
-                height: 35px;
+                height: 45px;
             }
             
             .logo-section .brand-name {
-                font-size: 1.1rem;
+                font-size: 1.3rem;
             }
             
             .login-container {
@@ -458,11 +458,11 @@
             }
             
             .logo-section img {
-                height: 30px;
+                height: 40px;
             }
             
             .logo-section .brand-name {
-                font-size: 1rem;
+                font-size: 1.2rem;
             }
             
             .login-container {

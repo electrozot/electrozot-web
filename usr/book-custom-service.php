@@ -101,13 +101,13 @@ if(isset($_POST['submit_custom_booking'])) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 70px;
         }
         
         .header {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 20px 15px;
+            padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
             position: sticky;
             top: 0;
@@ -116,45 +116,58 @@ if(isset($_POST['submit_custom_booking'])) {
         
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
         
         .logo {
-            height: 45px;
+            height: 55px;
             width: auto;
         }
         
         .brand-text h2 {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 700;
             margin: 0;
+            line-height: 1.2;
         }
         
         .brand-text p {
-            font-size: 11px;
+            font-size: 13px;
             opacity: 0.85;
-            margin: 2px 0 0 0;
+            margin: 3px 0 0 0;
             font-style: italic;
         }
         
-        .back-btn {
-            width: 40px;
-            height: 40px;
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.25);
             border-radius: 50%;
-            background: rgba(255,255,255,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-decoration: none;
-            font-size: 18px;
+            font-size: 14px;
         }
         
         .content {
@@ -324,19 +337,59 @@ if(isset($_POST['submit_custom_booking'])) {
             left: 0;
             color: #6366f1;
         }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            z-index: 1000;
+            border-radius: 20px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            color: #999;
+            transition: all 0.3s;
+            padding: 4px;
+        }
+        
+        .nav-item.active { color: #667eea; }
+        
+        .nav-item i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
             <div class="brand-section">
-                <a href="user-dashboard.php" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
+                </div>
+            </div>
+            <div class="user-section">
+                <div class="header-icons">
+                    <a href="user-view-profile.php" class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -438,6 +491,25 @@ if(isset($_POST['submit_custom_booking'])) {
                 <div class="example-item">Any other electrical/plumbing service</div>
             </div>
         </div>
+    </div>
+
+    <div class="bottom-nav">
+        <a href="user-dashboard.php" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="book-service-step1.php" class="nav-item active">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Book</span>
+        </a>
+        <a href="user-manage-booking.php" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Orders</span>
+        </a>
+        <a href="user-view-profile.php" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
     </div>
 </body>
 </html>

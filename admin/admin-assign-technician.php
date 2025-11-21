@@ -351,28 +351,98 @@
                                      // Handle NULL technician_id
                                      $current_tech_id = $booking_data->sb_technician_id ? $booking_data->sb_technician_id : 0;
                                      
-                                     // Use IMPROVED skill-based matcher with time slot checking
-                                     require_once('vendor/inc/improved-technician-matcher.php');
+                                     // SPECIAL CASE: For Custom Service / Other - Show ALL available technicians
+                                     $is_custom_service_booking = (stripos($booking_data->s_name, 'Custom Service') !== false || 
+                                                                   stripos($booking_data->s_name, 'Other') !== false ||
+                                                                   stripos($booking_data->sb_description, 'Custom Service:') !== false);
                                      
-                                     if($booking_data->sb_service_id && $booking_data->sb_booking_date && $booking_data->sb_booking_time) {
-                                         // Best method: Match by service ID with time slot availability
-                                         $available_techs = getAvailableTechniciansWithSkillAndSlot(
-                                             $mysqli, 
-                                             $booking_data->sb_service_id, 
-                                             $booking_data->sb_booking_date,
-                                             $booking_data->sb_booking_time,
-                                             $sb_id
-                                         );
-                                     } else {
+                                     if($is_custom_service_booking) {
+                                         // For custom services, show ALL technicians with available capacity
+                                         // Admin will decide based on the custom service description
+                                         $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
+                                                                    (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                    t.t_skills
+                                                             FROM tms_technician t
+                                                             WHERE t.t_status != 'Inactive'
+                                                             ORDER BY 
+                                                                 CASE WHEN t.t_current_bookings < t.t_booking_limit THEN 0 ELSE 1 END,
+                                                                 t.t_experience DESC,
+                                                                 t.t_name ASC";
+                                         $all_techs_result = $mysqli->query($all_techs_query);
                                          $available_techs = [];
+                                         
+                                         while($tech = $all_techs_result->fetch_assoc()) {
+                                             $available_techs[] = [
+                                                 't_id' => $tech['t_id'],
+                                                 't_name' => $tech['t_name'],
+                                                 't_experience' => $tech['t_experience'],
+                                                 'available_slots' => $tech['available_slots'],
+                                                 'slot_available' => ($tech['available_slots'] > 0),
+                                                 'match_type' => 'custom_service',
+                                                 'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity',
+                                                 't_skills' => $tech['t_skills']
+                                             ];
+                                         }
+                                     } else {
+                                         // REGULAR SERVICES: Use skill-based matcher with time slot checking
+                                         require_once('vendor/inc/improved-technician-matcher.php');
+                                         
+                                         if($booking_data->sb_service_id && $booking_data->sb_booking_date && $booking_data->sb_booking_time) {
+                                             // Best method: Match by service ID with time slot availability
+                                             $available_techs = getAvailableTechniciansWithSkillAndSlot(
+                                                 $mysqli, 
+                                                 $booking_data->sb_service_id, 
+                                                 $booking_data->sb_booking_date,
+                                                 $booking_data->sb_booking_time,
+                                                 $sb_id
+                                             );
+                                         } else {
+                                             $available_techs = [];
+                                         }
                                      }
                                      
                                      if(empty($available_techs)) {
                                          // NO AVAILABLE TECHNICIANS - Show clear message
                                          echo '<option value="" disabled style="color: red;">⚠️ No available technicians for: '.$booking_data->s_name.'</option>';
                                          echo '<option value="" disabled>No technicians with required skills or all are busy at this time</option>';
+                                     } elseif($is_custom_service_booking) {
+                                         // CUSTOM SERVICE: Show all technicians grouped by availability
+                                         $available_custom = array_filter($available_techs, function($t) { 
+                                             return $t['slot_available']; 
+                                         });
+                                         $busy_custom = array_filter($available_techs, function($t) { 
+                                             return !$t['slot_available']; 
+                                         });
+                                         
+                                         // Show available technicians (can take more bookings)
+                                         if(!empty($available_custom)) {
+                                             echo '<optgroup label="✅ Available Technicians - Has Capacity ('.count($available_custom).')">';
+                                             foreach($available_custom as $tech) {
+                                                 $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
+                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 $slots = $tech['available_slots'];
+                                                 $skills = !empty($tech['t_skills']) ? ' | Skills: '.htmlspecialchars($tech['t_skills']) : '';
+                                                 echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
+                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)'.$skills;
+                                                 echo '</option>';
+                                             }
+                                             echo '</optgroup>';
+                                         }
+                                         
+                                         // Show busy technicians (at capacity) as disabled
+                                         if(!empty($busy_custom)) {
+                                             echo '<optgroup label="🔴 At Capacity - Cannot Take More Bookings ('.count($busy_custom).')">';
+                                             foreach($busy_custom as $tech) {
+                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 $skills = !empty($tech['t_skills']) ? ' | Skills: '.htmlspecialchars($tech['t_skills']) : '';
+                                                 echo '<option value="'.$tech['t_id'].'" disabled>';
+                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.') - At capacity'.$skills;
+                                                 echo '</option>';
+                                             }
+                                             echo '</optgroup>';
+                                         }
                                      } else {
-                                         // Group technicians by availability and match type
+                                         // REGULAR SERVICES: Group technicians by availability and match type
                                          $available_exact = array_filter($available_techs, function($t) { 
                                              return $t['slot_available'] && $t['match_type'] === 'exact_skill'; 
                                          });
@@ -450,40 +520,78 @@
                                      $busy_count = count(array_filter($available_techs, function($t) { return !$t['slot_available']; }));
                                      $tech_count = count($available_techs);
                                      
-                                     if($tech_count == 0) {
-                                         echo '<br><span class="text-danger"><i class="fas fa-exclamation-triangle"></i> No technicians with required skills found!</span>';
-                                     } else if($available_count == 0) {
-                                         echo '<br><span class="text-warning"><i class="fas fa-clock"></i> '.$busy_count.' technician(s) have the skill but are busy at this time</span>';
+                                     if($is_custom_service_booking) {
+                                         // Custom service message
+                                         echo '<br><span class="text-info"><i class="fas fa-info-circle"></i> <strong>Custom Service:</strong> Showing all technicians with available capacity. Review the service description above and assign based on technician skills.</span>';
+                                         if($available_count > 0) {
+                                             echo '<br><span class="text-success"><i class="fas fa-check-circle"></i> '.$available_count.' technician(s) have capacity to take this booking';
+                                             if($busy_count > 0) echo ' ('.$busy_count.' at capacity)';
+                                             echo '</span>';
+                                         } else {
+                                             echo '<br><span class="text-danger"><i class="fas fa-exclamation-triangle"></i> All technicians are at capacity!</span>';
+                                         }
                                      } else {
-                                         echo '<br><span class="text-success"><i class="fas fa-check-circle"></i> '.$available_count.' technician(s) available for this time slot';
-                                         if($busy_count > 0) echo ' ('.$busy_count.' busy)';
-                                         echo '</span>';
+                                         // Regular service message
+                                         if($tech_count == 0) {
+                                             echo '<br><span class="text-danger"><i class="fas fa-exclamation-triangle"></i> No technicians with required skills found!</span>';
+                                         } else if($available_count == 0) {
+                                             echo '<br><span class="text-warning"><i class="fas fa-clock"></i> '.$busy_count.' technician(s) have the skill but are busy at this time</span>';
+                                         } else {
+                                             echo '<br><span class="text-success"><i class="fas fa-check-circle"></i> '.$available_count.' technician(s) available for this time slot';
+                                             if($busy_count > 0) echo ' ('.$busy_count.' busy)';
+                                             echo '</span>';
+                                         }
                                      }
                                      ?>
                                  </small>
                                  
-                                 <?php if($tech_count == 0): ?>
-                                 <div class="alert alert-warning mt-2">
-                                     <strong><i class="fas fa-info-circle"></i> No Technicians with Required Skills</strong><br>
-                                     No technicians found with the detailed service skill: "<strong><?php echo $booking_data->s_name;?></strong>"<br><br>
-                                     <strong>Solutions:</strong>
-                                     <ul class="mb-0">
-                                         <li>Add the skill to an existing technician: <a href="admin-manage-technician.php" class="alert-link">Manage Technicians</a></li>
-                                         <li>Add a new technician with this skill: <a href="admin-add-technician.php" class="alert-link">Add Technician</a></li>
-                                         <li>Change the booking time if technicians are busy</li>
-                                     </ul>
-                                 </div>
-                                 <?php elseif($available_count == 0 && $busy_count > 0): ?>
-                                 <div class="alert alert-info mt-2">
-                                     <strong><i class="fas fa-clock"></i> All Skilled Technicians Busy at This Time</strong><br>
-                                     <?php echo $busy_count;?> technician(s) have the required skill but are busy at <?php echo date('h:i A', strtotime($booking_data->sb_booking_time));?> on <?php echo date('M d', strtotime($booking_data->sb_booking_date));?><br><br>
-                                     <strong>Options:</strong>
-                                     <ul class="mb-0">
-                                         <li>Change the booking time to a different slot</li>
-                                         <li>Wait for a technician to complete their current booking</li>
-                                         <li>Assign a technician from category match (if available)</li>
-                                     </ul>
-                                 </div>
+                                 <?php if($is_custom_service_booking): ?>
+                                     <?php if($available_count == 0): ?>
+                                     <div class="alert alert-warning mt-2">
+                                         <strong><i class="fas fa-exclamation-triangle"></i> All Technicians at Capacity</strong><br>
+                                         All technicians are currently at their booking limit. No one can take additional bookings right now.<br><br>
+                                         <strong>Options:</strong>
+                                         <ul class="mb-0">
+                                             <li>Wait for a technician to complete their current bookings</li>
+                                             <li>Increase booking limit for a technician: <a href="admin-manage-technician.php" class="alert-link">Manage Technicians</a></li>
+                                             <li>Add a new technician: <a href="admin-add-technician.php" class="alert-link">Add Technician</a></li>
+                                         </ul>
+                                     </div>
+                                     <?php else: ?>
+                                     <div class="alert alert-info mt-2">
+                                         <strong><i class="fas fa-lightbulb"></i> Custom Service Assignment Tips</strong><br>
+                                         <ul class="mb-0">
+                                             <li>Review the <strong>custom service description</strong> in the orange box above</li>
+                                             <li>Check each technician's <strong>skills</strong> listed in the dropdown</li>
+                                             <li>Assign to the technician whose skills best match the customer's request</li>
+                                             <li>All listed technicians have capacity to take this booking</li>
+                                         </ul>
+                                     </div>
+                                     <?php endif; ?>
+                                 <?php else: ?>
+                                     <?php if($tech_count == 0): ?>
+                                     <div class="alert alert-warning mt-2">
+                                         <strong><i class="fas fa-info-circle"></i> No Technicians with Required Skills</strong><br>
+                                         No technicians found with the detailed service skill: "<strong><?php echo $booking_data->s_name;?></strong>"<br><br>
+                                         <strong>Solutions:</strong>
+                                         <ul class="mb-0">
+                                             <li>Add the skill to an existing technician: <a href="admin-manage-technician.php" class="alert-link">Manage Technicians</a></li>
+                                             <li>Add a new technician with this skill: <a href="admin-add-technician.php" class="alert-link">Add Technician</a></li>
+                                             <li>Change the booking time if technicians are busy</li>
+                                         </ul>
+                                     </div>
+                                     <?php elseif($available_count == 0 && $busy_count > 0): ?>
+                                     <div class="alert alert-info mt-2">
+                                         <strong><i class="fas fa-clock"></i> All Skilled Technicians Busy at This Time</strong><br>
+                                         <?php echo $busy_count;?> technician(s) have the required skill but are busy at <?php echo date('h:i A', strtotime($booking_data->sb_booking_time));?> on <?php echo date('M d', strtotime($booking_data->sb_booking_date));?><br><br>
+                                         <strong>Options:</strong>
+                                         <ul class="mb-0">
+                                             <li>Change the booking time to a different slot</li>
+                                             <li>Wait for a technician to complete their current booking</li>
+                                             <li>Assign a technician from category match (if available)</li>
+                                         </ul>
+                                     </div>
+                                     <?php endif; ?>
                                  <?php endif; ?>
                              </div>
                              <div class="form-group">

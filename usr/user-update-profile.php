@@ -56,13 +56,13 @@ if (isset($_POST['update_profile'])) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
-            padding-bottom: 80px;
+            padding-bottom: 55px;
         }
         
         .top-bar {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 15px;
+            padding: 12px 15px 15px;
             display: flex;
             align-items: center;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
@@ -86,7 +86,7 @@ if (isset($_POST['update_profile'])) {
         }
         
         .logo {
-            height: 35px;
+            height: 55px;
             width: auto;
             margin-right: 12px;
         }
