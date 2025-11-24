@@ -58,14 +58,20 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
+            padding-top: 75px;
             padding-bottom: 55px;
         }
         
         .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
             padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            z-index: 1000;
         }
         
         .header-content {
@@ -394,13 +400,13 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
 <body>
     <div class="top-bar">
         <div class="header-content">
-            <div class="brand-section">
+            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
                 </div>
-            </div>
+            </a>
             <div class="user-section">
                 <div class="header-icons">
                     <a href="user-view-profile.php" class="header-icon">
@@ -575,6 +581,10 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
         <a href="user-view-profile.php" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
+        </a>
+        <a href="../index.php" class="nav-item">
+            <i class="fas fa-globe"></i>
+            <span>Website</span>
         </a>
     </div>
 

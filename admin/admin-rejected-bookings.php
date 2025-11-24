@@ -14,10 +14,10 @@ if(isset($_POST['reassign'])) {
     $mysqli->begin_transaction();
     
     try {
-        // 1. Check if new technician has capacity
+        // 1. LOCK and check if new technician has capacity (RACE CONDITION FIX)
         $check_query = "SELECT t_name, t_booking_limit, t_current_bookings,
                               (t_booking_limit - t_current_bookings) as available_slots
-                       FROM tms_technician WHERE t_id = ?";
+                       FROM tms_technician WHERE t_id = ? FOR UPDATE";
         $stmt_check = $mysqli->prepare($check_query);
         $stmt_check->bind_param('i', $new_tech_id);
         $stmt_check->execute();
@@ -32,6 +32,9 @@ if(isset($_POST['reassign'])) {
         if($tech['t_current_bookings'] >= $tech['t_booking_limit']) {
             throw new Exception("Technician " . $tech['t_name'] . " is at capacity (" . $tech['t_current_bookings'] . "/" . $tech['t_booking_limit'] . " bookings)");
         }
+        
+        // TIME SLOT CHECK REMOVED - Only capacity matters
+        // Admin can manage scheduling conflicts manually
         
         // 2. Get old technician ID to free them up
         $old_tech_query = "SELECT sb_technician_id FROM tms_service_booking WHERE sb_id = ?";
@@ -203,7 +206,7 @@ $rejected_count = $count_result->fetch_object()->count;
                                                     <?php endif; ?>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_name); ?>', '<?php echo addslashes($booking->s_category); ?>')">
+                                                    <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_name); ?>', '<?php echo addslashes($booking->s_category); ?>', '<?php echo $booking->sb_booking_date; ?>', '<?php echo $booking->sb_booking_time; ?>')">
                                                         <i class="fas fa-user-plus"></i> Reassign
                                                     </button>
                                                     <a href="admin-view-service-booking.php?id=<?php echo $booking->sb_id; ?>" class="btn btn-info btn-sm">
@@ -269,16 +272,19 @@ $rejected_count = $count_result->fetch_object()->count;
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     
     <script>
-        function openReassignModal(bookingId, serviceName, category) {
+        function openReassignModal(bookingId, serviceName, category, bookingDate, bookingTime) {
             document.getElementById('booking_id').value = bookingId;
             
-            // Fetch available technicians for this specific service
+            // Fetch available technicians with smart matching (skills + capacity + time slots)
             $.ajax({
                 url: 'vendor/inc/get-technicians.php',
                 method: 'POST',
                 data: { 
                     service_name: serviceName,
-                    category: category 
+                    category: category,
+                    booking_date: bookingDate || '<?php echo date('Y-m-d'); ?>',
+                    booking_time: bookingTime || '10:00:00',
+                    exclude_booking_id: bookingId
                 },
                 success: function(response) {
                     $('#tech_select').html(response);

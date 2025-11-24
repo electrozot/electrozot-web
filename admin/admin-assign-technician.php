@@ -12,6 +12,7 @@
             // Get sb_id from POST (hidden field) or GET
             $sb_id = isset($_POST['sb_id']) ? intval($_POST['sb_id']) : (isset($_GET['sb_id']) ? intval($_GET['sb_id']) : 0);
             $sb_technician_id = isset($_POST['sb_technician_id']) ? intval($_POST['sb_technician_id']) : 0;
+            $sb_service_id = isset($_POST['sb_service_id']) ? intval($_POST['sb_service_id']) : 0;
             $sb_status = isset($_POST['sb_status']) ? trim($_POST['sb_status']) : '';
             
             // Get service deadline from form
@@ -21,6 +22,8 @@
             // Validation
             if($sb_id <= 0) {
                 $err = "Booking ID is missing. Please try again.";
+            } elseif($sb_service_id <= 0) {
+                $err = "Please select a service.";
             } elseif($sb_technician_id <= 0) {
                 $err = "Please select a technician.";
             } elseif(empty($sb_status)) {
@@ -50,6 +53,9 @@
                     if($tech_data->t_current_bookings >= $tech_data->t_booking_limit) {
                         throw new Exception("Technician {$tech_data->t_name} is at capacity ({$tech_data->t_current_bookings}/{$tech_data->t_booking_limit}). Please select another technician.");
                     }
+                    
+                    // TIME SLOT CHECK REMOVED - Admin manages scheduling
+                    // Only capacity check matters
                     
                     // STEP 2: Get the previously assigned technician (if any) and lock booking row
                     $get_old_tech = "SELECT sb_id, sb_technician_id, sb_status FROM tms_service_booking WHERE sb_id = ? FOR UPDATE";
@@ -118,15 +124,15 @@
                     // STEP 6: Auto-set status based on technician assignment
                     $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
                     
-                    // STEP 7: Update the booking with new technician, service deadline, and assignment timestamp
-                    $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
+                    // STEP 7: Update the booking with new service, technician, service deadline, and assignment timestamp
+                    $query="UPDATE tms_service_booking SET sb_service_id=?, sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
                     $stmt = $mysqli->prepare($query);
                     
                     if(!$stmt) {
                         throw new Exception("Database error: " . $mysqli->error);
                     }
                     
-                    $stmt->bind_param('isssi', $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
+                    $stmt->bind_param('iisssi', $sb_service_id, $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     $result = $stmt->execute();
                     
                     if(!$result || $stmt->affected_rows == 0) {
@@ -343,6 +349,47 @@
                              <input type="hidden" name="sb_id" value="<?php echo $sb_id; ?>">
                              
                              <fieldset id="formFieldset" <?php echo ($is_assigned && !$is_rejected) ? 'disabled' : ''; ?>>
+                             
+                             <!-- SERVICE SELECTION DROPDOWN -->
+                             <div class="form-group">
+                                 <label for="sb_service_id">Select Service *</label>
+                                 <select class="form-control" name="sb_service_id" id="sb_service_id" required onchange="updateTechnicianList()">
+                                     <option value="">-- Select Service --</option>
+                                     <?php
+                                     // Get all active services
+                                     $all_services_query = "SELECT s_id, s_name, s_category, s_subcategory 
+                                                           FROM tms_service 
+                                                           WHERE s_status = 'Active' 
+                                                           ORDER BY s_category, s_subcategory, s_name";
+                                     $all_services_result = $mysqli->query($all_services_query);
+                                     
+                                     $services_by_category = [];
+                                     while($svc = $all_services_result->fetch_assoc()) {
+                                         $cat = $svc['s_category'];
+                                         if(!isset($services_by_category[$cat])) {
+                                             $services_by_category[$cat] = [];
+                                         }
+                                         $services_by_category[$cat][] = $svc;
+                                     }
+                                     
+                                     // Display services grouped by category
+                                     foreach($services_by_category as $category => $services) {
+                                         echo '<optgroup label="'.htmlspecialchars($category).'">';
+                                         foreach($services as $svc) {
+                                             $selected = ($svc['s_id'] == $booking_data->sb_service_id) ? 'selected' : '';
+                                             echo '<option value="'.$svc['s_id'].'" '.$selected.'>';
+                                             echo htmlspecialchars($svc['s_name']);
+                                             echo '</option>';
+                                         }
+                                         echo '</optgroup>';
+                                     }
+                                     ?>
+                                 </select>
+                                 <small class="form-text text-muted">
+                                     <i class="fas fa-info-circle"></i> Change the service if needed. Technician list will update automatically.
+                                 </small>
+                             </div>
+                             
                              <div class="form-group">
                                  <label for="sb_technician_id">Select Technician *</label>
                                  <select class="form-control" name="sb_technician_id" id="sb_technician_id" required>
@@ -351,14 +398,22 @@
                                      // Handle NULL technician_id
                                      $current_tech_id = $booking_data->sb_technician_id ? $booking_data->sb_technician_id : 0;
                                      
+                                     // Get the CURRENT selected service from booking
+                                     $current_service_id = $booking_data->sb_service_id;
+                                     
+                                     // Fetch service details for current service
+                                     $service_query = "SELECT s_id, s_name, s_category FROM tms_service WHERE s_id = ?";
+                                     $svc_stmt = $mysqli->prepare($service_query);
+                                     $svc_stmt->bind_param('i', $current_service_id);
+                                     $svc_stmt->execute();
+                                     $current_service = $svc_stmt->get_result()->fetch_assoc();
+                                     
                                      // SPECIAL CASE: For Custom Service / Other - Show ALL available technicians
-                                     $is_custom_service_booking = (stripos($booking_data->s_name, 'Custom Service') !== false || 
-                                                                   stripos($booking_data->s_name, 'Other') !== false ||
-                                                                   stripos($booking_data->sb_description, 'Custom Service:') !== false);
+                                     $is_custom_service_booking = ($current_service && (stripos($current_service['s_name'], 'Custom Service') !== false || 
+                                                                   stripos($current_service['s_name'], 'Other') !== false));
                                      
                                      if($is_custom_service_booking) {
                                          // For custom services, show ALL technicians with available capacity
-                                         // Admin will decide based on the custom service description
                                          $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
                                                                     (t.t_booking_limit - t.t_current_bookings) as available_slots,
                                                                     t.t_skills
@@ -377,21 +432,21 @@
                                                  't_name' => $tech['t_name'],
                                                  't_experience' => $tech['t_experience'],
                                                  'available_slots' => $tech['available_slots'],
-                                                 'slot_available' => ($tech['available_slots'] > 0),
+                                                 'is_available' => ($tech['available_slots'] > 0),
                                                  'match_type' => 'custom_service',
                                                  'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity',
                                                  't_skills' => $tech['t_skills']
                                              ];
                                          }
                                      } else {
-                                         // REGULAR SERVICES: Use skill-based matcher with time slot checking
-                                         require_once('vendor/inc/improved-technician-matcher.php');
+                                         // REGULAR SERVICES: Use ULTIMATE smart matcher with SKILL-BASED MATCHING
+                                         require_once('vendor/inc/ultimate-technician-matcher.php');
                                          
-                                         if($booking_data->sb_service_id && $booking_data->sb_booking_date && $booking_data->sb_booking_time) {
-                                             // Best method: Match by service ID with time slot availability
-                                             $available_techs = getAvailableTechniciansWithSkillAndSlot(
+                                         if($current_service_id && $booking_data->sb_booking_date && $booking_data->sb_booking_time) {
+                                             // Smart matching: Checks EXACT SERVICE SKILLS from t_skills column
+                                             $available_techs = getSmartAvailableTechnicians(
                                                  $mysqli, 
-                                                 $booking_data->sb_service_id, 
+                                                 $current_service_id, 
                                                  $booking_data->sb_booking_date,
                                                  $booking_data->sb_booking_time,
                                                  $sb_id
@@ -408,10 +463,10 @@
                                      } elseif($is_custom_service_booking) {
                                          // CUSTOM SERVICE: Show all technicians grouped by availability
                                          $available_custom = array_filter($available_techs, function($t) { 
-                                             return $t['slot_available']; 
+                                             return isset($t['is_available']) ? $t['is_available'] : true; 
                                          });
                                          $busy_custom = array_filter($available_techs, function($t) { 
-                                             return !$t['slot_available']; 
+                                             return isset($t['is_available']) ? !$t['is_available'] : false; 
                                          });
                                          
                                          // Show available technicians (can take more bookings)
@@ -444,17 +499,12 @@
                                      } else {
                                          // REGULAR SERVICES: Group technicians by availability and match type
                                          $available_exact = array_filter($available_techs, function($t) { 
-                                             return $t['slot_available'] && $t['match_type'] === 'exact_skill'; 
+                                             return (isset($t['is_available']) ? $t['is_available'] : true) && (isset($t['match_type']) && $t['match_type'] === 'exact_skill'); 
                                          });
                                          $busy_exact = array_filter($available_techs, function($t) { 
-                                             return !$t['slot_available'] && $t['match_type'] === 'exact_skill'; 
+                                             return (isset($t['is_available']) ? !$t['is_available'] : false) && (isset($t['match_type']) && $t['match_type'] === 'exact_skill'); 
                                          });
-                                         $available_category = array_filter($available_techs, function($t) { 
-                                             return $t['slot_available'] && $t['match_type'] === 'category_only'; 
-                                         });
-                                         $busy_category = array_filter($available_techs, function($t) { 
-                                             return !$t['slot_available'] && $t['match_type'] === 'category_only'; 
-                                         });
+                                         // REMOVED: Category match filtering - only showing exact skill matches
                                          
                                          // Show available technicians with exact skill match (BEST)
                                          if(!empty($available_exact)) {
@@ -470,19 +520,7 @@
                                              echo '</optgroup>';
                                          }
                                          
-                                         // Show available with category match only
-                                         if(!empty($available_category)) {
-                                             echo '<optgroup label="⚠️ Available Now - Category Match Only ('.count($available_category).')">';
-                                             foreach($available_category as $tech) {
-                                                 $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
-                                                 $slots = $tech['available_slots'];
-                                                 echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free) - '.$tech['slot_message'];
-                                                 echo '</option>';
-                                             }
-                                             echo '</optgroup>';
-                                         }
+                                         // REMOVED: Category match section - only showing exact skill matches
                                          
                                          // Show busy technicians with skill (as disabled options for reference)
                                          if(!empty($busy_exact)) {
@@ -511,13 +549,14 @@
                                      ?>
                                  </select>
                                  <small class="form-text text-muted">
-                                     <strong>Service:</strong> <?php echo $booking_data->s_name;?> 
-                                     | <strong>Category:</strong> <?php echo $booking_data->s_category;?>
+                                     <strong>Current Service:</strong> <?php echo $current_service ? $current_service['s_name'] : $booking_data->s_name;?> 
+                                     | <strong>Category:</strong> <?php echo $current_service ? $current_service['s_category'] : $booking_data->s_category;?>
                                      <br><strong>Booking Time:</strong> <?php echo date('M d, Y', strtotime($booking_data->sb_booking_date));?> at <?php echo date('h:i A', strtotime($booking_data->sb_booking_time));?>
+                                     <br><strong>Matching:</strong> Showing technicians who checked "<?php echo $current_service ? $current_service['s_name'] : $booking_data->s_name;?>" during registration
                                      <?php
-                                     // Count available technicians for this time slot
-                                     $available_count = count(array_filter($available_techs, function($t) { return $t['slot_available']; }));
-                                     $busy_count = count(array_filter($available_techs, function($t) { return !$t['slot_available']; }));
+                                     // Count available technicians (based on capacity)
+                                     $available_count = count(array_filter($available_techs, function($t) { return isset($t['is_available']) ? $t['is_available'] : true; }));
+                                     $busy_count = count(array_filter($available_techs, function($t) { return isset($t['is_available']) ? !$t['is_available'] : false; }));
                                      $tech_count = count($available_techs);
                                      
                                      if($is_custom_service_booking) {
@@ -710,6 +749,54 @@
              if(checkbox && fieldset) {
                  fieldset.disabled = !checkbox.checked;
              }
+         }
+         
+         // Update technician list when service changes
+         function updateTechnicianList() {
+             const serviceId = document.getElementById('sb_service_id').value;
+             const bookingId = <?php echo $sb_id; ?>;
+             
+             if(!serviceId) {
+                 return;
+             }
+             
+             // Show loading state
+             const techSelect = document.getElementById('sb_technician_id');
+             techSelect.disabled = true;
+             techSelect.innerHTML = '<option value="">Loading technicians...</option>';
+             
+             // Fetch available technicians for this service
+             $.ajax({
+                 url: 'ajax-get-technicians-for-service.php',
+                 method: 'POST',
+                 data: {
+                     service_id: serviceId,
+                     booking_id: bookingId
+                 },
+                 dataType: 'json',
+                 success: function(response) {
+                     techSelect.disabled = false;
+                     techSelect.innerHTML = '<option value="">-- Select Technician --</option>';
+                     
+                     if(response.success && response.technicians && response.technicians.length > 0) {
+                         response.technicians.forEach(function(tech) {
+                             const option = document.createElement('option');
+                             option.value = tech.t_id;
+                             option.textContent = tech.display_name;
+                             if(tech.disabled) {
+                                 option.disabled = true;
+                             }
+                             techSelect.appendChild(option);
+                         });
+                     } else {
+                         techSelect.innerHTML = '<option value="">No available technicians for this service</option>';
+                     }
+                 },
+                 error: function() {
+                     techSelect.disabled = false;
+                     techSelect.innerHTML = '<option value="">Error loading technicians</option>';
+                 }
+             });
          }
          
          // Auto-hide alerts after 5 seconds

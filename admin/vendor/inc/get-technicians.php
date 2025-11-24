@@ -1,28 +1,35 @@
 <?php
+/**
+ * Get Technicians for Assignment/Reassignment
+ * Uses ULTIMATE TECHNICIAN MATCHER for all scenarios
+ */
 session_start();
 include('config.php');
-include('technician-matcher.php');
+require_once('ultimate-technician-matcher.php');
 
 // Ensure booking limit columns exist
 try {
-    $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_booking_limit INT DEFAULT 1");
+    $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_booking_limit INT DEFAULT 3");
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_current_bookings INT DEFAULT 0");
 } catch(Exception $e) {}
 
 // Get parameters
 $service_id = isset($_POST['service_id']) ? intval($_POST['service_id']) : 0;
-$service_name = isset($_POST['service_name']) ? $_POST['service_name'] : '';
-$category = isset($_POST['category']) ? $_POST['category'] : '';
+$service_name = isset($_POST['service_name']) ? trim($_POST['service_name']) : '';
+$category = isset($_POST['category']) ? trim($_POST['category']) : '';
+$booking_date = isset($_POST['booking_date']) ? $_POST['booking_date'] : date('Y-m-d');
+$booking_time = isset($_POST['booking_time']) ? $_POST['booking_time'] : '10:00:00';
+$exclude_booking_id = isset($_POST['exclude_booking_id']) ? intval($_POST['exclude_booking_id']) : null;
 
-// Use new skill-based matcher
+// Use ULTIMATE smart matcher
 if ($service_id > 0) {
-    // Get technicians by service ID (best method)
-    $technicians = getAvailableTechniciansForService($mysqli, $service_id);
-    echo formatTechniciansAsOptions($technicians);
+    // Best method: Get by service ID with full validation
+    $technicians = getSmartAvailableTechnicians($mysqli, $service_id, $booking_date, $booking_time, $exclude_booking_id);
+    echo formatSmartTechnicianOptions($technicians);
 } else if (!empty($service_name)) {
-    // Get technicians by service name (for reassignment)
-    $technicians = getAvailableTechniciansByServiceName($mysqli, $service_name, $category);
-    echo formatTechniciansAsOptions($technicians);
+    // For reassignment: Get by service name
+    $technicians = getSmartTechniciansForReassignment($mysqli, $service_name, $category, $booking_date, $booking_time, $exclude_booking_id);
+    echo formatSmartTechnicianOptions($technicians);
 } else {
     // No service specified - show all available technicians
     $query = "SELECT 
@@ -33,39 +40,30 @@ if ($service_id > 0) {
                 t_experience,
                 t_booking_limit,
                 t_current_bookings,
-                (t_booking_limit - t_current_bookings) as available_slots,
-                NULL as skill_name,
-                'general' as match_type
+                t_skills,
+                (t_booking_limit - t_current_bookings) as available_slots
               FROM tms_technician 
-              WHERE t_current_bookings < t_booking_limit
+              WHERE t_status != 'Inactive'
+              AND t_current_bookings < t_booking_limit
               ORDER BY available_slots DESC, t_category, t_name";
     
     $result = $mysqli->query($query);
     $technicians = [];
     
     while ($tech = $result->fetch_assoc()) {
+        $time_slot_check = checkTimeSlotAvailability($mysqli, $tech['t_id'], $booking_date, $booking_time, $exclude_booking_id);
+        
+        $tech['match_type'] = 'general';
+        $tech['has_capacity'] = true;
+        $tech['has_free_slot'] = $time_slot_check['available'];
+        $tech['is_available'] = $time_slot_check['available'];
+        $tech['slot_message'] = $time_slot_check['message'];
+        $tech['conflicting_bookings'] = $time_slot_check['conflicting_count'];
+        $tech['unavailable_reason'] = $time_slot_check['message'];
+        
         $technicians[] = $tech;
     }
     
-    if (empty($technicians)) {
-        echo '<option value="">❌ No available technicians</option>';
-    } else {
-        echo '<option value="">-- Select Technician --</option>';
-        echo '<optgroup label="✅ All Available Technicians (' . count($technicians) . ')">';
-        foreach ($technicians as $tech) {
-            $exp = $tech['t_experience'] ? $tech['t_experience'] . ' yrs' : 'New';
-            $slots = $tech['available_slots'];
-            echo sprintf(
-                '<option value="%d">%s (%s, %s exp, %d slot%s free)</option>',
-                $tech['t_id'],
-                htmlspecialchars($tech['t_name']),
-                htmlspecialchars($tech['t_category']),
-                $exp,
-                $slots,
-                $slots != 1 ? 's' : ''
-            );
-        }
-        echo '</optgroup>';
-    }
+    echo formatSmartTechnicianOptions($technicians);
 }
 ?>

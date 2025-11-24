@@ -61,18 +61,22 @@ if (isset($_POST['change_password'])) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
+            padding-top: 75px;
             padding-bottom: 55px;
         }
         
         .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
             padding: 12px 15px 15px;
             display: flex;
             align-items: center;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            position: sticky;
-            top: 0;
+            z-index: 1000;
             z-index: 100;
         }
         
@@ -450,6 +454,10 @@ if (isset($_POST['change_password'])) {
         <a href="user-view-profile.php" class="nav-item active">
             <i class="fas fa-user"></i>
             <span>Profile</span>
+        </a>
+        <a href="../index.php" class="nav-item">
+            <i class="fas fa-globe"></i>
+            <span>Website</span>
         </a>
     </div>
 

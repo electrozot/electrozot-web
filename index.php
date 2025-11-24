@@ -127,11 +127,45 @@
                     .hero-title {
                         font-size: 3.5rem !important;
                     }
+                    
+                    .hero-buttons-wrapper {
+                        display: flex !important;
+                        flex-direction: row !important;
+                        justify-content: flex-start !important;
+                        gap: 10px !important;
+                    }
+                    
+                    .hero-btn {
+                        flex: 0 1 auto !important;
+                        min-width: auto !important;
+                        padding: 8px 18px !important;
+                        font-size: 0.85rem !important;
+                    }
                 }
                 
                 @media (max-width: 576px) {
                     .hero-title {
                         font-size: 3rem !important;
+                    }
+                    
+                    .hero-buttons-wrapper {
+                        display: flex !important;
+                        flex-direction: row !important;
+                        justify-content: flex-start !important;
+                        gap: 8px !important;
+                        flex-wrap: nowrap !important;
+                    }
+                    
+                    .hero-btn {
+                        flex: 1 1 0 !important;
+                        min-width: 0 !important;
+                        padding: 8px 12px !important;
+                        font-size: 0.8rem !important;
+                        white-space: nowrap !important;
+                    }
+                    
+                    .hero-btn i {
+                        font-size: 0.75rem !important;
                     }
                 }
             </style>
@@ -145,11 +179,11 @@
                         <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; color: #4a5568; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); font-weight: 700;">
                             Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
                         </p>
-                        <div class="d-flex flex-wrap" style="gap: 12px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge" role="button" aria-label="Book service now" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 150px; text-align: center;">
+                        <div class="hero-buttons-wrapper d-flex flex-wrap" style="gap: 12px;">
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 150px; text-align: center;">
                                 <i class="fas fa-bolt"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 180px; text-align: center;">
+                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 180px; text-align: center;">
                                 <i class="fas fa-phone"></i> 7559606925
                             </a>
                         </div>
@@ -278,10 +312,10 @@
         <style>
             /* Compact Form Styling - Enhanced Design */
             .booking-form-compact .form-label-compact {
-                font-size: 0.85rem !important;
+                font-size: 0.8rem !important;
                 font-weight: 600 !important;
                 color: #495057 !important;
-                margin-bottom: 3px !important;
+                margin-bottom: 2px !important;
                 display: block !important;
             }
             
@@ -291,11 +325,11 @@
             }
             
             .booking-form-compact .form-control {
-                font-size: 0.9rem !important;
-                padding: 8px 12px !important;
+                font-size: 1rem !important;
+                padding: 6px 10px !important;
                 height: auto !important;
-                min-height: 40px !important;
-                border-radius: 10px !important;
+                min-height: 36px !important;
+                border-radius: 8px !important;
                 border: 2px solid #d1d5db !important;
                 background: linear-gradient(to bottom, #ffffff, #f9fafb) !important;
                 font-weight: 500;
@@ -319,20 +353,20 @@
             }
             
             .booking-form-compact textarea.form-control {
-                padding: 8px 12px !important;
-                line-height: 1.6;
-                font-size: 0.9rem !important;
+                padding: 6px 10px !important;
+                line-height: 1.5;
+                font-size: 1rem !important;
                 font-weight: 500;
                 width: 100% !important;
                 resize: vertical !important;
             }
             
             .booking-form-compact select.form-control {
-                font-size: 0.9rem !important;
+                font-size: 1rem !important;
                 font-weight: 500;
                 width: 100% !important;
-                padding: 8px 12px !important;
-                min-height: 40px !important;
+                padding: 6px 10px !important;
+                min-height: 36px !important;
                 cursor: pointer !important;
                 background-image: linear-gradient(45deg, transparent 50%, #dc143c 50%), linear-gradient(135deg, #dc143c 50%, transparent 50%) !important;
                 background-position: calc(100% - 15px) center, calc(100% - 10px) center !important;
@@ -342,7 +376,7 @@
             }
             
             .booking-form-compact .form-group {
-                margin-bottom: 0.75rem !important;
+                margin-bottom: 0.5rem !important;
                 width: 100% !important;
                 position: relative !important;
             }
@@ -517,33 +551,38 @@
                 
                 /* Compact spacing for mobile - keep text size same */
                 .booking-form-compact .form-label-compact {
-                    margin-bottom: 3px !important;
+                    margin-bottom: 2px !important;
+                    font-size: 0.75rem !important;
                 }
                 
                 .booking-form-compact .form-group {
-                    margin-bottom: 0.6rem !important;
+                    margin-bottom: 0.4rem !important;
                 }
                 
                 /* Compact card on mobile */
                 .card-body.p-3 {
-                    padding: 0.75rem !important;
-                }
-                
-                .card-header.py-3 {
                     padding: 0.6rem !important;
                 }
                 
-                /* Stack columns properly on mobile */
+                .card-header.py-3 {
+                    padding: 0.5rem !important;
+                }
+                
+                .card-header h3 {
+                    font-size: 1.1rem !important;
+                }
+                
+                /* Keep two columns on mobile like desktop */
                 .booking-form-compact .col-md-6 {
-                    padding-left: 8px !important;
-                    padding-right: 8px !important;
-                    flex: 0 0 100% !important;
-                    max-width: 100% !important;
+                    padding-left: 6px !important;
+                    padding-right: 6px !important;
+                    flex: 0 0 50% !important;
+                    max-width: 50% !important;
                 }
                 
                 .booking-form-compact .row {
-                    margin-left: -8px !important;
-                    margin-right: -8px !important;
+                    margin-left: -6px !important;
+                    margin-right: -6px !important;
                 }
                 
                 /* Ensure all form controls are full width and aligned on mobile */

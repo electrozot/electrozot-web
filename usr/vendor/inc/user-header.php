@@ -12,13 +12,13 @@ if (!isset($user)) {
 ?>
 <div class="top-header">
     <div class="header-content">
-        <div class="brand-section">
+        <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
             <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
             <div class="brand-text">
                 <h2>Electrozot</h2>
                 <p>We make perfect</p>
             </div>
-        </div>
+        </a>
         <div class="user-section">
             <div class="user-name"><?php echo htmlspecialchars($user->u_fname); ?></div>
             <div class="header-icons">
