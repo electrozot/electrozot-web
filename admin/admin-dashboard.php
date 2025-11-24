@@ -6,6 +6,9 @@
   check_login();
   $aid=$_SESSION['a_id'];
   
+  // AUTO-FIX: Sync technician slots and availability
+  include('auto-fix-technician-slots.php');
+  
   // Auto-setup services on first admin login
   $services_inserted = include('auto-setup-services.php');
   if($services_inserted > 0) {
@@ -897,126 +900,8 @@
             }, 10000);
         }
 
-        // Check for new bookings
-        function checkNewBookings() {
-            console.log('🔍 Checking for new bookings...');
-            
-            $.ajax({
-                url: 'check-new-bookings.php',
-                method: 'GET',
-                dataType: 'text', // Get as text first to see raw response
-                cache: false,
-                success: function(rawResponse) {
-                    console.log('📡 Raw response:', rawResponse);
-                    
-                    // Try to parse JSON
-                    let response;
-                    try {
-                        response = JSON.parse(rawResponse);
-                        console.log('📊 Parsed response:', response);
-                    } catch(e) {
-                        console.error('❌ JSON Parse Error:', e);
-                        console.error('Raw response was:', rawResponse);
-                        return;
-                    }
-                    
-                    if(response.error) {
-                        console.error('❌ Server error:', response.error);
-                        return;
-                    }
-                    
-                    if(response.has_new && response.new_count > 0) {
-                        console.log('🔔 NEW BOOKINGS DETECTED:', response.new_count);
-                        console.log('📋 Booking details:', response.bookings);
-                        
-                        // Play sound
-                        try {
-                            playNotificationSound();
-                            console.log('🔊 Sound played');
-                        } catch(e) {
-                            console.error('❌ Sound error:', e);
-                        }
-                        
-                        // Show notification toast
-                        try {
-                            showNotification(response.bookings);
-                            console.log('📱 Toast notification shown');
-                        } catch(e) {
-                            console.error('❌ Toast error:', e);
-                        }
-                        
-                        // Update badge
-                        $('#notificationBadge').text(response.new_count).show();
-                        console.log('🔴 Badge updated');
-                        
-                        // Update page title
-                        document.title = `(${response.new_count}) New Booking - Admin Dashboard`;
-                        
-                        // Browser notification (if permitted)
-                        if ('Notification' in window && Notification.permission === 'granted') {
-                            try {
-                                const notification = new Notification('New Booking Received!', {
-                                    body: `${response.new_count} new booking(s) received`,
-                                    icon: 'vendor/img/logo.png',
-                                    badge: 'vendor/img/logo.png',
-                                    tag: 'new-booking',
-                                    requireInteraction: false,
-                                    silent: false
-                                });
-                                
-                                notification.onclick = function() {
-                                    window.focus();
-                                    notification.close();
-                                };
-                                
-                                console.log('🔔 Browser notification sent');
-                            } catch(e) {
-                                console.warn('⚠️ Browser notification failed:', e);
-                            }
-                        }
-                        
-                        // Update marquee
-                        updateMarquee(response.bookings, response.updates || []);
-                        
-                        // Reload page to show new booking in table
-                        setTimeout(() => {
-                            console.log('🔄 Reloading page to show new bookings...');
-                            location.reload();
-                        }, 3000);
-                    } else {
-                        console.log('✅ No new bookings (Count: ' + response.new_count + ')');
-                    }
-                    
-                    // Update marquee with recent activity
-                    updateMarqueeFromResponse(response);
-                } catch(e) {
-                    console.error('❌ JSON Parse Error:', e);
-                    console.error('Raw response was:', rawResponse);
-                    return;
-                }
-                },
-                error: function(xhr, status, error) {
-                    console.error('❌ AJAX Error:', {
-                        status: status,
-                        error: error,
-                        response: xhr.responseText
-                    });
-                }
-            });
-        }
-
-        // Request notification permission
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                console.log('Notification permission:', permission);
-            });
-        }
-
-        // Start checking for new bookings every 10 seconds
-        setInterval(checkNewBookings, 10000);
-        
-        // Check immediately on page load (after 2 seconds)
-        setTimeout(checkNewBookings, 2000);
+        // Notification system now handled by unified-notification-system.php in nav
+        // No duplicate polling needed here
         
         // Add CSS animation
         const style = document.createElement('style');

@@ -245,10 +245,10 @@
      <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
      <!-- Custom scripts for all pages-->
-     <script src="js/sb-admin.min.js"></script>
+     <script src="vendor/js/sb-admin.min.js"></script>
 
      <!-- Demo scripts for this page-->
-     <script src="js/demo/datatables-demo.js"></script>
+     <script src="vendor/js/demo/datatables-demo.js"></script>
      <script>
        // Apply client-side status filter based on URL param as a fallback
        $(function(){

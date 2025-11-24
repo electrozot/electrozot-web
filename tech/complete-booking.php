@@ -30,8 +30,8 @@ foreach($columns_to_add as $sql) {
     try { $mysqli->query($sql); } catch(Exception $e) {}
 }
 
-// Get booking details
-$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_category
+// Get booking details with service price
+$query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_email, s.s_name, s.s_category, s.s_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -48,6 +48,10 @@ if($result->num_rows == 0){
 }
 
 $booking = $result->fetch_object();
+
+// Check if admin has set a fixed price
+$admin_price_set = ($booking->s_price !== null && $booking->s_price > 0);
+$display_price = $admin_price_set ? $booking->s_price : $booking->sb_total_price;
 
 // Check if already completed or not done
 if($booking->sb_status == 'Completed' || $booking->sb_status == 'Not Done'){
@@ -66,8 +70,8 @@ $debug_mode = isset($_GET['debug']);
 if(isset($_POST['mark_done'])){
     $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
     
-    // Validate inputs
-    if($bill_amount <= 0){
+    // Validate inputs (skip validation if admin has set fixed price)
+    if($bill_amount <= 0 && !$admin_price_set){
         $error = 'Please enter a valid bill amount greater than 0';
     }
     elseif(!isset($_FILES['service_image']) || $_FILES['service_image']['error'] == 4){
@@ -113,7 +117,8 @@ if(isset($_POST['mark_done'])){
                                     sb_completion_image = ?,
                                     sb_bill_attachment = ?,
                                     sb_bill_amount = ?,
-                                    sb_completed_at = NOW()
+                                    sb_completed_at = NOW(),
+                                    sb_updated_at = NOW()
                                 WHERE sb_id = ? AND sb_technician_id = ?";
                 
                 $update_stmt = $mysqli->prepare($update_query);
@@ -154,11 +159,13 @@ if(isset($_POST['mark_not_done'])){
     if(empty($reason)){
         $error = 'Please provide a reason for not completing the service';
     } else {
-        // Update booking status to Not Done
+        // Update booking status to Not Done and clear technician assignment
         $update_query = "UPDATE tms_service_booking 
                         SET sb_status = 'Not Done',
                             sb_not_done_reason = ?,
-                            sb_not_done_at = NOW()
+                            sb_not_done_at = NOW(),
+                            sb_updated_at = NOW(),
+                            sb_technician_id = NULL
                         WHERE sb_id = ? AND sb_technician_id = ?";
         
         $update_stmt = $mysqli->prepare($update_query);
@@ -166,17 +173,82 @@ if(isset($_POST['mark_not_done'])){
         
         if($update_stmt->execute() && $update_stmt->affected_rows > 0){
             // CRITICAL: Free up technician for next booking (rejection case)
-            // Update all status fields to ensure technician is fully available
+            // Decrement counter and update all status fields to ensure technician is fully available
             $free_tech = "UPDATE tms_technician 
-                         SET t_status = 'Available', 
-                             t_is_available = 1, 
-                             t_current_booking_id = NULL 
+                         SET t_status = CASE 
+                             WHEN t_current_bookings - 1 >= t_booking_limit THEN 'Busy'
+                             WHEN t_current_bookings - 1 > 0 THEN 'Booked'
+                             ELSE 'Available'
+                         END,
+                         t_is_available = CASE 
+                             WHEN t_current_bookings - 1 < t_booking_limit THEN 1 
+                             ELSE 0 
+                         END,
+                         t_current_booking_id = NULL,
+                         t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                          WHERE t_id = ?";
             $free_stmt = $mysqli->prepare($free_tech);
             $free_stmt->bind_param('i', $t_id);
             $free_stmt->execute();
             
-            $_SESSION['success'] = "Booking marked as not done.";
+            // Get technician name for notifications
+            $tech_query = "SELECT t_name FROM tms_technician WHERE t_id = ?";
+            $tech_stmt = $mysqli->prepare($tech_query);
+            $tech_stmt->bind_param('i', $t_id);
+            $tech_stmt->execute();
+            $tech_result = $tech_stmt->get_result();
+            $tech_data = $tech_result->fetch_object();
+            $tech_name = $tech_data ? $tech_data->t_name : 'Technician';
+            
+            // Create admin notification table if not exists
+            $mysqli->query("CREATE TABLE IF NOT EXISTS tms_admin_notifications (
+                an_id INT AUTO_INCREMENT PRIMARY KEY,
+                an_type VARCHAR(50) NOT NULL,
+                an_title VARCHAR(255) NOT NULL,
+                an_message TEXT NOT NULL,
+                an_booking_id INT,
+                an_technician_id INT,
+                an_is_read TINYINT(1) DEFAULT 0,
+                an_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_read (an_is_read),
+                INDEX idx_booking (an_booking_id)
+            )");
+            
+            // Create admin notification
+            $notif_title = "Service Not Done - Needs Reassignment";
+            $notif_message = "$tech_name marked Booking #$sb_id as Not Done. Reason: $reason. Please reassign to another technician.";
+            $notif_type = "SERVICE_NOT_DONE";
+            
+            $notif_stmt = $mysqli->prepare("INSERT INTO tms_admin_notifications (an_type, an_title, an_message, an_booking_id, an_technician_id) VALUES (?, ?, ?, ?, ?)");
+            $notif_stmt->bind_param('sssii', $notif_type, $notif_title, $notif_message, $sb_id, $t_id);
+            $notif_stmt->execute();
+            
+            // Create user notification table if not exists
+            $mysqli->query("CREATE TABLE IF NOT EXISTS tms_user_notifications (
+                un_id INT AUTO_INCREMENT PRIMARY KEY,
+                un_user_id INT NOT NULL,
+                un_booking_id INT,
+                un_type VARCHAR(50) NOT NULL,
+                un_title VARCHAR(255) NOT NULL,
+                un_message TEXT NOT NULL,
+                un_is_read TINYINT(1) DEFAULT 0,
+                un_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_user (un_user_id),
+                INDEX idx_read (un_is_read)
+            )");
+            
+            // Create user notification
+            if ($booking->sb_user_id) {
+                $user_notif_title = "Service Status Update";
+                $user_notif_message = "Your booking #$sb_id could not be completed. Don't worry, we'll assign another technician to help you soon!";
+                $user_notif_type = "SERVICE_NOT_DONE";
+                
+                $user_notif_stmt = $mysqli->prepare("INSERT INTO tms_user_notifications (un_user_id, un_booking_id, un_type, un_title, un_message) VALUES (?, ?, ?, ?, ?)");
+                $user_notif_stmt->bind_param('iisss', $booking->sb_user_id, $sb_id, $user_notif_type, $user_notif_title, $user_notif_message);
+                $user_notif_stmt->execute();
+            }
+            
+            $_SESSION['success'] = "Booking marked as not done. Admin has been notified for reassignment.";
             header('Location: dashboard.php');
             exit();
         } else {
@@ -475,10 +547,23 @@ if(isset($_POST['mark_not_done'])){
                 </div>
                 
                 <!-- Bill Amount -->
+                <?php if(!$admin_price_set): ?>
                 <div class="form-group">
                     <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
-                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount" step="0.01" min="0.01" required>
+                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
                 </div>
+                <?php else: ?>
+                <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
+                <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
+                        <div>
+                            <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
+                            <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
                 
                 <button type="submit" name="mark_done" class="btn-submit">
                     <i class="fas fa-check-circle"></i> Complete Service
@@ -567,5 +652,8 @@ if(isset($_POST['mark_not_done'])){
             }
         }
     </script>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

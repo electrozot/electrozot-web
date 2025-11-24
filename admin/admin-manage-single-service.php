@@ -125,8 +125,9 @@
                                  <small class="form-text text-muted">Specify the device/gadget this service is for (optional)</small>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Service Price</label>
-                                 <input type="number" step="0.01" value="<?php echo $row->s_price;?>" required class="form-control" id="exampleInputEmail1" name="s_price">
+                                 <label for="exampleInputEmail1">Service Price (Optional)</label>
+                                 <input type="number" step="0.01" value="<?php echo $row->s_price;?>" class="form-control" id="exampleInputEmail1" name="s_price" placeholder="Leave empty if price varies">
+                                 <small class="form-text text-muted">Set a fixed price here, or leave empty/0 if the price varies based on parts/work (technician will determine final price)</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Service Duration</label>

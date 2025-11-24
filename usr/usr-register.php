@@ -134,9 +134,9 @@
             from { opacity: 0; transform: translateX(-30px); }
             to { opacity: 1; transform: translateX(0); }
         }
-        .logo-section img { height: 40px; width: auto; }
+        .logo-section img { height: 55px; width: auto; }
         .logo-section .brand-name {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             font-weight: 700;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
@@ -333,8 +333,8 @@
         }
         @media (max-width: 768px) {
             .logo-section { top: 15px; left: 15px; padding: 10px 15px; }
-            .logo-section img { height: 35px; }
-            .logo-section .brand-name { font-size: 1.1rem; }
+            .logo-section img { height: 45px; }
+            .logo-section .brand-name { font-size: 1.3rem; }
             .register-container { margin: 70px auto 20px; padding: 15px; }
             .register-body { padding: 30px 25px; }
             .register-header { padding: 35px 25px; }

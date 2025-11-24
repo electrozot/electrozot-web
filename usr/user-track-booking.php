@@ -1,9 +1,5 @@
 <?php
 session_start();
-// Prevent caching
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
 check_login();
@@ -24,70 +20,8 @@ $user = $user_result->fetch_object();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Track Order - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <?php include('vendor/inc/user-header-styles.php'); ?>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-        
-        .top-bar {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
-            color: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            gap: 15px;
-        }
-        
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-        
-        .logo {
-            height: 45px;
-            width: auto;
-        }
-        
-        .brand-text h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 11px;
-            opacity: 0.85;
-            margin: 2px 0 0 0;
-            font-style: italic;
-        }
-        
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-        
         .content {
             padding: 15px;
         }
@@ -194,11 +128,18 @@ $user = $user_result->fetch_object();
         }
         
         .timeline-step.active::before {
-            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+            background: #e5e7eb;
         }
         
+        /* Hide line only for the last step */
         .timeline-step:last-child::before {
             display: none;
+        }
+        
+        /* Show line for active step if it's not the last one */
+        .timeline-step.active:not(:last-child)::before {
+            display: block;
+            background: #e5e7eb;
         }
         
         .step-icon {
@@ -406,58 +347,10 @@ $user = $user_result->fetch_object();
         .btn-book i {
             margin-right: 8px;
         }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            z-index: 100;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: #999;
-            padding: 8px;
-            transition: all 0.3s;
-        }
-        
-        .nav-item.active {
-            color: #6366f1;
-        }
-        
-        .nav-item i {
-            font-size: 20px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        
-        .nav-item span {
-            font-size: 11px;
-            font-weight: 600;
-        }
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="brand-section">
-            <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
-            <div class="brand-text">
-                <h2>Electrozot</h2>
-                <p>We make perfect</p>
-            </div>
-        </div>
-        <a href="user-dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-    </div>
+    <?php include('vendor/inc/user-header.php'); ?>
 
     <div class="content">
         <?php
@@ -524,6 +417,13 @@ $user = $user_result->fetch_object();
         <?php
             $service_name = $booking->s_name ?? 'Service';
             $status = $booking->sb_status ?? 'Pending';
+            $has_technician = !empty($booking->sb_technician_id);
+            
+            // If technician is assigned (Approved status), show as "In Progress" to customer
+            $display_status = $status;
+            if($status == 'Approved' && $has_technician) {
+                $display_status = 'In Progress';
+            }
             
             // Determine status display
             $status_icon_bg = '';
@@ -531,12 +431,18 @@ $user = $user_result->fetch_object();
             $status_color = '';
             $status_message = '';
             
-            switch($status) {
+            switch($display_status) {
                 case 'Pending':
                     $status_icon_bg = 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);';
                     $status_icon = 'clock';
                     $status_color = '#f59e0b';
-                    $status_message = 'Waiting for confirmation';
+                    $status_message = 'Waiting for technician assignment';
+                    break;
+                case 'Approved':
+                    $status_icon_bg = 'background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);';
+                    $status_icon = 'check-circle';
+                    $status_color = '#3b82f6';
+                    $status_message = 'Booking confirmed - Technician assigned';
                     break;
                 case 'Confirmed':
                     $status_icon_bg = 'background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);';
@@ -548,7 +454,7 @@ $user = $user_result->fetch_object();
                     $status_icon_bg = 'background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);';
                     $status_icon = 'tools';
                     $status_color = '#8b5cf6';
-                    $status_message = 'Technician is working';
+                    $status_message = 'Technician is working on your service';
                     break;
                 case 'Completed':
                     $status_icon_bg = 'background: linear-gradient(135deg, #10b981 0%, #059669 100%);';
@@ -562,13 +468,26 @@ $user = $user_result->fetch_object();
                     $status_color = '#ef4444';
                     $status_message = 'Booking cancelled';
                     break;
+                case 'Rejected':
+                case 'Rejected by Technician':
+                case 'Not Done':
+                    $status_icon_bg = 'background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);';
+                    $status_icon = 'exclamation-triangle';
+                    $status_color = '#ef4444';
+                    $status_message = 'Service could not be completed - Contact support';
+                    break;
+                default:
+                    $status_icon_bg = 'background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);';
+                    $status_icon = 'info-circle';
+                    $status_color = '#6b7280';
+                    $status_message = 'Status: ' . $status;
             }
             
             // Timeline steps
             $step_pending = true;
-            $step_confirmed = in_array($status, ['Confirmed', 'In Progress', 'Completed']);
-            $step_progress = in_array($status, ['In Progress', 'Completed']);
-            $step_completed = ($status == 'Completed');
+            $step_confirmed = in_array($display_status, ['Approved', 'Confirmed', 'In Progress', 'Completed']) || $has_technician;
+            $step_progress = in_array($display_status, ['In Progress', 'Completed']);
+            $step_completed = ($display_status == 'Completed');
         ?>
         
         <!-- Status Card -->
@@ -578,7 +497,7 @@ $user = $user_result->fetch_object();
             <div class="status-icon" style="<?php echo $status_icon_bg; ?>">
                 <i class="fas fa-<?php echo $status_icon; ?>"></i>
             </div>
-            <div class="status-text" style="color: <?php echo $status_color; ?>;"><?php echo $status; ?></div>
+            <div class="status-text" style="color: <?php echo $status_color; ?>;"><?php echo $display_status; ?></div>
             <div class="status-desc"><?php echo $status_message; ?></div>
         </div>
         
@@ -704,145 +623,6 @@ $user = $user_result->fetch_object();
         <?php } ?>
     </div>
 
-    <div class="bottom-nav">
-        <a href="user-dashboard.php" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="user-manage-booking.php" class="nav-item">
-            <i class="fas fa-clipboard-list"></i>
-            <span>Bookings</span>
-        </a>
-        <a href="user-track-booking.php" class="nav-item active">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Track</span>
-        </a>
-        <a href="user-view-profile.php" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-    </div>
-
-    <script>
-        // Auto-refresh booking status every 10 seconds
-        let autoRefreshInterval;
-        let isPageVisible = true;
-        
-        // Detect if page is visible (don't refresh when tab is hidden)
-        document.addEventListener('visibilitychange', function() {
-            isPageVisible = !document.hidden;
-            if (isPageVisible && autoRefreshInterval) {
-                checkForUpdates(); // Check immediately when tab becomes visible
-            }
-        });
-        
-        // Function to check for booking updates
-        function checkForUpdates() {
-            if (!isPageVisible) return; // Don't update if page is hidden
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const bookingId = urlParams.get('booking_id') || '';
-            
-            // Only auto-refresh if we have a booking to track
-            <?php if(isset($booking) && $booking): ?>
-            fetch('get-booking-status.php?booking_id=<?php echo $booking->sb_id; ?>')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        updateBookingStatus(data.booking);
-                    }
-                })
-                .catch(error => {
-                    console.log('Auto-refresh error:', error);
-                });
-            <?php endif; ?>
-        }
-        
-        // Function to update the page with new status
-        function updateBookingStatus(booking) {
-            const currentStatus = '<?php echo isset($booking) ? $booking->sb_status : ""; ?>';
-            
-            // Only reload if status has changed
-            if (booking.status !== currentStatus) {
-                // Show notification
-                showUpdateNotification('Order status updated to: ' + booking.status);
-                
-                // Reload page after 2 seconds to show new status
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            }
-        }
-        
-        // Show notification when status changes
-        function showUpdateNotification(message) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 80px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                color: white;
-                padding: 15px 25px;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-                z-index: 9999;
-                font-weight: 600;
-                font-size: 14px;
-                animation: slideDown 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            `;
-            notification.innerHTML = `
-                <i class="fas fa-sync-alt fa-spin"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
-        // Start auto-refresh (every 10 seconds)
-        <?php if(isset($booking) && $booking): ?>
-        autoRefreshInterval = setInterval(checkForUpdates, 10000);
-        
-        // Initial check after 5 seconds
-        setTimeout(checkForUpdates, 5000);
-        <?php endif; ?>
-        
-        // Add CSS animations
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateX(-50%) translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(-50%) translateY(0);
-                }
-            }
-            @keyframes slideUp {
-                from {
-                    opacity: 1;
-                    transform: translateX(-50%) translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateX(-50%) translateY(-20px);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+    <?php include('vendor/inc/user-footer.php'); ?>
 </body>
 </html>

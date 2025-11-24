@@ -117,8 +117,9 @@
                                  <small class="form-text text-muted">Select the specific service or device type</small>
                              </div>
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Service Price</label>
-                                 <input type="number" step="0.01" required class="form-control" id="exampleInputEmail1" name="s_price" placeholder="Enter Service Price">
+                                 <label for="exampleInputEmail1">Service Price (Optional)</label>
+                                 <input type="number" step="0.01" class="form-control" id="exampleInputEmail1" name="s_price" placeholder="Leave empty if price varies (technician will set during completion)">
+                                 <small class="form-text text-muted">Set a fixed price here, or leave empty if the price varies based on parts/work (technician will determine final price)</small>
                              </div>
                              <div class="form-group">
                                  <label for="exampleInputEmail1">Service Duration</label>

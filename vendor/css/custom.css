@@ -58,7 +58,7 @@
 /* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    bottom: 30px;
+    bottom: 160px;
     right: 30px;
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
@@ -70,7 +70,7 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
-    z-index: 1000;
+    z-index: 10000;
     transition: all 0.3s ease;
     text-decoration: none;
     font-size: 22px;
@@ -129,7 +129,7 @@
     .book-service-fab {
         width: 55px;
         height: 55px;
-        bottom: 20px;
+        bottom: 140px !important;
         right: 20px;
         font-size: 20px;
     }
@@ -164,6 +164,13 @@
     animation: lightningMove 3s linear infinite;
     text-shadow: none;
     position: relative;
+    /* Remove any text stroke to prevent overlapping */
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+    /* Improve rendering on mobile */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 /* Add glowing effect behind the text */
@@ -193,6 +200,12 @@
     background-clip: text;
     filter: blur(10px);
     animation: lightningMove 3s linear infinite;
+    /* Remove any text stroke from glow layer */
+    -webkit-text-stroke: 0;
+    text-stroke: 0;
+    /* Improve rendering */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Lightning movement animation - moves from left to right in 3 seconds */
@@ -661,7 +674,7 @@ select.service-dropdown,
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Make the select input readable */
+    /* Make the select input readable - full width on mobile */
     select.service-dropdown,
     #guestServiceSubcategory,
     #guestService {
@@ -670,6 +683,7 @@ select.service-dropdown,
         height: auto !important;
         min-height: 42px !important;
         width: 100% !important;
+        max-width: 100% !important;
         white-space: normal !important;
         overflow: visible !important;
         text-overflow: clip !important;

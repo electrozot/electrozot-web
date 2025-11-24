@@ -40,66 +40,68 @@ $booking_stats = $booking_result->fetch_object();
         .top-header {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 20px 15px 25px;
+            padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
         }
         
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
         
         .logo {
-            height: 45px;
+            height: 55px;
             width: auto;
         }
         
         .brand-text h2 {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             margin: 0;
             line-height: 1.2;
         }
         
         .brand-text p {
-            font-size: 11px;
+            font-size: 13px;
             opacity: 0.85;
-            margin: 2px 0 0 0;
+            margin: 3px 0 0 0;
             font-style: italic;
         }
         
         .user-section {
-            text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
         }
         
         .user-name {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 8px;
+            white-space: nowrap;
         }
         
         .header-icons {
             display: flex;
-            gap: 8px;
-            justify-content: flex-end;
+            gap: 6px;
         }
         
         .header-icon {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             background: rgba(255,255,255,0.25);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 14px;
             text-decoration: none;
             color: white;
             transition: all 0.3s;
@@ -226,15 +228,16 @@ $booking_stats = $booking_result->fetch_object();
         
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 8px;
+            padding: 6px 0;
             z-index: 1000;
+            border-radius: 20px;
         }
         
         .nav-item {
@@ -243,19 +246,19 @@ $booking_stats = $booking_result->fetch_object();
             text-decoration: none;
             color: #999;
             transition: all 0.3s;
-            padding: 5px;
+            padding: 4px;
         }
         
         .nav-item.active { color: #667eea; }
         
         .nav-item i {
-            font-size: 24px;
+            font-size: 20px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         
         .nav-item span {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
         }
         
@@ -346,7 +349,9 @@ $booking_stats = $booking_result->fetch_object();
                 max-width: 1200px;
                 left: 50%;
                 transform: translateX(-50%);
-                border-radius: 15px 15px 0 0;
+                bottom: 10px;
+                margin: 0 10px;
+                border-radius: 20px;
             }
         }
         
@@ -390,9 +395,6 @@ $booking_stats = $booking_result->fetch_object();
                 <div class="header-icons">
                     <a href="user-view-profile.php" class="header-icon">
                         <i class="fas fa-user"></i>
-                    </a>
-                    <a href="user-logout.php" class="header-icon">
-                        <i class="fas fa-sign-out-alt"></i>
                     </a>
                 </div>
             </div>
@@ -518,5 +520,7 @@ $booking_stats = $booking_result->fetch_object();
             <span>Profile</span>
         </a>
     </div>
+
+
 </body>
 </html>

@@ -79,7 +79,7 @@ if(isset($_POST['book_service_guest'])) {
 
     // Get service price and validate service exists
     if($is_other_service) {
-        // For "Other" service, set price to 0 (to be determined by admin)
+        // For "Other" service, set price to 0 (to be filled by technician during completion)
         $sb_total_price = 0;
         // Append the custom service name to description
         $sb_description = "CUSTOM SERVICE: " . $other_service_name . "\n\n" . $sb_description;
@@ -105,7 +105,10 @@ if(isset($_POST['book_service_guest'])) {
             exit();
         }
         
-        $sb_total_price = $service->s_price;
+        // Use admin-set price if available, otherwise set to 0 (technician will fill during completion)
+        $sb_total_price = ($service->s_price !== null && $service->s_price > 0) 
+                         ? $service->s_price 
+                         : 0;
         $stmt_price->close();
     }
 
@@ -146,6 +149,26 @@ if(isset($_POST['book_service_guest'])) {
     }
 
     if($customer_id) {
+        // Check active bookings limit (3 bookings per phone number)
+        // Active bookings are those that are NOT 'Rejected', 'Cancelled', or 'Completed'
+        $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                                   WHERE sb_phone = ? 
+                                   AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+        $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+        $stmt_check_limit->bind_param('s', $customer_phone);
+        $stmt_check_limit->execute();
+        $result_limit = $stmt_check_limit->get_result();
+        $limit_data = $result_limit->fetch_object();
+        $active_bookings_count = $limit_data->active_count;
+        $stmt_check_limit->close();
+        
+        // If customer already has 3 or more active bookings, reject the new booking
+        if($active_bookings_count >= 3) {
+            $_SESSION['booking_error'] = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
+            header("location: index.php#booking-form");
+            exit();
+        }
+        
         // Ensure sb_pincode and sb_custom_service columns exist, and sb_service_id allows NULL
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_custom_service VARCHAR(255) DEFAULT NULL");

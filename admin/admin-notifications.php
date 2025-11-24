@@ -20,9 +20,14 @@ $params = [];
 $types = '';
 
 if($filter != 'all') {
-    $where_conditions[] = "sb.sb_status = ?";
-    $params[] = $filter;
-    $types .= 's';
+    // Handle Rejected filter to include all rejection statuses
+    if($filter == 'Rejected') {
+        $where_conditions[] = "(sb.sb_status = 'Rejected' OR sb.sb_status = 'Rejected by Technician' OR sb.sb_status = 'Cancelled' OR sb.sb_status = 'Not Done' OR sb.sb_status = 'Not Completed')";
+    } else {
+        $where_conditions[] = "sb.sb_status = ?";
+        $params[] = $filter;
+        $types .= 's';
+    }
 }
 
 if(!empty($search)) {
@@ -54,17 +59,30 @@ if(!empty($params)) {
 
 $total_pages = ceil($total_records / $per_page);
 
-// Get notifications
+// Get notifications with priority ordering:
+// 1. Rejected/Cancelled (highest priority)
+// 2. Pending (new bookings)
+// 3. Approved/Assigned
+// 4. In Progress
+// 5. Completed (lowest priority)
 $query = "SELECT sb.*, 
                  u.u_fname, u.u_lname, u.u_phone, u.u_email,
                  s.s_name, s.s_category, s.s_price,
-                 t.t_name as technician_name, t.t_phone as technician_phone
+                 t.t_name as technician_name, t.t_phone as technician_phone,
+                 CASE 
+                     WHEN sb.sb_status IN ('Rejected', 'Rejected by Technician', 'Cancelled', 'Not Done', 'Not Completed') THEN 1
+                     WHEN sb.sb_status = 'Pending' THEN 2
+                     WHEN sb.sb_status IN ('Approved', 'Assigned') THEN 3
+                     WHEN sb.sb_status = 'In Progress' THEN 4
+                     WHEN sb.sb_status = 'Completed' THEN 5
+                     ELSE 6
+                 END as priority_order
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
           $where_clause
-          ORDER BY sb.sb_created_at DESC
+          ORDER BY priority_order ASC, sb.sb_created_at DESC
           LIMIT ? OFFSET ?";
 
 if(!empty($params)) {
@@ -173,96 +191,7 @@ if(!empty($params)) {
                     </div>
                 </div>
 
-                <!-- Stats Cards -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $pending_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Pending'";
-                                            $pending_result = $mysqli->query($pending_query);
-                                            echo $pending_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clock fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">In Progress</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $progress_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'In Progress'";
-                                            $progress_result = $mysqli->query($progress_query);
-                                            echo $progress_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-cog fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Completed</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $completed_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Completed'";
-                                            $completed_result = $mysqli->query($completed_query);
-                                            echo $completed_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-3">
-                        <div class="card border-left-danger shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Rejected</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            <?php
-                                            $rejected_query = "SELECT COUNT(*) as count FROM tms_service_booking WHERE sb_status = 'Rejected' OR sb_status = 'Cancelled'";
-                                            $rejected_result = $mysqli->query($rejected_query);
-                                            echo $rejected_result->fetch_assoc()['count'];
-                                            ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-times-circle fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Stats Cards - Removed to clean up interface -->
 
                 <!-- Filters -->
                 <div class="card shadow mb-4">
@@ -320,7 +249,10 @@ if(!empty($params)) {
                                     $status_badge = 'badge-success';
                                     break;
                                 case 'Rejected':
+                                case 'Rejected by Technician':
                                 case 'Cancelled':
+                                case 'Not Done':
+                                case 'Not Completed':
                                     $icon = 'fa-times-circle';
                                     $icon_bg = 'bg-danger';
                                     $status_badge = 'badge-danger';
@@ -464,12 +396,16 @@ if(!empty($params)) {
             let audioBuffer = null;
             let customSoundEnabled = false;
             
-            // Initialize audio context on first user interaction
+            // Initialize audio context on first user interaction (silently)
             function initAudioContext() {
                 if (!audioContext) {
                     try {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        console.log('🔊 Audio context initialized');
+                        // Suspend context immediately to prevent any sound during initialization
+                        if (audioContext.state === 'running') {
+                            audioContext.suspend();
+                        }
+                        console.log('🔊 Audio context initialized (suspended)');
                         loadCustomSound();
                     } catch(e) {
                         console.warn('⚠️ Audio context not supported:', e);
@@ -479,23 +415,9 @@ if(!empty($params)) {
             
             // Load custom notification sound
             function loadCustomSound() {
-                fetch('vendor/sounds/notification.mp3')
-                    .then(response => {
-                        if (response.ok) {
-                            return response.arrayBuffer();
-                        }
-                        throw new Error('Sound file not found');
-                    })
-                    .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-                    .then(buffer => {
-                        audioBuffer = buffer;
-                        customSoundEnabled = true;
-                        console.log('✅ Custom notification sound loaded');
-                    })
-                    .catch(error => {
-                        console.log('ℹ️ Custom sound not available, will use Web API:', error.message);
-                        customSoundEnabled = false;
-                    });
+                // Skip loading external sound file, use Web Audio API directly
+                console.log('ℹ️ Using Web Audio API for notifications');
+                customSoundEnabled = false;
             }
             
             // Play notification sound (custom or fallback)
@@ -503,6 +425,11 @@ if(!empty($params)) {
                 // Try custom sound first
                 if (customSoundEnabled && audioContext && audioBuffer) {
                     try {
+                        // Resume context if suspended
+                        if (audioContext.state === 'suspended') {
+                            audioContext.resume();
+                        }
+                        
                         const source = audioContext.createBufferSource();
                         source.buffer = audioBuffer;
                         source.connect(audioContext.destination);
@@ -518,6 +445,11 @@ if(!empty($params)) {
                 try {
                     if (!audioContext) {
                         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    
+                    // Resume context if suspended
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
                     }
                     
                     const oscillator = audioContext.createOscillator();

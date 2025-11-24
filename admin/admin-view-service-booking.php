@@ -2,11 +2,13 @@
   session_start();
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
+  include('vendor/inc/image-visibility-helper.php');
   check_login();
   $aid=$_SESSION['a_id'];
   
   $sb_id=$_GET['sb_id'];
-  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, t.t_name as tech_name, t.t_id_no as tech_id
+  $ret="SELECT sb.*, u.u_fname, u.u_lname, u.u_email, u.u_phone, s.s_name, s.s_category, s.s_price, 
+        t.t_name as tech_name, t.t_id_no as tech_id
         FROM tms_service_booking sb
         LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
         LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
@@ -17,6 +19,11 @@
   $stmt->execute();
   $res=$stmt->get_result();
   $booking = $res->fetch_object();
+  
+  // Ensure price tracking columns exist
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -99,9 +106,14 @@
                                      </tr>
                                    </table>
                                    
+                                   <?php 
+                                   // Check if images should be visible (40 days for admin)
+                                   $show_images_admin = !empty($booking->sb_completed_date) && isImageVisible($booking->sb_completed_date, 'admin');
+                                   ?>
+                                   
                                    <h6 class="mt-3"><i class="fas fa-camera"></i> Service Completion Photo</h6>
                                    <div class="border rounded p-3 mb-3" style="background:#f8f9fa;">
-                                     <?php if(!empty($booking->sb_completion_image)): ?>
+                                     <?php if(!empty($booking->sb_completion_image) && $show_images_admin): ?>
                                        <?php 
                                        // Fix path - remove leading ../ if present, images are in root uploads folder
                                        $service_img_path = str_replace('../', '', $booking->sb_completion_image);
@@ -112,6 +124,8 @@
                                        </a>
                                        <p class="text-muted mt-2 mb-0"><small><i class="fas fa-info-circle"></i> Click image to view full size</small></p>
                                        <p class="text-muted mb-0"><small>Path: <?php echo htmlspecialchars($service_img_path); ?></small></p>
+                                     <?php elseif(!empty($booking->sb_completion_image) && !$show_images_admin): ?>
+                                       <span class="text-muted"><i class="fas fa-clock"></i> Image has been archived (older than 40 days)</span>
                                      <?php else: ?>
                                        <span class="text-muted"><i class="fas fa-exclamation-triangle"></i> No service image uploaded</span>
                                      <?php endif; ?>
@@ -119,7 +133,7 @@
                                    
                                    <h6><i class="fas fa-file-invoice"></i> Bill/Receipt Photo</h6>
                                    <div class="border rounded p-3" style="background:#f8f9fa;">
-                                     <?php if(!empty($booking->sb_bill_attachment)): ?>
+                                     <?php if(!empty($booking->sb_bill_attachment) && $show_images_admin): ?>
                                        <?php 
                                        // Fix path - remove leading ../ if present, images are in root uploads folder
                                        $bill_img_path = str_replace('../', '', $booking->sb_bill_attachment);
@@ -133,6 +147,8 @@
                                        <a href="<?php echo $bill_img_url; ?>" download class="btn btn-sm btn-primary mt-2">
                                          <i class="fas fa-download"></i> Download Bill
                                        </a>
+                                     <?php elseif(!empty($booking->sb_bill_attachment) && !$show_images_admin): ?>
+                                       <span class="text-muted"><i class="fas fa-clock"></i> Image has been archived (older than 40 days)</span>
                                      <?php else: ?>
                                        <span class="text-muted"><i class="fas fa-exclamation-triangle"></i> No bill attachment uploaded</span>
                                      <?php endif; ?>
@@ -168,10 +184,17 @@
                                          <th>Category:</th>
                                          <td><?php echo $booking->s_category;?></td>
                                      </tr>
+                                     <?php if($booking->s_price !== null && $booking->s_price > 0): ?>
                                      <tr>
                                          <th>Service Price:</th>
-                                         <td>$<?php echo number_format($booking->s_price, 2);?></td>
+                                         <td>
+                                             <strong style="color: #28a745;">₹<?php echo number_format($booking->s_price, 2);?></strong>
+                                             <span class="badge badge-success ml-2">
+                                                 <i class="fas fa-check"></i> Fixed Price
+                                             </span>
+                                         </td>
                                      </tr>
+                                     <?php endif; ?>
                                  </table>
                              </div>
                          </div>
@@ -211,9 +234,44 @@
                                          </td>
                                      </tr>
                                      <tr>
-                                         <th>Total Price:</th>
-                                         <td>$<?php echo number_format($booking->sb_total_price, 2);?></td>
+                                         <th>Booking Price:</th>
+                                         <td>₹<?php echo number_format($booking->sb_total_price, 2);?></td>
                                      </tr>
+                                     <?php if($booking->sb_status == 'Completed'): ?>
+                                     <tr>
+                                         <th>Final Charged Price:</th>
+                                         <td>
+                                             <strong style="color: #007bff; font-size: 1.2rem;">
+                                                 ₹<?php echo number_format($booking->sb_final_price ?? $booking->sb_total_price, 2);?>
+                                             </strong>
+                                             <?php if(isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1): ?>
+                                             <br>
+                                             <span class="badge badge-info mt-1">
+                                                 <i class="fas fa-user-cog"></i> Price set by Technician for this booking
+                                             </span>
+                                             <?php elseif($booking->s_price !== null && $booking->s_price > 0): ?>
+                                             <br>
+                                             <span class="badge badge-success mt-1">
+                                                 <i class="fas fa-check"></i> Fixed price applied
+                                             </span>
+                                             <?php endif; ?>
+                                         </td>
+                                     </tr>
+                                     <?php if(isset($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price !== null): ?>
+                                     <tr>
+                                         <th>Technician Decided Price:</th>
+                                         <td>
+                                             <span class="badge badge-warning" style="font-size: 1rem; padding: 8px 12px;">
+                                                 ₹<?php echo number_format($booking->sb_tech_decided_price, 2);?>
+                                             </span>
+                                             <br>
+                                             <small class="text-muted">
+                                                 <i class="fas fa-info-circle"></i> This price was specifically set by the technician for this booking only
+                                             </small>
+                                         </td>
+                                     </tr>
+                                     <?php endif; ?>
+                                     <?php endif; ?>
                                  </table>
                              </div>
                              <div class="col-md-6">
@@ -318,10 +376,10 @@
      <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
      <!-- Custom scripts for all pages-->
-     <script src="js/sb-admin.min.js"></script>
+     <script src="vendor/js/sb-admin.min.js"></script>
 
      <!-- Demo scripts for this page-->
-     <script src="js/demo/datatables-demo.js"></script>
+     <script src="vendor/js/demo/datatables-demo.js"></script>
  </body>
 
  </html>

@@ -12,9 +12,7 @@ if (!isset($_SESSION['a_id'])) {
 }
 
 require_once('vendor/inc/config.php');
-require_once('BookingSystem.php');
-
-$bookingSystem = new BookingSystem($conn);
+require_once('vendor/inc/booking-limit-helper.php');
 
 $booking_id = $_POST['booking_id'] ?? null;
 $technician_id = $_POST['technician_id'] ?? null;
@@ -25,6 +23,6 @@ if (!$booking_id || !$technician_id) {
     exit;
 }
 
-$result = $bookingSystem->assignBooking($booking_id, $technician_id, $admin_id);
+$result = assignBookingToTechnician($mysqli, $booking_id, $technician_id, $admin_id);
 echo json_encode($result);
 ?>

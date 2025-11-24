@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════
+  AUTOMATIC IMAGE DELETION SYSTEM - QUICK START GUIDE
+═══════════════════════════════════════════════════════════════
+
+WHAT IT DOES:
+✓ Hides service images from customers after 31 days
+✓ Hides service images from admin after 40 days
+✓ Permanently deletes images after 40 days
+✓ No messages shown to users (silent operation)
+
+═══════════════════════════════════════════════════════════════
+SETUP (3 STEPS):
+═══════════════════════════════════════════════════════════════
+
+STEP 1: Run Setup Script
+→ Visit: http://yourdomain.com/admin/setup-image-auto-deletion.php
+→ This creates database columns and directories
+
+STEP 2: Set Up Cron Job (Choose ONE option)
+
+Option A - Linux Server:
+  crontab -e
+  Add: 0 2 * * * /usr/bin/php /path/to/admin/cron-delete-old-images.php
+
+Option B - cPanel:
+  Go to: cPanel → Cron Jobs
+  Command: /usr/bin/php /home/username/public_html/admin/cron-delete-old-images.php
+  Schedule: Daily at 2:00 AM
+
+Option C - Web Cron:
+  URL: https://yourdomain.com/admin/cron-delete-old-images.php?token=electrozot_secure_cron_2024
+  Schedule: Daily
+
+STEP 3: Change Security Token (Important!)
+→ Edit: admin/cron-delete-old-images.php
+→ Line 15: Change 'electrozot_secure_cron_2024' to your own random string
+
+═══════════════════════════════════════════════════════════════
+HOW IT WORKS:
+═══════════════════════════════════════════════════════════════
+
+Timeline:
+  Day 0:     Service completed, images uploaded
+  Day 1-31:  Customer can see images
+  Day 32-40: Only admin can see images
+  Day 41+:   Images deleted permanently
+
+Files Affected:
+  ✓ Service completion photos (vendor/img/completions/)
+  ✓ Bill/receipt images (vendor/img/bills/)
+
+═══════════════════════════════════════════════════════════════
+TESTING:
+═══════════════════════════════════════════════════════════════
+
+Test Cron Job Manually:
+  php admin/cron-delete-old-images.php
+
+Check Log:
+  cat admin/logs/image-deletion.log
+
+Verify Setup:
+  Visit: admin/setup-image-auto-deletion.php
+
+═══════════════════════════════════════════════════════════════
+IMPORTANT NOTES:
+═══════════════════════════════════════════════════════════════
+
+✓ NO messages shown to users about deletion
+✓ Images simply disappear after the time period
+✓ Deletion is PERMANENT - cannot be recovered
+✓ Admin gets 9 extra days to review (40 vs 31)
+✓ Runs automatically once set up
+
+═══════════════════════════════════════════════════════════════
+TROUBLESHOOTING:
+═══════════════════════════════════════════════════════════════
+
+Images not deleting?
+  → Check cron job is running: crontab -l
+  → Run manually: php admin/cron-delete-old-images.php
+  → Check log: cat admin/logs/image-deletion.log
+
+Permission errors?
+  → chmod 755 vendor/img/completions/
+  → chmod 755 vendor/img/bills/
+  → chmod 755 admin/logs/
+
+═══════════════════════════════════════════════════════════════
+FILES CREATED:
+═══════════════════════════════════════════════════════════════
+
+admin/cron-delete-old-images.php              - Deletion script
+admin/setup-image-auto-deletion.php           - Setup script
+admin/vendor/inc/image-visibility-helper.php  - Visibility control
+admin/logs/image-deletion.log                 - Activity log
+admin/IMAGE_AUTO_DELETION_GUIDE.md            - Full documentation
+
+═══════════════════════════════════════════════════════════════
+
+For detailed documentation, see: IMAGE_AUTO_DELETION_GUIDE.md

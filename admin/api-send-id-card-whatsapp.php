@@ -72,6 +72,42 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image_url = $protocol . '://' . $host . '/uploads/id_cards/' . $image_filename;
         $pdf_url = $protocol . '://' . $host . '/uploads/id_cards/' . $pdf_filename;
         
+        // AUTO-SAVE: Store ID card record in database
+        $admin_id = $_SESSION['a_id'];
+        
+        // Get technician ID from phone number
+        $tech_query = "SELECT t_id FROM tms_technician WHERE t_phone = ?";
+        $tech_stmt = $mysqli->prepare($tech_query);
+        $tech_stmt->bind_param('s', $phone);
+        $tech_stmt->execute();
+        $tech_result = $tech_stmt->get_result();
+        $technician_id = 0;
+        
+        if($tech_result->num_rows > 0) {
+            $tech_row = $tech_result->fetch_assoc();
+            $technician_id = $tech_row['t_id'];
+            
+            // Save to generated ID cards table
+            $save_query = "INSERT INTO tms_generated_id_cards 
+                          (technician_id, technician_name, technician_phone, image_path, pdf_path, generated_by_admin_id) 
+                          VALUES (?, ?, ?, ?, ?, ?)";
+            $save_stmt = $mysqli->prepare($save_query);
+            $image_path = $image_saved ? 'uploads/id_cards/' . $image_filename : NULL;
+            $pdf_path = $pdf_saved ? 'uploads/id_cards/' . $pdf_filename : NULL;
+            $save_stmt->bind_param('issssi', $technician_id, $name, $phone, $image_path, $pdf_path, $admin_id);
+            $save_stmt->execute();
+            
+            // Update technician table with latest ID card info
+            $update_tech = "UPDATE tms_technician 
+                           SET t_id_card_generated = 1, 
+                               t_id_card_path = ?, 
+                               t_id_card_generated_at = NOW() 
+                           WHERE t_id = ?";
+            $update_stmt = $mysqli->prepare($update_tech);
+            $update_stmt->bind_param('si', $pdf_path, $technician_id);
+            $update_stmt->execute();
+        }
+        
         // Format phone number for WhatsApp (add country code)
         $whatsapp_number = '91' . $phone; // India country code
         

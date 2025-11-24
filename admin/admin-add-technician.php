@@ -36,24 +36,56 @@
   // Add phone column if it doesn't exist
   $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_phone VARCHAR(15) DEFAULT NULL");
   
+  // Add booking limit columns if they don't exist
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_booking_limit INT NOT NULL DEFAULT 1");
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_current_bookings INT NOT NULL DEFAULT 0");
+  
   if(isset($_POST['add_tech']))
     {
             $t_name=$_POST['t_name'];
             $t_phone = isset($_POST['t_phone']) ? $_POST['t_phone'] : '';
+            $t_aadhar = isset($_POST['t_aadhar']) ? $_POST['t_aadhar'] : '';
             
             // Validate phone number is exactly 10 digits
             if(!empty($t_phone) && !preg_match('/^[0-9]{10}$/', $t_phone)) {
-                $err = "Phone number must be exactly 10 digits";
+                $_SESSION['error'] = "Phone number must be exactly 10 digits";
+                header("Location: admin-add-technician.php");
+                exit();
+            } elseif(!empty($t_aadhar) && !preg_match('/^[0-9]{12}$/', $t_aadhar)) {
+                $_SESSION['error'] = "Aadhaar number must be exactly 12 digits";
+                header("Location: admin-add-technician.php");
+                exit();
             } else {
+            
+            // Check if mobile number or Aadhaar already exists for any technician
+            $check_existing = $mysqli->prepare("SELECT t_id, t_name, t_ez_id FROM tms_technician WHERE t_phone = ? OR t_aadhar = ?");
+            $check_existing->bind_param('ss', $t_phone, $t_aadhar);
+            $check_existing->execute();
+            $existing_result = $check_existing->get_result();
+            
+            if($existing_result->num_rows > 0) {
+                $existing_tech = $existing_result->fetch_object();
+                $_SESSION['error'] = "This Mobile Number or Aadhaar Number is already registered to EZ Technician: " . htmlspecialchars($existing_tech->t_name) . " (EZ ID: " . htmlspecialchars($existing_tech->t_ez_id) . "). Each technician must have unique mobile number and Aadhaar number.";
+                $check_existing->close();
+                header("Location: admin-add-technician.php");
+                exit();
+            } else {
+                $check_existing->close();
             
             $t_ez_id = isset($_POST['t_ez_id']) ? $_POST['t_ez_id'] : '';
             $t_id_no = $t_ez_id; // Use EZ ID as the ID number
             $t_category=$_POST['t_category'];
             $t_experience=$_POST['t_experience'];
-            $t_status=$_POST['t_status'];
+            $t_status='Available'; // Auto-set to Available (will be updated automatically based on bookings)
             $t_pwd = isset($_POST['t_pwd']) ? $_POST['t_pwd'] : '';
             $t_specialization=$_POST['t_specialization'];
             $t_service_pincode = isset($_POST['t_service_pincode']) ? $_POST['t_service_pincode'] : '';
+            $t_booking_limit = isset($_POST['t_booking_limit']) ? intval($_POST['t_booking_limit']) : 1;
+            
+            // Validate booking limit (1-5)
+            if($t_booking_limit < 1 || $t_booking_limit > 5) {
+                $t_booking_limit = 1;
+            }
             
             // Check for duplicate EZ ID
             $check_ez = $mysqli->prepare("SELECT t_id FROM tms_technician WHERE t_ez_id = ?");
@@ -62,29 +94,20 @@
             $check_ez->store_result();
             
             if($check_ez->num_rows > 0) {
-                $err = "EZ ID already exists! Please use a unique EZ ID.";
+                $_SESSION['error'] = "EZ ID already exists! Please use a unique EZ ID.";
                 $check_ez->close();
+                header("Location: admin-add-technician.php");
+                exit();
             } else {
                 $check_ez->close();
                 
-                // Check for duplicate Mobile Number
-                $check_phone = $mysqli->prepare("SELECT t_id FROM tms_technician WHERE t_phone = ?");
-                $check_phone->bind_param('s', $t_phone);
-                $check_phone->execute();
-                $check_phone->store_result();
-                
-                if($check_phone->num_rows > 0) {
-                    $err = "Mobile Number already exists! Please use a unique mobile number.";
-                    $check_phone->close();
-                } else {
-                    $check_phone->close();
-                    
-                    // Proceed with insertion
+                // Proceed with insertion
                     $t_pic=$_FILES["t_pic"]["name"];
                     move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-                    $query="insert into tms_technician (t_name, t_phone, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode) values(?,?,?,?,?,?,?,?,?,?,?)";
+                    $t_current_bookings = 0; // Initialize current bookings to 0
+                    $query="insert into tms_technician (t_name, t_phone, t_aadhar, t_ez_id, t_experience, t_id_no, t_specialization, t_category, t_pic, t_status, t_pwd, t_service_pincode, t_booking_limit, t_current_bookings) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $stmt = $mysqli->prepare($query);
-                    $rc=$stmt->bind_param('sssssssssss', $t_name, $t_phone, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode);
+                    $rc=$stmt->bind_param('ssssssssssssii', $t_name, $t_phone, $t_aadhar, $t_ez_id, $t_experience, $t_id_no, $t_specialization, $t_category, $t_pic, $t_status, $t_pwd, $t_service_pincode, $t_booking_limit, $t_current_bookings);
                     $stmt->execute();
             
                     if($stmt)
@@ -101,16 +124,30 @@
                             }
                         }
                         
-                        $succ = "Technician Added Successfully with " . (isset($_POST['tech_skills']) ? count($_POST['tech_skills']) : 0) . " skills";
+                        $_SESSION['success'] = "Technician Added Successfully with " . (isset($_POST['tech_skills']) ? count($_POST['tech_skills']) : 0) . " skills";
+                        header("Location: admin-add-technician.php");
+                        exit();
                     }
                     else 
                     {
-                        $err = "Please Try Again Later";
+                        $_SESSION['error'] = "Please Try Again Later";
+                        header("Location: admin-add-technician.php");
+                        exit();
                     }
                 }
             }
             }
-            } // Close phone validation
+    } // Close if(isset($_POST['add_tech']))
+  
+  // Get messages from session
+  if(isset($_SESSION['success'])) {
+      $succ = $_SESSION['success'];
+      unset($_SESSION['success']);
+  }
+  if(isset($_SESSION['error'])) {
+      $err = $_SESSION['error'];
+      unset($_SESSION['error']);
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -192,11 +229,19 @@
                                  
                                  <div class="col-md-6">
                                      <div class="form-group">
+                                         <label><i class="fas fa-id-card-alt text-warning"></i> Aadhaar Number <span class="text-danger">*</span></label>
+                                         <input type="text" class="form-control" name="t_aadhar" placeholder="Enter 12-digit Aadhaar number" pattern="[0-9]{12}" maxlength="12" required title="Enter exactly 12 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,12)">
+                                         <small class="text-success"><i class="fas fa-info-circle"></i> Government ID for verification (exactly 12 digits)</small>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
                                          <label><i class="fas fa-id-badge text-primary"></i> EZ ID <span class="text-danger">*</span></label>
                                          <div class="input-group">
                                              <input type="text" class="form-control" id="t_ez_id" name="t_ez_id" placeholder="EZ0001" required style="text-transform: uppercase;" readonly>
                                              <div class="input-group-append">
-                                                 <button class="btn btn-success" type="button" onclick="generateNextEZID()">
+                                                 <button class="btn btn-success" type="button" onclick="generateNextEZID(event)">
                                                      <i class="fas fa-sync-alt"></i> Auto Generate
                                                  </button>
                                              </div>
@@ -205,7 +250,7 @@
                                      </div>
                                  </div>
                                  
-                                 <div class="col-md-4">
+                                 <div class="col-md-6">
                                      <div class="form-group">
                                          <label>Password <span class="text-danger">*</span></label>
                                          <input type="password" class="form-control" name="t_pwd" placeholder="Login password" required>
@@ -260,11 +305,43 @@
                                  
                                  <div class="col-md-4">
                                      <div class="form-group">
-                                         <label>Status <span class="text-danger">*</span></label>
-                                         <select class="form-control" name="t_status" required>
-                                             <option value="Available">Available</option>
-                                             <option value="Booked">Booked</option>
+                                         <label><i class="fas fa-info-circle text-success"></i> Status</label>
+                                         <input type="text" class="form-control" value="Available (Auto-managed)" readonly style="background-color: #e8f5e9; color: #2e7d32; font-weight: 600;">
+                                         <small class="text-success">
+                                             <i class="fas fa-magic"></i> Status is automatically updated based on active bookings
+                                         </small>
+                                     </div>
+                                 </div>
+                             </div>
+                             
+                             <!-- Booking Capacity Section -->
+                             <div class="row mt-3">
+                                 <div class="col-12">
+                                     <h6 class="border-bottom pb-2 mb-3"><i class="fas fa-tasks"></i> Booking Capacity</h6>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label><i class="fas fa-layer-group text-warning"></i> Maximum Concurrent Bookings <span class="text-danger">*</span></label>
+                                         <select class="form-control" name="t_booking_limit" id="t_booking_limit" required onchange="updateBookingLimitInfo()">
+                                             <option value="1" selected>1 Booking at a time</option>
+                                             <option value="2">2 Bookings at a time</option>
+                                             <option value="3">3 Bookings at a time</option>
+                                             <option value="4">4 Bookings at a time</option>
+                                             <option value="5">5 Bookings at a time</option>
                                          </select>
+                                         <small class="text-muted">
+                                             <i class="fas fa-info-circle"></i> How many bookings can this technician handle simultaneously?
+                                         </small>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="alert alert-info mt-4" id="bookingLimitInfo">
+                                         <strong><i class="fas fa-lightbulb"></i> Booking Limit:</strong>
+                                         <p class="mb-0" id="limitDescription">
+                                             Technician can take <strong>1 booking</strong> at a time. After completing or rejecting it, they become available for the next booking.
+                                         </p>
                                      </div>
                                  </div>
                                  
@@ -276,6 +353,19 @@
                                      </div>
                                  </div>
                              </div>
+                             
+                             <script>
+                             function updateBookingLimitInfo() {
+                                 const limit = document.getElementById('t_booking_limit').value;
+                                 const description = document.getElementById('limitDescription');
+                                 
+                                 if(limit == 1) {
+                                     description.innerHTML = 'Technician can take <strong>1 booking</strong> at a time. After completing or rejecting it, they become available for the next booking.';
+                                 } else {
+                                     description.innerHTML = `Technician can handle <strong>${limit} bookings</strong> simultaneously. They must complete or reject at least <strong>${limit - 1}</strong> booking(s) before accepting new ones when at capacity.`;
+                                 }
+                             }
+                             </script>
                              
                              <script>
                              function showCategoryDetails(select) {
@@ -649,22 +739,12 @@
          <!-- Core plugin JavaScript-->
          <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-         <!-- Page level plugin JavaScript-->
-         <script src="vendor/chart.js/Chart.min.js"></script>
-         <script src="vendor/datatables/jquery.dataTables.js"></script>
-         <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-
          <!-- Custom scripts for all pages-->
          <script src="vendor/js/sb-admin.min.js"></script>
-         <!-- Demo scripts for this page-->
-         <script src="vendor/js/demo/datatables-demo.js"></script>
-         <script src="vendor/js/demo/chart-area-demo.js"></script>
-         <!--INject Sweet alert js-->
-         <script src="vendor/js/swal.js"></script>
          
          <!-- EZ ID Auto Generation Script -->
          <script>
-         function generateNextEZID() {
+         function generateNextEZID(event) {
              const ezIdInput = document.getElementById('t_ez_id');
              const btn = event.target.closest('button');
              const originalHTML = btn.innerHTML;

@@ -7,8 +7,12 @@ check_login();
 header('Content-Type: application/json');
 
 try {
-    // Get the latest EZ ID from database
-    $query = "SELECT t_ez_id FROM tms_technician WHERE t_ez_id LIKE 'EZ%' ORDER BY t_ez_id DESC LIMIT 1";
+    // Get the highest numeric EZ ID from database
+    // Use CAST to convert the numeric part to integer for proper sorting
+    $query = "SELECT t_ez_id FROM tms_technician 
+              WHERE t_ez_id LIKE 'EZ%' AND t_ez_id REGEXP '^EZ[0-9]+$'
+              ORDER BY CAST(SUBSTRING(t_ez_id, 3) AS UNSIGNED) DESC 
+              LIMIT 1";
     $result = $mysqli->query($query);
     
     if($result && $result->num_rows > 0) {
@@ -34,16 +38,30 @@ try {
     $nextEZID = 'EZ' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     
     // Double-check this ID doesn't exist (in case of race condition)
-    $checkQuery = "SELECT t_id FROM tms_technician WHERE t_ez_id = ?";
-    $stmt = $mysqli->prepare($checkQuery);
-    $stmt->bind_param('s', $nextEZID);
-    $stmt->execute();
-    $stmt->store_result();
+    // Keep checking and incrementing until we find an available ID
+    $maxAttempts = 100;
+    $attempts = 0;
     
-    if($stmt->num_rows > 0) {
-        // ID already exists, try next one
+    while($attempts < $maxAttempts) {
+        $checkQuery = "SELECT t_id FROM tms_technician WHERE t_ez_id = ?";
+        $stmt = $mysqli->prepare($checkQuery);
+        $stmt->bind_param('s', $nextEZID);
+        $stmt->execute();
+        $stmt->store_result();
+        
+        if($stmt->num_rows == 0) {
+            // ID is available
+            break;
+        }
+        
+        // ID exists, try next one
         $nextNumber++;
         $nextEZID = 'EZ' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $attempts++;
+    }
+    
+    if($attempts >= $maxAttempts) {
+        throw new Exception('Unable to generate unique EZ ID after ' . $maxAttempts . ' attempts');
     }
     
     echo json_encode([

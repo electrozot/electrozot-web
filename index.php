@@ -17,103 +17,156 @@
     <!--End Navigation-->
 
     <!-- Page Content -->
-    <div class="container-fluid px-0">
+    <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 80px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #F0E5D8 0%, #E8D5C4 100%); padding: 136px 0 80px 0; position: relative; overflow: hidden;">
             
-            <!-- Background Decorative Elements -->
+            <!-- Enhanced Background Decorative Elements -->
             <div class="hero-bg-elements">
-                <!-- Large Circles -->
-                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: rgba(255, 215, 0, 0.08); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 200px; height: 200px; background: rgba(255, 215, 0, 0.05); border-radius: 50%; z-index: 1;"></div>
+                <!-- Animated Large Circles with Glow -->
+                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 8s ease-in-out infinite;"></div>
+                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 550px; height: 550px; background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 10s ease-in-out infinite reverse;"></div>
+                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: pulse 6s ease-in-out infinite;"></div>
+                <div class="hero-circle hero-circle-4" style="position: absolute; top: 20%; left: 15%; width: 180px; height: 180px; background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: float 7s ease-in-out infinite;"></div>
                 
-                <!-- Floating Icons -->
-                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.15;">
-                    <i class="fas fa-bolt" style="font-size: 3rem; color: #7ff4fdff;"></i>
+                <!-- Enhanced Floating Icons with Animation -->
+                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.25; animation: floatIcon 4s ease-in-out infinite;">
+                    <i class="fas fa-bolt" style="font-size: 3.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.12;">
-                    <i class="fas fa-tools" style="font-size: 2.5rem; color: #ffffff;"></i>
+                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.2; animation: floatIcon 5s ease-in-out infinite 1s;">
+                    <i class="fas fa-tools" style="font-size: 3rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.1;">
-                    <i class="fas fa-cog" style="font-size: 2rem; color: #7ff4fdff;"></i>
+                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.18; animation: floatIcon 6s ease-in-out infinite 2s;">
+                    <i class="fas fa-cog" style="font-size: 2.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); animation: rotate 20s linear infinite;"></i>
                 </div>
-                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.08;">
-                    <i class="fas fa-wrench" style="font-size: 2.2rem; color: #ffffff;"></i>
+                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.15; animation: floatIcon 5.5s ease-in-out infinite 1.5s;">
+                    <i class="fas fa-wrench" style="font-size: 2.8rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
+                </div>
+                <div class="floating-icon" style="position: absolute; top: 70%; left: 25%; z-index: 1; opacity: 0.2; animation: floatIcon 4.5s ease-in-out infinite 0.5s;">
+                    <i class="fas fa-plug" style="font-size: 2.3rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
                 </div>
                 
-                <!-- Geometric Shapes -->
-                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 80px; height: 80px; border: 3px solid rgba(255, 215, 0, 0.2); border-radius: 15px; transform: rotate(45deg); z-index: 1;"></div>
-                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 60px; height: 60px; border: 3px solid rgba(255, 255, 255, 0.15); border-radius: 50%; z-index: 1;"></div>
-                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 40px; height: 40px; background: rgba(255, 215, 0, 0.1); border-radius: 8px; transform: rotate(25deg); z-index: 1;"></div>
+                <!-- Enhanced Geometric Shapes with Glow -->
+                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 90px; height: 90px; border: 4px solid rgba(255, 215, 0, 0.3); border-radius: 18px; transform: rotate(45deg); z-index: 1; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); animation: rotate 15s linear infinite;"></div>
+                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 70px; height: 70px; border: 4px solid rgba(255, 255, 255, 0.25); border-radius: 50%; z-index: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); animation: pulse 4s ease-in-out infinite;"></div>
+                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.15); border-radius: 10px; transform: rotate(25deg); z-index: 1; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); animation: float 6s ease-in-out infinite;"></div>
+                <div class="hero-shape" style="position: absolute; top: 35%; right: 5%; width: 65px; height: 65px; border: 3px solid rgba(255, 255, 255, 0.2); border-radius: 12px; transform: rotate(-30deg); z-index: 1; animation: rotate 12s linear infinite reverse;"></div>
                 
-                <!-- Dots Pattern -->
-                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.2;">
-                    <div style="display: grid; grid-template-columns: repeat(4, 8px); gap: 12px;">
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
-                        <div style="width: 8px; height: 8px; background: #ffd700; border-radius: 50%;"></div>
+                <!-- Enhanced Dots Pattern with Glow -->
+                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.3; animation: pulse 3s ease-in-out infinite;">
+                    <div style="display: grid; grid-template-columns: repeat(4, 10px); gap: 15px;">
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
+                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
                     </div>
                 </div>
                 
-                <!-- Wave Lines -->
-                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; z-index: 1; opacity: 0.1;" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.3)"></path>
+                <!-- Additional Dots Pattern -->
+                <div class="dots-pattern" style="position: absolute; bottom: 25%; left: 8%; z-index: 1; opacity: 0.25; animation: pulse 4s ease-in-out infinite 1s;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 8px); gap: 12px;">
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Wave Lines with Multiple Layers -->
+                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 180px; z-index: 1; opacity: 0.15;" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.4)"></path>
+                    <path d="M0,70 Q300,40 600,70 T1200,70 L1200,120 L0,120 Z" fill="rgba(255,215,0,0.2)"></path>
                 </svg>
+                
+                <!-- Sparkle Effects -->
+                <div style="position: absolute; top: 18%; right: 12%; width: 4px; height: 4px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 15px #ffd700; animation: sparkle 2s ease-in-out infinite;"></div>
+                <div style="position: absolute; top: 45%; left: 18%; width: 3px; height: 3px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 12px #ffffff; animation: sparkle 3s ease-in-out infinite 1s;"></div>
+                <div style="position: absolute; bottom: 30%; right: 20%; width: 5px; height: 5px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 18px #ffd700; animation: sparkle 2.5s ease-in-out infinite 0.5s;"></div>
             </div>
+            
+            <style>
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                
+                @keyframes floatIcon {
+                    0%, 100% { transform: translateY(0px) translateX(0px); }
+                    25% { transform: translateY(-15px) translateX(5px); }
+                    75% { transform: translateY(15px) translateX(-5px); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 0.3; }
+                    50% { transform: scale(1.1); opacity: 0.5; }
+                }
+                
+                @keyframes rotate {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                @keyframes sparkle {
+                    0%, 100% { opacity: 0; transform: scale(0); }
+                    50% { opacity: 1; transform: scale(1); }
+                }
+                
+                /* Mobile responsive heading */
+                @media (max-width: 768px) {
+                    .hero-title {
+                        font-size: 3.5rem !important;
+                    }
+                }
+                
+                @media (max-width: 576px) {
+                    .hero-title {
+                        font-size: 3rem !important;
+                    }
+                }
+            </style>
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
-                    <div class="col-lg-6 text-white mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-4 font-weight-bold mb-4 hero-title" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
-                            Welcome to <span class="electrozot-animated">Electrozot</span>
+                    <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
+                        <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); font-size: 4.5rem;">
+                            <span class="electrozot-animated">Electrozot</span>
                         </h1>
-                        <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">
-                            Professional Technician Booking System - Book expert technicians for all your electrical, plumbing, HVAC, and appliance repair needs. Fast, reliable, and hassle-free service.
+                        <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; color: #4a5568; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); font-weight: 700;">
+                            Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
                         </p>
-                        <div class="d-flex flex-wrap" style="gap: 15px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge pulse-animation" role="button" aria-label="Book service now" style="text-decoration: none;">
+                        <div class="d-flex flex-wrap" style="gap: 12px;">
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge" role="button" aria-label="Book service now" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 150px; text-align: center;">
                                 <i class="fas fa-bolt"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge pulse-animation" style="animation-delay: 0.2s; text-decoration: none;" aria-label="Call 7559606925">
-                                <i class="fas fa-phone"></i> Call 7559606925
+                            <a href="tel:7559606925" class="feature-badge" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 180px; text-align: center;">
+                                <i class="fas fa-phone"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #ffd700;">
-                                <!-- Sliding Images Background -->
-                                <div class="form-sliding-bg">
-                                    <div class="slide-image active" style="background-image: url('vendor/img/slide_2.jpg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/slide01.jpeg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/p_banner1.jpg');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/service1.png');"></div>
-                                    <div class="slide-image" style="background-image: url('vendor/img/service2.png');"></div>
-                                </div>
-                                <div class="form-overlay"></div>
+                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #8b0000;">
                                 
-                                <div class="card-header text-center py-4 booking-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); position: relative; z-index: 3; border-bottom: 4px solid #a78bfa; overflow: hidden;">
-                                    <div class="header-shine"></div>
-                                    <h3 class="mb-1 font-weight-bold" style="color: #ffffff; font-size: 1.8rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2;">
-                                        <i class="fas fa-calendar-check" style="color: #a78bfa; margin-right: 10px;"></i>
+                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #0d7a6f 0%, #2bc569 100%); position: relative; z-index: 3; border-bottom: 3px solid #0d7a6f; overflow: hidden;">
+                                    <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.4rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                                        <i class="fas fa-calendar-check" style="color: white; margin-right: 8px;"></i>
                                         Book Service Now
                                     </h3>
-                                    <p class="mb-0" style="color: rgba(255,255,255,0.95); font-size: 0.95rem; position: relative; z-index: 2;">Fill the form below to get started</p>
                                 </div>
-                                <div class="card-body p-4" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
+                                <div class="card-body p-3" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
                                     <?php if(isset($_SESSION['booking_success'])) { ?>
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.9rem;">
                                             <i class="fas fa-check-circle"></i> <?php echo $_SESSION['booking_success']; unset($_SESSION['booking_success']); ?>
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
@@ -121,26 +174,26 @@
                                         </div>
                                     <?php } ?>
                                     <?php if(isset($_SESSION['booking_error'])) { ?>
-                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <div class="alert alert-danger alert-dismissible fade show py-2" role="alert" style="font-size: 0.9rem;">
                                             <i class="fas fa-exclamation-circle"></i> <?php echo $_SESSION['booking_error']; unset($_SESSION['booking_error']); ?>
                                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
                                     <?php } ?>
-                                    <form method="POST" action="process-guest-booking.php" class="booking-form-enhanced" enctype="multipart/form-data">
+                                    <form method="POST" action="process-guest-booking.php" class="booking-form-compact" enctype="multipart/form-data">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <div class="form-group mb-3">
-                                                    <label class="form-label-enhanced"><i class="fas fa-phone"></i> Phone Number <span style="color: #e74c3c;">*</span></label>
-                                                    <input type="tel" class="form-control form-control-enhanced" id="guest_phone" name="customer_phone" required placeholder="10-digit mobile number" maxlength="10" pattern="^[0-9]{10}$" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label-compact"><i class="fas fa-phone"></i> Phone Number *</label>
+                                                    <input type="tel" class="form-control" id="guest_phone" name="customer_phone" required placeholder="" maxlength="10" pattern="^[0-9]{10}$" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
                                                     <small id="customer_status" class="form-text"></small>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="form-group mb-3">
-                                                    <label class="form-label-enhanced"><i class="fas fa-user"></i> Full Name <span style="color: #e74c3c;">*</span></label>
-                                                    <input type="text" class="form-control form-control-enhanced" id="guest_name" name="customer_name" required placeholder="Enter your full name">
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label-compact"><i class="fas fa-user"></i> Full Name *</label>
+                                                    <input type="text" class="form-control" id="guest_name" name="customer_name">
                                                 </div>
                                             </div>
                                         </div>
@@ -148,14 +201,14 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-map-signs text-primary"></i> Area / Locality</label>
-                                                    <input type="text" class="form-control form-control-sm" id="guest_area" name="customer_area" required placeholder="Enter your area or locality">
+                                                    <label class="form-label-compact"><i class="fas fa-map-marker-alt"></i> Area / Locality *</label>
+                                                    <input type="text" class="form-control" id="guest_area" name="customer_area" >
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-map-pin text-primary"></i> Pincode</label>
-                                                    <input type="text" class="form-control form-control-sm" id="guest_pincode" name="customer_pincode" required placeholder="6-digit" maxlength="6" pattern="^[0-9]{6}$" title="Enter exactly 6 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
+                                                    <label class="form-label-compact"><i class="fas fa-map-pin"></i> Pincode *</label>
+                                                    <input type="text" class="form-control" id="guest_pincode" name="customer_pincode"  maxlength="6" pattern="^[0-9]{6}$" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,6)">
                                                 </div>
                                             </div>
                                         </div>
@@ -163,58 +216,55 @@
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-layer-group text-primary"></i> Service Category <span style="color: #e74c3c;">*</span></label>
-                                                    <select class="form-control form-control-sm service-dropdown" id="guestServiceSubcategory" required>
-                                                        <option value="">-- Select Category --</option>
+                                                    <label class="form-label-compact"><i class="fas fa-th-large"></i> Service Category *</label>
+                                                    <select class="form-control service-dropdown" id="guestServiceSubcategory" required>
+                                                        <option value="">-- Choose Service Type --</option>
                                                         <optgroup label="⚡ ELECTRICAL">
-                                                            <option value="Wiring & Fixtures">Wiring/Fixtures</option>
-                                                            <option value="Safety & Power">Safety/Power</option>
+                                                            <option value="Wiring & Fixtures">Wiring & Fixtures</option>
+                                                            <option value="Safety & Power">Safety & Power</option>
                                                         </optgroup>
                                                         <optgroup label="🔧 REPAIR">
                                                             <option value="Major Appliances">Major Appliances</option>
                                                             <option value="Other Gadgets">Other Gadgets</option>
                                                         </optgroup>
-                                                        <optgroup label="⚙️ INSTALL">
+                                                        <optgroup label="🔌 INSTALL">
                                                             <option value="Appliance Setup">Appliance Setup</option>
-                                                            <option value="Tech & Security">Tech/Security</option>
+                                                            <option value="Tech & Security">Tech & Security</option>
                                                         </optgroup>
-                                                        <optgroup label="🧹 MAINTAIN">
+                                                        <optgroup label="🛠️ MAINTAIN">
                                                             <option value="Routine Care">Routine Care</option>
                                                         </optgroup>
-                                                        <optgroup label="🚰 PLUMBING">
-                                                            <option value="Fixtures & Taps">Fixtures/Taps</option>
+                                                        <optgroup label="💧 PLUMBING">
+                                                            <option value="Fixtures & Taps">Fixtures & Taps</option>
                                                         </optgroup>
                                                     </select>
-                                                    <small class="text-muted"><i class="fas fa-hand-pointer"></i> Tap to select</small>
                                                 </div>
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-tools text-primary"></i> Specific Service <span style="color: #e74c3c;">*</span></label>
-                                                    <select class="form-control form-control-sm service-dropdown" name="sb_service_id" id="guestService" disabled required>
-                                                        <option value="">Select category first...</option>
+                                                    <label class="form-label-compact"><i class="fas fa-tools"></i> Specific Service *</label>
+                                                    <select class="form-control service-dropdown" name="sb_service_id" id="guestService" disabled required>
+                                                        <option value="">First select category above</option>
                                                     </select>
-                                                    <small class="text-muted"><i class="fas fa-scroll"></i> Scroll to view all options</small>
                                                 </div>
                                                 <div class="form-group mb-2" id="otherServiceDiv" style="display: none;">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-edit text-warning"></i> Specify Your Service <span style="color: #e74c3c;">*</span></label>
-                                                    <input type="text" class="form-control form-control-sm" name="other_service_name" id="otherServiceInput" placeholder="Enter the service you need">
-                                                    <small class="text-info"><i class="fas fa-info-circle"></i> Please describe the service you need</small>
-                                                </div>
-                                                <div class="form-group mb-2" style="margin-top: 8px;">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-comment text-primary"></i> Additional Notes</label>
-                                                    <textarea class="form-control form-control-sm" name="sb_description" rows="3" placeholder="Any special requirements or additional information"></textarea>
+                                                    <label class="form-label-compact"><i class="fas fa-edit"></i> Custom Service *</label>
+                                                    <input type="text" class="form-control" name="other_service_name" id="otherServiceInput" placeholder="Describe your service requirement">
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group mb-2">
-                                                    <label style="font-size:0.95rem;"><i class="fas fa-map-marker-alt text-primary"></i> Address</label>
-                                                    <textarea class="form-control form-control-sm" id="guest_address" name="sb_address" rows="3" required placeholder="Enter complete service address"></textarea>
+                                                    <label class="form-label-compact"><i class="fas fa-home"></i> Service Address *</label>
+                                                    <textarea class="form-control" id="guest_address" name="sb_address" rows="2" , Building, Street"></textarea>
                                                 </div>
-                                                <div class="text-right" style="margin-top: 8px;">
-                                                    <button type="submit" name="book_service_guest" class="btn btn-sm text-gray submit-btn" style="background: linear-gradient(135deg, #13b7f8ff 0%, #40ff22ff 50%, #4facfe 100%); background-size: 200% 200%; border: none; padding: 8px 20px; font-weight: 600; border-radius: 8px; position: relative; overflow: hidden; transition: all 0.4s ease;">
-                                                        <span style="position: relative; z-index: 2;"><i class="fas fa-paper-plane"></i> Submit</span>
-                                                    </button>
+                                                <div class="form-group mb-2">
+                                                    <label class="form-label-compact"><i class="fas fa-comment-dots"></i> Additional Notes</label>
+                                                    <textarea class="form-control" name="sb_description" rows="2" ></textarea>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div class="text-center mt-2">
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
+                                                <i class="fas fa-paper-plane"></i> Submit Booking
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -226,36 +276,168 @@
         </section>
 
         <style>
-            /* Fix for service dropdown text truncation */
+            /* Compact Form Styling - Enhanced Design */
+            .booking-form-compact .form-label-compact {
+                font-size: 0.85rem !important;
+                font-weight: 600 !important;
+                color: #495057 !important;
+                margin-bottom: 3px !important;
+                display: block !important;
+            }
+            
+            .booking-form-compact .form-label-compact i {
+                color: #dc143c !important;
+                margin-right: 5px !important;
+            }
+            
+            .booking-form-compact .form-control {
+                font-size: 0.9rem !important;
+                padding: 8px 12px !important;
+                height: auto !important;
+                min-height: 40px !important;
+                border-radius: 10px !important;
+                border: 2px solid #d1d5db !important;
+                background: linear-gradient(to bottom, #ffffff, #f9fafb) !important;
+                font-weight: 500;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+            }
+            
+            .booking-form-compact .form-control:hover {
+                border-color: #9ca3af !important;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
+            }
+            
+            .booking-form-compact .form-control:focus {
+                border-color: #dc143c !important;
+                background: #ffffff !important;
+                box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.15), 0 4px 10px rgba(220, 20, 60, 0.1) !important;
+                outline: none !important;
+                transform: translateY(-1px) !important;
+            }
+            
+            .booking-form-compact textarea.form-control {
+                padding: 8px 12px !important;
+                line-height: 1.6;
+                font-size: 0.9rem !important;
+                font-weight: 500;
+                width: 100% !important;
+                resize: vertical !important;
+            }
+            
+            .booking-form-compact select.form-control {
+                font-size: 0.9rem !important;
+                font-weight: 500;
+                width: 100% !important;
+                padding: 8px 12px !important;
+                min-height: 40px !important;
+                cursor: pointer !important;
+                background-image: linear-gradient(45deg, transparent 50%, #dc143c 50%), linear-gradient(135deg, #dc143c 50%, transparent 50%) !important;
+                background-position: calc(100% - 15px) center, calc(100% - 10px) center !important;
+                background-size: 5px 5px, 5px 5px !important;
+                background-repeat: no-repeat !important;
+                padding-right: 35px !important;
+            }
+            
+            .booking-form-compact .form-group {
+                margin-bottom: 0.75rem !important;
+                width: 100% !important;
+                position: relative !important;
+            }
+            
+            /* Add icon styling inside inputs */
+            .booking-form-compact .form-group::before {
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #9ca3af;
+                font-size: 0.85rem;
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            /* Ensure columns align properly */
+            .booking-form-compact .row {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                margin-left: -15px !important;
+                margin-right: -15px !important;
+            }
+            
+            .booking-form-compact .col-md-6 {
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                flex: 0 0 50% !important;
+                max-width: 50% !important;
+            }
+            
+            .booking-form-compact .form-control::placeholder {
+                font-size: 0.85rem;
+                color: #9ca3af;
+                font-weight: 400;
+            }
+            
+            /* Enhanced card styling */
+            .booking-form-card {
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
+                border-radius: 20px !important;
+            }
+            
+            .card-body {
+                background: rgba(255, 255, 255, 0.95) !important;
+                backdrop-filter: blur(20px) !important;
+            }
+            
+            .booking-form-compact select.form-control option {
+                font-size: 1.05rem;
+                padding: 10px;
+            }
+            
+            .booking-form-compact select.form-control optgroup {
+                font-size: 1rem;
+                font-weight: 600;
+            }
+            
+            /* Fix for service dropdown - stable rendering with smooth opening */
             .service-dropdown {
                 width: 100% !important;
                 max-width: 100% !important;
-                white-space: normal !important;
-                overflow: visible !important;
-                text-overflow: clip !important;
-                padding-right: 30px !important;
+                appearance: auto !important;
+                -webkit-appearance: menulist !important;
+                -moz-appearance: menulist !important;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
             }
             
             .service-dropdown option {
+                padding: 10px !important;
+                background: white !important;
+                color: #333 !important;
                 white-space: normal !important;
-                overflow: visible !important;
-                text-overflow: clip !important;
-                padding: 8px 10px !important;
-                line-height: 1.4 !important;
+                line-height: 1.5 !important;
             }
             
-            /* Ensure form controls have proper width */
-            .form-control-sm {
-                font-size: 0.95rem !important;
-                padding: 8px 12px !important;
-                height: auto !important;
-                min-height: 38px !important;
+            .service-dropdown optgroup {
+                font-weight: 700 !important;
+                color: #000 !important;
+                background: #f0f0f0 !important;
+                padding: 8px 5px !important;
             }
             
-            /* Fix for select dropdown arrow */
-            select.form-control-sm {
-                background-position: right 8px center !important;
-                background-size: 12px 12px !important;
+            /* Smooth focus effect */
+            .service-dropdown:focus {
+                outline: none !important;
+                border-color: #dc143c !important;
+                box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.15) !important;
+                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            }
+            
+            /* Smooth hover effect */
+            .service-dropdown:hover {
+                border-color: #a0a0a0 !important;
+                transition: border-color 0.2s ease !important;
             }
             
             /* Custom service input styling */
@@ -276,12 +458,128 @@
             
             #otherServiceInput {
                 border: 2px solid #ffc107 !important;
-                background-color: #fffbf0 !important;
+                background: linear-gradient(to bottom, #fffbf0, #fff8e1) !important;
             }
             
             #otherServiceInput:focus {
                 border-color: #ff9800 !important;
-                box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25) !important;
+                box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.2) !important;
+            }
+            
+            /* Submit button hover effect */
+            .booking-submit-btn:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5) !important;
+            }
+            
+            .booking-submit-btn:active {
+                transform: translateY(0) !important;
+            }
+            
+            /* Button shine effect */
+            .booking-submit-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: left 0.5s;
+            }
+            
+            .booking-submit-btn:hover::before {
+                left: 100%;
+            }
+            
+            /* Compact alert messages */
+            .booking-form-compact + .alert {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            /* Reduce row spacing */
+            .booking-form-compact .row {
+                margin-bottom: 0;
+            }
+            
+            /* Mobile Responsive Styles for Small Screens */
+            @media (max-width: 576px) {
+                /* Reduce booking form width on small screens */
+                .booking-card {
+                    max-width: 95% !important;
+                    margin: 0 auto !important;
+                }
+                
+                .booking-form-card {
+                    margin: 0 auto !important;
+                }
+                
+                /* Compact spacing for mobile - keep text size same */
+                .booking-form-compact .form-label-compact {
+                    margin-bottom: 3px !important;
+                }
+                
+                .booking-form-compact .form-group {
+                    margin-bottom: 0.6rem !important;
+                }
+                
+                /* Compact card on mobile */
+                .card-body.p-3 {
+                    padding: 0.75rem !important;
+                }
+                
+                .card-header.py-3 {
+                    padding: 0.6rem !important;
+                }
+                
+                /* Stack columns properly on mobile */
+                .booking-form-compact .col-md-6 {
+                    padding-left: 8px !important;
+                    padding-right: 8px !important;
+                    flex: 0 0 100% !important;
+                    max-width: 100% !important;
+                }
+                
+                .booking-form-compact .row {
+                    margin-left: -8px !important;
+                    margin-right: -8px !important;
+                }
+                
+                /* Ensure all form controls are full width and aligned on mobile */
+                .booking-form-compact .form-control,
+                .booking-form-compact select.form-control,
+                .booking-form-compact textarea.form-control,
+                .service-dropdown {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                
+                /* Hide duplicate dropdown error by ensuring proper spacing */
+                .booking-form-compact .form-group + .form-group {
+                    margin-top: 0.6rem !important;
+                }
+                
+                /* Smaller service cards on mobile */
+                .service-card {
+                    transform: scale(0.9) !important;
+                }
+                
+                .service-img-wrapper {
+                    height: 150px !important;
+                }
+                
+                .service-card .card-body {
+                    padding: 1rem !important;
+                }
+                
+                .service-card .card-title {
+                    font-size: 1rem !important;
+                }
+                
+                .service-card .card-text {
+                    font-size: 0.85rem !important;
+                }
             }
         </style>
 
@@ -636,15 +934,15 @@
         </section>
 
         <!-- Testimonials Section with Auto-Sliding -->
-        <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
+        <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #89c9c6 0%, #e8b4c0 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
             <div class="testimonial-overlay"></div>
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row text-center mb-5">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3 text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                        <h2 class="display-5 font-weight-bold mb-3" style="color: #2d3748; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">
                             Client Testimonials
                         </h2>
-                        <p class="lead text-white" style="opacity: 0.95; font-weight: 400;">What our customers say about us</p>
+                        <p class="lead" style="color: #4a5568; font-weight: 400;">What our customers say about us</p>
                     </div>
                 </div>
                 
@@ -671,7 +969,7 @@
                                     <div class="mb-3">
                                         <i class="fas fa-quote-left testimonial-quote" style="font-size: 2.5rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
                                     </div>
-                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #4a5568; font-size: 1.05rem; min-height: 120px;">
+                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #2d3748; font-size: 1.05rem; min-height: 120px;">
                                         "<?php echo $row->f_content; ?>"
                                     </p>
                                     <div class="d-flex align-items-center">
@@ -709,26 +1007,6 @@
     <!-- Sliding Images Script for Booking Form -->
     <script>
         $(document).ready(function() {
-            let currentSlide = 0;
-            const slides = $('.slide-image');
-            const totalSlides = slides.length;
-            
-            function showSlide(index) {
-                slides.removeClass('active');
-                slides.eq(index).addClass('active');
-            }
-            
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % totalSlides;
-                showSlide(currentSlide);
-            }
-            
-            // Initialize first slide
-            showSlide(0);
-            
-            // Change slide every 4 seconds
-            setInterval(nextSlide, 4000);
-
             // Initialize Work Carousel with auto-play (4 seconds)
             $('#workCarousel').carousel({
                 interval: 4000,
@@ -862,7 +1140,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             border: none;
             padding: 15px 25px;
@@ -918,6 +1196,9 @@
             console.log('✅ Running as installed PWA');
         }
     </script>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
 
 </body>
 

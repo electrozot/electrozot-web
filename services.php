@@ -13,7 +13,7 @@
     <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="services-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 60px 0 40px 0;">
+    <section class="services-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 116px 0 40px 0; margin-top: -56px;">
     <div class="container">
             <div class="text-center">
                 <h1 class="services-title" style="font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 10px;">
@@ -40,18 +40,55 @@
         </nav>
 
         <!-- Service Images -->
-        <div class="row text-center mb-4" style="margin-bottom: 30px !important;">
-            <div class="col-lg-4 col-md-4 mb-3">
+        <style>
+            @media (max-width: 768px) {
+                .service-images-mobile {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    flex-wrap: nowrap !important;
+                    overflow-x: auto !important;
+                    overflow-y: hidden !important;
+                    gap: 15px !important;
+                    padding: 10px 5px !important;
+                    margin-left: 0 !important;
+                    margin-right: 0 !important;
+                    -webkit-overflow-scrolling: touch !important;
+                    scroll-snap-type: x mandatory !important;
+                }
+                .service-images-mobile .service-image-col {
+                    flex: 0 0 auto !important;
+                    width: 75% !important;
+                    min-width: 250px !important;
+                    max-width: 300px !important;
+                    padding-left: 0 !important;
+                    padding-right: 0 !important;
+                    scroll-snap-align: center !important;
+                }
+                .service-images-mobile .service-image-wrapper {
+                    width: 100% !important;
+                    display: block !important;
+                }
+                .service-images-mobile .service-image {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-height: 220px !important;
+                    object-fit: cover !important;
+                    display: block !important;
+                }
+            }
+        </style>
+        <div class="row text-center mb-4 service-images-mobile" style="margin-bottom: 30px !important;">
+            <div class="col-lg-4 col-md-4 mb-3 service-image-col">
                 <div class="service-image-wrapper">
                     <img class="img-fluid rounded service-image" src="vendor/img/service1.png" alt="Electronic Service" style="max-height: 150px; width: auto; border-radius: 12px;">
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 mb-3">
+            <div class="col-lg-4 col-md-4 mb-3 service-image-col">
                 <div class="service-image-wrapper">
                     <img class="img-fluid rounded service-image" src="vendor/img/service3.png" alt="Electrical Service" style="max-height: 150px; width: auto; border-radius: 12px;">
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 mb-3">
+            <div class="col-lg-4 col-md-4 mb-3 service-image-col">
                 <div class="service-image-wrapper">
                     <img class="img-fluid rounded service-image" src="vendor/img/service2.png" alt="Plumbing Service" style="max-height: 150px; width: auto; border-radius: 12px;">
                 </div>
@@ -357,6 +394,10 @@
             }
         }
     </style>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
+
 </body>
 
 </html>

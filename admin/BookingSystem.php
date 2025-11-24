@@ -160,7 +160,8 @@ class BookingSystem {
     public function acceptBooking($booking_id, $technician_id) {
         $stmt = $this->conn->prepare("
             UPDATE tms_service_booking 
-            SET sb_accepted_at = NOW()
+            SET sb_accepted_at = NOW(),
+                sb_updated_at = NOW()
             WHERE sb_id = ? AND sb_technician_id = ?
         ");
         $stmt->execute([$booking_id, $technician_id]);
@@ -189,7 +190,8 @@ class BookingSystem {
                 SET sb_status = 'Rejected by Technician',
                     sb_rejected_at = NOW(),
                     sb_rejection_reason = ?,
-                    sb_technician_id = NULL
+                    sb_technician_id = NULL,
+                    sb_updated_at = NOW()
                 WHERE sb_id = ? AND sb_technician_id = ?
             ");
             $stmt->execute([$reason, $booking_id, $technician_id]);

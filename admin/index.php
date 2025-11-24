@@ -1,5 +1,7 @@
 <!--Server Side Scripting Language to inject login code-->
 <?php
+    // Configure persistent session (30 days) BEFORE starting session
+    include('vendor/inc/session-config.php');
     session_start();
     include('vendor/inc/config.php');//get configuration file
     
@@ -50,6 +52,9 @@
       $_SESSION['a_photo']=$a_photo;//assign session to admin photo
       if($rs)
       {//if its sucessfull
+        // Regenerate session ID for security
+        session_regenerate_id(true);
+        
         // Log the admin login
         $user_ip = $_SERVER['REMOTE_ADDR'];
         $user_city = 'N/A'; // Can be enhanced with IP geolocation API

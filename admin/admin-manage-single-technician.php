@@ -4,6 +4,10 @@
   include('vendor/inc/checklogin.php');
   check_login();
   $aid=$_SESSION['a_id'];
+  // Add booking limit columns if they don't exist
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_booking_limit INT NOT NULL DEFAULT 1");
+  $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_current_bookings INT NOT NULL DEFAULT 0");
+  
   //Update Technician
   if(isset($_POST['update_tech']))
     {
@@ -11,14 +15,35 @@
             $t_name=$_POST['t_name'];
             $t_id_no = $_POST['t_id_no'];
             $t_category=$_POST['t_category'];
-            $t_status=$_POST['t_status'];
+            // Status is now auto-managed, no longer accepting manual input
             $t_specialization=$_POST['t_specialization'];
             $t_experience=$_POST['t_experience'];
-            $t_pic=$_FILES["t_pic"]["name"];
-            move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-            $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_status=? where t_id = ?";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssssi', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_status, $t_id);
+            $t_booking_limit = isset($_POST['t_booking_limit']) ? intval($_POST['t_booking_limit']) : 1;
+            
+            // Validate booking limit (1-5)
+            if($t_booking_limit < 1 || $t_booking_limit > 5) {
+                $t_booking_limit = 1;
+            }
+            
+            // Check if new photo is uploaded
+            if(!empty($_FILES["t_pic"]["name"])) {
+                // New photo uploaded - update with new photo
+                $t_pic = $_FILES["t_pic"]["name"];
+                move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
+                
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_booking_limit, $t_id);
+            } else {
+                // No new photo - update without changing photo
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_booking_limit, $t_id);
+            }
+            
+            // After update, automatically sync technician status
+            include('auto-update-technician-status.php');
+            
             $stmt->execute();
                 if($stmt)
                 {
@@ -125,12 +150,39 @@
                              </div>
 
                              <div class="form-group">
-                                 <label for="exampleFormControlSelect1">Technician Status</label>
-                                 <select class="form-control" name="t_status" id="exampleFormControlSelect1">
-                                     <option>Booked</option>
-                                     <option>Available</option>
-                                 </select>
+                                 <label for="techStatus">
+                                     <i class="fas fa-sync-alt text-success"></i> Technician Status (Auto-Managed)
+                                 </label>
+                                 <div class="input-group">
+                                     <input type="text" class="form-control" id="techStatus" value="<?php echo $row->t_status; ?>" readonly style="background-color: <?php echo ($row->t_status == 'Available') ? '#e8f5e9' : '#fff3e0'; ?>; color: <?php echo ($row->t_status == 'Available') ? '#2e7d32' : '#e65100'; ?>; font-weight: 600;">
+                                     <div class="input-group-append">
+                                         <span class="input-group-text" style="background-color: <?php echo ($row->t_status == 'Available') ? '#4caf50' : '#ff9800'; ?>; color: white;">
+                                             <i class="fas <?php echo ($row->t_status == 'Available') ? 'fa-check-circle' : 'fa-clock'; ?>"></i>
+                                         </span>
+                                     </div>
+                                 </div>
+                                 <small class="text-muted">
+                                     <i class="fas fa-info-circle text-primary"></i> Status automatically updates based on active bookings. 
+                                     Current: <strong><?php echo isset($row->t_current_bookings) ? $row->t_current_bookings : 0; ?></strong> / <strong><?php echo isset($row->t_booking_limit) ? $row->t_booking_limit : 1; ?></strong> bookings
+                                 </small>
                              </div>
+                             
+                             <div class="form-group">
+                                 <label for="t_booking_limit">
+                                     <i class="fas fa-layer-group text-warning"></i> Maximum Concurrent Bookings <span class="text-danger">*</span>
+                                 </label>
+                                 <select class="form-control" name="t_booking_limit" id="t_booking_limit" required>
+                                     <option value="1" <?php echo ($row->t_booking_limit == 1) ? 'selected' : ''; ?>>1 Booking at a time</option>
+                                     <option value="2" <?php echo ($row->t_booking_limit == 2) ? 'selected' : ''; ?>>2 Bookings at a time</option>
+                                     <option value="3" <?php echo ($row->t_booking_limit == 3) ? 'selected' : ''; ?>>3 Bookings at a time</option>
+                                     <option value="4" <?php echo ($row->t_booking_limit == 4) ? 'selected' : ''; ?>>4 Bookings at a time</option>
+                                     <option value="5" <?php echo ($row->t_booking_limit == 5) ? 'selected' : ''; ?>>5 Bookings at a time</option>
+                                 </select>
+                                 <small class="text-muted">
+                                     <i class="fas fa-info-circle"></i> Current active bookings: <strong><?php echo isset($row->t_current_bookings) ? $row->t_current_bookings : 0; ?></strong>
+                                 </small>
+                             </div>
+                             
                              <div class="card form-group" style="width: 30rem">
                                  <img src="../vendor/img/<?php echo $row->t_pic;?>" class="card-img-top">
                                  <div class="card-body">

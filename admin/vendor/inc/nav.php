@@ -24,16 +24,7 @@
          <li class="nav-item dropdown no-arrow mx-1">
              <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative;" title="View All Notifications">
                  <i class="fas fa-bell fa-fw" style="font-size: 20px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
-                 <span id="notificationBadge" class="badge badge-danger badge-counter" style="
-                     position: absolute;
-                     top: -5px;
-                     right: -5px;
-                     display: none;
-                     padding: 3px 6px;
-                     border-radius: 10px;
-                     font-size: 10px;
-                     animation: pulse 2s infinite;
-                 ">0</span>
+                 <!-- Badge removed -->
              </a>
          </li>
 
@@ -265,7 +256,41 @@
          display: none;
      }
  }
+ 
+ /* Notification Badge Pulse Animation */
+ @keyframes pulse {
+     0% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+     }
+     50% {
+         transform: scale(1.1);
+         box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+     }
+     100% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+     }
+ }
+ 
+ #notificationBadge {
+     animation: pulse 2s infinite;
+ }
+ 
+ /* Bell shake animation when new notification */
+ @keyframes bellShake {
+     0%, 100% { transform: rotate(0deg); }
+     10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+     20%, 40%, 60%, 80% { transform: rotate(10deg); }
+ }
+ 
+ .bell-shake {
+     animation: bellShake 0.5s ease-in-out;
+ }
  </style>
+
+<!-- Unified Notification System - Works on ALL admin pages -->
+<?php include('unified-notification-system.php'); ?>
 
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

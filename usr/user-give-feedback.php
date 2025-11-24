@@ -45,23 +45,19 @@ if(isset($_POST['give_feedback'])) {
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
-            padding-bottom: 70px;
+            padding-bottom: 55px;
             min-height: 100vh;
         }
         
         .top-header {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 20px 15px;
+            padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
         
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 15px;
         }
@@ -69,45 +65,54 @@ if(isset($_POST['give_feedback'])) {
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 15px;
         }
         
         .logo {
-            height: 45px;
+            height: 55px;
             width: auto;
         }
         
         .brand-text h2 {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 700;
             margin: 0;
             line-height: 1.2;
         }
         
         .brand-text p {
-            font-size: 11px;
+            font-size: 13px;
             opacity: 0.85;
-            margin: 2px 0 0 0;
+            margin: 3px 0 0 0;
             font-style: italic;
         }
         
-        .back-btn {
-            width: 40px;
-            height: 40px;
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
             background: rgba(255,255,255,0.25);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
-            text-decoration: none;
             color: white;
-            transition: all 0.3s;
-            flex-shrink: 0;
+            text-decoration: none;
+            font-size: 14px;
         }
         
-        .back-btn:hover {
+        .header-icon:hover {
             background: rgba(255,255,255,0.35);
             transform: scale(1.05);
         }
@@ -354,15 +359,16 @@ if(isset($_POST['give_feedback'])) {
         
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
             background: white;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             display: flex;
             justify-content: space-around;
-            padding: 10px 0 8px;
+            padding: 6px 0;
             z-index: 1000;
+            border-radius: 20px;
         }
         
         .nav-item {
@@ -371,19 +377,19 @@ if(isset($_POST['give_feedback'])) {
             text-decoration: none;
             color: #999;
             transition: all 0.3s;
-            padding: 5px;
+            padding: 4px;
         }
         
         .nav-item.active { color: #667eea; }
         
         .nav-item i {
-            font-size: 24px;
+            font-size: 20px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
         
         .nav-item span {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
         }
         
@@ -452,9 +458,13 @@ if(isset($_POST['give_feedback'])) {
                     <p>We make perfect</p>
                 </div>
             </div>
-            <a href="user-dashboard.php" class="back-btn">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+            <div class="user-section">
+                <div class="header-icons">
+                    <a href="user-view-profile.php" class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

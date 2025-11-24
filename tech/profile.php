@@ -66,14 +66,40 @@ if(isset($_POST['update_profile'])){
 
         <div class="row">
             <div class="col-md-4 mb-4">
-                <div class="card-custom text-center">
-                    <div style="width: 120px; height: 120px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);">
-                        <i class="fas fa-user" style="font-size: 3rem; color: white;"></i>
+                <!-- ID Card -->
+                <div class="id-card">
+                    <div class="id-card-header">
+                        <h3>ELECTROZOT</h3>
+                        <p>Technician ID Card</p>
                     </div>
-                    <h4 style="color: #2d3748; font-weight: 700;"><?php echo htmlspecialchars($tech->t_name); ?></h4>
-                    <p style="color: #6c757d; margin: 5px 0;">Technician</p>
-                    <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); padding: 15px; border-radius: 10px; margin-top: 20px;">
-                        <strong style="color: var(--primary);">ID: <?php echo htmlspecialchars($tech->t_id_no); ?></strong>
+                    <div class="id-card-body">
+                        <div class="id-photo">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="id-info">
+                            <div class="id-field">
+                                <label>Name</label>
+                                <p><?php echo htmlspecialchars($tech->t_name); ?></p>
+                            </div>
+                            <div class="id-field">
+                                <label>ID Number</label>
+                                <p class="id-number"><?php echo htmlspecialchars($tech->t_id_no); ?></p>
+                            </div>
+                            <div class="id-field">
+                                <label>Phone</label>
+                                <p><?php echo htmlspecialchars($tech->t_phone ?? 'N/A'); ?></p>
+                            </div>
+                            <div class="id-field">
+                                <label>Aadhaar Number</label>
+                                <p><?php echo htmlspecialchars($tech->t_aadhar ?? 'N/A'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="id-card-footer">
+                        <a href="tel:+919876543210" class="call-admin-btn">
+                            <i class="fas fa-phone-alt"></i>
+                            Call Admin Support
+                        </a>
                     </div>
                 </div>
             </div>

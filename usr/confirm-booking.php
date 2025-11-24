@@ -35,6 +35,23 @@ if (isset($_POST['confirm_booking'])) {
     $address = $_POST['address'];
     $phone = $_POST['phone'];
     
+    // Check active bookings limit (3 bookings per user)
+    $check_active_bookings = "SELECT COUNT(*) as active_count FROM tms_service_booking 
+                               WHERE sb_user_id = ? 
+                               AND sb_status NOT IN ('Rejected', 'Cancelled', 'Completed')";
+    $stmt_check_limit = $mysqli->prepare($check_active_bookings);
+    $stmt_check_limit->bind_param('i', $aid);
+    $stmt_check_limit->execute();
+    $result_limit = $stmt_check_limit->get_result();
+    $limit_data = $result_limit->fetch_object();
+    $active_bookings_count = $limit_data->active_count;
+    $stmt_check_limit->close();
+    
+    // If user already has 3 or more active bookings, reject the new booking
+    if($active_bookings_count >= 3) {
+        $error_msg = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
+    } else {
+    
     // Get service ID from service name, or create service if not exists
     $service_query = "SELECT s_id FROM tms_service WHERE s_name = ? LIMIT 1";
     $service_stmt = $mysqli->prepare($service_query);
@@ -85,6 +102,7 @@ if (isset($_POST['confirm_booking'])) {
     } else {
         $error_msg = "Booking failed. Please try again. Error: " . $mysqli->error;
     }
+    } // Close booking limit check
 }
 
 // Check if booking was successful
@@ -110,27 +128,55 @@ if ($show_success) {
         .header {
             background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            padding: 20px 15px;
+            padding: 10px 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-        }
-        .logo {
-            height: 35px;
-            width: auto;
         }
         .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
         }
+        
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
         }
         
-        .back-btn {
-            width: 36px;
-            height: 36px;
+        .logo {
+            height: 55px;
+            width: auto;
+        }
+        
+        .brand-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-text p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin: 3px 0 0 0;
+            font-style: italic;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
             background: rgba(255,255,255,0.25);
             border-radius: 50%;
             display: flex;
@@ -138,27 +184,7 @@ if ($show_success) {
             justify-content: center;
             color: white;
             text-decoration: none;
-            font-size: 18px;
-        }
-        
-        .brand-text h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 10px;
-            opacity: 0.85;
-            margin: 2px 0 0 0;
-            font-style: italic;
-        }
-        
-        .page-title {
-            font-size: 16px;
-            font-weight: 600;
-            text-align: right;
+            font-size: 14px;
         }
         .content { padding: 15px; max-width: 600px; margin: 0 auto; }
         .service-info {
@@ -267,6 +293,42 @@ if ($show_success) {
             margin-bottom: 20px;
         }
         
+        .bottom-nav {
+            position: fixed;
+            bottom: 8px;
+            left: 8px;
+            right: 8px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            z-index: 1000;
+            border-radius: 20px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            text-decoration: none;
+            color: #999;
+            transition: all 0.3s;
+            padding: 4px;
+        }
+        
+        .nav-item.active { color: #667eea; }
+        
+        .nav-item i {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 3px;
+        }
+        
+        .nav-item span {
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
         @media (min-width: 768px) {
             body {
                 max-width: 1200px;
@@ -360,16 +422,19 @@ if ($show_success) {
     <div class="header">
         <div class="header-content">
             <div class="brand-section">
-                <a href="javascript:history.back()" class="back-btn">
-                    <i class="fas fa-arrow-left"></i>
-                </a>
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
                 </div>
             </div>
-            <div class="page-title">Confirm</div>
+            <div class="user-section">
+                <div class="header-icons">
+                    <a href="user-view-profile.php" class="header-icon">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -416,5 +481,24 @@ if ($show_success) {
         </div>
     </div>
     <?php endif; ?>
+
+    <div class="bottom-nav">
+        <a href="user-dashboard.php" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="book-service-step1.php" class="nav-item active">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Book</span>
+        </a>
+        <a href="user-manage-booking.php" class="nav-item">
+            <i class="fas fa-list-alt"></i>
+            <span>Orders</span>
+        </a>
+        <a href="user-view-profile.php" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    </div>
 </body>
 </html>

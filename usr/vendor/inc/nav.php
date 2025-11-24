@@ -9,7 +9,7 @@ $nav_user_result = $nav_user_stmt->get_result();
 $nav_user = $nav_user_result->fetch_object();
 $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname : 'User';
 ?>
-<nav class="navbar navbar-expand static-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<nav class="navbar navbar-expand static-top" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 
     <a class="navbar-brand mr-1" href="user-dashboard.php" style="display: flex; align-items: center; gap: 12px; padding: 8px 15px; background: rgba(255,255,255,0.15); border-radius: 12px; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2);">
         <div class="logo-container" style="background: white; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); padding: 5px;">
@@ -67,7 +67,7 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="border-radius: 15px; border: none;">
-            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%); color: white; border-radius: 15px 15px 0 0;">
                 <h5 class="modal-title" id="exampleModalLabel"><i class="fas fa-sign-out-alt"></i> Ready to Leave?</h5>
                 <button class="close text-white" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
@@ -96,7 +96,7 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 }
 
 .sidebar .nav-link:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%) !important;
     color: white !important;
     transform: translateX(5px);
     border-radius: 10px;
@@ -104,7 +104,7 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 }
 
 .sidebar .nav-link i {
-    color: #667eea;
+    color: #ff4757;
     transition: all 0.3s ease;
 }
 
@@ -113,7 +113,7 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 }
 
 .sidebar .nav-item.active .nav-link {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%) !important;
     color: white !important;
     border-radius: 10px;
     margin: 0 10px;
@@ -135,12 +135,12 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 }
 
 .sidebar .dropdown-item:hover {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
     color: white !important;
 }
 
 .sidebar .dropdown-item i {
-    color: #667eea;
+    color: #ff4757;
     margin-right: 8px;
 }
 
@@ -149,7 +149,7 @@ $user_display_name = $nav_user ? $nav_user->u_fname . ' ' . $nav_user->u_lname :
 }
 
 .sidebar .dropdown-header {
-    color: #667eea;
+    color: #ff4757;
     font-weight: 700;
 }
 </style>

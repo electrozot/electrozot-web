@@ -5,6 +5,9 @@
   check_login();
   $aid=$_SESSION['a_id'];
 
+  // AUTO-FIX: Sync technician slots and availability
+  include('auto-fix-technician-slots.php');
+
   // Include soft delete helper
   include('vendor/inc/soft-delete.php');
 
@@ -196,48 +199,52 @@
                                  </select>
                              </div>
                          </div>
+                         
+                         <!-- Quick Filter Buttons -->
+                         <div class="row mb-3">
+                             <div class="col-12">
+                                 <button class="btn btn-sm btn-outline-primary" onclick="showAllTechnicians()">
+                                     <i class="fas fa-users"></i> All Technicians
+                                 </button>
+                                 <button class="btn btn-sm" style="background: linear-gradient(135deg, #0575E6 0%, #00F260 100%); color: white; font-weight: 700;" onclick="showGuestTechnicians()">
+                                     <i class="fas fa-user-clock"></i> Guest Technicians Only
+                                 </button>
+                                 <button class="btn btn-sm btn-warning" onclick="showPendingApprovals()">
+                                     <i class="fas fa-hourglass-half"></i> Pending Approvals
+                                 </button>
+                             </div>
+                         </div>
                          <div class="table-responsive">
                              <table class="table table-bordered table-hover table-sm" id="dataTable" width="100%" cellspacing="0" style="font-size: 0.875rem; table-layout: fixed;">
                                  <thead class="thead-light">
                                      <tr>
                                          <th style="width: 3%;">#</th>
-                                         <th style="width: 11%;">Name</th>
-                                         <th style="width: 9%;">ID Number</th>
-                                         <th style="width: 10%;">Mobile (Login)</th>
-                                         <th style="width: 12%;">Category</th>
-                                         <th style="width: 15%;">Specialization</th>
-                                         <th style="width: 9%;">Availability</th>
-                                         <th style="width: 11%;">Booking Status</th>
-                                         <th style="width: 20%;">Actions</th>
+                                         <th style="width: 10%;">Name</th>
+                                         <th style="width: 8%;">ID Number</th>
+                                         <th style="width: 9%;">Mobile (Login)</th>
+                                         <th style="width: 11%;">Category</th>
+                                         <th style="width: 13%;">Specialization</th>
+                                         <th style="width: 10%;">Availability</th>
+                                         <th style="width: 12%;">Capacity</th>
+                                         <th style="width: 18%;">Actions</th>
                                      </tr>
                                  </thead>
                                  <tbody>
                                  <?php
-                    // Get technicians with their booking status
+                    // Get technicians with their booking status (Guest technicians first)
                     $ret="SELECT t.*, 
                           COUNT(CASE WHEN sb.sb_status IN ('Pending', 'Approved', 'In Progress') THEN 1 END) as active_bookings,
                           COUNT(CASE WHEN sb.sb_status = 'Completed' THEN 1 END) as completed_bookings
                           FROM tms_technician t
                           LEFT JOIN tms_service_booking sb ON t.t_id = sb.sb_technician_id
                           GROUP BY t.t_id
-                          ORDER BY t.t_name"; 
+                          ORDER BY t.t_is_guest DESC, t.t_status = 'Pending' DESC, t.t_name"; 
                     $stmt= $mysqli->prepare($ret);
                     $stmt->execute();
                     $res=$stmt->get_result();
                     $cnt=1;
                     while($row=$res->fetch_object())
                     {
-                        // Determine booking status
-                        $booking_status = '';
-                        $booking_badge = '';
-                        if($row->active_bookings > 0) {
-                            $booking_status = 'Engaged (' . $row->active_bookings . ')';
-                            $booking_badge = 'badge-warning';
-                        } else {
-                            $booking_status = 'Free';
-                            $booking_badge = 'badge-success';
-                        }
-                        
                         // Availability status
                         $avail_badge = '';
                         if($row->t_status == 'Available') {
@@ -249,10 +256,22 @@
                         }
                 ?>
                                      <tr data-category="<?php echo strtolower($row->t_category);?>" 
-                                         data-availability="<?php echo strtolower($row->t_status);?>" 
-                                         data-booking="<?php echo strtolower($booking_status);?>">
+                                         data-availability="<?php echo strtolower($row->t_status);?>"
+                                         style="<?php echo (isset($row->t_is_guest) && $row->t_is_guest == 1) ? 'background: linear-gradient(135deg, rgba(5, 117, 230, 0.05) 0%, rgba(0, 242, 96, 0.05) 100%);' : ''; ?>">
                                          <td class="text-center"><?php echo $cnt;?></td>
-                                         <td><strong><?php echo $row->t_name;?></strong></td>
+                                         <td>
+                                             <strong><?php echo $row->t_name;?></strong>
+                                             <?php if(isset($row->t_is_guest) && $row->t_is_guest == 1): ?>
+                                                 <span class="badge badge-pill" style="background: linear-gradient(135deg, #0575E6 0%, #00F260 100%); color: white; font-weight: 800; font-size: 0.7rem; margin-left: 8px; animation: pulse 2s infinite;">
+                                                     <i class="fas fa-user-clock"></i> GUEST
+                                                 </span>
+                                             <?php endif; ?>
+                                             <?php if(isset($row->t_status) && $row->t_status == 'Pending'): ?>
+                                                 <span class="badge badge-warning badge-pill" style="font-weight: 800; font-size: 0.7rem; margin-left: 8px;">
+                                                     <i class="fas fa-hourglass-half"></i> PENDING APPROVAL
+                                                 </span>
+                                             <?php endif; ?>
+                                         </td>
                                          <td class="text-center"><?php echo $row->t_id_no;?></td>
                                          <td class="text-center">
                                              <i class="fas fa-mobile-alt text-success"></i> 
@@ -270,8 +289,14 @@
                                              </span>
                                          </td>
                                          <td class="text-center">
-                                             <span class="badge <?php echo $booking_badge;?> badge-pill" style="font-size: 0.75rem; min-width: 60px;">
-                                                 <?php echo $booking_status;?>
+                                             <?php 
+                                             $current = isset($row->t_current_bookings) ? $row->t_current_bookings : 0;
+                                             $limit = isset($row->t_booking_limit) ? $row->t_booking_limit : 1;
+                                             $percentage = ($limit > 0) ? ($current / $limit) * 100 : 0;
+                                             $capacity_color = ($percentage >= 100) ? 'danger' : (($percentage >= 80) ? 'warning' : 'success');
+                                             ?>
+                                             <span class="badge badge-<?php echo $capacity_color;?> badge-pill" style="font-size: 0.75rem;" title="Current/Maximum bookings">
+                                                 <i class="fas fa-layer-group"></i> <?php echo $current;?>/<?php echo $limit;?>
                                              </span>
                                          </td>
                                          <td class="text-center" style="white-space: nowrap; padding: 0.75rem;">
@@ -336,10 +361,10 @@
      <script src="vendor/datatables/dataTables.bootstrap4.js"></script>
 
      <!-- Custom scripts for all pages-->
-     <script src="js/sb-admin.min.js"></script>
+     <script src="vendor/js/sb-admin.min.js"></script>
 
      <!-- Demo scripts for this page-->
-     <script src="js/demo/datatables-demo.js"></script>
+     <script src="vendor/js/demo/datatables-demo.js"></script>
      
      <!-- Custom Filter Script -->
      <script>
@@ -397,7 +422,76 @@
          $('#filterAvailability').on('change', filterTable);
          $('#filterBooking').on('change', filterTable);
      });
+     
+     // Show only guest technicians
+     function showGuestTechnicians() {
+         $('#dataTable tbody tr').each(function() {
+             var row = $(this);
+             var nameCell = row.find('td:eq(1)').html();
+             
+             if (nameCell.indexOf('GUEST') > -1) {
+                 row.show();
+             } else {
+                 row.hide();
+             }
+         });
+         
+         var visibleRows = $('#dataTable tbody tr:visible').length;
+         var totalRows = $('#dataTable tbody tr').length;
+         
+         if ($('#filterInfo').length === 0) {
+             $('#dataTable_wrapper').prepend('<div id="filterInfo" class="alert alert-info alert-sm py-2 mb-2"><i class="fas fa-user-clock"></i> <strong>Showing ' + visibleRows + ' Guest Technicians</strong> (out of ' + totalRows + ' total)</div>');
+         } else {
+             $('#filterInfo').html('<i class="fas fa-user-clock"></i> <strong>Showing ' + visibleRows + ' Guest Technicians</strong> (out of ' + totalRows + ' total)');
+         }
+     }
+     
+     // Show only pending approvals
+     function showPendingApprovals() {
+         $('#dataTable tbody tr').each(function() {
+             var row = $(this);
+             var nameCell = row.find('td:eq(1)').html();
+             
+             if (nameCell.indexOf('PENDING APPROVAL') > -1) {
+                 row.show();
+             } else {
+                 row.hide();
+             }
+         });
+         
+         var visibleRows = $('#dataTable tbody tr:visible').length;
+         var totalRows = $('#dataTable tbody tr').length;
+         
+         if ($('#filterInfo').length === 0) {
+             $('#dataTable_wrapper').prepend('<div id="filterInfo" class="alert alert-warning alert-sm py-2 mb-2"><i class="fas fa-hourglass-half"></i> <strong>Showing ' + visibleRows + ' Pending Approvals</strong> (out of ' + totalRows + ' total)</div>');
+         } else {
+             $('#filterInfo').html('<i class="fas fa-hourglass-half"></i> <strong>Showing ' + visibleRows + ' Pending Approvals</strong> (out of ' + totalRows + ' total)');
+         }
+     }
+     
+     // Show all technicians
+     function showAllTechnicians() {
+         $('#dataTable tbody tr').show();
+         $('#filterInfo').remove();
+         
+         // Reset filters
+         $('#searchTechnician').val('');
+         $('#filterCategory').val('');
+         $('#filterAvailability').val('');
+         $('#filterBooking').val('');
+     }
      </script>
+     
+     <style>
+     @keyframes pulse {
+         0%, 100% { transform: scale(1); opacity: 1; }
+         50% { transform: scale(1.05); opacity: 0.9; }
+     }
+     </style>
+ </body>
+
+ </html>
+
  </body>
 
  </html>

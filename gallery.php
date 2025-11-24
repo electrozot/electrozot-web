@@ -17,7 +17,7 @@
      <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="gallery-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 60px 0 40px 0;">
+    <section class="gallery-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 116px 0 40px 0; margin-top: -56px;">
      <div class="container">
             <div class="text-center">
                 <h1 class="gallery-title" style="font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 10px;">
@@ -149,6 +149,32 @@
             
             .gallery-title {
                 font-size: 1.5rem !important;
+            }
+            
+            /* Horizontal sliding gallery on mobile */
+            .gallery-grid {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                gap: 15px !important;
+                padding: 10px 5px !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                -webkit-overflow-scrolling: touch !important;
+                scroll-snap-type: x mandatory !important;
+            }
+            
+            .gallery-grid > div {
+                flex: 0 0 auto !important;
+                width: 80% !important;
+                min-width: 280px !important;
+                max-width: 350px !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                scroll-snap-align: center !important;
+                margin-bottom: 0 !important;
             }
         }
 
