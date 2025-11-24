@@ -52,9 +52,9 @@ CREATE TABLE `tms_admin` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Sample admin data
--- Default credentials: mohit@electrozot.in / mohit@123
-INSERT INTO `tms_admin` (`a_id`, `a_name`, `a_email`, `a_pwd`)
-VALUES (3, 'Mohit', 'mohit@electrozot.in', '5f93f983524def3dca464469d2cf9f3e');
+-- Default credentials: admin@electrozot.in / admin123
+INSERT INTO tms_admin (a_id, a_name, a_email, a_pwd, a_phone) VALUES
+(4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500', '9876543210');
 
 -- ----------------------------------------------------------------------------
 -- Table: tms_user
