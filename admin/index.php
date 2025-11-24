@@ -47,29 +47,41 @@
       $rs=$stmt->fetch();
       $stmt->close(); // Close the statement to free the connection
       
-      $_SESSION['a_id']=$a_id;//assaign session to admin id
-      $_SESSION['a_name']=$a_name;//assign session to admin name
-      $_SESSION['a_photo']=$a_photo;//assign session to admin photo
       if($rs)
       {//if its sucessfull
+        // Set session variables AFTER successful fetch
+        $_SESSION['a_id']=$a_id;//assaign session to admin id
+        $_SESSION['a_name']=$a_name;//assign session to admin name
+        $_SESSION['a_photo']=$a_photo;//assign session to admin photo
+        
         // Regenerate session ID for security
         session_regenerate_id(true);
         
-        // Log the admin login
-        $user_ip = $_SERVER['REMOTE_ADDR'];
-        $user_city = 'N/A'; // Can be enhanced with IP geolocation API
-        $user_country = 'N/A';
+        // Log the admin login (wrapped in try-catch to prevent errors)
+        try {
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            $user_city = 'N/A';
+            $user_country = 'N/A';
+            
+            // Insert log entry
+            $log_stmt = $mysqli->prepare("INSERT INTO tms_syslogs (u_email, u_ip, u_city, u_country, user_type) VALUES (?, ?, ?, ?, 'admin')");
+            if($log_stmt) {
+                $log_stmt->bind_param('ssss', $a_email, $user_ip, $user_city, $user_country);
+                $log_stmt->execute();
+                $log_stmt->close();
+            }
+            
+            // Auto-cleanup: Keep only 100 most recent system logs
+            if(file_exists('vendor/inc/cleanup-syslogs.php')) {
+                @include('vendor/inc/cleanup-syslogs.php');
+            }
+        } catch(Exception $e) {
+            // Silently handle logging errors
+        }
         
-        // Insert log entry
-        $log_stmt = $mysqli->prepare("INSERT INTO tms_syslogs (u_email, u_ip, u_city, u_country, user_type) VALUES (?, ?, ?, ?, 'admin')");
-        $log_stmt->bind_param('ssss', $a_email, $user_ip, $user_city, $user_country);
-        $log_stmt->execute();
-        $log_stmt->close();
-        
-        // Auto-cleanup: Keep only 100 most recent system logs
-        include('vendor/inc/cleanup-syslogs.php');
-        
-        header("location:admin-dashboard.php");
+        // Redirect to dashboard
+        header("Location: admin-dashboard.php");
+        exit(); // IMPORTANT: Stop script execution after redirect
       }
       else
       {

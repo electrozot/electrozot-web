@@ -1,0 +1,245 @@
+================================================================================
+ELECTROZOT - PROJECT STRUCTURE
+================================================================================
+
+ROOT DIRECTORY
+--------------
+electrozot/
+├── .gitignore                          # Git ignore rules
+├── QUICK_REFERENCE.txt                 # Quick reference guide
+├── SETUP_COMPLETE.txt                  # Setup documentation
+├── PROJECT_STRUCTURE.txt               # This file
+├── index.php                           # Main landing page
+├── about.php                           # About page
+├── contact.php                         # Contact page
+├── services.php                        # Services listing
+├── gallery.php                         # Gallery page
+├── process-guest-booking.php           # Guest booking handler
+├── manifest.json                       # PWA manifest
+├── sw.js                               # Service worker
+├── offline.html                        # Offline page
+│
+├── DATABASE FILE/
+│   └── electrozot_db_complete.sql      # Complete database (IMPORT THIS)
+│
+├── admin/                              # Admin panel
+│   ├── index.php                       # Admin login
+│   ├── admin-dashboard.php             # Main dashboard
+│   ├── admin-*.php                     # Admin management pages
+│   ├── api-*.php                       # API endpoints
+│   ├── auto-*.php                      # Auto-update scripts
+│   ├── cron-*.php                      # Cron jobs
+│   ├── sounds/                         # Notification sounds
+│   └── vendor/
+│       ├── inc/
+│       │   ├── config.php              # Database config (EDIT THIS)
+│       │   ├── checklogin.php          # Login verification
+│       │   ├── nav.php                 # Navigation
+│       │   ├── sidebar.php             # Sidebar
+│       │   └── footer.php              # Footer
+│       ├── img/
+│       │   ├── slider/                 # Slider images (writable)
+│       │   ├── gallery/                # Gallery images (writable)
+│       │   ├── technicians/            # Technician photos (writable)
+│       │   └── services/               # Service images (writable)
+│       └── [css, js, fonts, etc.]      # Frontend assets
+│
+├── tech/                               # Technician panel
+│   ├── index.php                       # Technician login
+│   ├── tech-dashboard.php              # Technician dashboard
+│   ├── tech-*.php                      # Technician pages
+│   └── vendor/
+│       └── inc/
+│           └── config.php              # Database config
+│
+├── usr/                                # User panel
+│   ├── index.php                       # User login
+│   ├── usr-dashboard.php               # User dashboard
+│   ├── usr-*.php                       # User pages
+│   └── vendor/
+│       └── inc/
+│           └── config.php              # Database config
+│
+├── uploads/                            # Upload directory (writable)
+│   ├── slider/                         # Slider uploads
+│   ├── gallery/                        # Gallery uploads
+│   ├── technicians/                    # Technician uploads
+│   ├── services/                       # Service uploads
+│   ├── id_cards/                       # Generated ID cards
+│   ├── bill_images/                    # Bill images
+│   └── service_images/                 # Service completion images
+│
+├── css/                                # Frontend stylesheets
+├── js/                                 # Frontend JavaScript
+├── mail/                               # Email templates
+└── vendor/                             # Shared vendor files
+
+================================================================================
+KEY FILES TO CONFIGURE
+================================================================================
+
+1. Database Configuration (3 files):
+   - admin/vendor/inc/config.php
+   - tech/vendor/inc/config.php
+   - usr/vendor/inc/config.php
+   
+   Update these with your database credentials:
+   $dbuser = "root";
+   $dbpass = "";
+   $host = "localhost";
+   $db = "electrozot_db";
+
+2. Database Import:
+   - Import: DATABASE FILE/electrozot_db_complete.sql
+   - Database name: electrozot_db
+
+================================================================================
+WRITABLE DIRECTORIES (777 permissions)
+================================================================================
+
+✓ admin/vendor/img/slider/
+✓ admin/vendor/img/gallery/
+✓ admin/vendor/img/technicians/
+✓ admin/vendor/img/services/
+✓ uploads/ (and all subdirectories)
+
+================================================================================
+ACCESS POINTS
+================================================================================
+
+Public:
+  - http://localhost/electrozot/                    (Landing page)
+  - http://localhost/electrozot/services.php        (Services)
+  - http://localhost/electrozot/gallery.php         (Gallery)
+
+Admin Panel:
+  - http://localhost/electrozot/admin/              (Admin login)
+  - Default: mohit@electrozot.in / mohit@123
+
+Technician Panel:
+  - http://localhost/electrozot/tech/               (Technician login)
+
+User Panel:
+  - http://localhost/electrozot/usr/                (User login)
+
+================================================================================
+IMPORTANT FEATURES
+================================================================================
+
+Admin Panel:
+  ✓ Dashboard with statistics
+  ✓ Booking management (view, assign, approve, reject)
+  ✓ Technician management (add, edit, delete, skills)
+  ✓ Service management (add, edit, pricing)
+  ✓ User management (view, protected from deletion)
+  ✓ Home slider management
+  ✓ Gallery management
+  ✓ Notifications center
+  ✓ System logs
+  ✓ ID card generation
+
+Technician Panel:
+  ✓ View assigned bookings
+  ✓ Accept/reject bookings
+  ✓ Mark bookings as complete
+  ✓ Upload service completion images
+  ✓ Set final price (if admin price not set)
+  ✓ Real-time notifications
+
+User Panel:
+  ✓ Book services
+  ✓ View booking history
+  ✓ Track booking status
+  ✓ Cancel bookings
+  ✓ View assigned technician
+  ✓ Real-time status updates
+
+Automation:
+  ✓ Auto-assign technicians based on skills
+  ✓ Auto-update technician availability
+  ✓ Auto-sync booking counts
+  ✓ Auto-cleanup old logs
+  ✓ Real-time notifications
+
+================================================================================
+SECURITY FEATURES
+================================================================================
+
+✓ User data protection (cannot delete users)
+✓ MD5 password hashing
+✓ Session management
+✓ SQL injection prevention (prepared statements)
+✓ File upload validation
+✓ Login attempt logging
+✓ Admin/Technician/User role separation
+
+================================================================================
+DATABASE TABLES
+================================================================================
+
+Core Tables:
+  - tms_admin                    (Admin users)
+  - tms_user                     (Regular users)
+  - tms_technician               (Technicians)
+  - tms_service                  (Services)
+  - tms_service_booking          (Bookings)
+
+Feature Tables:
+  - tms_home_slider              (Homepage slider)
+  - tms_feedback                 (User feedback)
+  - tms_admin_notifications      (Admin notifications)
+  - tms_generated_id_cards       (ID card records)
+  - tms_site_settings            (Site configuration)
+
+System Tables:
+  - tms_syslogs                  (Login logs)
+  - tms_system_logs              (System activity logs)
+  - tms_pwd_resets               (Password reset requests)
+
+================================================================================
+MAINTENANCE
+================================================================================
+
+Regular Tasks:
+  - Backup database weekly
+  - Monitor upload directory size
+  - Review system logs
+  - Update admin passwords
+  - Clean old notification records
+
+Cron Jobs (optional):
+  - cron-delete-old-images.php   (Clean old uploaded images)
+  - cron-expire-bookings.php     (Auto-expire old bookings)
+  - cron-send-reminders.php      (Send booking reminders)
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Issue: Cannot login
+Solution: Check database credentials in config.php files
+
+Issue: Upload fails
+Solution: Check directory permissions (should be 777)
+
+Issue: White screen
+Solution: Enable PHP error display, check error logs
+
+Issue: Database errors
+Solution: Re-import electrozot_db_complete.sql
+
+Issue: Notifications not working
+Solution: Check tms_admin_notifications table exists
+
+================================================================================
+VERSION INFORMATION
+================================================================================
+
+Version: 1.0
+Status: Production Ready
+Last Updated: November 24, 2025
+PHP Version: 7.4+ recommended
+MySQL Version: 5.7+ or 8.0+
+Server: Apache (XAMPP/WAMP/LAMP)
+
+================================================================================

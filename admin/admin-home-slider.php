@@ -39,26 +39,52 @@ if(isset($_POST['add_slider'])) {
             
             // Create directory if not exists
             if(!is_dir('vendor/img/slider')) {
-                mkdir('vendor/img/slider', 0777, true);
+                if(!mkdir('vendor/img/slider', 0777, true)) {
+                    $err = "Failed to create upload directory. Please check permissions.";
+                } else {
+                    chmod('vendor/img/slider', 0777);
+                }
             }
             
-            if(move_uploaded_file($_FILES['slider_image']['tmp_name'], $upload_path)) {
-                $insert = "INSERT INTO tms_home_slider (slider_image, slider_title, slider_description, slider_order, slider_status) 
-                          VALUES (?, ?, ?, ?, ?)";
-                $stmt = $mysqli->prepare($insert);
-                $stmt->bind_param('sssis', $new_filename, $slider_title, $slider_description, $slider_order, $slider_status);
-                
-                if($stmt->execute()) {
-                    $success = "Slider image added successfully!";
+            if(!isset($err)) {
+                if(move_uploaded_file($_FILES['slider_image']['tmp_name'], $upload_path)) {
+                    // Set file permissions
+                    chmod($upload_path, 0644);
+                    
+                    $insert = "INSERT INTO tms_home_slider (slider_image, slider_title, slider_description, slider_order, slider_status) 
+                              VALUES (?, ?, ?, ?, ?)";
+                    $stmt = $mysqli->prepare($insert);
+                    $stmt->bind_param('sssis', $new_filename, $slider_title, $slider_description, $slider_order, $slider_status);
+                    
+                    if($stmt->execute()) {
+                        $success = "Slider image added successfully!";
+                    } else {
+                        $err = "Failed to add slider to database: " . $stmt->error;
+                        // Delete uploaded file if database insert fails
+                        if(file_exists($upload_path)) {
+                            unlink($upload_path);
+                        }
+                    }
                 } else {
-                    $err = "Failed to add slider. Please try again.";
+                    $err = "Failed to upload image. Check directory permissions (vendor/img/slider must be writable).";
                 }
-            } else {
-                $err = "Failed to upload image.";
             }
         } else {
             $err = "Invalid file type. Only JPG, PNG, and GIF allowed.";
         }
+    } elseif(isset($_FILES['slider_image'])) {
+        // Handle upload errors
+        $upload_errors = [
+            UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize in php.ini',
+            UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE in HTML form',
+            UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+            UPLOAD_ERR_EXTENSION => 'File upload stopped by extension'
+        ];
+        $error_code = $_FILES['slider_image']['error'];
+        $err = isset($upload_errors[$error_code]) ? $upload_errors[$error_code] : "Unknown upload error (code: $error_code)";
     } else {
         $err = "Please select an image.";
     }

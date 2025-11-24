@@ -6,13 +6,25 @@
   check_login();
   $aid=$_SESSION['a_id'];
   
-  // AUTO-FIX: Sync technician slots and availability
-  include('auto-fix-technician-slots.php');
+  // AUTO-FIX: Sync technician slots and availability (wrapped in try-catch)
+  try {
+      if(file_exists('auto-fix-technician-slots.php')) {
+          @include('auto-fix-technician-slots.php');
+      }
+  } catch(Exception $e) {
+      // Silently handle errors
+  }
   
-  // Auto-setup services on first admin login
-  $services_inserted = include('auto-setup-services.php');
-  if($services_inserted > 0) {
-      $_SESSION['setup_success'] = "System initialized! $services_inserted services added automatically.";
+  // Auto-setup services on first admin login (wrapped in try-catch)
+  try {
+      if(file_exists('auto-setup-services.php')) {
+          $services_inserted = @include('auto-setup-services.php');
+          if($services_inserted > 0) {
+              $_SESSION['setup_success'] = "System initialized! $services_inserted services added automatically.";
+          }
+      }
+  } catch(Exception $e) {
+      // Silently handle errors
   }
   
   // Handle reassignment from dashboard

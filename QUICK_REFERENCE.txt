@@ -1,131 +1,54 @@
-═══════════════════════════════════════════════════════════════════
-  QUICK REFERENCE - AUTOMATED BOOKING SYSTEM
-═══════════════════════════════════════════════════════════════════
+================================================================================
+ELECTROZOT - QUICK REFERENCE GUIDE
+================================================================================
 
-📋 BOOKING STATUS (Automatic)
-─────────────────────────────
-Pending       → No technician assigned
-Approved      → Technician assigned
-Not Completed → Technician rejected/couldn't complete
-Completed     → Service done successfully
-Cancelled     → Booking cancelled
+DATABASE SETUP
+--------------
+1. Import: DATABASE FILE/electrozot_db_complete.sql
+2. This creates all tables, triggers, views, and sample data
 
-👤 TECHNICIAN STATUS (Automatic)
-────────────────────────────────
-Available → Has capacity (bookings < limit)
-Booked    → At capacity (bookings >= limit)
+ADMIN LOGIN
+-----------
+URL: http://localhost/your-project/admin/
+Email: mohit@electrozot.in
+Password: mohit@123
 
-🔔 NOTIFICATIONS (Fixed)
-────────────────────────
-✓ Shows once per booking
-✓ Sound plays once
-✓ No repeats
+If login fails, run: http://localhost/your-project/admin/FIX-LOGIN-NOW.php
+Then DELETE FIX-LOGIN-NOW.php after successful login
 
-═══════════════════════════════════════════════════════════════════
-  CUSTOMER FEATURES
-═══════════════════════════════════════════════════════════════════
+DATABASE CONNECTION
+-------------------
+File: admin/vendor/inc/config.php
+Default settings:
+  - Host: localhost
+  - User: root
+  - Password: (empty)
+  - Database: electrozot_db
 
-VIEW LIVE STATUS:
-usr/live-booking-status.php?booking_id=123&phone=1234567890
+KEY FEATURES
+------------
+✓ Booking management system
+✓ Technician assignment with skill matching
+✓ Real-time notifications
+✓ User data protection (cannot delete users)
+✓ Booking limit system (technicians can handle multiple bookings)
+✓ Admin price management
+✓ ID card generation for technicians
+✓ Automated status updates
 
-WHAT THEY SEE:
-✓ Current booking status
-✓ Assigned technician details
-✓ Booking timeline
-✓ Auto-refresh every 10 seconds
-✓ Cancel button (if applicable)
+IMPORTANT FILES
+---------------
+- admin/index.php - Admin login
+- admin/admin-dashboard.php - Main dashboard
+- admin/auto-setup-services.php - Auto-creates services on first login
+- admin/auto-fix-technician-slots.php - Auto-syncs technician data
 
-═══════════════════════════════════════════════════════════════════
-  ADMIN FEATURES
-═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+---------------
+White page on login? Check:
+1. Database exists and is imported
+2. Database credentials in config.php are correct
+3. Admin user exists (run FIX-LOGIN-NOW.php)
+4. PHP errors enabled: error_reporting(E_ALL)
 
-AUTOMATIC ACTIONS:
-✓ Booking status updates when technician assigned
-✓ Technician status updates based on bookings
-✓ No manual status changes needed
-
-LIVE MONITORING:
-admin/api-get-live-booking-status.php?booking_id=123
-
-DASHBOARD CARDS:
-📋 Pending    → Need to assign technician
-✅ Approved   → Technician assigned, awaiting completion
-⚠️ Not Done   → Need to reassign
-✓ Completed   → Finalized
-
-═══════════════════════════════════════════════════════════════════
-  TECHNICIAN FEATURES
-═══════════════════════════════════════════════════════════════════
-
-AUTOMATIC STATUS:
-✓ Status updates based on active bookings
-✓ Prevents over-booking
-✓ Clear capacity indicator
-
-ACTIONS:
-Complete → Booking status: Completed
-Reject   → Booking status: Not Completed (admin reassigns)
-
-═══════════════════════════════════════════════════════════════════
-  STATUS WORKFLOW
-═══════════════════════════════════════════════════════════════════
-
-1. Customer books → Pending
-2. Admin assigns tech → Approved
-3. Tech completes → Completed ✓
-
-OR if tech rejects:
-3. Tech rejects → Not Completed
-4. Admin reassigns → Approved
-5. New tech completes → Completed ✓
-
-═══════════════════════════════════════════════════════════════════
-  KEY FILES
-═══════════════════════════════════════════════════════════════════
-
-BOOKING STATUS:
-- admin/auto-update-booking-status.php
-- usr/api-get-booking-status.php
-- usr/live-booking-status.php
-
-TECHNICIAN STATUS:
-- admin/auto-update-technician-status.php
-- admin/api-update-technician-status.php
-
-NOTIFICATIONS:
-- admin/api-unified-notifications.php
-- admin/vendor/inc/unified-notification-system.php
-
-DOCUMENTATION:
-- COMPLETE_AUTOMATION_SUMMARY.txt
-- BOOKING_STATUS_AUTOMATION.md
-- TECHNICIAN_STATUS_AUTO_UPDATE.md
-- BOOKING_STATUS_VISUAL_GUIDE.txt
-
-═══════════════════════════════════════════════════════════════════
-  TESTING
-═══════════════════════════════════════════════════════════════════
-
-1. Create booking → Check status: Pending
-2. Assign tech → Check status: Approved
-3. Tech rejects → Check status: Not Completed
-4. Reassign tech → Check status: Approved
-5. Complete → Check status: Completed
-
-6. Open customer live status page
-7. Verify auto-refresh works
-8. Check technician details display
-
-═══════════════════════════════════════════════════════════════════
-  BENEFITS
-═══════════════════════════════════════════════════════════════════
-
-✅ No manual status updates
-✅ Real-time tracking for customers
-✅ Automatic capacity management
-✅ Clear workflow visibility
-✅ Professional appearance
-✅ Reduced support calls
-✅ Better customer satisfaction
-
-═══════════════════════════════════════════════════════════════════
+================================================================================
