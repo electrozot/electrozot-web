@@ -22,14 +22,34 @@
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
             $is_popular = isset($_POST['is_popular']) ? 1 : 0;
-            $query="update tms_service set s_name=?, s_description=?, s_category=?, s_subcategory=?, s_gadget_name=?, s_price=?, s_duration=?, s_status=?, is_popular=? where s_id = ?";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssdsiii', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular, $s_id);
-            $stmt->execute();
-                if($stmt)
-                {
-                    $succ = "Service Updated";
+            
+            // Check if trying to mark as popular
+            if($is_popular == 1) {
+                // Count current popular services (excluding this one)
+                $count_query = "SELECT COUNT(*) as popular_count FROM tms_service WHERE is_popular = 1 AND s_id != ?";
+                $count_stmt = $mysqli->prepare($count_query);
+                $count_stmt->bind_param('i', $s_id);
+                $count_stmt->execute();
+                $count_result = $count_stmt->get_result();
+                $count_row = $count_result->fetch_assoc();
+                
+                if($count_row['popular_count'] >= 3) {
+                    $err = "Maximum 3 services can be marked as popular. Please unmark another service first.";
+                    $is_popular = 0; // Don't mark this one as popular
                 }
+            }
+            
+            if(!isset($err)) {
+                $query="update tms_service set s_name=?, s_description=?, s_category=?, s_subcategory=?, s_gadget_name=?, s_price=?, s_duration=?, s_status=?, is_popular=? where s_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssdsiii', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular, $s_id);
+                
+                if($stmt->execute()) {
+                    $succ = "Service Updated Successfully";
+                } else {
+                    $err = "Failed to update service: " . $mysqli->error;
+                }
+            }
                 else 
                 {
                     $err = "Please Try Again Later";
@@ -102,8 +122,8 @@
                                  <textarea class="form-control" required name="s_description" rows="4"><?php echo $row->s_description;?></textarea>
                              </div>
                              <div class="form-group">
-                                 <label for="editServiceCategory">Service Category <span class="text-danger">*</span></label>
-                                 <select class="form-control" name="s_category" id="editServiceCategory" required>
+                                 <label for="editServiceCategory">Service Category <small class="text-muted">(Optional)</small></label>
+                                 <select class="form-control" name="s_category" id="editServiceCategory">
                                      <option value="">-- Select Category --</option>
                                      <option value="Basic Electrical Work" <?php echo ($row->s_category == 'Basic Electrical Work') ? 'selected' : ''; ?>>Basic Electrical Work</option>
                                      <option value="Electronic Repair" <?php echo ($row->s_category == 'Electronic Repair') ? 'selected' : ''; ?>>Electronic Repair</option>
@@ -111,13 +131,15 @@
                                      <option value="Servicing & Maintenance" <?php echo ($row->s_category == 'Servicing & Maintenance') ? 'selected' : ''; ?>>Servicing & Maintenance</option>
                                      <option value="Plumbing Work" <?php echo ($row->s_category == 'Plumbing Work') ? 'selected' : ''; ?>>Plumbing Work</option>
                                  </select>
+                                 <small class="form-text text-muted">Leave blank if not applicable</small>
                              </div>
                              <div class="form-group">
-                                 <label for="editServiceSubcategory">Service Subcategory <span class="text-danger">*</span></label>
-                                 <select class="form-control" name="s_subcategory" id="editServiceSubcategory" required>
+                                 <label for="editServiceSubcategory">Service Subcategory <small class="text-muted">(Optional)</small></label>
+                                 <select class="form-control" name="s_subcategory" id="editServiceSubcategory">
                                      <option value="">-- Select Category First --</option>
                                  </select>
                                  <input type="hidden" id="currentSubcategory" value="<?php echo isset($row->s_subcategory) ? $row->s_subcategory : ''; ?>">
+                                 <small class="form-text text-muted">Leave blank if not applicable</small>
                              </div>
                              <div class="form-group">
                                  <label for="editServiceGadget">Gadget/Device Name</label>

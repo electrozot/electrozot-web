@@ -23,10 +23,26 @@
             $s_duration=$_POST['s_duration'];
             $s_status=$_POST['s_status'];
             $is_popular = isset($_POST['is_popular']) ? 1 : 0;
-            $query="insert into tms_service (s_name, s_description, s_category, s_subcategory, s_gadget_name, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?,?,?)";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssdssi', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
-            $stmt->execute();
+            
+            // Check if trying to mark as popular
+            if($is_popular == 1) {
+                // Count current popular services
+                $count_query = "SELECT COUNT(*) as popular_count FROM tms_service WHERE is_popular = 1";
+                $count_result = $mysqli->query($count_query);
+                $count_row = $count_result->fetch_assoc();
+                
+                if($count_row['popular_count'] >= 3) {
+                    $err = "Maximum 3 services can be marked as popular. Please unmark another service first.";
+                    $is_popular = 0; // Don't mark this one as popular
+                }
+            }
+            
+            if(!isset($err)) {
+                $query="insert into tms_service (s_name, s_description, s_category, s_subcategory, s_gadget_name, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?,?,?)";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssdssi', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
+                $stmt->execute();
+            }
                 if($stmt)
                 {
                     $succ = "Service Added";

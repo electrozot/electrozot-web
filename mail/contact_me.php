@@ -1,27 +1,45 @@
- <?php
+<?php
+// Include database connection
+require_once('../admin/vendor/inc/config.php');
+
+// Create table if not exists
+$mysqli->query("CREATE TABLE IF NOT EXISTS tms_contact_messages (
+    cm_id INT AUTO_INCREMENT PRIMARY KEY,
+    cm_name VARCHAR(200) NOT NULL,
+    cm_email VARCHAR(200) NOT NULL,
+    cm_phone VARCHAR(20) NOT NULL,
+    cm_message TEXT NOT NULL,
+    cm_status VARCHAR(20) DEFAULT 'Unread',
+    cm_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
 // Check for empty fields
-if(empty($_POST['name'])      ||
-   empty($_POST['email'])     ||
-   empty($_POST['phone'])     ||
-   empty($_POST['message'])   ||
-   !filter_var($_POST['email'],FILTER_VALIDATE_EMAIL))
-   {
-   echo "No arguments Provided!";
-   return false;
-   }
-   
+if(empty($_POST['name']) ||
+   empty($_POST['email']) ||
+   empty($_POST['phone']) ||
+   empty($_POST['message']) ||
+   !filter_var($_POST['email'], FILTER_VALIDATE_EMAIL))
+{
+    echo "No arguments Provided!";
+    exit;
+}
+
 $name = strip_tags(htmlspecialchars($_POST['name']));
 $email_address = strip_tags(htmlspecialchars($_POST['email']));
 $phone = strip_tags(htmlspecialchars($_POST['phone']));
 $message = strip_tags(htmlspecialchars($_POST['message']));
-   
-// Create the email and send the message
-$to = 'martdevelopers254@gmail.com'; // Add your email address inbetween the '' replacing yourname@yourdomain.com - This is where the form will send a message to.
-$email_subject = "Website Contact Form:  $name";
-$email_body = "You have received a new message from your website contact form.\n\n"."Here are the details:\n\nName: $name\n\nEmail: $email_address\n\nPhone: $phone\n\nMessage:\n$message";
-$headers = "From: martdevelopers254@gmail.com\n"; // This is the email address the generated message will be from. We recommend using something like noreply@yourdomain.com.
-$headers .= "Reply-To: $email_address";   
-mail($to,$email_subject,$email_body,$headers);
-return true;         
+
+// Save to database
+$stmt = $mysqli->prepare("INSERT INTO tms_contact_messages (cm_name, cm_email, cm_phone, cm_message) VALUES (?, ?, ?, ?)");
+$stmt->bind_param('ssss', $name, $email_address, $phone, $message);
+
+if($stmt->execute()) {
+    echo "success";
+} else {
+    echo "Database error: " . $mysqli->error;
+}
+
+$stmt->close();
+$mysqli->close();
 ?>
  

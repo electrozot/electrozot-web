@@ -59,9 +59,14 @@
                 <div class="card mb-3">
                     <div class="card-header">
                         <i class="fas fa-comments"></i> Manage Feedbacks
-                        <a href="admin-add-feedback.php" class="btn btn-sm btn-success float-right">
-                            <i class="fas fa-plus"></i> Add New Feedback
-                        </a>
+                        <div class="float-right">
+                            <a href="admin-contact-messages.php" class="btn btn-sm btn-info mr-2">
+                                <i class="fas fa-envelope"></i> Messages
+                            </a>
+                            <a href="admin-add-feedback.php" class="btn btn-sm btn-success">
+                                <i class="fas fa-plus"></i> Add New Feedback
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <?php if(isset($succ)) { ?>

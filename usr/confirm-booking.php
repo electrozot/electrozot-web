@@ -192,7 +192,7 @@ if ($show_success) {
             text-decoration: none;
             font-size: 14px;
         }
-        .content { padding: 15px; max-width: 600px; margin: 0 auto; }
+        .content { padding: 15px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
         .service-info {
             background: white;
             border-radius: 15px;
@@ -348,6 +348,7 @@ if ($show_success) {
             
             .content {
                 padding: 30px 50px;
+                padding-bottom: 100px;
                 max-width: 100%;
             }
             
@@ -385,6 +386,7 @@ if ($show_success) {
             
             .content {
                 padding: 40px 80px;
+                padding-bottom: 100px;
             }
             
             .service-info {
@@ -403,6 +405,7 @@ if ($show_success) {
             
             .content {
                 padding: 50px 100px;
+                padding-bottom: 100px;
             }
         }
     </style>

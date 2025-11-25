@@ -1,3 +1,4 @@
+<?php include('admin/vendor/inc/config.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -165,7 +166,7 @@
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="js/jqBootstrapValidation.js"></script>
-    <script src="js/contact_me.js"></script>
+    <!-- contact_me.js removed - using inline script instead -->
 
     <style>
         /* Contact Page Specific Styles */
@@ -349,3 +350,41 @@
 </body>
 
 </html>
+
+<script
+>
+$(document).ready(function() {
+    $("#contactForm").submit(function(e) {
+        e.preventDefault();
+        
+        var name = $("#name").val();
+        var email = $("#email").val();
+        var phone = $("#phone").val();
+        var message = $("#message").val();
+        
+        if(name && email && phone && message) {
+            $("#sendMessageButton").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+            
+            $.ajax({
+                url: "mail/contact_me.php",
+                type: "POST",
+                data: {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    message: message
+                },
+                success: function(response) {
+                    $("#success").html('<div class="alert alert-success mt-3"><strong>Success!</strong> Your message has been sent. We will get back to you soon!</div>');
+                    $("#contactForm")[0].reset();
+                    $("#sendMessageButton").prop("disabled", false).html('<i class="fas fa-paper-plane"></i> Send Message');
+                },
+                error: function() {
+                    $("#success").html('<div class="alert alert-danger mt-3"><strong>Error!</strong> Something went wrong. Please try again.</div>');
+                    $("#sendMessageButton").prop("disabled", false).html('<i class="fas fa-paper-plane"></i> Send Message');
+                }
+            });
+        }
+    });
+});
+</script>

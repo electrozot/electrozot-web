@@ -1,3 +1,22 @@
+<?php
+// Load site settings for footer
+$settings = [];
+$settings_query = "SELECT setting_key, setting_value FROM tms_site_settings";
+$settings_result = $mysqli->query($settings_query);
+if($settings_result) {
+    while($row = $settings_result->fetch_assoc()) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+}
+
+// Get social media URLs with defaults
+$instagram_url = !empty($settings['instagram_url']) ? $settings['instagram_url'] : 'https://www.instagram.com/electrozot.in/';
+$facebook_url = !empty($settings['facebook_url']) ? $settings['facebook_url'] : '#';
+$twitter_url = !empty($settings['twitter_url']) ? $settings['twitter_url'] : '#';
+$whatsapp_number = !empty($settings['whatsapp_number']) ? $settings['whatsapp_number'] : '917559606925';
+$primary_phone = !empty($settings['primary_phone']) ? $settings['primary_phone'] : '7559606925';
+$primary_email = !empty($settings['primary_email']) ? $settings['primary_email'] : 'electrozot.in@gmail.com';
+?>
 <footer style="background: linear-gradient(135deg, #4a5568 0%, #5a6c7d 100%); color: white; padding: 40px 0 20px 0;">
     <div class="container">
         <div class="row justify-content-center">
@@ -10,15 +29,15 @@
                         <span style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.5;">Electrozot, Dharamshala</span>
                     </li>
                     <li style="margin-bottom: 18px;">
-                        <a href="tel:7559606925" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
+                        <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
                             <i class="fas fa-phone" style="color: #87ceeb; font-size: 1rem;"></i>
-                            <span>7559606925</span>
+                            <span><?php echo htmlspecialchars($primary_phone); ?></span>
                         </a>
                     </li>
                     <li style="margin-bottom: 8px;">
-                        <a href="mailto:electrozot.in@gmail.com" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s; word-break: break-all;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
+                        <a href="mailto:<?php echo htmlspecialchars($primary_email); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s; word-break: break-all;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
                             <i class="fas fa-envelope" style="color: #87ceeb; font-size: 1rem;"></i>
-                            <span>electrozot.in@gmail.com</span>
+                            <span><?php echo htmlspecialchars($primary_email); ?></span>
                         </a>
                     </li>
                     <li style="margin-bottom: 18px; display: flex; align-items: start; gap: 12px;">
@@ -33,13 +52,22 @@
                 <h5 style="font-weight: 600; margin-bottom: 25px; color: #87ceeb; font-size: 1.1rem;">Follow Us</h5>
                 <p style="color: rgba(255,255,255,0.75); margin-bottom: 25px; font-size: 0.95rem; line-height: 1.6;">Stay connected with us on social media</p>
                 <div style="display: flex; gap: 15px;">
-                    <a href="https://www.instagram.com/electrozot.in/" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(240, 147, 251, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(240, 147, 251, 0.2)'">
+                    <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(240, 147, 251, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(240, 147, 251, 0.2)'">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="https://wa.me/917559606925?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(37, 211, 102, 0.2)'">
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($facebook_url) && $facebook_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #4267B2 0%, #3b5998 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(66, 103, 178, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(66, 103, 178, 0.2)'">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <?php endif; ?>
+                    
+                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(37, 211, 102, 0.2)'">
                         <i class="fab fa-whatsapp"></i>
                     </a>
-                    <a href="tel:7559606925" style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(0, 212, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 212, 255, 0.2)'">
+                    <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(0, 212, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 212, 255, 0.2)'">
                         <i class="fas fa-phone"></i>
                     </a>
                 </div>

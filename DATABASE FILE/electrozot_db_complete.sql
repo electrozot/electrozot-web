@@ -53,8 +53,8 @@ CREATE TABLE `tms_admin` (
 
 -- Sample admin data
 -- Default credentials: admin@electrozot.in / admin123
-INSERT INTO tms_admin (a_id, a_name, a_email, a_pwd, a_phone) VALUES
-(4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500', '9876543210');
+INSERT INTO `tms_admin` (`a_id`, `a_name`, `a_email`, `a_pwd`, `a_photo`, `a_phone`) VALUES
+(4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500',"null" ,'9876543210');
 
 -- ----------------------------------------------------------------------------
 -- Table: tms_user
@@ -65,6 +65,8 @@ CREATE TABLE `tms_user` (
   `u_lname` varchar(200) NOT NULL,
   `u_phone` varchar(200) NOT NULL,
   `u_addr` varchar(200) NOT NULL,
+  `u_area` varchar(100) DEFAULT NULL COMMENT 'User area/locality',
+  `u_pincode` varchar(10) DEFAULT NULL COMMENT 'User pincode',
   `u_category` varchar(200) NOT NULL,
   `u_email` varchar(200) NOT NULL,
   `u_pwd` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -77,6 +79,7 @@ CREATE TABLE `tms_user` (
   `u_deleted_by` int DEFAULT NULL COMMENT 'Admin ID who deleted the user',
   `u_deletion_protected` tinyint(1) DEFAULT 1 COMMENT 'Protection flag - 1 means cannot be deleted',
   `u_registered_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When user was registered',
+  `registration_type` enum('admin','self','guest') DEFAULT 'admin' COMMENT 'How user was registered',
   PRIMARY KEY (`u_id`),
   INDEX `idx_user_deleted` (`u_is_deleted`),
   INDEX `idx_user_protected` (`u_deletion_protected`)
@@ -93,12 +96,17 @@ CREATE TABLE `tms_technician` (
   `t_id` int NOT NULL AUTO_INCREMENT,
   `t_name` varchar(200) NOT NULL,
   `t_id_no` varchar(200) NOT NULL,
+  `t_phone` varchar(20) DEFAULT NULL,
+  `t_aadhar` varchar(12) DEFAULT NULL COMMENT 'Aadhaar number for verification',
+  `t_ez_id` varchar(20) DEFAULT NULL COMMENT 'Electrozot unique ID',
+  `t_email` varchar(200) DEFAULT NULL,
+  `t_addr` varchar(500) DEFAULT NULL COMMENT 'Technician address',
+  `t_pwd` varchar(255) DEFAULT NULL COMMENT 'Technician login password',
   `t_experience` varchar(200) NOT NULL,
   `t_specialization` varchar(200) NOT NULL,
   `t_category` varchar(200) NOT NULL,
   `t_pic` varchar(200) NOT NULL,
-  `t_phone` varchar(20) DEFAULT NULL,
-  `t_email` varchar(200) DEFAULT NULL,
+  `t_service_pincode` varchar(20) DEFAULT '' COMMENT 'Service area pincode',
   `t_status` VARCHAR(20) DEFAULT 'Available' COMMENT 'Technician status: Available, Busy, Offline',
   `t_is_available` TINYINT(1) DEFAULT 1 COMMENT 'Whether technician is available (1) or not (0)',
   `t_is_guest` TINYINT(1) DEFAULT 0 COMMENT 'Whether technician is a guest (1) or permanent (0)',
@@ -108,9 +116,13 @@ CREATE TABLE `tms_technician` (
   `t_id_card_generated` tinyint(1) DEFAULT 0 COMMENT 'Whether ID card has been generated',
   `t_id_card_path` varchar(500) DEFAULT NULL COMMENT 'Path to latest ID card',
   `t_id_card_generated_at` timestamp NULL DEFAULT NULL COMMENT 'When ID card was last generated',
+  `t_registered_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'When technician was registered',
   PRIMARY KEY (`t_id`),
+  UNIQUE KEY `idx_ez_id` (`t_ez_id`),
+  UNIQUE KEY `idx_aadhar` (`t_aadhar`)now recheck the king of set a,
   INDEX `idx_category` (`t_category`),
   INDEX `idx_status` (`t_status`),
+  INDEX `idx_phone` (`t_phone`),
   FULLTEXT INDEX `idx_skills` (`t_skills`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -134,10 +146,12 @@ CREATE TABLE `tms_service` (
   `s_duration` varchar(200) NOT NULL,
   `s_status` varchar(200) NOT NULL DEFAULT 'Active',
   `s_admin_price` DECIMAL(10,2) DEFAULT NULL COMMENT 'Admin-set fixed price. If NULL, technician sets price',
+  `is_popular` tinyint(1) DEFAULT 0 COMMENT 'Whether service is marked as popular',
   `s_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`s_id`),
   INDEX `idx_category` (`s_category`),
-  INDEX `idx_status` (`s_status`)
+  INDEX `idx_status` (`s_status`),
+  INDEX `idx_popular` (`is_popular`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Sample service data
@@ -154,7 +168,7 @@ INSERT INTO `tms_service` (`s_id`, `s_name`, `s_description`, `s_category`, `s_p
 CREATE TABLE `tms_service_booking` (
   `sb_id` int NOT NULL AUTO_INCREMENT,
   `sb_user_id` int NOT NULL,
-  `sb_service_id` int NOT NULL,
+  `sb_service_id` int DEFAULT NULL COMMENT 'Service ID - NULL for custom services',
   `sb_technician_id` int DEFAULT NULL,
   `sb_service_name` VARCHAR(255) DEFAULT NULL,
   `sb_category` VARCHAR(100) DEFAULT NULL,
@@ -164,6 +178,7 @@ CREATE TABLE `tms_service_booking` (
   `sb_booking_time` time NOT NULL,
   `sb_time` time DEFAULT NULL,
   `sb_address` varchar(500) NOT NULL,
+  `sb_pincode` varchar(10) DEFAULT NULL COMMENT 'Booking location pincode',
   `sb_phone` varchar(200) NOT NULL,
   `sb_description` longtext,
   `sb_status` varchar(200) NOT NULL DEFAULT 'Pending',
@@ -171,7 +186,9 @@ CREATE TABLE `tms_service_booking` (
   `sb_final_price` DECIMAL(10,2) DEFAULT NULL COMMENT 'Final price charged for the service',
   `sb_tech_decided_price` DECIMAL(10,2) DEFAULT NULL COMMENT 'Price decided by technician (only for this booking)',
   `sb_price_set_by_tech` TINYINT(1) DEFAULT 0 COMMENT 'Whether final price was set by technician (1) or admin (0)',
+  `sb_custom_service` varchar(255) DEFAULT NULL COMMENT 'Custom service name for other services',
   `sb_rejection_reason` TEXT NULL DEFAULT NULL COMMENT 'Reason for rejection',
+  `sb_not_done_reason` TEXT NULL DEFAULT NULL COMMENT 'Reason why service was not completed',
   `sb_created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `sb_updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `sb_assigned_at` TIMESTAMP NULL DEFAULT NULL COMMENT 'When technician was assigned',
@@ -179,6 +196,7 @@ CREATE TABLE `tms_service_booking` (
   `sb_completed_at` TIMESTAMP NULL DEFAULT NULL COMMENT 'When booking was completed',
   `sb_cancelled_at` TIMESTAMP NULL DEFAULT NULL COMMENT 'When booking was cancelled',
   `sb_cancelled_by` VARCHAR(50) NULL DEFAULT NULL COMMENT 'Who cancelled: user/admin/system',
+  `sb_not_done_at` TIMESTAMP NULL DEFAULT NULL COMMENT 'When service was marked as not done',
   PRIMARY KEY (`sb_id`),
   KEY `sb_user_id` (`sb_user_id`),
   KEY `sb_service_id` (`sb_service_id`),
@@ -331,6 +349,46 @@ CREATE TABLE IF NOT EXISTS `tms_admin_notifications` (
   INDEX `idx_read` (`an_is_read`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Admin notification system for booking events';
 
+-- ----------------------------------------------------------------------------
+-- Table: tms_home_slider
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tms_home_slider` (
+  `slider_id` int NOT NULL AUTO_INCREMENT,
+  `slider_image` varchar(255) NOT NULL,
+  `slider_title` varchar(255) NOT NULL,
+  `slider_description` text,
+  `slider_order` int DEFAULT 0,
+  `slider_status` enum('Active','Inactive') DEFAULT 'Active',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`slider_id`),
+  INDEX `idx_status` (`slider_status`),
+  INDEX `idx_order` (`slider_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Home page slider/carousel images';
+
+-- Sample slider data
+INSERT INTO `tms_home_slider` (`slider_image`, `slider_title`, `slider_description`, `slider_order`, `slider_status`) VALUES
+('default-slider-1.jpg', 'Welcome to Electrozot', 'Professional electrical and maintenance services at your doorstep', 1, 'Active'),
+('default-slider-2.jpg', 'Expert Technicians', 'Certified and experienced professionals ready to serve you', 2, 'Active'),
+('default-slider-3.jpg', '24/7 Support', 'Round the clock customer support for all your service needs', 3, 'Active');
+
+-- ----------------------------------------------------------------------------
+-- Table: tms_gallery
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tms_gallery` (
+  `g_id` int NOT NULL AUTO_INCREMENT,
+  `g_title` varchar(255) NOT NULL,
+  `g_image` varchar(255) NOT NULL,
+  `g_service_id` int DEFAULT NULL,
+  `g_description` text,
+  `g_status` varchar(20) NOT NULL DEFAULT 'Active',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`g_id`),
+  KEY `g_service_id` (`g_service_id`),
+  INDEX `idx_status` (`g_status`),
+  CONSTRAINT `tms_gallery_ibfk_1` FOREIGN KEY (`g_service_id`) REFERENCES `tms_service` (`s_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Gallery images for showcasing work';
+
 -- ============================================================================
 -- VIEWS
 -- ============================================================================
@@ -370,61 +428,29 @@ FROM tms_technician;
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- Trigger: Prevent User Hard Delete
+-- Trigger: Log User Deletion (Admin can delete with password)
 -- ----------------------------------------------------------------------------
 DELIMITER $
 
 DROP TRIGGER IF EXISTS `block_user_deletion`$
 
-CREATE TRIGGER `block_user_deletion`
+CREATE TRIGGER `log_user_deletion`
 BEFORE DELETE ON `tms_user`
 FOR EACH ROW
 BEGIN
-    -- Log the deletion attempt with full details
+    -- Log the deletion with full details
     INSERT INTO tms_system_logs (log_type, log_message, log_data, created_at)
     VALUES (
-        'USER_DELETE_BLOCKED_BY_TRIGGER', 
-        CONCAT('BLOCKED: Attempted to delete user - ', OLD.u_fname, ' ', OLD.u_lname),
+        'USER_DELETED', 
+        CONCAT('User deleted by admin - ', OLD.u_fname, ' ', OLD.u_lname),
         CONCAT('User ID: ', OLD.u_id, ', Email: ', OLD.u_email, ', Phone: ', OLD.u_phone, ', Registered: ', OLD.u_registered_at),
         NOW()
     );
-    
-    -- PREVENT the delete by signaling an error
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = '❌ USER DELETION BLOCKED: Users cannot be deleted once registered. This is for data integrity and compliance.';
 END$
 
 DELIMITER ;
 
--- ----------------------------------------------------------------------------
--- Trigger: Prevent User Soft Delete
--- ----------------------------------------------------------------------------
-DELIMITER $
-
-DROP TRIGGER IF EXISTS `block_user_soft_delete`$
-
-CREATE TRIGGER `block_user_soft_delete`
-BEFORE UPDATE ON `tms_user`
-FOR EACH ROW
-BEGIN
-    -- If someone tries to set u_is_deleted = 1, block it
-    IF NEW.u_is_deleted = 1 AND OLD.u_is_deleted = 0 THEN
-        -- Log the attempt
-        INSERT INTO tms_system_logs (log_type, log_message, log_data, created_at)
-        VALUES (
-            'USER_SOFT_DELETE_BLOCKED', 
-            CONCAT('BLOCKED: Attempted to soft-delete user - ', OLD.u_fname, ' ', OLD.u_lname),
-            CONCAT('User ID: ', OLD.u_id, ', Email: ', OLD.u_email),
-            NOW()
-        );
-        
-        -- Prevent the soft delete
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = '❌ USER SOFT DELETE BLOCKED: Users cannot be marked as deleted. User data is permanently protected.';
-    END IF;
-END$
-
-DELIMITER ;
+-- Note: Soft delete trigger removed - Admin can delete users with password verification
 
 -- ----------------------------------------------------------------------------
 -- Trigger: Auto-update Booking Counter

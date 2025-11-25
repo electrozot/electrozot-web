@@ -152,6 +152,24 @@
          </div>
      </li>
 
+     <!-- Contact Messages -->
+     <li class="nav-item">
+         <a class="nav-link" href="admin-contact-messages.php">
+             <i class="fas fa-fw fa-envelope"></i>
+             <span>Messages</span>
+             <?php
+             // Get unread message count
+             $unread_query = $mysqli->query("SELECT COUNT(*) as count FROM tms_contact_messages WHERE cm_status='Unread'");
+             if($unread_query) {
+                 $unread_count = $unread_query->fetch_object()->count;
+                 if($unread_count > 0) {
+                     echo '<span class="badge badge-danger badge-counter ml-2">' . $unread_count . '</span>';
+                 }
+             }
+             ?>
+         </a>
+     </li>
+
      <!-- Notifications -->
      <li class="nav-item">
          <a class="nav-link" href="admin-notifications.php">

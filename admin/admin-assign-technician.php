@@ -350,44 +350,38 @@
                              
                              <fieldset id="formFieldset" <?php echo ($is_assigned && !$is_rejected) ? 'disabled' : ''; ?>>
                              
-                             <!-- SERVICE SELECTION DROPDOWN -->
+                             <!-- SERVICE DISPLAY (READ-ONLY) -->
                              <div class="form-group">
-                                 <label for="sb_service_id">Select Service *</label>
-                                 <select class="form-control" name="sb_service_id" id="sb_service_id" required onchange="updateTechnicianList()">
-                                     <option value="">-- Select Service --</option>
-                                     <?php
-                                     // Get all active services
-                                     $all_services_query = "SELECT s_id, s_name, s_category, s_subcategory 
-                                                           FROM tms_service 
-                                                           WHERE s_status = 'Active' 
-                                                           ORDER BY s_category, s_subcategory, s_name";
-                                     $all_services_result = $mysqli->query($all_services_query);
-                                     
-                                     $services_by_category = [];
-                                     while($svc = $all_services_result->fetch_assoc()) {
-                                         $cat = $svc['s_category'];
-                                         if(!isset($services_by_category[$cat])) {
-                                             $services_by_category[$cat] = [];
-                                         }
-                                         $services_by_category[$cat][] = $svc;
-                                     }
-                                     
-                                     // Display services grouped by category
-                                     foreach($services_by_category as $category => $services) {
-                                         echo '<optgroup label="'.htmlspecialchars($category).'">';
-                                         foreach($services as $svc) {
-                                             $selected = ($svc['s_id'] == $booking_data->sb_service_id) ? 'selected' : '';
-                                             echo '<option value="'.$svc['s_id'].'" '.$selected.'>';
-                                             echo htmlspecialchars($svc['s_name']);
-                                             echo '</option>';
-                                         }
-                                         echo '</optgroup>';
-                                     }
-                                     ?>
-                                 </select>
+                                 <label>Service</label>
+                                 <div class="form-control" style="background-color: #f8f9fa; cursor: not-allowed; display: flex; align-items: center; justify-content: space-between;">
+                                     <div>
+                                         <i class="fas fa-tools text-primary"></i> 
+                                         <strong>
+                                             <?php 
+                                             // Display service name from service table or custom service name
+                                             if(!empty($booking_data->s_name)) {
+                                                 echo htmlspecialchars($booking_data->s_name);
+                                             } elseif(!empty($booking_data->sb_service_name)) {
+                                                 echo htmlspecialchars($booking_data->sb_service_name);
+                                             } elseif(!empty($booking_data->sb_custom_service)) {
+                                                 echo htmlspecialchars($booking_data->sb_custom_service) . ' (Custom)';
+                                             } else {
+                                                 echo 'Service Not Specified';
+                                             }
+                                             ?>
+                                         </strong>
+                                     </div>
+                                     <?php if(!empty($booking_data->s_category) || !empty($booking_data->sb_category)): ?>
+                                         <span class="badge badge-info">
+                                             <?php echo htmlspecialchars($booking_data->s_category ?? $booking_data->sb_category); ?>
+                                         </span>
+                                     <?php endif; ?>
+                                 </div>
                                  <small class="form-text text-muted">
-                                     <i class="fas fa-info-circle"></i> Change the service if needed. Technician list will update automatically.
+                                     <i class="fas fa-lock"></i> Service cannot be changed during technician assignment.
                                  </small>
+                                 <!-- Hidden field to pass service ID -->
+                                 <input type="hidden" name="sb_service_id" value="<?php echo htmlspecialchars($booking_data->sb_service_id ?? ''); ?>">
                              </div>
                              
                              <div class="form-group">

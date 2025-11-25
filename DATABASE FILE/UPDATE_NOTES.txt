@@ -1,0 +1,49 @@
+================================================================================
+ELECTROZOT DATABASE - UPDATE NOTES
+================================================================================
+
+CHANGES MADE TO electrozot_db_complete.sql:
+-------------------------------------------
+
+1. ADDED MISSING TABLES:
+   - tms_home_slider (for homepage carousel/slider)
+   - tms_gallery (for gallery page images)
+
+2. ADDED MISSING COLUMNS TO tms_user:
+   - u_area VARCHAR(100) - User area/locality
+   - u_pincode VARCHAR(10) - User pincode
+   - registration_type ENUM('admin','self','guest') - How user was registered
+
+3. ADDED MISSING COLUMNS TO tms_service:
+   - is_popular TINYINT(1) - Whether service is marked as popular
+
+4. ADDED MISSING COLUMNS TO tms_service_booking:
+   - sb_pincode VARCHAR(10) - Booking location pincode
+   - sb_custom_service VARCHAR(255) - Custom service name for other services
+   - Modified sb_service_id to allow NULL (for custom services)
+
+================================================================================
+HOW TO UPDATE YOUR DATABASE:
+================================================================================
+
+OPTION 1 - For Existing Database (Recommended):
+   1. Open browser: http://localhost/ez/electrozot/update-database.php
+   2. This will add missing tables/columns without losing data
+   3. Delete update-database.php after running
+
+OPTION 2 - Fresh Installation:
+   1. Drop existing database (WARNING: This deletes all data!)
+   2. Import: DATABASE FILE/electrozot_db_complete.sql
+   3. This creates everything from scratch
+
+================================================================================
+WHAT WAS FIXED:
+================================================================================
+
+✓ Fixed: Table 'tms_home_slider' doesn't exist error
+✓ Fixed: Missing gallery table for gallery.php
+✓ Fixed: Missing columns for guest booking system
+✓ Fixed: Missing columns for popular services feature
+✓ All tables and columns are now in ONE consolidated SQL file
+
+================================================================================

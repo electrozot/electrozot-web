@@ -837,18 +837,15 @@
                 </div>
                 <div class="row">
                     <?php
-                    // Add is_popular column if it doesn't exist
-                    $mysqli->query("ALTER TABLE tms_service ADD COLUMN IF NOT EXISTS is_popular TINYINT(1) DEFAULT 0");
-                    
-                    // First try to get popular services
-                    $ret="SELECT * FROM tms_service WHERE s_status = 'Active' AND is_popular = 1 ORDER BY s_id DESC LIMIT 3";
+                    // Get popular services (marked by admin)
+                    $ret="SELECT DISTINCT s.* FROM tms_service s WHERE s.s_status = 'Active' AND s.is_popular = 1 ORDER BY s.s_id DESC LIMIT 3";
                     $stmt= $mysqli->prepare($ret);
                     $stmt->execute();
                     $res=$stmt->get_result();
                     
-                    // If no popular services, get latest 3 active services
+                    // If no popular services marked, show latest 3 active services
                     if($res->num_rows == 0) {
-                        $ret="SELECT * FROM tms_service WHERE s_status = 'Active' ORDER BY s_id DESC LIMIT 3";
+                        $ret="SELECT DISTINCT s.* FROM tms_service s WHERE s.s_status = 'Active' ORDER BY s.s_id DESC LIMIT 3";
                         $stmt= $mysqli->prepare($ret);
                         $stmt->execute();
                         $res=$stmt->get_result();

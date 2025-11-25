@@ -68,6 +68,7 @@
                      $total_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service")->fetch_object()->count;
                      $active_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service WHERE s_status='Active'")->fetch_object()->count;
                      $inactive_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service WHERE s_status='Inactive'")->fetch_object()->count;
+                     $popular_services = $mysqli->query("SELECT COUNT(*) as count FROM tms_service WHERE is_popular=1")->fetch_object()->count;
                      $total_bookings = $mysqli->query("SELECT COUNT(*) as count FROM tms_service_booking")->fetch_object()->count;
                      ?>
                      <div class="col-md-3">
@@ -110,6 +111,26 @@
                                      </div>
                                      <div class="col-auto">
                                          <i class="fas fa-pause-circle fa-2x text-gray-300"></i>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="col-md-3">
+                         <div class="card border-left-warning shadow h-100 py-2" style="border-left: 4px solid #ffc107 !important;">
+                             <div class="card-body">
+                                 <div class="row no-gutters align-items-center">
+                                     <div class="col mr-2">
+                                         <div class="text-xs font-weight-bold text-uppercase mb-1" style="color: #ffc107;">Popular Services (Max 3)</div>
+                                         <div class="h5 mb-0 font-weight-bold" style="color: <?php echo $popular_services >= 3 ? '#dc3545' : '#28a745'; ?>">
+                                             <?php echo $popular_services; ?> / 3
+                                         </div>
+                                         <?php if($popular_services >= 3): ?>
+                                         <small class="text-danger"><i class="fas fa-exclamation-triangle"></i> Limit reached</small>
+                                         <?php endif; ?>
+                                     </div>
+                                     <div class="col-auto">
+                                         <i class="fas fa-star fa-2x text-gray-300"></i>
                                      </div>
                                  </div>
                              </div>
