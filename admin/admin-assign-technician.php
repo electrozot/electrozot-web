@@ -395,29 +395,25 @@
                                      // Get the CURRENT selected service from booking
                                      $current_service_id = $booking_data->sb_service_id;
                                      
-                                     // Fetch service details for current service
-                                     $service_query = "SELECT s_id, s_name, s_category FROM tms_service WHERE s_id = ?";
-                                     $svc_stmt = $mysqli->prepare($service_query);
-                                     $svc_stmt->bind_param('i', $current_service_id);
-                                     $svc_stmt->execute();
-                                     $current_service = $svc_stmt->get_result()->fetch_assoc();
+                                     // SKILL-BASED MATCHING: Only show technicians who can perform this service
+                                     // Query gets technicians who have this service in their skills
+                                     $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
+                                                                  (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                  t.t_phone, t.t_email
+                                                           FROM tms_technician t
+                                                           INNER JOIN tms_technician_skills ts ON t.t_id = ts.ts_technician_id
+                                                           WHERE ts.ts_service_id = ?
+                                                           AND t.t_status != 'Inactive'
+                                                           AND t.t_current_bookings < t.t_booking_limit
+                                                           ORDER BY 
+                                                               t.t_current_bookings ASC,
+                                                               t.t_experience DESC,
+                                                               t.t_name ASC";
                                      
-                                     // SPECIAL CASE: For Custom Service / Other - Show ALL available technicians
-                                     $is_custom_service_booking = ($current_service && (stripos($current_service['s_name'], 'Custom Service') !== false || 
-                                                                   stripos($current_service['s_name'], 'Other') !== false));
-                                     
-                                     if($is_custom_service_booking) {
-                                         // For custom services, show ALL technicians with available capacity
-                                         $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
-                                                                    (t.t_booking_limit - t.t_current_bookings) as available_slots,
-                                                                    t.t_skills
-                                                             FROM tms_technician t
-                                                             WHERE t.t_status != 'Inactive'
-                                                             ORDER BY 
-                                                                 CASE WHEN t.t_current_bookings < t.t_booking_limit THEN 0 ELSE 1 END,
-                                                                 t.t_experience DESC,
-                                                                 t.t_name ASC";
-                                         $all_techs_result = $mysqli->query($all_techs_query);
+                                     $all_techs_stmt = $mysqli->prepare($skill_match_query);
+                                     $all_techs_stmt->bind_param('i', $current_service_id);
+                                     $all_techs_stmt->execute();
+                                     $all_techs_result = $all_techs_stmt->get_result();
                                          $available_techs = [];
                                          
                                          while($tech = $all_techs_result->fetch_assoc()) {

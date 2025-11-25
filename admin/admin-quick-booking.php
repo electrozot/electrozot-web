@@ -275,14 +275,24 @@ if(isset($_SESSION['error'])) {
                                         <label>Service Type <span class="text-danger">*</span></label>
                                         <select name="service_subcategory" id="quickBookSubcategory" class="form-control" required>
                                             <option value="">-- Select Service Type --</option>
-                                            <option value="Wiring & Fixtures">Wiring & Fixtures</option>
-                                            <option value="Safety & Power">Safety & Power</option>
-                                            <option value="Major Appliances">Major Appliances</option>
-                                            <option value="Small Gadgets">Small Gadgets</option>
-                                            <option value="Appliance Setup">Appliance Setup</option>
-                                            <option value="Tech & Security">Tech & Security</option>
-                                            <option value="Routine Care">Routine Care</option>
-                                            <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                            <optgroup label="⚡ ELECTRICAL">
+                                                <option value="Wiring & Fixtures">Wiring & Fixtures</option>
+                                                <option value="Safety & Power">Safety & Power</option>
+                                            </optgroup>
+                                            <optgroup label="🔧 REPAIR">
+                                                <option value="Major Appliances">Major Appliances</option>
+                                                <option value="Other Gadgets">Other Gadgets</option>
+                                            </optgroup>
+                                            <optgroup label="🔌 INSTALL">
+                                                <option value="Appliance Setup">Appliance Setup</option>
+                                                <option value="Tech & Security">Tech & Security</option>
+                                            </optgroup>
+                                            <optgroup label="🛠️ MAINTAIN">
+                                                <option value="Routine Care">Routine Care</option>
+                                            </optgroup>
+                                            <optgroup label="💧 PLUMBING">
+                                                <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                     

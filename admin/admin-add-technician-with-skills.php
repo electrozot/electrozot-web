@@ -5,79 +5,21 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
-// All 43 services organized by category
-$all_services = [
-    'Basic Electrical Work - Wiring & Fixtures' => [
-        'Home Wiring - New Installation',
-        'Home Wiring - Repair',
-        'Switch/Socket - Installation',
-        'Switch/Socket - Replacement',
-        'Light Fixture - Installation',
-        'Festive Lighting - Setup'
-    ],
-    'Basic Electrical Work - Safety & Power' => [
-        'Circuit Breaker - Repair',
-        'Inverter - Installation',
-        'UPS - Installation',
-        'Voltage Stabilizer - Installation',
-        'Grounding System - Installation',
-        'Electrical Fault - Repair'
-    ],
-    'Electronic Repair - Major Appliances' => [
-        'AC (Split) - Repair',
-        'AC (Window) - Repair',
-        'Refrigerator - Repair',
-        'Refrigerator - Gas Charging',
-        'Washing Machine - Repair',
-        'Microwave Oven - Repair',
-        'Geyser/Water Heater - Repair'
-    ],
-    'Electronic Repair - Other Gadgets' => [
-        'Ceiling Fan - Repair',
-        'Table Fan - Repair',
-        'LED TV - Repair',
-        'Smart TV - Repair',
-        'Electric Iron - Repair',
-        'Induction Cooktop - Repair',
-        'Air Cooler - Repair',
-        'Water Filter/Purifier - Repair'
-    ],
-    'Installation & Setup - Appliance Setup' => [
-        'TV/DTH - Installation',
-        'Electric Chimney - Installation',
-        'Ceiling Fan - Installation',
-        'Washing Machine - Installation',
-        'Air Cooler - Installation',
-        'Water Filter/Purifier - Installation',
-        'Geyser/Water Heater - Installation'
-    ],
-    'Installation & Setup - Tech & Security' => [
-        'CCTV Camera - Installation (Single)',
-        'CCTV Camera - Installation (4 Cameras)',
-        'Wi-Fi Router - Setup',
-        'Smart Switch - Installation',
-        'Smart Light - Installation'
-    ],
-    'Servicing & Maintenance - Routine Care' => [
-        'AC - Wet Servicing',
-        'AC - Dry Servicing',
-        'Washing Machine - Cleaning',
-        'Geyser - Descaling',
-        'Water Filter - Cartridge Replacement',
-        'Water Tank - Cleaning (Manual)',
-        'Water Tank - Cleaning (Motorized)'
-    ],
-    'Plumbing Work - Fixtures & Taps' => [
-        'Tap/Faucet - Installation',
-        'Tap/Faucet - Repair',
-        'Shower - Installation',
-        'Shower - Repair',
-        'Washbasin - Installation',
-        'Kitchen Sink - Installation',
-        'Toilet/Commode - Installation',
-        'Flush Tank - Installation'
-    ]
-];
+// Load all services from database grouped by subcategory
+$services_query = "SELECT s_id, s_name, s_subcategory FROM tms_service ORDER BY s_subcategory, s_name";
+$services_result = $mysqli->query($services_query);
+
+$all_services = [];
+while ($row = $services_result->fetch_assoc()) {
+    $subcategory = $row['s_subcategory'];
+    if (!isset($all_services[$subcategory])) {
+        $all_services[$subcategory] = [];
+    }
+    $all_services[$subcategory][] = [
+        'id' => $row['s_id'],
+        'name' => $row['s_name']
+    ];
+}
 
 // Handle form submission
 if (isset($_POST['add_technician'])) {
@@ -90,21 +32,39 @@ if (isset($_POST['add_technician'])) {
     $t_status = $_POST['t_status'];
     $t_booking_limit = intval($_POST['t_booking_limit']);
     
-    // Get selected skills
-    $selected_skills = isset($_POST['skills']) ? $_POST['skills'] : [];
-    $t_skills = implode(',', $selected_skills);
+    // Get selected skill IDs
+    $selected_skill_ids = isset($_POST['skills']) ? $_POST['skills'] : [];
     
-    $query = "INSERT INTO tms_technician (t_name, t_id_no, t_phone, t_email, t_experience, t_category, t_status, t_booking_limit, t_current_bookings, t_skills) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?)";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("sssssssss", $t_name, $t_id_no, $t_phone, $t_email, $t_experience, $t_category, $t_status, $t_booking_limit, $t_skills);
-    
-    if ($stmt->execute()) {
-        $_SESSION['success'] = "Technician added successfully with " . count($selected_skills) . " skills!";
-        header("Location: admin-manage-technician.php");
-        exit;
+    if (empty($selected_skill_ids)) {
+        $_SESSION['error'] = "Please select at least one skill!";
     } else {
-        $_SESSION['error'] = "Error: " . $stmt->error;
+        // Insert technician
+        $query = "INSERT INTO tms_technician (t_name, t_id_no, t_phone, t_email, t_experience, t_category, t_status, t_booking_limit, t_current_bookings) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param("sssssssi", $t_name, $t_id_no, $t_phone, $t_email, $t_experience, $t_category, $t_status, $t_booking_limit);
+        
+        if ($stmt->execute()) {
+            $technician_id = $mysqli->insert_id;
+            
+            // Insert skills into tms_technician_skills table
+            $skill_insert = "INSERT INTO tms_technician_skills (technician_id, service_id) VALUES (?, ?)";
+            $skill_stmt = $mysqli->prepare($skill_insert);
+            
+            $success_count = 0;
+            foreach ($selected_skill_ids as $service_id) {
+                $skill_stmt->bind_param("ii", $technician_id, $service_id);
+                if ($skill_stmt->execute()) {
+                    $success_count++;
+                }
+            }
+            
+            $_SESSION['success'] = "Technician added successfully with " . $success_count . " skills!";
+            header("Location: admin-manage-technician.php");
+            exit;
+        } else {
+            $_SESSION['error'] = "Error: " . $stmt->error;
+        }
     }
 }
 ?>
@@ -198,10 +158,10 @@ if (isset($_POST['add_technician'])) {
                 <h4><i class="fas fa-tools"></i> Select Skills (Tick all services this technician can handle)</h4>
                 <p class="text-muted">Select at least one skill. Technician will only be shown for bookings matching these skills.</p>
                 
-                <?php foreach ($all_services as $category => $services): ?>
+                <?php foreach ($all_services as $subcategory => $services): ?>
                     <div class="category-header">
-                        <?php echo htmlspecialchars($category); ?> (<?php echo count($services); ?> services)
-                        <button type="button" class="select-all-btn" onclick="selectCategory('<?php echo htmlspecialchars($category); ?>')">
+                        <?php echo htmlspecialchars($subcategory); ?> (<?php echo count($services); ?> services)
+                        <button type="button" class="select-all-btn" onclick="selectCategory(this)">
                             Select All
                         </button>
                     </div>
@@ -209,11 +169,11 @@ if (isset($_POST['add_technician'])) {
                         <?php foreach ($services as $service): ?>
                             <div class="col-md-6 col-lg-4">
                                 <div class="skill-checkbox">
-                                    <input type="checkbox" name="skills[]" value="<?php echo htmlspecialchars($service); ?>" 
-                                           id="skill_<?php echo md5($service); ?>" class="form-check-input" 
+                                    <input type="checkbox" name="skills[]" value="<?php echo $service['id']; ?>" 
+                                           id="skill_<?php echo $service['id']; ?>" class="form-check-input" 
                                            onchange="updateCount()">
-                                    <label for="skill_<?php echo md5($service); ?>" class="form-check-label">
-                                        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($service); ?>
+                                    <label for="skill_<?php echo $service['id']; ?>" class="form-check-label">
+                                        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($service['name']); ?>
                                     </label>
                                 </div>
                             </div>
@@ -240,8 +200,8 @@ if (isset($_POST['add_technician'])) {
             document.getElementById('skillCount').innerHTML = '<i class="fas fa-check-double"></i> ' + checked + ' Skills Selected';
         }
 
-        function selectCategory(category) {
-            const categoryDiv = event.target.closest('.category-header').nextElementSibling;
+        function selectCategory(button) {
+            const categoryDiv = button.closest('.category-header').nextElementSibling;
             const checkboxes = categoryDiv.querySelectorAll('input[type="checkbox"]');
             const allChecked = Array.from(checkboxes).every(cb => cb.checked);
             

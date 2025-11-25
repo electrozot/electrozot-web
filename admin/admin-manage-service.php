@@ -191,28 +191,49 @@
                        (SELECT COUNT(*) FROM tms_service_booking WHERE sb_service_id = s.s_id) as booking_count,
                        (SELECT COUNT(*) FROM tms_service_booking WHERE sb_service_id = s.s_id AND sb_status='Completed') as completed_count
                        FROM tms_service s 
-                       ORDER BY s.s_id DESC"; 
+                       ORDER BY 
+                           FIELD(s.s_category, 'BASIC ELECTRICAL WORK', 'ELECTRONIC REPAIR', 'INSTALLATION & SETUP', 'SERVICING & MAINTENANCE', 'PLUMBING WORK'),
+                           FIELD(s.s_subcategory, 'Wiring & Fixtures', 'Safety & Power', 'Major Appliances', 'Other Gadgets', 'Appliance Setup', 'Tech & Security', 'Routine Care', 'Fixtures & Taps'),
+                           s.s_name ASC"; 
                  $stmt= $mysqli->prepare($ret);
                  $stmt->execute();
                  $res=$stmt->get_result();
                  
-                 // Group services by category
-                 $services_by_category = [];
+                 // Group services by category and subcategory
+                 $services_grouped = [];
                  while($row=$res->fetch_object()) {
-                     $services_by_category[$row->s_category][] = $row;
+                     $category = $row->s_category;
+                     $subcategory = !empty($row->s_subcategory) ? $row->s_subcategory : 'Other';
+                     $services_grouped[$category][$subcategory][] = $row;
                  }
                  ?>
 
-                 <?php foreach($services_by_category as $category => $services): ?>
+                 <?php foreach($services_grouped as $category => $subcategories): ?>
                  <div class="card mb-4 category-section" data-category="<?php echo $category; ?>">
-                     <div class="card-header bg-primary text-white">
-                         <h5 class="mb-0">
-                             <i class="fas fa-wrench"></i> <?php echo $category; ?> Services
-                             <span class="badge badge-light ml-2"><?php echo count($services); ?> services</span>
-                         </h5>
+                     <div class="card-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                         <h4 class="mb-0">
+                             <i class="fas fa-wrench"></i> <?php echo $category; ?>
+                             <?php 
+                             $total_in_category = 0;
+                             foreach($subcategories as $services) {
+                                 $total_in_category += count($services);
+                             }
+                             ?>
+                             <span class="badge badge-light ml-2"><?php echo $total_in_category; ?> services</span>
+                         </h4>
                      </div>
-                     <div class="card-body">
-                         <div class="row">
+                     <div class="card-body p-0">
+                         <?php foreach($subcategories as $subcategory => $services): ?>
+                         <!-- Subcategory Section -->
+                         <div class="subcategory-section">
+                             <div class="subcategory-header">
+                                 <h5 class="mb-0">
+                                     <i class="fas fa-angle-double-right text-primary"></i> 
+                                     <strong><?php echo htmlspecialchars($subcategory); ?></strong>
+                                     <span class="badge badge-primary ml-2"><?php echo count($services); ?> services</span>
+                                 </h5>
+                             </div>
+                             <div class="row p-3">
                              <?php foreach($services as $service): ?>
                              <div class="col-md-6 mb-3 service-card" data-status="<?php echo $service->s_status; ?>">
                                  <div class="card h-100 shadow-sm">
@@ -283,7 +304,9 @@
                                  </div>
                              </div>
                              <?php endforeach; ?>
+                             </div>
                          </div>
+                         <?php endforeach; ?>
                      </div>
                  </div>
                  <?php endforeach; ?>
@@ -349,6 +372,122 @@
      <!-- Demo scripts for this page-->
      <script src="vendor/js/demo/datatables-demo.js"></script>
      <script src="vendor/js/swal.js"></script>
+     
+     <!-- Custom styling for subcategories -->
+     <style>
+         /* Category Card Styling */
+         .category-section {
+             border: none;
+             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+             overflow: hidden;
+         }
+         
+         .category-section .card-header {
+             border: none;
+             padding: 20px 25px;
+         }
+         
+         .category-section .card-header h4 {
+             font-size: 22px;
+             font-weight: 700;
+             margin: 0;
+             text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+         }
+         
+         /* Subcategory Section Styling */
+         .subcategory-section {
+             border-bottom: 2px solid #e5e7eb;
+             transition: all 0.3s ease;
+         }
+         
+         .subcategory-section:last-child {
+             border-bottom: none;
+         }
+         
+         .subcategory-section:hover {
+             background: #f9fafb;
+         }
+         
+         /* Subcategory Header - Enhanced Highlighting */
+         .subcategory-header {
+             background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+             padding: 18px 25px;
+             border-left: 6px solid #667eea;
+             margin: 0;
+             cursor: pointer;
+             transition: all 0.3s ease;
+             box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+         }
+         
+         .subcategory-header:hover {
+             background: linear-gradient(135deg, #e6f0ff 0%, #dce7ff 100%);
+             border-left-color: #5568d3;
+             box-shadow: inset 0 2px 5px rgba(0,0,0,0.08);
+             transform: translateX(3px);
+         }
+         
+         .subcategory-header h5 {
+             color: #1e3a8a;
+             font-size: 17px;
+             font-weight: 700;
+             margin: 0;
+             display: flex;
+             align-items: center;
+             gap: 10px;
+         }
+         
+         .subcategory-header h5 i {
+             color: #667eea;
+             font-size: 18px;
+             transition: transform 0.3s ease;
+         }
+         
+         .subcategory-header:hover h5 i {
+             transform: translateX(5px);
+         }
+         
+         .subcategory-header .badge {
+             background: #667eea;
+             color: white;
+             font-size: 13px;
+             font-weight: 600;
+             padding: 6px 12px;
+             border-radius: 20px;
+             box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+         }
+         
+         /* Service Cards Container */
+         .subcategory-section .row {
+             background: white;
+         }
+         
+         /* Service Card Enhancements */
+         .service-card .card {
+             border: 2px solid #e5e7eb;
+             transition: all 0.3s ease;
+         }
+         
+         .service-card .card:hover {
+             border-color: #667eea;
+             box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15) !important;
+             transform: translateY(-3px);
+         }
+         
+         /* Responsive Design */
+         @media (max-width: 768px) {
+             .subcategory-header {
+                 padding: 15px 20px;
+             }
+             
+             .subcategory-header h5 {
+                 font-size: 15px;
+             }
+             
+             .category-section .card-header h4 {
+                 font-size: 18px;
+             }
+         }
+     </style>
      
      <!-- Custom filtering script -->
      <script>

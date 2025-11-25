@@ -373,6 +373,22 @@ INSERT INTO `tms_home_slider` (`slider_image`, `slider_title`, `slider_descripti
 ('default-slider-3.jpg', '24/7 Support', 'Round the clock customer support for all your service needs', 3, 'Active');
 
 -- ----------------------------------------------------------------------------
+-- Table: tms_technician_skills
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tms_technician_skills` (
+  `ts_id` int NOT NULL AUTO_INCREMENT,
+  `ts_technician_id` int NOT NULL,
+  `ts_service_id` int NOT NULL,
+  `ts_added_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ts_id`),
+  UNIQUE KEY `unique_tech_service` (`ts_technician_id`,`ts_service_id`),
+  KEY `idx_technician` (`ts_technician_id`),
+  KEY `idx_service` (`ts_service_id`),
+  CONSTRAINT `tms_technician_skills_ibfk_1` FOREIGN KEY (`ts_technician_id`) REFERENCES `tms_technician` (`t_id`) ON DELETE CASCADE,
+  CONSTRAINT `tms_technician_skills_ibfk_2` FOREIGN KEY (`ts_service_id`) REFERENCES `tms_service` (`s_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Maps which services each technician can perform';
+
+-- ----------------------------------------------------------------------------
 -- Table: tms_gallery
 -- ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tms_gallery` (
