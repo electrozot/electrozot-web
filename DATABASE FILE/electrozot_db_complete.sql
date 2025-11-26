@@ -54,7 +54,7 @@ CREATE TABLE `tms_admin` (
 -- Sample admin data
 -- Default credentials: admin@electrozot.in / admin123
 INSERT INTO `tms_admin` (`a_id`, `a_name`, `a_email`, `a_pwd`, `a_photo`, `a_phone`) VALUES
-(4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500',"null" ,'9876543210');
+(4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500',null ,9876543210);
 
 -- ----------------------------------------------------------------------------
 -- Table: tms_user
