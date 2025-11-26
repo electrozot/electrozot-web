@@ -60,18 +60,50 @@ if(isset($_POST['approve_guest'])){
                 header("Location: admin-guest-technicians.php");
                 exit();
             } else {
+            // Add payment QR column if not exists
+            $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_payment_qr VARCHAR(255) DEFAULT NULL");
+            
+            // Handle payment QR upload
+            $t_payment_qr = '';
+            if(!empty($_FILES["t_payment_qr"]["name"])) {
+                $qr_dir = "../uploads/technician_qr/";
+                if(!file_exists($qr_dir)) {
+                    mkdir($qr_dir, 0777, true);
+                }
+                $qr_extension = pathinfo($_FILES["t_payment_qr"]["name"], PATHINFO_EXTENSION);
+                $qr_filename = "tech_qr_" . time() . "_" . rand(1000, 9999) . "." . $qr_extension;
+                if(move_uploaded_file($_FILES["t_payment_qr"]["tmp_name"], $qr_dir . $qr_filename)) {
+                    $t_payment_qr = "uploads/technician_qr/" . $qr_filename;
+                }
+            }
+            
             // Approve guest technician
-            $approve_query = "UPDATE tms_technician SET 
-                            t_ez_id = ?,
-                            t_id_no = ?,
-                            t_category = ?,
-                            t_specialization = ?,
-                            t_booking_limit = ?,
-                            t_status = 'Available',
-                            t_is_guest = 0
-                            WHERE t_id = ?";
-            $approve_stmt = $mysqli->prepare($approve_query);
-            $approve_stmt->bind_param('ssssii', $t_ez_id, $t_ez_id, $t_category, $t_specialization, $t_booking_limit, $guest_id);
+            if(!empty($t_payment_qr)) {
+                $approve_query = "UPDATE tms_technician SET 
+                                t_ez_id = ?,
+                                t_id_no = ?,
+                                t_category = ?,
+                                t_specialization = ?,
+                                t_booking_limit = ?,
+                                t_payment_qr = ?,
+                                t_status = 'Available',
+                                t_is_guest = 0
+                                WHERE t_id = ?";
+                $approve_stmt = $mysqli->prepare($approve_query);
+                $approve_stmt->bind_param('ssssssi', $t_ez_id, $t_ez_id, $t_category, $t_specialization, $t_booking_limit, $t_payment_qr, $guest_id);
+            } else {
+                $approve_query = "UPDATE tms_technician SET 
+                                t_ez_id = ?,
+                                t_id_no = ?,
+                                t_category = ?,
+                                t_specialization = ?,
+                                t_booking_limit = ?,
+                                t_status = 'Available',
+                                t_is_guest = 0
+                                WHERE t_id = ?";
+                $approve_stmt = $mysqli->prepare($approve_query);
+                $approve_stmt->bind_param('ssssii', $t_ez_id, $t_ez_id, $t_category, $t_specialization, $t_booking_limit, $guest_id);
+            }
             
             if($approve_stmt->execute()){
                 // Insert technician skills if provided
@@ -220,7 +252,7 @@ $guest_result = $mysqli->query($guest_query);
                                                 <hr>
                                                 
                                                 <!-- Approval Form -->
-                                                <form method="POST" class="border p-3 bg-light">
+                                                <form method="POST" enctype="multipart/form-data" class="border p-3 bg-light">
                                                     <input type="hidden" name="guest_id" value="<?php echo $guest->t_id; ?>">
                                                     <h6 class="text-success"><i class="fas fa-check-circle"></i> Approve & Convert to EZ Technician</h6>
                                                     
@@ -462,6 +494,16 @@ $guest_result = $mysqli->query($guest_query);
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="row mt-3">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <label><i class="fas fa-qrcode"></i> Payment QR Code (Optional)</label>
+                                                                <input type="file" class="form-control-file" name="t_payment_qr" accept="image/*">
+                                                                <small class="text-muted">Upload technician's personal payment QR for direct payments</small>
                                                             </div>
                                                         </div>
                                                     </div>

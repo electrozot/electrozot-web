@@ -5,21 +5,66 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
-// Load all services from database grouped by subcategory
-$services_query = "SELECT s_id, s_name, s_subcategory FROM tms_service ORDER BY s_subcategory, s_name";
+// Load all services from database
+$services_query = "SELECT s_id, s_name, s_category, s_subcategory FROM tms_service ORDER BY s_name";
 $services_result = $mysqli->query($services_query);
 
-$all_services = [];
+// Define EXACT order matching booking form and add service form
+$category_order = [
+    'BASIC ELECTRICAL WORK',
+    'ELECTRONIC REPAIR',
+    'INSTALLATION & SETUP',
+    'SERVICING & MAINTENANCE',
+    'PLUMBING WORK'
+];
+
+$subcategory_order = [
+    'Wiring & Fixtures',
+    'Safety & Power',
+    'Major Appliances',
+    'Other Gadgets',
+    'Appliance Setup',
+    'Tech & Security',
+    'Routine Care',
+    'Fixtures & Taps'
+];
+
+$all_services_temp = [];
+$categories = [];
+$subcategories = [];
+
 while ($row = $services_result->fetch_assoc()) {
     $subcategory = $row['s_subcategory'];
-    if (!isset($all_services[$subcategory])) {
-        $all_services[$subcategory] = [];
+    $category = $row['s_category'];
+    
+    if (!in_array($category, $categories)) {
+        $categories[] = $category;
     }
-    $all_services[$subcategory][] = [
+    if (!in_array($subcategory, $subcategories)) {
+        $subcategories[] = $subcategory;
+    }
+    
+    if (!isset($all_services_temp[$subcategory])) {
+        $all_services_temp[$subcategory] = [];
+    }
+    $all_services_temp[$subcategory][] = [
         'id' => $row['s_id'],
-        'name' => $row['s_name']
+        'name' => $row['s_name'],
+        'category' => $category
     ];
 }
+
+// Reorder services to match exact order
+$all_services = [];
+foreach ($subcategory_order as $subcat) {
+    if (isset($all_services_temp[$subcat])) {
+        $all_services[$subcat] = $all_services_temp[$subcat];
+    }
+}
+
+// Reorder categories
+$categories = $category_order;
+$subcategories = $subcategory_order;
 
 // Handle form submission
 if (isset($_POST['add_tech'])) {
@@ -52,14 +97,31 @@ if (isset($_POST['add_tech'])) {
         exit();
     }
     
+    // Add QR code column if not exists
+    $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_payment_qr VARCHAR(255) DEFAULT NULL");
+    
     // Insert technician
     $t_pic = isset($_FILES["t_pic"]["name"]) ? $_FILES["t_pic"]["name"] : '';
     if(!empty($t_pic)) {
         move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
     }
     
-    $query = "INSERT INTO tms_technician (t_name, t_phone, t_aadhar, t_ez_id, t_id_no, t_pwd, t_category, t_specialization, t_experience, t_service_pincode, t_pic, t_status, t_booking_limit, t_current_bookings) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
+    // Handle payment QR upload
+    $t_payment_qr = '';
+    if(!empty($_FILES["t_payment_qr"]["name"])) {
+        $qr_dir = "../uploads/technician_qr/";
+        if(!file_exists($qr_dir)) {
+            mkdir($qr_dir, 0777, true);
+        }
+        $qr_extension = pathinfo($_FILES["t_payment_qr"]["name"], PATHINFO_EXTENSION);
+        $qr_filename = "tech_qr_" . time() . "_" . rand(1000, 9999) . "." . $qr_extension;
+        if(move_uploaded_file($_FILES["t_payment_qr"]["tmp_name"], $qr_dir . $qr_filename)) {
+            $t_payment_qr = "uploads/technician_qr/" . $qr_filename;
+        }
+    }
+    
+    $query = "INSERT INTO tms_technician (t_name, t_phone, t_aadhar, t_ez_id, t_id_no, t_pwd, t_category, t_specialization, t_experience, t_service_pincode, t_pic, t_payment_qr, t_status, t_booking_limit, t_current_bookings) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
     $stmt = $mysqli->prepare($query);
     
     if(!$stmt) {
@@ -68,7 +130,7 @@ if (isset($_POST['add_tech'])) {
         exit();
     }
     
-    $stmt->bind_param("ssssssssssssi", $t_name, $t_phone, $t_aadhar, $t_ez_id, $t_id_no, $t_pwd, $t_category, $t_specialization, $t_experience, $t_service_pincode, $t_pic, $t_status, $t_booking_limit);
+    $stmt->bind_param("sssssssssssssi", $t_name, $t_phone, $t_aadhar, $t_ez_id, $t_id_no, $t_pwd, $t_category, $t_specialization, $t_experience, $t_service_pincode, $t_pic, $t_payment_qr, $t_status, $t_booking_limit);
     
     if ($stmt->execute()) {
         $technician_id = $mysqli->insert_id;
@@ -121,11 +183,15 @@ if (isset($_POST['add_tech'])) {
         
         if(!empty($skill_errors)) {
             $_SESSION['error'] = "Technician added but some skills failed: " . implode(", ", $skill_errors);
+            header("Location: admin-manage-technician.php");
+            exit;
         } else {
-            $_SESSION['success'] = "Technician added successfully with " . $success_count . " skills!";
+            // Redirect with success modal
+            $success_message = "Technician added successfully with " . $success_count . " skills!";
+            $redirect_url = "admin-manage-technician.php";
+            header("Location: admin-add-technician.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+            exit;
         }
-        header("Location: admin-manage-technician.php");
-        exit;
     } else {
         $_SESSION['error'] = "Error: " . $stmt->error;
         header("Location: admin-add-technician.php");
@@ -248,11 +314,9 @@ unset($_SESSION['error']);
                                         <label>Primary Service Category <span class="text-danger">*</span></label>
                                         <select class="form-control" name="t_category" required>
                                             <option value="">Select Category...</option>
-                                            <option value="BASIC ELECTRICAL WORK">BASIC ELECTRICAL WORK</option>
-                                            <option value="ELECTRONIC REPAIR">ELECTRONIC REPAIR</option>
-                                            <option value="INSTALLATION & SETUP">INSTALLATION & SETUP</option>
-                                            <option value="SERVICING & MAINTENANCE">SERVICING & MAINTENANCE</option>
-                                            <option value="PLUMBING WORK">PLUMBING WORK</option>
+                                            <?php foreach($categories as $cat): ?>
+                                            <option value="<?php echo htmlspecialchars($cat); ?>"><?php echo htmlspecialchars($cat); ?></option>
+                                            <?php endforeach; ?>
                                         </select>
                                     </div>
                                 </div>
@@ -260,7 +324,7 @@ unset($_SESSION['error']);
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label>Specialization</label>
-                                        <input type="text" class="form-control" name="t_specialization" placeholder="e.g., AC Repair">
+                                        <input type="text" class="form-control" name="t_specialization" placeholder="e.g., AC Repair, Plumbing">
                                     </div>
                                 </div>
                                 
@@ -291,10 +355,19 @@ unset($_SESSION['error']);
                                     </div>
                                 </div>
                                 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group">
-                                        <label>Profile Picture</label>
+                                        <label><i class="fas fa-user-circle"></i> Profile Picture</label>
                                         <input type="file" class="form-control-file" name="t_pic" accept="image/*">
+                                        <small class="text-muted">Upload technician photo</small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-qrcode"></i> Payment QR Code (Optional)</label>
+                                        <input type="file" class="form-control-file" name="t_payment_qr" accept="image/*">
+                                        <small class="text-muted">Upload technician's personal payment QR</small>
                                     </div>
                                 </div>
                             </div>
@@ -491,5 +564,8 @@ unset($_SESSION['error']);
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="js/sb-admin.min.js"></script>
+    
+    <!-- Success Modal -->
+    <?php include("vendor/inc/success-modal.php");?>
 </body>
 </html>

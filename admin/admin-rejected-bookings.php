@@ -87,7 +87,11 @@ if(isset($_POST['reassign'])) {
         // Commit transaction
         $mysqli->commit();
         
-        $_SESSION['success'] = "Booking #$booking_id reassigned to " . $tech['t_name'] . " successfully! Old technician is now available.";
+        // Redirect with success modal
+        $success_message = "Booking #$booking_id reassigned to " . $tech['t_name'] . " successfully!";
+        $redirect_url = "admin-rejected-bookings.php";
+        header("Location: admin-rejected-bookings.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+        exit();
     } catch(Exception $e) {
         // Rollback on error
         $mysqli->rollback();
@@ -297,5 +301,8 @@ $rejected_count = $count_result->fetch_object()->count;
             $('#reassignModal').modal('show');
         }
     </script>
+    
+    <!-- Success Modal -->
+    <?php include("vendor/inc/success-modal.php");?>
 </body>
 </html>

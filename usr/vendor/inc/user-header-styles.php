@@ -86,13 +86,15 @@
     .bottom-nav {
         position: fixed;
         bottom: 8px;
-        left: 8px;
-        right: 8px;
-        background: white;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 16px);
+        max-width: 450px;
+        background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+        box-shadow: 0 3px 20px rgba(6, 182, 212, 0.35), 0 1px 5px rgba(0,0,0,0.1);
         display: flex;
         justify-content: space-around;
-        padding: 6px 0;
+        padding: 4px 6px;
         z-index: 1000;
         border-radius: 20px;
     }
@@ -101,22 +103,44 @@
         flex: 1;
         text-align: center;
         text-decoration: none;
-        color: #999;
-        transition: all 0.3s;
-        padding: 4px;
+        color: rgba(255, 255, 255, 0.75);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        padding: 4px 2px;
+        position: relative;
+        border-radius: 12px;
     }
     
-    .nav-item.active { color: #667eea; }
+    .nav-item:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .nav-item.active { 
+        color: white;
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    }
     
     .nav-item i {
-        font-size: 20px;
+        font-size: 16px;
         display: block;
-        margin-bottom: 3px;
+        margin-bottom: 1px;
+    }
+    
+    .nav-item.active i {
+        animation: bounce 0.4s ease;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
     }
     
     .nav-item span {
-        font-size: 10px;
+        font-size: 8px;
         font-weight: 600;
+        letter-spacing: 0.2px;
     }
     
     /* Tablet & Desktop Responsive */
@@ -152,12 +176,22 @@
         }
         
         .bottom-nav {
-            max-width: 1200px;
-            left: 50%;
-            transform: translateX(-50%);
+            max-width: 400px;
             bottom: 10px;
-            margin: 0 10px;
-            border-radius: 20px;
+            padding: 5px 8px;
+        }
+        
+        .nav-item {
+            padding: 5px 4px;
+        }
+        
+        .nav-item i {
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+        
+        .nav-item span {
+            font-size: 9px;
         }
     }
 </style>

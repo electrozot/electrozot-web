@@ -1,4 +1,10 @@
  <style>
+ /* Reduce Sidebar Width Only */
+ .sidebar {
+     width: 200px !important;
+     overflow-x: hidden !important;
+ }
+ 
  /* Dropdown menu styling for better visibility */
  .navbar-nav .dropdown-menu {
      background-color: #4a5568 !important;
@@ -10,11 +16,17 @@
  
  .navbar-nav .dropdown-item {
      color: #ffffff !important;
-     padding: 0.85rem 1.5rem !important;
-     font-size: 0.95rem !important;
+     padding: 0.65rem 0.5rem !important;
+     font-size: 0.9rem !important;
      font-weight: 500 !important;
      border-radius: 4px !important;
-     margin: 2px 8px !important;
+     margin-left: 8px !important;
+     margin-right: 8px !important;
+     margin-top: 2px !important;
+     margin-bottom: 2px !important;
+     display: flex !important;
+     align-items: center !important;
+     max-width: calc(100% - 16px) !important;
  }
  
  .navbar-nav .dropdown-item:hover {
@@ -25,10 +37,17 @@
  }
  
  .navbar-nav .dropdown-item i {
-     margin-right: 8px;
-     width: 20px;
-     text-align: center;
+     margin-right: 6px !important;
+     width: 16px !important;
+     text-align: center !important;
      color: #a0aec0;
+     flex-shrink: 0 !important;
+ }
+ 
+ .navbar-nav .dropdown-item span {
+     white-space: nowrap !important;
+     overflow: hidden !important;
+     text-overflow: ellipsis !important;
  }
  
  .navbar-nav .dropdown-item:hover i {
@@ -50,16 +69,36 @@
      margin: 0.5rem 0.5rem !important;
  }
  
- /* Main sidebar items styling for contrast */
+ /* Main sidebar items styling - Equal spacing on both sides */
  .navbar-nav .nav-link {
      background-color: rgba(255,255,255,0.1);
-     margin: 3px 10px;
+     margin-left: 10px !important;
+     margin-right: 10px !important;
+     margin-top: 3px !important;
+     margin-bottom: 3px !important;
+     padding: 0.75rem 0.6rem 0.75rem 0.6rem !important;
      border-radius: 8px;
      transition: all 0.3s ease;
+     display: flex !important;
+     align-items: center !important;
+     max-width: calc(100% - 20px) !important;
  }
  
  .navbar-nav .nav-link:hover {
      background-color: rgba(255,255,255,0.2);
+ }
+ 
+ .navbar-nav .nav-link i {
+     width: 18px !important;
+     margin-right: 6px !important;
+     text-align: center !important;
+     flex-shrink: 0 !important;
+ }
+ 
+ .navbar-nav .nav-link span {
+     white-space: nowrap !important;
+     overflow: hidden !important;
+     text-overflow: ellipsis !important;
  }
  </style>
  
@@ -194,6 +233,8 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="settingsDropdown">
              <a class="dropdown-item" href="admin-site-settings.php"><i class="fas fa-address-book"></i> Site Contact Info</a>
+             <div class="dropdown-divider"></div>
+             <a class="dropdown-item" href="admin-payment-settings.php"><i class="fas fa-qrcode"></i> Payment QR</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-generate-id-card.php"><i class="fas fa-id-card"></i> Generate ID Card</a>
              <div class="dropdown-divider"></div>

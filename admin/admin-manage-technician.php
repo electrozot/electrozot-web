@@ -499,10 +499,9 @@
          50% { transform: scale(1.05); opacity: 0.9; }
      }
      </style>
- </body>
-
- </html>
-
+     
+     <!-- Success Modal -->
+     <?php include("vendor/inc/success-modal.php");?>
  </body>
 
  </html>

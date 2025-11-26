@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success Modal Test</title>
+    <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 50px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .test-btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        .test-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            border-left: 4px solid #2196f3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎉 Success Modal Test Page</h1>
+        <p>Click the buttons below to test the success modal with different scenarios:</p>
+        
+        <button class="test-btn" onclick="testModal1()">
+            <i class="fas fa-user-plus"></i> Test: Technician Assigned
+        </button>
+        
+        <button class="test-btn" onclick="testModal2()">
+            <i class="fas fa-times-circle"></i> Test: Booking Cancelled
+        </button>
+        
+        <button class="test-btn" onclick="testModal3()">
+            <i class="fas fa-check-circle"></i> Test: Technician Added
+        </button>
+        
+        <button class="test-btn" onclick="testModal4()">
+            <i class="fas fa-sync-alt"></i> Test: Booking Reassigned
+        </button>
+        
+        <div class="info">
+            <strong>Note:</strong> The modal will show for 3 seconds and then redirect to this page. 
+            In production, it will redirect to the specified page.
+        </div>
+    </div>
+
+    <!-- Success Modal Component -->
+    <style>
+    .success-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .success-modal-overlay.show {
+        display: flex;
+    }
+
+    .success-modal-box {
+        background: white;
+        border-radius: 20px;
+        padding: 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.4s ease;
+        position: relative;
+    }
+
+    .success-checkmark {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: scaleIn 0.5s ease;
+    }
+
+    .success-checkmark i {
+        font-size: 50px;
+        color: white;
+        animation: checkPop 0.6s ease 0.3s both;
+    }
+
+    .success-modal-title {
+        font-size: 28px;
+        font-weight: 900;
+        color: #10b981;
+        margin-bottom: 15px;
+    }
+
+    .success-modal-message {
+        font-size: 16px;
+        color: #64748b;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .success-modal-redirect {
+        font-size: 14px;
+        color: #94a3b8;
+        font-weight: 600;
+    }
+
+    .success-modal-redirect .countdown {
+        color: #10b981;
+        font-weight: 900;
+        font-size: 18px;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes scaleIn {
+        from {
+            transform: scale(0);
+        }
+        to {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes checkPop {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    </style>
+
+    <div id="successModal" class="success-modal-overlay">
+        <div class="success-modal-box">
+            <div class="success-checkmark">
+                <i class="fas fa-check"></i>
+            </div>
+            <h2 class="success-modal-title">Success!</h2>
+            <p class="success-modal-message" id="successMessage">Operation completed successfully</p>
+            <p class="success-modal-redirect">
+                Redirecting in <span class="countdown" id="countdown">3</span> seconds...
+            </p>
+        </div>
+    </div>
+
+    <script>
+    function showSuccessModal(message, redirectUrl, delay = 3000) {
+        const modal = document.getElementById('successModal');
+        const messageEl = document.getElementById('successMessage');
+        const countdownEl = document.getElementById('countdown');
+        
+        // Set message
+        messageEl.textContent = message;
+        
+        // Show modal
+        modal.classList.add('show');
+        
+        // Countdown
+        let seconds = Math.ceil(delay / 1000);
+        countdownEl.textContent = seconds;
+        
+        const countdownInterval = setInterval(() => {
+            seconds--;
+            countdownEl.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+        
+        // Redirect after delay
+        setTimeout(() => {
+            window.location.href = redirectUrl;
+        }, delay);
+    }
+
+    // Test functions
+    function testModal1() {
+        showSuccessModal(
+            "Technician assigned successfully to Booking #12345",
+            "test-success-modal.html"
+        );
+    }
+
+    function testModal2() {
+        showSuccessModal(
+            "Booking #67890 has been cancelled successfully!",
+            "test-success-modal.html"
+        );
+    }
+
+    function testModal3() {
+        showSuccessModal(
+            "Technician added successfully with 8 skills!",
+            "test-success-modal.html"
+        );
+    }
+
+    function testModal4() {
+        showSuccessModal(
+            "Booking #54321 reassigned to John Doe successfully!",
+            "test-success-modal.html"
+        );
+    }
+
+    // Auto-trigger if success parameter is in URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get('success');
+        const message = urlParams.get('message');
+        const redirect = urlParams.get('redirect');
+        
+        if (success === '1' && message && redirect) {
+            showSuccessModal(decodeURIComponent(message), decodeURIComponent(redirect));
+        }
+    });
+    </script>
+</body>
+</html>

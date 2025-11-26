@@ -118,34 +118,129 @@ if(!empty($display_pincode)) {
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            padding: 20px 15px;
+            padding-top: 80px;
+            padding-bottom: 20px;
             position: relative;
             overflow-x: hidden;
         }
         
-        body::before {
-            content: '';
+
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            padding: 8px 20px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+            height: 70px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        
+        .logo-image {
+            width: 55px;
+            height: 55px;
+            background: transparent;
+            border-radius: 8px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .notif-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .notif-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
         }
         
         .profile-container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
+            padding: 15px;
             position: relative;
             z-index: 1;
-            animation: fadeInUp 0.6s ease-out;
         }
         
         @keyframes fadeInUp {
@@ -159,47 +254,14 @@ if(!empty($display_pincode)) {
             }
         }
         
-        .back-btn {
-            background: rgba(255, 255, 255, 0.95);
-            color: #667eea;
-            padding: 12px 30px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .back-btn:hover {
-            background: white;
-            text-decoration: none;
-            color: #764ba2;
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
-        }
-        
-        .back-btn i {
-            transition: transform 0.3s;
-        }
-        
-        .back-btn:hover i {
-            transform: translateX(-5px);
-        }
+
         
         .profile-card {
             background: white;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             overflow: hidden;
-            margin-bottom: 30px;
-            animation: slideIn 0.8s ease-out 0.2s both;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
         }
         
         @keyframes slideIn {
@@ -214,8 +276,8 @@ if(!empty($display_pincode)) {
         }
         
         .profile-header {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            padding: 50px 40px;
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            padding: 30px 25px;
             color: white;
             position: relative;
             overflow: hidden;
@@ -256,69 +318,43 @@ if(!empty($display_pincode)) {
         
         .service-pincode-badge {
             background: rgba(255,255,255,0.2);
-            padding: 15px 30px;
-            border-radius: 50px;
-            display: inline-block;
-            margin-bottom: 25px;
-            backdrop-filter: blur(15px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: block;
+            margin-bottom: 10px;
+            backdrop-filter: blur(10px);
             border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            }
-            50% {
-                box-shadow: 0 8px 35px rgba(0,0,0,0.15);
-            }
+            font-size: 0.85rem;
+            font-weight: 600;
         }
         
         .service-pincode-badge:hover {
-            transform: scale(1.05);
             background: rgba(255,255,255,0.25);
         }
         
-        .service-pincode-badge h5 {
-            margin: 0;
-            font-weight: 800;
-            font-size: 1.2rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .service-pincode-badge .badge {
-            animation: bounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-3px);
-            }
+        .service-pincode-badge i {
+            margin-right: 5px;
         }
         
         .profile-main {
             display: flex;
-            align-items: center;
-            gap: 30px;
+            align-items: flex-start;
+            gap: 25px;
             position: relative;
             z-index: 2;
         }
         
         .profile-photo {
-            width: 160px;
-            height: 160px;
-            border-radius: 25px;
-            border: 6px solid white;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             object-fit: cover;
             background: white;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: photoZoom 0.8s ease-out 0.4s both;
+            transition: all 0.3s;
         }
         
         @keyframes photoZoom {
@@ -338,19 +374,18 @@ if(!empty($display_pincode)) {
         }
         
         .profile-photo-placeholder {
-            width: 160px;
-            height: 160px;
-            border-radius: 25px;
-            border: 6px solid white;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             background: linear-gradient(135deg, #667eea, #764ba2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 4.5rem;
+            font-size: 3rem;
             color: white;
-            transition: all 0.4s;
-            animation: photoZoom 0.8s ease-out 0.4s both;
+            transition: all 0.3s;
         }
         
         .profile-photo-placeholder:hover {
@@ -371,13 +406,15 @@ if(!empty($display_pincode)) {
             }
         }
         
+        .profile-info {
+            flex: 1;
+        }
+        
         .profile-info h2 {
-            font-size: 2.8rem;
+            font-size: 1.8rem;
             font-weight: 900;
-            margin-bottom: 15px;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: slideInRight 0.8s ease-out 0.6s both;
-            letter-spacing: -1px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         
         @keyframes slideInRight {
@@ -392,97 +429,74 @@ if(!empty($display_pincode)) {
         }
         
         .tech-id-badge {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.2);
             color: white;
-            padding: 10px 25px;
-            border-radius: 50px;
-            font-weight: 900;
-            display: inline-block;
-            margin-bottom: 20px;
-            font-size: 1.15rem;
-            border: 2px solid rgba(255,255,255,0.4);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             backdrop-filter: blur(10px);
-            animation: slideInRight 0.8s ease-out 0.7s both;
             transition: all 0.3s;
         }
         
         .tech-id-badge:hover {
-            transform: scale(1.05);
-            background: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.25);
         }
         
-        .contact-info {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
+        .tech-id-badge i {
+            margin-right: 5px;
         }
         
         .contact-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: rgba(255,255,255,0.2);
-            padding: 12px 25px;
-            border-radius: 50px;
-            backdrop-filter: blur(15px);
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
             border: 2px solid rgba(255,255,255,0.3);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeIn 0.8s ease-out 0.8s both;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
         
         .contact-item:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.3);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.25);
         }
         
         .contact-item i {
-            font-size: 1.3rem;
-            animation: iconPulse 2s ease-in-out infinite;
-        }
-        
-        @keyframes iconPulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
+            font-size: 1rem;
         }
         
         .profile-actions {
-            padding: 35px 40px;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px 25px;
+            background: #f8f9fa;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            border-top: 3px solid #e2e8f0;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            border-top: 2px solid #e2e8f0;
         }
         
         .action-btn {
-            padding: 18px 35px;
-            border-radius: 50px;
+            padding: 10px 20px;
+            border-radius: 25px;
             font-weight: 700;
             text-decoration: none;
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             cursor: pointer;
-            font-size: 1.05rem;
+            font-size: 0.9rem;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
         
         .action-btn::before {
@@ -573,19 +587,18 @@ if(!empty($display_pincode)) {
         }
         
         .profile-details {
-            padding: 45px;
-            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+            padding: 25px;
+            background: white;
         }
         
         .detail-row {
             display: flex;
-            padding: 25px;
-            margin-bottom: 15px;
-            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
             background: white;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: slideInLeft 0.6s ease-out both;
         }
         
         .detail-row:nth-child(1) { animation-delay: 0.1s; }
@@ -614,17 +627,17 @@ if(!empty($display_pincode)) {
         .detail-label {
             font-weight: 700;
             color: #555;
-            width: 220px;
+            width: 180px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.05rem;
+            gap: 10px;
+            font-size: 0.9rem;
         }
         
         .detail-label i {
             color: #667eea;
-            width: 30px;
-            font-size: 1.3rem;
+            width: 25px;
+            font-size: 1.1rem;
             transition: transform 0.3s;
         }
         
@@ -636,22 +649,19 @@ if(!empty($display_pincode)) {
             color: #2d3748;
             flex: 1;
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 0.9rem;
         }
         
         .stats-section {
             background: white;
-            border-radius: 30px;
-            padding: 50px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            animation: slideIn 0.8s ease-out 0.4s both;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         
         .stats-header {
             text-align: center;
-            margin-bottom: 40px;
-            animation: fadeInDown 0.8s ease-out 0.6s both;
+            margin-bottom: 20px;
         }
         
         @keyframes fadeInDown {
@@ -666,40 +676,35 @@ if(!empty($display_pincode)) {
         }
         
         .stats-header h3 {
-            font-size: 2.3rem;
+            font-size: 1.5rem;
             font-weight: 900;
             color: #2d3748;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 10px;
         }
         
         .stats-header p {
             color: #718096;
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             font-weight: 600;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
         
         .stat-card {
             background: linear-gradient(135deg, #f85959ff 0%, #fc9484ff 100%);
-            padding: 40px 30px;
-            border-radius: 25px;
+            padding: 20px 15px;
+            border-radius: 15px;
             color: white;
             text-align: center;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            animation: scaleIn 0.6s ease-out both;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
         }
         
         .stat-card:nth-child(1) { animation-delay: 0.8s; }
@@ -730,15 +735,8 @@ if(!empty($display_pincode)) {
         }
         
         .stat-card:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
-        
-        .stat-card:hover::before {
-            top: -50px;
-            right: -50px;
-            width: 250px;
-            height: 250px;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
         .stat-card.stat-orders {
@@ -746,14 +744,13 @@ if(!empty($display_pincode)) {
         }
         
         .stat-card.stat-earnings {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
         }
         
         .stat-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 10px;
             opacity: 0.95;
-            animation: iconBounce 2s ease-in-out infinite;
         }
         
         @keyframes iconBounce {
@@ -766,13 +763,12 @@ if(!empty($display_pincode)) {
         }
         
         .stat-value {
-            font-size: 3.5rem;
+            font-size: 2rem;
             font-weight: 900;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             position: relative;
             z-index: 2;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: countUp 1s ease-out;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         
         @keyframes countUp {
@@ -787,13 +783,13 @@ if(!empty($display_pincode)) {
         }
         
         .stat-label {
-            font-size: 1.2rem;
+            font-size: 0.85rem;
             font-weight: 700;
             opacity: 0.95;
             position: relative;
             z-index: 2;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
         
         @media (max-width: 768px) {
@@ -834,23 +830,30 @@ if(!empty($display_pincode)) {
     </style>
 </head>
 <body>
-    <div class="profile-container">
-        <a href="dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
+    <!-- Header -->
+    <div class="header">
+        <a href="dashboard.php" class="logo-section">
+            <div class="logo-image">
+                <img src="../vendor/EZlogonew.png" alt="EZ">
+            </div>
+            <div class="brand-info">
+                <h1 class="brand-title">Electrozot</h1>
+                <p class="brand-subtitle">We Make Perfect</p>
+            </div>
         </a>
+        
+        <div class="header-actions">
+            <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
+                <i class="fas fa-bell"></i>
+            </button>
+        </div>
+    </div>
 
+    <div class="profile-container">
         <!-- Profile Card -->
         <div class="profile-card">
             <!-- Header Section -->
             <div class="profile-header">
-                <div class="service-pincode-badge">
-                    <h5>
-                        <i class="fas fa-map-marker-alt"></i> 
-                        Service Area Pincode: <?php echo $display_pincode ? $display_pincode : 'Not Set'; ?> 
-                        <span class="badge badge-light ml-2"><?php echo $services_in_pincode; ?> Services</span>
-                    </h5>
-                </div>
-                
                 <div class="profile-main">
                     <div>
                         <?php if(!empty($t_pic)): ?>
@@ -864,25 +867,30 @@ if(!empty($display_pincode)) {
                     
                     <div class="profile-info">
                         <h2><?php echo htmlspecialchars($t_name); ?></h2>
-                        <div class="tech-id-badge">
-                            Technician ID: <?php echo htmlspecialchars($t_id_no); ?>
+                        
+                        <div class="service-pincode-badge">
+                            <i class="fas fa-map-marker-alt"></i> 
+                            Service Area: <?php echo $display_pincode ? $display_pincode : 'Not Set'; ?> 
+                            <span class="badge badge-light ml-1"><?php echo $services_in_pincode; ?> Services</span>
                         </div>
                         
-                        <div class="contact-info">
-                            <?php if(!empty($t_phone)): ?>
-                                <div class="contact-item">
-                                    <i class="fas fa-phone"></i>
-                                    <span><?php echo htmlspecialchars($t_phone); ?></span>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if(!empty($t_email)): ?>
-                                <div class="contact-item">
-                                    <i class="fas fa-envelope"></i>
-                                    <span><?php echo htmlspecialchars($t_email); ?></span>
-                                </div>
-                            <?php endif; ?>
+                        <div class="tech-id-badge">
+                            <i class="fas fa-id-card"></i> Technician ID: <?php echo htmlspecialchars($t_id_no); ?>
                         </div>
+                        
+                        <?php if(!empty($t_phone)): ?>
+                            <div class="contact-item">
+                                <i class="fas fa-phone"></i>
+                                <span><?php echo htmlspecialchars($t_phone); ?></span>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if(!empty($t_email)): ?>
+                            <div class="contact-item">
+                                <i class="fas fa-envelope"></i>
+                                <span><?php echo htmlspecialchars($t_email); ?></span>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

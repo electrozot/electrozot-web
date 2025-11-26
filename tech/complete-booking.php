@@ -60,6 +60,41 @@ if($booking->sb_status == 'Completed' || $booking->sb_status == 'Not Done'){
     exit();
 }
 
+// Ensure payment collection table exists
+$mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+    pc_booking_id INT NOT NULL,
+    pc_amount DECIMAL(10,2) NOT NULL,
+    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+    pc_collected_by INT NOT NULL,
+    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+    INDEX(pc_booking_id),
+    INDEX(pc_collected_by)
+)");
+
+// PAYMENT VERIFICATION - Check if payment has been collected and get details
+$payment_check = $mysqli->prepare("SELECT * FROM tms_payment_collection WHERE pc_booking_id = ?");
+$payment_check->bind_param('i', $sb_id);
+$payment_check->execute();
+$payment_result = $payment_check->get_result();
+$payment_collected = $payment_result->num_rows > 0;
+$payment_data = $payment_collected ? $payment_result->fetch_object() : null;
+
+// If payment not collected and trying to mark as done, redirect to payment collection
+if(!$payment_collected && $action == 'done'){
+    $_SESSION['error'] = "Please collect payment first before completing the service.";
+    header('Location: collect-payment.php?id=' . $sb_id);
+    exit();
+}
+
+// If payment already collected, cannot mark as "Not Done"
+if($payment_collected && $action == 'not-done'){
+    $_SESSION['error'] = "Cannot mark as 'Not Done' after payment has been collected. Please contact admin.";
+    header('Location: dashboard.php');
+    exit();
+}
+
 $success = '';
 $error = '';
 
@@ -68,10 +103,15 @@ $debug_mode = isset($_GET['debug']);
 
 // Handle Mark as Done
 if(isset($_POST['mark_done'])){
-    $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
+    // Use payment amount if available, otherwise use posted amount
+    if($payment_collected && $payment_data) {
+        $bill_amount = $payment_data->pc_amount;
+    } else {
+        $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
+    }
     
-    // Validate inputs (skip validation if admin has set fixed price)
-    if($bill_amount <= 0 && !$admin_price_set){
+    // Validate inputs (skip validation if payment already collected or admin has set fixed price)
+    if($bill_amount <= 0 && !$admin_price_set && !$payment_collected){
         $error = 'Please enter a valid bill amount greater than 0';
     }
     elseif(!isset($_FILES['service_image']) || $_FILES['service_image']['error'] == 4){
@@ -133,14 +173,22 @@ if(isset($_POST['mark_done'])){
                     $free_tech = "UPDATE tms_technician 
                                  SET t_status = 'Available', 
                                      t_is_available = 1, 
-                                     t_current_booking_id = NULL 
+                                     t_current_bookings = 0 
                                  WHERE t_id = ?";
                     $free_stmt = $mysqli->prepare($free_tech);
                     $free_stmt->bind_param('i', $t_id);
                     $free_stmt->execute();
                     
-                    $_SESSION['success'] = "Service completed successfully!";
-                    header('Location: dashboard.php');
+                    // Store completion details for success modal
+                    $_SESSION['completion_success'] = true;
+                    $_SESSION['completion_booking_id'] = $sb_id;
+                    $_SESSION['completion_customer'] = $booking->u_fname . ' ' . $booking->u_lname;
+                    $_SESSION['completion_service'] = $booking->s_name;
+                    $_SESSION['completion_amount'] = $bill_amount;
+                    $_SESSION['completion_payment_method'] = $payment_data ? $payment_data->pc_method : 'N/A';
+                    
+                    // Redirect to success page
+                    header('Location: complete-booking.php?success=1');
                     exit();
                 } else {
                     $error = 'Failed to update booking status. Please try again.';
@@ -184,7 +232,6 @@ if(isset($_POST['mark_not_done'])){
                              WHEN t_current_bookings - 1 < t_booking_limit THEN 1 
                              ELSE 0 
                          END,
-                         t_current_booking_id = NULL,
                          t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                          WHERE t_id = ?";
             $free_stmt = $mysqli->prepare($free_tech);
@@ -301,36 +348,52 @@ if(isset($_POST['mark_not_done'])){
         
         .card {
             background: white;
-            border-radius: 20px;
-            padding: 30px;
+            border-radius: 25px;
+            padding: 35px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             margin-bottom: 20px;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .card h3 {
             color: #667eea;
             font-weight: 900;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-size: 2rem;
             display: flex;
             align-items: center;
             gap: 12px;
+            text-align: center;
+            justify-content: center;
         }
         
         .booking-info {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
             border: 2px solid #e0e7ff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
         }
         
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e7ff;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e7ff;
         }
         
         .info-row:last-child {
@@ -342,12 +405,13 @@ if(isset($_POST['mark_not_done'])){
         .info-row label {
             font-weight: 700;
             color: #667eea;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
         
         .info-row span {
-            font-weight: 700;
+            font-weight: 800;
             color: #1e293b;
+            font-size: 1.05rem;
         }
         
         .form-group {
@@ -422,19 +486,27 @@ if(isset($_POST['mark_not_done'])){
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 15px;
+            padding: 18px;
             border-radius: 50px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(-1px);
         }
         
         .btn-not-done {
@@ -482,6 +554,138 @@ if(isset($_POST['mark_not_done'])){
     </style>
 </head>
 <body>
+    <!-- Success Modal -->
+    <?php if(isset($_GET['success']) && isset($_SESSION['completion_success'])): ?>
+    <div id="successModal" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    ">
+        <div style="
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease;
+        ">
+            <div style="
+                width: 100px;
+                height: 100px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 25px;
+                animation: scaleIn 0.6s ease;
+            ">
+                <i class="fas fa-check" style="font-size: 3.5rem; color: white;"></i>
+            </div>
+            
+            <h2 style="color: #10b981; font-weight: 900; margin-bottom: 15px;">
+                Service Completed!
+            </h2>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Booking ID:</strong>
+                    <span style="color: #1e293b; font-weight: 700;">#<?php echo $_SESSION['completion_booking_id']; ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Customer:</strong>
+                    <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($_SESSION['completion_customer']); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Service:</strong>
+                    <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($_SESSION['completion_service']); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Amount:</strong>
+                    <span style="color: #10b981; font-weight: 900; font-size: 1.2rem;">₹<?php echo number_format($_SESSION['completion_amount'], 2); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <strong style="color: #64748b;">Payment Method:</strong>
+                    <span style="color: #1e293b; font-weight: 700;">
+                        <?php 
+                        $method = $_SESSION['completion_payment_method'];
+                        if($method == 'QR') {
+                            echo '<span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Company QR</span>';
+                        } elseif($method == 'TechQR') {
+                            echo '<span style="background: #f59e0b; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Tech QR</span>';
+                        } else {
+                            echo '<span style="background: #10b981; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Cash</span>';
+                        }
+                        ?>
+                    </span>
+                </div>
+            </div>
+            
+            <p style="color: #64748b; font-size: 0.95rem; margin-top: 15px;">
+                <i class="fas fa-info-circle"></i> Redirecting to dashboard...
+            </p>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+    
+    <script>
+        // Auto redirect after 2 seconds
+        setTimeout(function() {
+            window.location.href = 'dashboard.php';
+        }, 2000);
+    </script>
+    <?php 
+    // Clear session variables
+    unset($_SESSION['completion_success']);
+    unset($_SESSION['completion_booking_id']);
+    unset($_SESSION['completion_customer']);
+    unset($_SESSION['completion_service']);
+    unset($_SESSION['completion_amount']);
+    unset($_SESSION['completion_payment_method']);
+    ?>
+    <?php endif; ?>
+    
     <div class="container">
         <a href="dashboard.php" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -546,23 +750,51 @@ if(isset($_POST['mark_not_done'])){
                     <img id="bill_preview" class="preview-image" alt="Bill Preview">
                 </div>
                 
-                <!-- Bill Amount -->
-                <?php if(!$admin_price_set): ?>
-                <div class="form-group">
-                    <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
-                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
-                </div>
-                <?php else: ?>
-                <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
-                <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
-                        <div>
-                            <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
-                            <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                <!-- Bill Amount - Show payment collected amount -->
+                <?php if($payment_collected && $payment_data): ?>
+                    <input type="hidden" name="bill_amount" value="<?php echo $payment_data->pc_amount; ?>">
+                    <div class="alert alert-success" style="border-left: 4px solid #10b981; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-check-circle" style="font-size: 2.5rem; color: #10b981;"></i>
+                            <div style="flex: 1;">
+                                <strong style="color: #065f46; font-size: 1.1rem; display: block; margin-bottom: 5px;">
+                                    <i class="fas fa-rupee-sign"></i> Payment Collected: ₹<?php echo number_format($payment_data->pc_amount, 2); ?>
+                                </strong>
+                                <p style="margin: 0; color: #047857; font-size: 0.9rem;">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Payment Method: 
+                                    <?php 
+                                    if($payment_data->pc_method == 'QR') {
+                                        echo '<span class="badge badge-primary">Company QR</span>';
+                                    } elseif($payment_data->pc_method == 'TechQR') {
+                                        echo '<span class="badge badge-warning">Technician QR</span>';
+                                    } else {
+                                        echo '<span class="badge badge-success">Cash</span>';
+                                    }
+                                    ?>
+                                </p>
+                                <small style="color: #065f46; opacity: 0.8;">
+                                    Collected at: <?php echo date('d M Y, h:i A', strtotime($payment_data->pc_collected_at)); ?>
+                                </small>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php elseif($admin_price_set): ?>
+                    <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
+                    <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
+                            <div>
+                                <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
+                                <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                            </div>
+                        </div>
+                    </div>
+                <?php else: ?>
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
+                        <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
+                    </div>
                 <?php endif; ?>
                 
                 <button type="submit" name="mark_done" class="btn-submit">

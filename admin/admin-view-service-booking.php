@@ -20,6 +20,29 @@
   $res=$stmt->get_result();
   $booking = $res->fetch_object();
   
+  // Get payment collection details
+  $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+      pc_id INT AUTO_INCREMENT PRIMARY KEY,
+      pc_booking_id INT NOT NULL,
+      pc_amount DECIMAL(10,2) NOT NULL,
+      pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+      pc_collected_by INT NOT NULL,
+      pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+      INDEX(pc_booking_id),
+      INDEX(pc_collected_by)
+  )");
+  
+  $payment_query = "SELECT pc.*, t.t_name as collector_name 
+                    FROM tms_payment_collection pc
+                    LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
+                    WHERE pc.pc_booking_id = ?";
+  $payment_stmt = $mysqli->prepare($payment_query);
+  $payment_stmt->bind_param('i', $sb_id);
+  $payment_stmt->execute();
+  $payment_result = $payment_stmt->get_result();
+  $payment_data = $payment_result->fetch_object();
+  
   // Ensure price tracking columns exist
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
@@ -102,8 +125,46 @@
                                      </tr>
                                      <tr>
                                        <th>Bill Amount Charged:</th>
-                                       <td><strong style="font-size:1.3rem;color:#28a745;">₹<?php echo isset($booking->sb_bill_amount) ? number_format($booking->sb_bill_amount, 2) : '0.00';?></strong></td>
+                                       <td><strong style="font-size:1.3rem;color:#28a745;">₹<?php 
+                                       // Show payment amount if collected, otherwise bill amount
+                                       if($payment_data && $payment_data->pc_amount > 0) {
+                                           echo number_format($payment_data->pc_amount, 2);
+                                       } elseif(isset($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                           echo number_format($booking->sb_bill_amount, 2);
+                                       } else {
+                                           echo '0.00';
+                                       }
+                                       ?></strong></td>
                                      </tr>
+                                     <?php if($payment_data): ?>
+                                     <tr>
+                                       <th>Payment Method:</th>
+                                       <td>
+                                         <?php 
+                                         if($payment_data->pc_method == 'QR') {
+                                             echo '<span class="badge badge-primary" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-qrcode"></i> Company QR Code</span>';
+                                         } elseif($payment_data->pc_method == 'TechQR') {
+                                             echo '<span class="badge badge-warning" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-user-circle"></i> Technician QR</span>';
+                                         } else {
+                                             echo '<span class="badge badge-success" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-money-bill-wave"></i> Cash Payment</span>';
+                                         }
+                                         ?>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th>Payment Collected By:</th>
+                                       <td><strong><?php echo htmlspecialchars($payment_data->collector_name); ?></strong></td>
+                                     </tr>
+                                     <tr>
+                                       <th>Payment Collected At:</th>
+                                       <td><strong><?php echo date('M d, Y h:i A', strtotime($payment_data->pc_collected_at)); ?></strong></td>
+                                     </tr>
+                                     <?php else: ?>
+                                     <tr>
+                                       <th>Payment Status:</th>
+                                       <td><span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Payment Not Recorded</span></td>
+                                     </tr>
+                                     <?php endif; ?>
                                    </table>
                                    
                                    <?php 

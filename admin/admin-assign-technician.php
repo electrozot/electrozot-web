@@ -138,69 +138,24 @@
                     if(!$result || $stmt->affected_rows == 0) {
                         throw new Exception("Failed to update booking");
                     }
-                    // STEP 8: Update technician status based on booking status
-                    if($sb_status == 'Completed' || $sb_status == 'Cancelled' || $sb_status == 'Rejected') {
-                        // Free the technician if booking is completed, cancelled, or rejected
-                        // Decrement booking count
-                        $update_tech = "UPDATE tms_technician 
-                                      SET t_status='Available', 
-                                          t_is_available=1, 
-                                          t_current_booking_id=NULL,
-                                          t_current_bookings = GREATEST(t_current_bookings - 1, 0)
-                                      WHERE t_id=?";
-                    } else if($sb_status == 'In Progress' || $sb_status == 'Approved' || $sb_status == 'Assigned') {
+                    // STEP 8: Increment new technician's booking count and update status
+                    $update_tech = "UPDATE tms_technician 
+                                  SET t_current_bookings = t_current_bookings + 1,
+                                      t_status = CASE 
+                                          WHEN (t_current_bookings + 1) >= t_booking_limit THEN 'Busy'
+                                          ELSE 'Available'
+                                      END
+                                  WHERE t_id=?";
                         // Mark technician as booked if booking is in progress, approved, or assigned
-                        // Increment booking count only if this is a new assignment (not reassignment to same tech)
-                        if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=?,
-                                              t_current_bookings = t_current_bookings + 1
-                                          WHERE t_id=?";
-                        } else {
-                            // Same technician, just update status without incrementing
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=?
-                                          WHERE t_id=?";
-                        }
-                    } else {
-                        // For pending status, mark as booked but with pending status
-                        // Increment booking count only if this is a new assignment
-                        if(!$old_tech_id || $old_tech_id != $sb_technician_id) {
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=?,
-                                              t_current_bookings = t_current_bookings + 1
-                                          WHERE t_id=?";
-                        } else {
-                            $update_tech = "UPDATE tms_technician 
-                                          SET t_status='Booked', 
-                                              t_is_available=0, 
-                                              t_current_booking_id=?
-                                          WHERE t_id=?";
-                        }
+                    
+                    $tech_stmt = $mysqli->prepare($update_tech);
+                    if(!$tech_stmt) {
+                        throw new Exception("Failed to prepare technician update");
                     }
                     
-                    if($update_tech && $sb_technician_id) {
-                        $tech_stmt = $mysqli->prepare($update_tech);
-                        if(!$tech_stmt) {
-                            throw new Exception("Failed to prepare technician update");
-                        }
-                        
-                        // Check if query needs booking_id parameter
-                        if(strpos($update_tech, 't_current_booking_id=?') !== false) {
-                            $tech_stmt->bind_param('ii', $sb_id, $sb_technician_id);
-                        } else {
-                            $tech_stmt->bind_param('i', $sb_technician_id);
-                        }
-                        
-                        if(!$tech_stmt->execute()) {
-                            throw new Exception("Failed to update technician status");
-                        }
+                    $tech_stmt->bind_param('i', $sb_technician_id);
+                    if(!$tech_stmt->execute()) {
+                        throw new Exception("Failed to update technician status");
                     }
                     
                     // COMMIT TRANSACTION - All operations successful
@@ -209,9 +164,10 @@
                     // Auto-update all technician statuses after assignment
                     include_once('auto-update-technician-status.php');
                     
-                    $succ = "Technician Assigned Successfully";
-                    // Redirect to prevent form resubmission
-                    header("Location: admin-assign-technician.php?sb_id=" . $sb_id . "&success=1");
+                    // Redirect with success modal parameters
+                    $success_message = "Technician assigned successfully to Booking #" . $sb_id;
+                    $redirect_url = "admin-manage-service-booking.php";
+                    header("Location: admin-assign-technician.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
                     exit();
                     
                 } catch(Exception $e) {
@@ -239,14 +195,6 @@
          <div id="content-wrapper">
 
              <div class="container-fluid">
-                 <?php if(isset($succ) || isset($_GET['success'])) {?>
-                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                     <strong><i class="fas fa-check-circle"></i> Success!</strong> Technician Assigned Successfully!
-                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                         <span aria-hidden="true">&times;</span>
-                     </button>
-                 </div>
-                 <?php } ?>
                  <?php if(isset($err)) {?>
                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
                      <strong><i class="fas fa-exclamation-circle"></i> Failed!</strong> <?php echo htmlspecialchars($err);?>
@@ -395,6 +343,17 @@
                                      // Get the CURRENT selected service from booking
                                      $current_service_id = $booking_data->sb_service_id;
                                      
+                                     // Get service details
+                                     $service_query = "SELECT s_name, s_category, s_subcategory FROM tms_service WHERE s_id = ?";
+                                     $service_stmt = $mysqli->prepare($service_query);
+                                     $service_stmt->bind_param('i', $current_service_id);
+                                     $service_stmt->execute();
+                                     $service_result = $service_stmt->get_result();
+                                     $current_service = $service_result->fetch_object();
+                                     
+                                     // Check if this is a custom service booking
+                                     $is_custom_service_booking = !empty($booking_data->sb_custom_service);
+                                     
                                      // SKILL-BASED MATCHING: Only show technicians who can perform this service
                                      // Query gets technicians who have this service in their skills
                                      $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
@@ -414,36 +373,18 @@
                                      $all_techs_stmt->bind_param('i', $current_service_id);
                                      $all_techs_stmt->execute();
                                      $all_techs_result = $all_techs_stmt->get_result();
-                                         $available_techs = [];
-                                         
-                                         while($tech = $all_techs_result->fetch_assoc()) {
-                                             $available_techs[] = [
-                                                 't_id' => $tech['t_id'],
-                                                 't_name' => $tech['t_name'],
-                                                 't_experience' => $tech['t_experience'],
-                                                 'available_slots' => $tech['available_slots'],
-                                                 'is_available' => ($tech['available_slots'] > 0),
-                                                 'match_type' => 'custom_service',
-                                                 'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity',
-                                                 't_skills' => $tech['t_skills']
-                                             ];
-                                         }
-                                     } else {
-                                         // REGULAR SERVICES: Use ULTIMATE smart matcher with SKILL-BASED MATCHING
-                                         require_once('vendor/inc/ultimate-technician-matcher.php');
-                                         
-                                         if($current_service_id && $booking_data->sb_booking_date && $booking_data->sb_booking_time) {
-                                             // Smart matching: Checks EXACT SERVICE SKILLS from t_skills column
-                                             $available_techs = getSmartAvailableTechnicians(
-                                                 $mysqli, 
-                                                 $current_service_id, 
-                                                 $booking_data->sb_booking_date,
-                                                 $booking_data->sb_booking_time,
-                                                 $sb_id
-                                             );
-                                         } else {
-                                             $available_techs = [];
-                                         }
+                                     $available_techs = [];
+                                     
+                                     while($tech = $all_techs_result->fetch_assoc()) {
+                                         $available_techs[] = [
+                                             't_id' => $tech['t_id'],
+                                             't_name' => $tech['t_name'],
+                                             't_experience' => $tech['t_experience'],
+                                             'available_slots' => $tech['available_slots'],
+                                             'is_available' => ($tech['available_slots'] > 0),
+                                             'match_type' => 'exact_skill',
+                                             'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
+                                         ];
                                      }
                                      
                                      if(empty($available_techs)) {
@@ -539,10 +480,10 @@
                                      ?>
                                  </select>
                                  <small class="form-text text-muted">
-                                     <strong>Current Service:</strong> <?php echo $current_service ? $current_service['s_name'] : $booking_data->s_name;?> 
-                                     | <strong>Category:</strong> <?php echo $current_service ? $current_service['s_category'] : $booking_data->s_category;?>
+                                     <strong>Current Service:</strong> <?php echo $current_service ? $current_service->s_name : $booking_data->s_name;?> 
+                                     | <strong>Category:</strong> <?php echo $current_service ? $current_service->s_category : $booking_data->s_category;?>
                                      <br><strong>Booking Time:</strong> <?php echo date('M d, Y', strtotime($booking_data->sb_booking_date));?> at <?php echo date('h:i A', strtotime($booking_data->sb_booking_time));?>
-                                     <br><strong>Matching:</strong> Showing technicians who checked "<?php echo $current_service ? $current_service['s_name'] : $booking_data->s_name;?>" during registration
+                                     <br><strong>Matching:</strong> Showing technicians who checked "<?php echo $current_service ? $current_service->s_name : $booking_data->s_name;?>" during registration
                                      <?php
                                      // Count available technicians (based on capacity)
                                      $available_count = count(array_filter($available_techs, function($t) { return isset($t['is_available']) ? $t['is_available'] : true; }));
@@ -796,6 +737,9 @@
              }, 5000);
          });
          </script>
+         
+         <!-- Success Modal -->
+         <?php include("vendor/inc/success-modal.php");?>
 
  </body>
 

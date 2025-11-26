@@ -174,9 +174,9 @@ $completed_count = $counts->completed_count;
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 50%, #0575E6 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             padding: 8px 20px;
-            box-shadow: 0 4px 20px rgba(5, 117, 230, 0.4);
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -187,7 +187,7 @@ $completed_count = $counts->completed_count;
             right: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 2px solid rgba(0, 242, 96, 0.3);
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
             -webkit-backface-visibility: hidden;
@@ -195,16 +195,17 @@ $completed_count = $counts->completed_count;
             height: 70px;
         }
         
-        /* Search and Menu Bar */
+        /* Search Bar */
         .search-menu-bar {
-            background: linear-gradient(135deg, rgba(5, 117, 230, 0.95) 0%, rgba(0, 242, 96, 0.95) 100%);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(20, 184, 166, 0.95) 35%, rgba(6, 182, 212, 0.95) 70%, rgba(14, 165, 233, 0.95) 100%);
             padding: 8px 20px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             display: flex !important;
             align-items: center;
+            justify-content: space-between;
             gap: 15px;
             position: fixed;
-            top: 80px;
+            top: 70px;
             left: 0;
             right: 0;
             width: 100%;
@@ -220,8 +221,9 @@ $completed_count = $counts->completed_count;
         }
         
         .search-menu-bar .header-search {
-            flex: 1;
-            max-width: 600px;
+            max-width: 280px;
+            width: 100%;
+            margin-left: auto;
         }
         
         .logo-section {
@@ -280,8 +282,8 @@ $completed_count = $counts->completed_count;
         }
         
         .header-search {
-            flex: 1;
-            min-width: 0;
+            flex: 0 0 auto;
+            max-width: 220px;
         }
         
         .header-search form {
@@ -290,15 +292,16 @@ $completed_count = $counts->completed_count;
         
         .header-search input {
             width: 100%;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 30px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             background: rgba(255, 255, 255, 0.2);
             box-sizing: border-box;
             color: white;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
         
         .header-search input:focus {
@@ -312,33 +315,6 @@ $completed_count = $counts->completed_count;
             color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
         }
-
-        .search-submit-btn {
-            background: white;
-            color: #0575E6;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-            flex-shrink: 0;
-        }
-
-        .search-submit-btn:hover {
-            background: #00F260;
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0, 242, 96, 0.5);
-        }
-
-        .search-submit-btn i {
-            font-size: 1rem;
-        }
         
         .header-actions {
             display: flex;
@@ -346,37 +322,7 @@ $completed_count = $counts->completed_count;
             align-items: center;
         }
 
-        .tech-name-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            color: white;
-            font-weight: 800;
-            font-size: 0.95rem;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
 
-        .tech-name-display:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
-
-        .tech-name-display i {
-            font-size: 1.1rem;
-            color: white;
-            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
-        }
-
-        .tech-name-display span {
-            color: white;
-        }
         
         .header-btn {
             padding: 6px 12px;
@@ -513,7 +459,7 @@ $completed_count = $counts->completed_count;
         }
         
         .sidebar-header {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             padding: 20px;
             color: white;
         }
@@ -575,7 +521,7 @@ $completed_count = $counts->completed_count;
         
         .sidebar-pin {
             background: white;
-            color: #0575E6;
+            color: #10b981;
             padding: 5px 15px;
             border-radius: 50px;
             font-size: 0.85rem;
@@ -602,9 +548,9 @@ $completed_count = $counts->completed_count;
         
         .sidebar-menu-item:hover {
             background: #f8f9fa;
-            border-left-color: #0575E6;
+            border-left-color: #10b981;
             text-decoration: none;
-            color: #0575E6;
+            color: #10b981;
         }
         
         .sidebar-menu-item i {
@@ -669,15 +615,15 @@ $completed_count = $counts->completed_count;
         
         /* Mobile Notification Alert */
         .mobile-notification-alert {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             color: white;
             padding: 15px 20px;
-            margin: 140px 15px 15px 15px;
+            margin: 130px 15px 15px 15px;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.4);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
             animation: slideDown 0.5s ease-out;
         }
         
@@ -718,7 +664,7 @@ $completed_count = $counts->completed_count;
         
         .mobile-alert-btn {
             background: white;
-            color: #0575E6;
+            color: #10b981;
             padding: 10px 25px;
             border-radius: 50px;
             text-decoration: none;
@@ -729,7 +675,7 @@ $completed_count = $counts->completed_count;
         
         .mobile-alert-btn:hover {
             background: #ffd700;
-            color: #667eea;
+            color: #10b981;
             text-decoration: none;
         }
         
@@ -788,9 +734,9 @@ $completed_count = $counts->completed_count;
             margin: 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             border-bottom: 3px solid transparent;
-            border-image: linear-gradient(90deg, #0575E6 0%, #00F260 100%) 1;
+            border-image: linear-gradient(90deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%) 1;
             position: fixed;
-            top: 130px;
+            top: 120px;
             left: 0;
             right: 0;
             width: 100%;
@@ -835,14 +781,14 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn.active {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
         }
         
         .filter-btn .badge {
-            background: linear-gradient(135deg, #00F260 0%, #0575E6 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
             padding: 2px 6px;
             border-radius: 50px;
@@ -850,12 +796,12 @@ $completed_count = $counts->completed_count;
             font-weight: 900;
             min-width: 18px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 242, 96, 0.3);
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
         }
         
         .filter-btn.active .badge {
             background: white;
-            color: #0575E6;
+            color: #ec4899;
         }
         
         .filter-btn i {
@@ -865,7 +811,7 @@ $completed_count = $counts->completed_count;
         /* Main Content */
         .main-container-full {
             padding: 0 20px 20px 20px;
-            padding-top: 200px;
+            padding-top: 190px;
             max-width: 100%;
             width: 100%;
             margin: 0 auto;
@@ -1137,8 +1083,8 @@ $completed_count = $counts->completed_count;
             }
 
             .logo-image {
-                width: 75px;
-                height: 75px;
+                width: 55px;
+                height: 55px;
             }
 
             .brand-title {
@@ -1149,14 +1095,7 @@ $completed_count = $counts->completed_count;
                 font-size: 0.75rem;
             }
 
-            .tech-name-display {
-                padding: 10px 16px;
-                font-size: 0.95rem;
-            }
 
-            .tech-name-display i {
-                font-size: 1.2rem;
-            }
             
             .dashboard-title {
                 font-size: 0.95rem;
@@ -1219,13 +1158,13 @@ $completed_count = $counts->completed_count;
             left: 0;
             width: 5px;
             height: 100%;
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
         }
 
         .booking-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(5, 117, 230, 0.15);
-            border-color: rgba(5, 117, 230, 0.3);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.15);
+            border-color: rgba(6, 182, 212, 0.3);
         }
         
         .booking-card-body {
@@ -1417,18 +1356,13 @@ $completed_count = $counts->completed_count;
                 padding: 8px 15px;
             }
 
+            .header-search {
+                max-width: 200px;
+            }
+
             .header-search input {
-                padding: 8px 15px;
-                font-size: 0.85rem;
-            }
-
-            .search-submit-btn {
-                width: 36px;
-                height: 36px;
-            }
-
-            .search-submit-btn i {
-                font-size: 0.9rem;
+                padding: 7px 12px;
+                font-size: 0.75rem;
             }
             
             .logo-section {
@@ -1439,8 +1373,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
             }
             
             .menu-toggle-btn {
@@ -1510,7 +1444,7 @@ $completed_count = $counts->completed_count;
             }
 
             .main-container-full {
-                padding-top: 220px;
+                padding-top: 210px;
             }
             
             .search-box {
@@ -1655,8 +1589,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 50px;
-                height: 50px;
+                width: 55px;
+                height: 55px;
             }
             
             .menu-toggle-btn {
@@ -1781,8 +1715,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 45px;
-                height: 45px;
+                width: 48px;
+                height: 48px;
             }
             
             .menu-toggle-btn {
@@ -1912,10 +1846,6 @@ $completed_count = $counts->completed_count;
         </div>
         
         <div class="header-actions">
-            <div class="tech-name-display">
-                <i class="fas fa-user-circle"></i>
-                <span><?php echo htmlspecialchars($t_name); ?></span>
-            </div>
             <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
                 <i class="fas fa-bell"></i>
                 <span class="notif-dot" id="headerNotifDot" style="display: none;"></span>
@@ -1923,7 +1853,7 @@ $completed_count = $counts->completed_count;
         </div>
     </div>
     
-    <!-- Search and Menu Bar -->
+    <!-- Search Bar -->
     <div class="search-menu-bar">
         <button class="menu-toggle-btn" onclick="toggleSidebar()">
             <span></span>
@@ -1932,14 +1862,11 @@ $completed_count = $counts->completed_count;
         </button>
         
         <div class="header-search">
-            <form action="" method="GET" style="display: flex; align-items: center; gap: 8px; width: 100%;">
-                <input type="search" name="search" placeholder="Search by phone number..." value="<?php echo htmlspecialchars($search); ?>" style="flex: 1;">
+            <form action="" method="GET" id="searchForm">
+                <input type="search" name="search" id="searchInput" placeholder="Search by phone, name, or ID..." value="<?php echo htmlspecialchars($search); ?>" autocomplete="off">
                 <?php if($filter != 'all'): ?>
                     <input type="hidden" name="filter" value="<?php echo $filter; ?>">
                 <?php endif; ?>
-                <button type="submit" class="search-submit-btn">
-                    <i class="fas fa-search"></i>
-                </button>
             </form>
         </div>
     </div>
@@ -1956,13 +1883,6 @@ $completed_count = $counts->completed_count;
     <!-- Control Bar -->
     <div class="control-bar">
         <div class="filter-buttons-row">
-            <a href="?" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
-                <i class="fas fa-list"></i> All
-                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
-                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
-                <?php endif; ?>
-            </a>
-            
             <a href="?filter=new" class="filter-btn <?php echo $filter == 'new' ? 'active' : ''; ?>">
                 <i class="fas fa-plus-circle"></i> New
                 <?php if($new_count > 0): ?>
@@ -1981,6 +1901,13 @@ $completed_count = $counts->completed_count;
                 <i class="fas fa-check-circle"></i> Completed
                 <?php if($completed_count > 0): ?>
                     <span class="badge"><?php echo $completed_count; ?></span>
+                <?php endif; ?>
+            </a>
+            
+            <a href="?" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
+                <i class="fas fa-list"></i> All
+                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
+                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
                 <?php endif; ?>
             </a>
             
@@ -2201,12 +2128,43 @@ $completed_count = $counts->completed_count;
                                     <i class="fas fa-times-circle"></i> Not Done
                                 </button>
                             <?php else: ?>
-                                <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=done" class="mobile-done-btn">
-                                    <i class="fas fa-check"></i> Done
+                                <?php
+                                // Ensure payment collection table exists
+                                $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+                                    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+                                    pc_booking_id INT NOT NULL,
+                                    pc_amount DECIMAL(10,2) NOT NULL,
+                                    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+                                    pc_collected_by INT NOT NULL,
+                                    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+                                    INDEX(pc_booking_id),
+                                    INDEX(pc_collected_by)
+                                )");
+                                
+                                // Check if payment has been collected for this booking
+                                $payment_check_query = "SELECT COUNT(*) as count FROM tms_payment_collection WHERE pc_booking_id = ?";
+                                $payment_check_stmt = $mysqli->prepare($payment_check_query);
+                                $payment_check_stmt->bind_param('i', $booking->sb_id);
+                                $payment_check_stmt->execute();
+                                $payment_check_result = $payment_check_stmt->get_result();
+                                $payment_check_data = $payment_check_result->fetch_object();
+                                $payment_already_collected = $payment_check_data->count > 0;
+                                ?>
+                                
+                                <a href="collect-payment.php?id=<?php echo $booking->sb_id; ?>" class="mobile-done-btn">
+                                    <i class="fas fa-rupee-sign"></i> Collect Payment
                                 </a>
-                                <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=not-done" class="mobile-notdone-btn">
-                                    <i class="fas fa-times"></i> Not Done
-                                </a>
+                                
+                                <?php if($payment_already_collected): ?>
+                                    <button class="mobile-notdone-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Cannot mark as Not Done after payment collected">
+                                        <i class="fas fa-lock"></i> Payment Collected
+                                    </button>
+                                <?php else: ?>
+                                    <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=not-done" class="mobile-notdone-btn">
+                                        <i class="fas fa-times"></i> Not Done
+                                    </a>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -2235,8 +2193,24 @@ $completed_count = $counts->completed_count;
             overlay.classList.toggle('active');
         }
         
-        // Auto-hide alert messages after 5 seconds
+        // Auto-search functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.getElementById('searchForm');
+            let searchTimeout;
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    
+                    // Auto-submit after 500ms of no typing
+                    searchTimeout = setTimeout(function() {
+                        searchForm.submit();
+                    }, 500);
+                });
+            }
+            
+            // Auto-hide alert messages after 5 seconds
             const alertMessages = document.querySelectorAll('.alert-message');
             
             alertMessages.forEach(function(alert) {

@@ -1,44 +1,44 @@
- <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+ <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.3rem 1rem; min-height: 50px;">
 
-     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 12px; padding: 8px 15px;">
-         <div class="logo-container" style="background: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); padding: 5px;">
+     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 8px; padding: 4px 10px;">
+         <div class="logo-container" style="background: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); padding: 4px;">
              <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" style="width: 100%; height: 100%; object-fit: contain;">
          </div>
+         <span style="font-size: 16px; font-weight: 700; color: white; display: none; display: md-block;">Electrozot</span>
      </a>
 
-     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-         <i class="fas fa-bars"></i>
+     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#" style="padding: 4px 8px;">
+         <i class="fas fa-bars" style="font-size: 16px;"></i>
      </button>
 
-     <!-- Quick Booking Button - Centered -->
-     <div class="mx-auto">
-         <a href="admin-quick-booking.php" class="btn btn-success btn-sm shadow-sm" style="padding: 10px 25px; border-radius: 25px; font-weight: 600; display: flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
-             <i class="fas fa-phone-alt"></i>
+     <!-- Quick Booking Button - Compact -->
+     <div class="mx-auto d-none d-md-block">
+         <a href="admin-quick-booking.php" class="btn btn-success btn-sm shadow-sm" style="padding: 6px 18px; border-radius: 20px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
+             <i class="fas fa-phone-alt" style="font-size: 12px;"></i>
              <span>Quick Booking</span>
          </a>
      </div>
      
      <!-- Navbar -->
-     <ul class="navbar-nav">
+     <ul class="navbar-nav ml-auto" style="align-items: center;">
          <!-- Notification Bell -->
          <li class="nav-item dropdown no-arrow mx-1">
-             <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative;" title="View All Notifications">
-                 <i class="fas fa-bell fa-fw" style="font-size: 20px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.2) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
-                 <!-- Badge removed -->
+             <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative; padding: 6px 10px;" title="View All Notifications">
+                 <i class="fas fa-bell fa-fw" style="font-size: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
              </a>
          </li>
 
          <li class="nav-item dropdown no-arrow">
-             <a style="display: flex; align-items: center; gap: 8px;" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <a style="display: flex; align-items: center; gap: 6px; padding: 4px 10px;" class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                  <?php if(isset($_SESSION['a_photo']) && !empty($_SESSION['a_photo'])): ?>
                      <img src="../vendor/img/<?php echo htmlspecialchars($_SESSION['a_photo']); ?>" 
                           class="rounded-circle" 
-                          style="width: 32px; height: 32px; object-fit: cover; border: 2px solid #fff;"
+                          style="width: 28px; height: 28px; object-fit: cover; border: 2px solid #fff;"
                           alt="Admin Photo">
                  <?php else: ?>
-                     <i class="fas fa-user-circle fa-fw"></i>
+                     <i class="fas fa-user-circle fa-fw" style="font-size: 20px;"></i>
                  <?php endif; ?>
-                 <h6 style="margin: 0;">
+                 <span class="d-none d-md-inline" style="font-size: 14px; font-weight: 600; margin: 0;">
                      <?php 
                      if(isset($_SESSION['a_name'])) {
                          echo htmlspecialchars($_SESSION['a_name']);
@@ -46,44 +46,40 @@
                          echo 'Admin';
                      }
                      ?>
-                 </h6>
+                 </span>
              </a>
-             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
-                 <a class="dropdown-item" href="admin-profile.php"><i class="fas fa-user"></i> Profile</a>
-                 <a class="dropdown-item" href="admin-change-password.php"><i class="fas fa-key"></i> Change Password</a>
-                 <div class="dropdown-divider"></div>
-                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal"><i class="fas fa-sign-out-alt"></i> Logout</a>
+             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown" style="border-radius: 10px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-top: 8px;">
+                 <a class="dropdown-item" href="admin-profile.php" style="padding: 8px 15px; font-size: 14px;"><i class="fas fa-user" style="width: 20px;"></i> Profile</a>
+                 <a class="dropdown-item" href="admin-change-password.php" style="padding: 8px 15px; font-size: 14px;"><i class="fas fa-key" style="width: 20px;"></i> Change Password</a>
+                 <div class="dropdown-divider" style="margin: 5px 0;"></div>
+                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal" style="padding: 8px 15px; font-size: 14px; color: #dc3545;"><i class="fas fa-sign-out-alt" style="width: 20px;"></i> Logout</a>
              </div>
          </li>
      </ul>
  </nav>
 
  <style>
- /* Enhanced Navbar Styling */
+ /* Slim Navbar Styling */
+ nav.navbar {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+     position: sticky;
+     top: 0;
+     z-index: 1000;
+ }
+ 
  .navbar-brand {
      transition: all 0.3s ease;
  }
  
  .navbar-brand:hover {
-     transform: translateY(-3px);
+     transform: translateY(-2px);
      filter: brightness(1.1);
  }
  
  .navbar-brand:hover .logo-container {
-     box-shadow: 0 8px 25px rgba(255,193,7,0.5);
-     transform: rotate(5deg) scale(1.05);
- }
- 
- /* Animated gradient background */
- @keyframes gradientShift {
-     0% { background-position: 0% 50%; }
-     50% { background-position: 100% 50%; }
-     100% { background-position: 0% 50%; }
- }
- 
- nav.navbar {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+     box-shadow: 0 4px 15px rgba(255,255,255,0.3);
+     transform: scale(1.08);
  }
  
  /* Sidebar Styling */
@@ -169,123 +165,115 @@
      color: white;
  }
  
- /* Logo animations */
- @keyframes logoPulse {
-     0%, 100% { transform: scale(1) rotate(0deg); }
-     50% { transform: scale(1.08) rotate(-5deg); }
- }
- 
- @keyframes sparkle {
-     0%, 100% { opacity: 1; transform: scale(1); }
-     50% { opacity: 0.6; transform: scale(1.3); }
- }
- 
+ /* Logo animations - Subtle */
  .logo-container {
-     animation: logoPulse 3s ease-in-out infinite;
      transition: all 0.3s ease;
  }
  
- .logo-container > div {
-     animation: sparkle 2s ease-in-out infinite;
- }
- 
  .logo-container img {
-     animation: logoPulse 2.5s ease-in-out infinite;
      transition: all 0.3s ease;
  }
  
  /* Glow effect on hover */
  .navbar-brand:hover .logo-container img {
-     filter: drop-shadow(0 0 8px rgba(255,193,7,0.6)) drop-shadow(2px 2px 6px rgba(0,0,0,0.2));
+     filter: drop-shadow(0 0 4px rgba(255,255,255,0.4));
      transform: scale(1.05);
  }
  
- /* Quick Booking Button Styling */
+ /* Quick Booking Button Styling - Compact */
  .btn-success {
      background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
      border: none !important;
-     box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3) !important;
+     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25) !important;
  }
  
  .btn-success:hover {
      background: linear-gradient(135deg, #218838 0%, #1aa179 100%) !important;
-     transform: translateY(-2px);
-     box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4) !important;
+     transform: translateY(-1px);
+     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35) !important;
  }
  
  .btn-success:active {
      transform: translateY(0);
  }
  
+ /* Dropdown Menu Styling */
+ .dropdown-menu {
+     animation: slideDown 0.3s ease;
+ }
+ 
+ @keyframes slideDown {
+     from {
+         opacity: 0;
+         transform: translateY(-10px);
+     }
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+ 
+ .dropdown-item {
+     transition: all 0.2s ease;
+ }
+ 
+ .dropdown-item:hover {
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     color: white !important;
+     padding-left: 20px;
+ }
+ 
+ .dropdown-item:hover i {
+     color: white !important;
+ }
+ 
  /* Responsive adjustments */
  @media (max-width: 768px) {
-     .navbar-brand {
-         padding: 5px 10px !important;
-         gap: 8px !important;
-     }
-     .navbar-brand > div:last-child span:first-child {
-         font-size: 14px !important;
-     }
-     .navbar-brand > div:last-child span:last-child {
-         font-size: 9px !important;
-     }
-     .logo-container {
-         width: 40px !important;
-         height: 40px !important;
-         padding: 3px !important;
-     }
-     .logo-container img {
-         width: 100% !important;
-         height: 100% !important;
+     nav.navbar {
+         padding: 0.25rem 0.75rem !important;
      }
      
-     /* Hide Quick Booking text on mobile */
-     .btn-success span {
-         display: none;
+     .navbar-brand {
+         padding: 2px 6px !important;
+         gap: 6px !important;
      }
-     .btn-success {
-         padding: 8px 12px !important;
+     
+     .logo-container {
+         width: 32px !important;
+         height: 32px !important;
+         padding: 3px !important;
      }
  }
  
  @media (max-width: 576px) {
-     .navbar-brand > div:last-child span:first-child {
-         font-size: 12px !important;
-     }
-     .navbar-brand > div:last-child span:last-child {
-         display: none;
+     .navbar-brand span {
+         display: none !important;
      }
  }
  
- /* Notification Badge Pulse Animation */
- @keyframes pulse {
-     0% {
-         transform: scale(1);
-         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-     }
-     50% {
-         transform: scale(1.1);
-         box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
-     }
-     100% {
-         transform: scale(1);
-         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
-     }
+ /* Notification Bell Hover */
+ #notificationBell {
+     transition: all 0.3s ease;
  }
  
- #notificationBadge {
-     animation: pulse 2s infinite;
+ #notificationBell:hover {
+     background: rgba(255,255,255,0.1);
+     border-radius: 50%;
  }
  
- /* Bell shake animation when new notification */
- @keyframes bellShake {
-     0%, 100% { transform: rotate(0deg); }
-     10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
-     20%, 40%, 60%, 80% { transform: rotate(10deg); }
+ /* User Dropdown Hover */
+ #userDropdown {
+     transition: all 0.3s ease;
+     border-radius: 25px;
  }
  
- .bell-shake {
-     animation: bellShake 0.5s ease-in-out;
+ #userDropdown:hover {
+     background: rgba(255,255,255,0.1);
+ }
+ 
+ /* Smooth transitions for all nav items */
+ .nav-link {
+     transition: all 0.3s ease;
  }
  </style>
 

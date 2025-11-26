@@ -607,6 +607,22 @@ $user = $user_result->fetch_object();
             </div>
         </div>
         
+        <!-- Quick Actions -->
+        <div class="info-card">
+            <div class="info-title">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-eye" style="margin-right: 6px;"></i> View Full Details
+                </a>
+                <a href="user-manage-booking.php" style="background: white; color: #6366f1; border: 2px solid #6366f1; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-list" style="margin-right: 6px;"></i> All Orders
+                </a>
+            </div>
+        </div>
+        
         <?php } else { ?>
         
         <div class="empty-state">

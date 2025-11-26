@@ -160,9 +160,26 @@ if(isset($_POST['register_technician'])){
         if(!move_uploaded_file($_FILES['t_pic']['tmp_name'], $upload_path)){
             $errors[] = "Failed to upload image";
         }
+        
+        // Handle payment QR upload (optional)
+        $t_payment_qr = '';
+        if(!empty($_FILES["t_payment_qr"]["name"]) && $_FILES["t_payment_qr"]["error"] == 0) {
+            $qr_dir = "../uploads/technician_qr/";
+            if(!file_exists($qr_dir)) {
+                mkdir($qr_dir, 0777, true);
+            }
+            $qr_extension = pathinfo($_FILES["t_payment_qr"]["name"], PATHINFO_EXTENSION);
+            $qr_filename = "tech_qr_" . time() . "_" . rand(1000, 9999) . "." . $qr_extension;
+            if(move_uploaded_file($_FILES["t_payment_qr"]["tmp_name"], $qr_dir . $qr_filename)) {
+                $t_payment_qr = "uploads/technician_qr/" . $qr_filename;
+            }
+        }
     }
     
     if(empty($errors)){
+        // Add payment QR column if not exists
+        $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_payment_qr VARCHAR(255) DEFAULT NULL");
+        
         // Generate temporary ID
         $t_id_no = 'GUEST-' . strtoupper(substr(md5(time() . $t_phone), 0, 8));
         
@@ -170,10 +187,17 @@ if(isset($_POST['register_technician'])){
         $hashed_pwd = password_hash($t_pwd, PASSWORD_DEFAULT);
         
         // Insert as guest technician (pending approval)
-        $insert_query = "INSERT INTO tms_technician (t_name, t_phone, t_email, t_addr, t_pwd, t_id_no, t_service_pincode, t_experience, t_skills, t_aadhar, t_pic, t_status, t_is_guest, t_registered_at, t_registration_ip) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 1, NOW(), ?)";
-        $stmt = $mysqli->prepare($insert_query);
-        $stmt->bind_param('ssssssssssss', $t_name, $t_phone, $t_email, $t_addr, $hashed_pwd, $t_id_no, $t_service_pincode, $t_experience, $t_skills, $t_aadhar, $t_pic, $user_ip);
+        if(!empty($t_payment_qr)) {
+            $insert_query = "INSERT INTO tms_technician (t_name, t_phone, t_email, t_addr, t_pwd, t_id_no, t_service_pincode, t_experience, t_skills, t_aadhar, t_pic, t_payment_qr, t_status, t_is_guest, t_registered_at, t_registration_ip) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 1, NOW(), ?)";
+            $stmt = $mysqli->prepare($insert_query);
+            $stmt->bind_param('sssssssssssss', $t_name, $t_phone, $t_email, $t_addr, $hashed_pwd, $t_id_no, $t_service_pincode, $t_experience, $t_skills, $t_aadhar, $t_pic, $t_payment_qr, $user_ip);
+        } else {
+            $insert_query = "INSERT INTO tms_technician (t_name, t_phone, t_email, t_addr, t_pwd, t_id_no, t_service_pincode, t_experience, t_skills, t_aadhar, t_pic, t_status, t_is_guest, t_registered_at, t_registration_ip) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending', 1, NOW(), ?)";
+            $stmt = $mysqli->prepare($insert_query);
+            $stmt->bind_param('ssssssssssss', $t_name, $t_phone, $t_email, $t_addr, $hashed_pwd, $t_id_no, $t_service_pincode, $t_experience, $t_skills, $t_aadhar, $t_pic, $user_ip);
+        }
         
         if($stmt->execute()){
             // Log the registration attempt
@@ -433,6 +457,15 @@ if(isset($_POST['register_technician'])){
             </label>
             <input type="file" name="t_pic" id="t_pic" class="form-control" accept="image/*" required>
             <small class="text-muted">Upload a clear photo for your ID card (JPG, PNG, max 2MB)</small>
+          </div>
+
+          <div class="form-group">
+            <label for="t_payment_qr">
+              <i class="fas fa-qrcode"></i>
+              Payment QR Code (Optional)
+            </label>
+            <input type="file" name="t_payment_qr" id="t_payment_qr" class="form-control" accept="image/*">
+            <small class="text-muted">Upload your personal payment QR code for receiving payments directly (Optional)</small>
           </div>
 
           <div class="form-group">

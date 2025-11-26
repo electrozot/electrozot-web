@@ -214,7 +214,8 @@ while($row = $result->fetch_object()) {
                                                            step="0.01" 
                                                            min="0"
                                                            value="<?php echo ($service->s_price !== null && $service->s_price > 0) ? $service->s_price : ''; ?>"
-                                                           placeholder="Leave empty if price varies">
+                                                           placeholder="Empty = Technician decides"
+                                                           style="<?php echo ($service->s_price === null || $service->s_price == 0) ? 'border-color: #f59e0b; background: #fffbeb;' : ''; ?>">
                                                     <div class="input-group-append">
                                                         <button type="button" 
                                                                 class="btn btn-sm btn-success update-single-btn" 
@@ -224,7 +225,17 @@ while($row = $result->fetch_object()) {
                                                         </button>
                                                     </div>
                                                 </div>
-                                                <small class="price-status text-muted" id="status-<?php echo $service->s_id; ?>"></small>
+                                                <small class="price-status" id="status-<?php echo $service->s_id; ?>">
+                                                    <?php if($service->s_price === null || $service->s_price == 0): ?>
+                                                        <span style="color: #f59e0b; font-weight: 600;">
+                                                            <i class="fas fa-user-cog"></i> Flexible - Technician sets price
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <span style="color: #10b981; font-weight: 600;">
+                                                            <i class="fas fa-lock"></i> Fixed price
+                                                        </span>
+                                                    <?php endif; ?>
+                                                </small>
                                             </td>
                                             <td>
                                                 <?php if($service->s_status == 'Active'): ?>

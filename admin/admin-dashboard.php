@@ -387,6 +387,127 @@
                     </div>
                 </div>
                 
+                <!-- Payment Collection Summary -->
+                <div class="row mt-3 mb-3">
+                    <div class="col-12">
+                        <div class="card shadow-sm" style="border: none; border-radius: 15px; overflow: hidden;">
+                            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 15px 20px;">
+                                <h5 class="mb-0" style="color: white; font-weight: 700;">
+                                    <i class="fas fa-money-bill-wave"></i> Payment Collections Summary
+                                </h5>
+                            </div>
+                            <div class="card-body" style="padding: 20px;">
+                                <?php
+                                // Ensure payment collection table exists
+                                $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+                                    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+                                    pc_booking_id INT NOT NULL,
+                                    pc_amount DECIMAL(10,2) NOT NULL,
+                                    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+                                    pc_collected_by INT NOT NULL,
+                                    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+                                    INDEX(pc_booking_id),
+                                    INDEX(pc_collected_by)
+                                )");
+                                
+                                // Get payment statistics
+                                $payment_stats_query = "SELECT 
+                                    COUNT(*) as total_payments,
+                                    SUM(pc_amount) as total_amount,
+                                    SUM(CASE WHEN pc_method = 'QR' THEN pc_amount ELSE 0 END) as qr_amount,
+                                    SUM(CASE WHEN pc_method = 'TechQR' THEN pc_amount ELSE 0 END) as techqr_amount,
+                                    SUM(CASE WHEN pc_method = 'Cash' THEN pc_amount ELSE 0 END) as cash_amount,
+                                    SUM(CASE WHEN pc_method = 'QR' THEN 1 ELSE 0 END) as qr_count,
+                                    SUM(CASE WHEN pc_method = 'TechQR' THEN 1 ELSE 0 END) as techqr_count,
+                                    SUM(CASE WHEN pc_method = 'Cash' THEN 1 ELSE 0 END) as cash_count
+                                FROM tms_payment_collection";
+                                $payment_stats = $mysqli->query($payment_stats_query);
+                                $stats = $payment_stats->fetch_object();
+                                
+                                // Get recent payments with technician details
+                                $recent_payments_query = "SELECT pc.*, t.t_name, sb.sb_id 
+                                    FROM tms_payment_collection pc
+                                    LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
+                                    LEFT JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
+                                    ORDER BY pc.pc_collected_at DESC 
+                                    LIMIT 10";
+                                $recent_payments = $mysqli->query($recent_payments_query);
+                                ?>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->total_amount ?? 0, 2); ?></h3>
+                                            <small style="opacity: 0.9;">Total Collected</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->qr_amount ?? 0, 2); ?></h3>
+                                            <small style="opacity: 0.9;">Company QR (<?php echo $stats->qr_count ?? 0; ?>)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 10px; color: white;">
+                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->techqr_amount ?? 0, 2); ?></h3>
+                                            <small style="opacity: 0.9;">Tech QR (<?php echo $stats->techqr_count ?? 0; ?>)</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 10px; color: white;">
+                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->cash_amount ?? 0, 2); ?></h3>
+                                            <small style="opacity: 0.9;">Cash (<?php echo $stats->cash_count ?? 0; ?>)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <?php if($recent_payments && $recent_payments->num_rows > 0): ?>
+                                <h6 class="mb-3" style="font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-history"></i> Recent Payment Collections
+                                </h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead style="background: #f8f9fa;">
+                                            <tr>
+                                                <th>Booking ID</th>
+                                                <th>Amount</th>
+                                                <th>Method</th>
+                                                <th>Collected By</th>
+                                                <th>Date & Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php while($payment = $recent_payments->fetch_object()): ?>
+                                            <tr>
+                                                <td><strong>#<?php echo $payment->sb_id; ?></strong></td>
+                                                <td><strong style="color: #10b981;">₹<?php echo number_format($payment->pc_amount, 2); ?></strong></td>
+                                                <td>
+                                                    <?php if($payment->pc_method == 'QR'): ?>
+                                                        <span class="badge badge-primary">Company QR</span>
+                                                    <?php elseif($payment->pc_method == 'TechQR'): ?>
+                                                        <span class="badge badge-warning">Tech QR</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-success">Cash</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($payment->t_name); ?></td>
+                                                <td><?php echo date('d M Y, h:i A', strtotime($payment->pc_collected_at)); ?></td>
+                                            </tr>
+                                            <?php endwhile; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <?php else: ?>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> No payment collections yet.
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!--Recent Bookings-->
                 <div class="card shadow-sm">
                     <div class="card-header bg-white border-bottom py-3">

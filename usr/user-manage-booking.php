@@ -537,7 +537,10 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                 <?php endif; ?>
             </div>
             
-            <div class="action-buttons">
+            <div class="action-buttons" style="grid-template-columns: 1fr 1fr 1fr;">
+                <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
+                    <i class="fas fa-eye"></i> View
+                </a>
                 <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-map-marker-alt"></i> Track
                 </a>
