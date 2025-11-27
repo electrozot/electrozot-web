@@ -276,7 +276,7 @@
                                     <i class="fas fa-rupee-sign" style="font-size: 2rem;"></i>
                                 </div>
                                 <?php
-                                $today_sales_query = "SELECT SUM(sb_total_price) FROM tms_service_booking 
+                                $today_sales_query = "SELECT SUM(COALESCE(sb_final_price, sb_total_price, 0)) FROM tms_service_booking 
                                                      WHERE DATE(sb_created_at) = CURDATE() AND sb_status = 'Completed'";
                                 $stmt_today = $mysqli->prepare($today_sales_query);
                                 $stmt_today->execute();
@@ -419,14 +419,21 @@
                                 </thead>
                                 <tbody>
                                     <?php
-                                    // Service Bookings - Unassigned (Pending/Approved) OR Rejected
-                                    $ret_service = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name 
+                                    // Service Bookings - Show recent activity (Unassigned, Rejected, or Recently Completed)
+                                    $ret_service = "SELECT sb.*, u.u_fname, u.u_lname, s.s_name,
+                                                    COALESCE(sb.sb_final_price, sb.sb_total_price, 0) as display_price
                                                     FROM tms_service_booking sb
                                                     LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                                                     LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                                                     WHERE (sb.sb_technician_id IS NULL AND sb.sb_status NOT IN ('Cancelled', 'Completed'))
                                                     OR sb.sb_status = 'Rejected'
-                                                    ORDER BY sb.sb_created_at DESC
+                                                    OR (sb.sb_status = 'Completed' AND sb.sb_completed_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR))
+                                                    ORDER BY 
+                                                      CASE 
+                                                        WHEN sb.sb_status = 'Completed' THEN sb.sb_completed_at
+                                                        WHEN sb.sb_status = 'Rejected' THEN sb.sb_rejected_at
+                                                        ELSE sb.sb_created_at
+                                                      END DESC
                                                     LIMIT 20";
                                     $stmt_service = $mysqli->prepare($ret_service);
                                     $stmt_service->execute();
@@ -621,7 +628,8 @@
                                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                                    LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                                    WHERE sb.sb_status = 'Rejected' OR sb.sb_status = 'Cancelled'
-                                   ORDER BY sb.sb_booking_date DESC
+                                   ORDER BY 
+                                     COALESCE(sb.sb_rejected_at, sb.sb_cancelled_at, sb.sb_updated_at) DESC
                                    LIMIT 10";
                 $rejected_result = $mysqli->query($rejected_query);
                 

@@ -9,7 +9,7 @@ ob_end_clean();
 header('Content-Type: application/json');
 header('Cache-Control: no-cache, must-revalidate');
 
-// Get recent bookings (last 10)
+// Get recent bookings (last 10) - exclude cancelled bookings
 $query = "SELECT sb.sb_id, sb.sb_status, sb.sb_created_at, sb.sb_updated_at,
                  u.u_fname, u.u_lname, u.u_phone,
                  s.s_name,
@@ -18,6 +18,7 @@ $query = "SELECT sb.sb_id, sb.sb_status, sb.sb_created_at, sb.sb_updated_at,
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+          WHERE sb.sb_status != 'Cancelled'
           ORDER BY sb.sb_created_at DESC
           LIMIT 10";
 

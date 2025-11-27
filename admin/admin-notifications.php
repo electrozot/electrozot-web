@@ -19,6 +19,13 @@ $where_conditions = [];
 $params = [];
 $types = '';
 
+// IMPORTANT: Exclude bookings cancelled by admin or customer (only show technician rejections)
+// Also exclude all 'Cancelled' status bookings as a fallback for old data
+$where_conditions[] = "(
+    (sb.sb_cancelled_by IS NULL OR sb.sb_cancelled_by NOT IN ('admin', 'user'))
+    AND sb.sb_status != 'Cancelled'
+)";
+
 if($filter != 'all') {
     // Handle Rejected filter to include all rejection statuses
     if($filter == 'Rejected') {

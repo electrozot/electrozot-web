@@ -724,5 +724,30 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
         `;
         document.head.appendChild(style);
     </script>
+    
+    <script>
+    // Live booking list updates
+    let lastBookingCount = document.querySelectorAll('.booking-card').length;
+    
+    function checkForBookingUpdates() {
+        fetch('api-dashboard-stats.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const currentCount = document.querySelectorAll('.booking-card').length;
+                    
+                    // If booking count changed, reload to show updates
+                    if (data.stats.total !== lastBookingCount && lastBookingCount > 0) {
+                        window.location.reload();
+                    }
+                    lastBookingCount = data.stats.total;
+                }
+            })
+            .catch(error => console.error('Error checking booking updates:', error));
+    }
+    
+    // Check every 10 seconds
+    setInterval(checkForBookingUpdates, 10000);
+    </script>
 </body>
 </html>

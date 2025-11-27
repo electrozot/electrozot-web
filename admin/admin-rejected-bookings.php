@@ -120,7 +120,9 @@ $rejected_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_n
                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                    LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                    WHERE sb.sb_status IN ('Rejected', 'Not Done')
-                   ORDER BY sb.sb_not_done_at DESC, sb.sb_booking_date DESC";
+                   ORDER BY 
+                     COALESCE(sb.sb_rejected_at, sb.sb_not_done_at, sb.sb_updated_at) DESC,
+                     sb.sb_booking_date DESC";
 $rejected_result = $mysqli->query($rejected_query);
 
 // Get count for dashboard

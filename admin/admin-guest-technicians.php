@@ -175,55 +175,85 @@ if(isset($_POST['approve_guest'])){
             }
             
             if($approve_stmt->execute()){
-                // Insert technician skills if provided
+                // Get selected skills
                 $selected_skill_ids = isset($_POST['skills']) ? $_POST['skills'] : [];
                 
-                if(!empty($selected_skill_ids)) {
-                    // Check which column names exist in the table
-                    $columns_check = $mysqli->query("SHOW COLUMNS FROM tms_technician_skills");
-                    $column_names = [];
-                    while($col = $columns_check->fetch_assoc()) {
-                        $column_names[] = $col['Field'];
-                    }
+                // Check if skills are provided
+                if(empty($selected_skill_ids)) {
+                    // Rollback the approval - set back to guest status
+                    $rollback_query = "UPDATE tms_technician SET t_status = 'Pending', t_is_guest = 1 WHERE t_id = ?";
+                    $rollback_stmt = $mysqli->prepare($rollback_query);
+                    $rollback_stmt->bind_param('i', $guest_id);
+                    $rollback_stmt->execute();
                     
-                    // Determine correct column names based on what exists
-                    $tech_col = 'ts_technician_id';
-                    $service_col = 'ts_service_id';
-                    
-                    if(in_array('technician_id', $column_names)) {
-                        $tech_col = 'technician_id';
-                    } elseif(in_array('t_id', $column_names)) {
-                        $tech_col = 't_id';
-                    }
-                    
-                    if(in_array('service_id', $column_names)) {
-                        $service_col = 'service_id';
-                    } elseif(in_array('s_id', $column_names)) {
-                        $service_col = 's_id';
-                    }
-                    
-                    // Insert skills with detected column names
-                    $skill_insert = "INSERT INTO tms_technician_skills ($tech_col, $service_col) VALUES (?, ?)";
-                    $skill_stmt = $mysqli->prepare($skill_insert);
-                    
-                    $success_count = 0;
-                    foreach ($selected_skill_ids as $service_id) {
-                        $service_id = intval($service_id);
-                        $skill_stmt->bind_param("ii", $guest_id, $service_id);
-                        if ($skill_stmt->execute()) {
-                            $success_count++;
-                        }
-                    }
-                    $skill_stmt->close();
-                    
-                    $_SESSION['success'] = "Guest technician approved successfully with " . $success_count . " skills! Now a regular EZ Technician.";
-                } else {
-                    $_SESSION['success'] = "Guest technician approved successfully! Now a regular EZ Technician.";
+                    $_SESSION['error'] = "Please select at least one skill/service for the technician before approving!";
+                    header("Location: admin-guest-technicians.php");
+                    exit();
                 }
+                
+                // Check which column names exist in the table
+                $columns_check = $mysqli->query("SHOW COLUMNS FROM tms_technician_skills");
+                $column_names = [];
+                while($col = $columns_check->fetch_assoc()) {
+                    $column_names[] = $col['Field'];
+                }
+                
+                // Determine correct column names based on what exists
+                $tech_col = 'ts_technician_id';
+                $service_col = 'ts_service_id';
+                
+                if(in_array('technician_id', $column_names)) {
+                    $tech_col = 'technician_id';
+                } elseif(in_array('t_id', $column_names)) {
+                    $tech_col = 't_id';
+                }
+                
+                if(in_array('service_id', $column_names)) {
+                    $service_col = 'service_id';
+                } elseif(in_array('s_id', $column_names)) {
+                    $service_col = 's_id';
+                }
+                
+                // Delete any existing skills for this technician first (in case of re-approval)
+                $delete_old_skills = "DELETE FROM tms_technician_skills WHERE $tech_col = ?";
+                $delete_stmt = $mysqli->prepare($delete_old_skills);
+                $delete_stmt->bind_param('i', $guest_id);
+                $delete_stmt->execute();
+                
+                // Insert skills with detected column names
+                $skill_insert = "INSERT INTO tms_technician_skills ($tech_col, $service_col) VALUES (?, ?)";
+                $skill_stmt = $mysqli->prepare($skill_insert);
+                
+                $success_count = 0;
+                $failed_skills = [];
+                
+                foreach ($selected_skill_ids as $service_id) {
+                    $service_id = intval($service_id);
+                    $skill_stmt->bind_param("ii", $guest_id, $service_id);
+                    if ($skill_stmt->execute()) {
+                        $success_count++;
+                    } else {
+                        $failed_skills[] = $service_id;
+                    }
+                }
+                $skill_stmt->close();
+                
+                if($success_count > 0) {
+                    $_SESSION['success'] = "Guest technician approved successfully with " . $success_count . " skills! Now a regular EZ Technician and ready for job assignments.";
+                } else {
+                    // Rollback if no skills were added
+                    $rollback_query = "UPDATE tms_technician SET t_status = 'Pending', t_is_guest = 1 WHERE t_id = ?";
+                    $rollback_stmt = $mysqli->prepare($rollback_query);
+                    $rollback_stmt->bind_param('i', $guest_id);
+                    $rollback_stmt->execute();
+                    
+                    $_SESSION['error'] = "Failed to add skills. Technician approval cancelled. Please try again.";
+                }
+                
                 header("Location: admin-guest-technicians.php");
                 exit();
             } else {
-                $_SESSION['error'] = "Failed to approve technician.";
+                $_SESSION['error'] = "Failed to approve technician: " . $mysqli->error;
                 header("Location: admin-guest-technicians.php");
                 exit();
             }
@@ -407,17 +437,20 @@ $guest_result = $mysqli->query($guest_query);
                                                     <!-- Detailed Skills Section -->
                                                     <div class="row mt-3">
                                                         <div class="col-12">
-                                                            <button type="button" class="btn btn-info btn-block" data-toggle="collapse" data-target="#skills_<?php echo $guest->t_id; ?>">
-                                                                <i class="fas fa-tools"></i> Select Detailed Service Skills (Optional - Click to Expand)
+                                                            <div class="alert alert-warning">
+                                                                <i class="fas fa-exclamation-triangle"></i> <strong>IMPORTANT:</strong> You must select at least one service skill below before approving. Without skills, the technician won't appear in job assignment lists!
+                                                            </div>
+                                                            <button type="button" class="btn btn-danger btn-block btn-lg" data-toggle="collapse" data-target="#skills_<?php echo $guest->t_id; ?>">
+                                                                <i class="fas fa-tools"></i> Select Service Skills (REQUIRED - Click to Expand)
                                                             </button>
                                                         </div>
                                                     </div>
                                                     
-                                                    <div class="collapse mt-3" id="skills_<?php echo $guest->t_id; ?>">
-                                                        <div class="card card-body bg-light">
-                                                            <p class="text-muted mb-3">
-                                                                <i class="fas fa-info-circle"></i> Select all specific services this technician can perform
-                                                            </p>
+                                                    <div class="collapse show mt-3" id="skills_<?php echo $guest->t_id; ?>">
+                                                        <div class="card card-body bg-light border-danger">
+                                                            <div class="alert alert-danger">
+                                                                <i class="fas fa-exclamation-circle"></i> <strong>REQUIRED:</strong> Select all specific services this technician can perform. At least one skill must be selected!
+                                                            </div>
                                                             
                                                             <?php 
                                                             $colors = ['primary', 'info', 'success', 'warning', 'secondary', 'dark', 'danger', 'primary'];

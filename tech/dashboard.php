@@ -70,9 +70,14 @@ if($filter == 'pending') {
 // Note: "All" filter shows everything with Pending bookings automatically at top due to status_priority sorting
 
 if(!empty($search)) {
-    $where_clause .= " AND u.u_phone LIKE ?";
-    $params[] = "%{$search}%";
-    $types .= 's';
+    $where_clause .= " AND (u.u_phone LIKE ? OR u.u_fname LIKE ? OR u.u_lname LIKE ? OR CONCAT(u.u_fname, ' ', u.u_lname) LIKE ? OR sb.sb_id LIKE ?)";
+    $search_param = "%{$search}%";
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $types .= 'sssss';
 }
 
 // Query to get only active bookings (exclude cancelled ones)
@@ -96,26 +101,36 @@ $bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_n
                    ORDER BY status_priority ASC, sb.sb_created_at DESC";
 
 $stmt_bookings = $mysqli->prepare($bookings_query);
-if(count($params) == 1) {
-    $stmt_bookings->bind_param('ii', $t_id, $params[0]);
-} else {
-    $stmt_bookings->bind_param('iii', $t_id, $params[0], $params[1]);
+
+// Bind parameters: first for cancelled bookings join, then the WHERE clause params
+$bind_params = array_merge([$t_id], $params);
+$bind_types = 'i' . $types;
+
+// Create references for bind_param
+$bind_refs = [];
+$bind_refs[] = &$bind_types;
+foreach($bind_params as $key => $value) {
+    $bind_refs[] = &$bind_params[$key];
 }
+call_user_func_array(array($stmt_bookings, 'bind_param'), $bind_refs);
+
 $stmt_bookings->execute();
 $bookings_result = $stmt_bookings->get_result();
 
-// Get counts
+// Get counts (excluding cancelled bookings)
 $new_count = 0;
 $pending_count = 0;
 $completed_count = 0;
 
 $count_query = "SELECT 
-                COUNT(CASE WHEN sb_status = 'Pending' THEN 1 END) as new_count,
-                COUNT(CASE WHEN sb_status = 'In Progress' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN sb_status = 'Completed' THEN 1 END) as completed_count
-                FROM tms_service_booking WHERE sb_technician_id = ?";
+                COUNT(CASE WHEN sb.sb_status = 'Pending' THEN 1 END) as new_count,
+                COUNT(CASE WHEN sb.sb_status = 'In Progress' THEN 1 END) as pending_count,
+                COUNT(CASE WHEN sb.sb_status = 'Completed' THEN 1 END) as completed_count
+                FROM tms_service_booking sb
+                LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
+                WHERE sb.sb_technician_id = ? AND cb.cb_id IS NULL";
 $stmt_count = $mysqli->prepare($count_query);
-$stmt_count->bind_param('i', $t_id);
+$stmt_count->bind_param('ii', $t_id, $t_id);
 $stmt_count->execute();
 $count_result = $stmt_count->get_result();
 $counts = $count_result->fetch_object();
@@ -754,19 +769,19 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn {
-            padding: 10px 20px;
+            padding: 6px 12px;
             border: 2px solid transparent;
             background: white;
-            border-radius: 25px;
-            font-weight: 800;
+            border-radius: 20px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             color: #1e293b;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
+            gap: 4px;
+            font-size: 0.8rem;
             white-space: nowrap;
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -789,11 +804,11 @@ $completed_count = $counts->completed_count;
         .filter-btn .badge {
             background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 900;
-            min-width: 18px;
+            min-width: 16px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
         }
@@ -804,7 +819,7 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn i {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         /* Main Content */
@@ -1847,6 +1862,11 @@ $completed_count = $counts->completed_count;
         <div class="header-actions">
             <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
                 <i class="fas fa-bell"></i>
+                <?php if($new_count > 0): ?>
+                    <span class="notification-count" id="notificationCount"><?php echo $new_count; ?></span>
+                <?php else: ?>
+                    <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+                <?php endif; ?>
                 <span class="notif-dot" id="headerNotifDot" style="display: none;"></span>
             </button>
         </div>
@@ -1882,29 +1902,29 @@ $completed_count = $counts->completed_count;
     <!-- Control Bar -->
     <div class="control-bar">
         <div class="filter-buttons-row">
-            <a href="?filter=pending" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
+            <a href="?filter=pending<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
                 <i class="fas fa-clock"></i> Pending
                 <?php if($pending_count > 0): ?>
                     <span class="badge"><?php echo $pending_count; ?></span>
                 <?php endif; ?>
             </a>
             
-            <a href="?filter=completed" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
-                <i class="fas fa-check-circle"></i> Completed
-                <?php if($completed_count > 0): ?>
-                    <span class="badge"><?php echo $completed_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <a href="?" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
+            <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
                 <i class="fas fa-list"></i> All
                 <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
                     <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
                 <?php endif; ?>
             </a>
             
+            <a href="?filter=completed<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
+                <i class="fas fa-check-circle"></i> Completed
+                <?php if($completed_count > 0): ?>
+                    <span class="badge"><?php echo $completed_count; ?></span>
+                <?php endif; ?>
+            </a>
+            
             <?php if(!empty($search)): ?>
-                <a href="?" class="filter-btn">
+                <a href="?<?php echo $filter != 'all' ? 'filter=' . $filter : ''; ?>" class="filter-btn">
                     <i class="fas fa-times"></i> Clear Search
                 </a>
             <?php endif; ?>
@@ -2144,15 +2164,19 @@ $completed_count = $counts->completed_count;
                                 $payment_already_collected = $payment_check_data->count > 0;
                                 ?>
                                 
-                                <a href="collect-payment.php?id=<?php echo $booking->sb_id; ?>" class="mobile-done-btn">
-                                    <i class="fas fa-rupee-sign"></i> Collect Payment
-                                </a>
-                                
                                 <?php if($payment_already_collected): ?>
+                                    <!-- Payment already collected, show Complete Service button -->
+                                    <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=done" class="mobile-done-btn">
+                                        <i class="fas fa-check-circle"></i> Complete Service
+                                    </a>
                                     <button class="mobile-notdone-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Cannot mark as Not Done after payment collected">
                                         <i class="fas fa-lock"></i> Payment Collected
                                     </button>
                                 <?php else: ?>
+                                    <!-- Payment not collected yet, show Collect Payment button -->
+                                    <a href="collect-payment.php?id=<?php echo $booking->sb_id; ?>" class="mobile-done-btn">
+                                        <i class="fas fa-rupee-sign"></i> Collect Payment
+                                    </a>
                                     <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=not-done" class="mobile-notdone-btn">
                                         <i class="fas fa-times"></i> Not Done
                                     </a>
@@ -2234,5 +2258,43 @@ $completed_count = $counts->completed_count;
     
     <!-- Bottom Navigation Bar -->
     <?php include('includes/bottom-nav.php'); ?>
+    
+    <script>
+    // Live dashboard updates for technician
+    function updateTechDashboardStats() {
+        fetch('api-tech-dashboard-stats.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update stats if elements exist
+                    const pendingEl = document.querySelector('[data-stat="pending"]');
+                    const progressEl = document.querySelector('[data-stat="progress"]');
+                    const completedEl = document.querySelector('[data-stat="completed"]');
+                    const totalEl = document.querySelector('[data-stat="total"]');
+                    
+                    if (pendingEl && pendingEl.textContent !== data.stats.pending.toString()) {
+                        pendingEl.textContent = data.stats.pending;
+                        pendingEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (progressEl && progressEl.textContent !== data.stats.progress.toString()) {
+                        progressEl.textContent = data.stats.progress;
+                        progressEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (completedEl && completedEl.textContent !== data.stats.completed.toString()) {
+                        completedEl.textContent = data.stats.completed;
+                        completedEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (totalEl && totalEl.textContent !== data.stats.total.toString()) {
+                        totalEl.textContent = data.stats.total;
+                        totalEl.style.animation = 'pulse 0.5s';
+                    }
+                }
+            })
+            .catch(error => console.error('Error updating tech dashboard:', error));
+    }
+    
+    // Update every 8 seconds
+    setInterval(updateTechDashboardStats, 8000);
+    </script>
 </body>
 </html>

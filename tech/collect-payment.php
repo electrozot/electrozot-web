@@ -183,47 +183,135 @@ if(isset($_POST['collect_payment'])){
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
             min-height: 100vh;
-            padding: 15px;
+            padding-top: 70px;
+            padding-bottom: 100px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            padding: 8px 20px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+            height: 70px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        
+        .logo-image {
+            width: 55px;
+            height: 55px;
+            background: transparent;
+            border-radius: 8px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .notif-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            text-decoration: none;
+        }
+        
+        .notif-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+            color: white;
         }
         
         .container {
             max-width: 500px;
             margin: 0 auto;
-        }
-        
-        .back-btn {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 15px;
-            border: 2px solid rgba(255,255,255,0.25);
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        .back-btn:hover {
-            background: rgba(255,255,255,0.25);
-            color: white;
-            text-decoration: none;
-            transform: translateX(-3px);
+            padding: 0 15px 15px 15px;
         }
         
         .card {
             background: white;
-            border-radius: 25px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             margin-bottom: 15px;
             animation: slideUp 0.4s ease;
+            border: 1px solid #e2e8f0;
         }
         
         @keyframes slideUp {
@@ -238,20 +326,23 @@ if(isset($_POST['collect_payment'])){
         }
         
         .card-header {
-            text-align: center;
-            margin-bottom: 25px;
+            text-align: left;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
         }
         
         .card-header h3 {
             color: #1e293b;
-            font-weight: 900;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
             margin-bottom: 5px;
         }
         
         .card-header p {
             color: #64748b;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin: 0;
         }
         
         .amount-display {
@@ -323,17 +414,18 @@ if(isset($_POST['collect_payment'])){
         }
         
         .payment-method {
-            border: 3px solid #e2e8f0;
-            border-radius: 18px;
-            padding: 18px;
-            margin-bottom: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             position: relative;
             overflow: hidden;
+            background: #f8fafc;
         }
         
         .payment-method::before {
@@ -353,15 +445,15 @@ if(isset($_POST['collect_payment'])){
         }
         
         .payment-method:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+            border-color: #10b981;
+            background: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1);
         }
         
         .payment-method.selected {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+            border-color: #10b981;
+            background: #ecfdf5;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
         }
         
         .payment-method-disabled {
@@ -382,18 +474,18 @@ if(isset($_POST['collect_payment'])){
         }
         
         .payment-method-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             flex-shrink: 0;
         }
         
         .payment-method-icon.qr {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
         }
         
@@ -467,23 +559,23 @@ if(isset($_POST['collect_payment'])){
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 16px;
-            border-radius: 50px;
-            font-weight: 900;
-            font-size: 1.05rem;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 700;
+            font-size: 1rem;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .btn-submit:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
         }
         
         .btn-submit:active:not(:disabled) {
@@ -532,18 +624,20 @@ if(isset($_POST['collect_payment'])){
         }
         
         .payment-collected-card {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 40px 30px;
-            border-radius: 25px;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            padding: 30px 25px;
+            border-radius: 20px;
             text-align: center;
             margin-bottom: 20px;
-            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
+            border: 2px solid #6ee7b7;
         }
         
         .payment-collected-card .icon {
-            font-size: 4.5rem;
-            margin-bottom: 20px;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            color: #10b981;
         }
         
         @keyframes scaleIn {
@@ -572,12 +666,14 @@ if(isset($_POST['collect_payment'])){
         }
         
         .payment-collected-card h4 {
-            font-weight: 900;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #065f46;
+            font-size: 1.3rem;
         }
         
         .payment-collected-card p {
-            opacity: 0.9;
+            color: #047857;
             font-size: 0.9rem;
         }
         
@@ -606,8 +702,25 @@ if(isset($_POST['collect_payment'])){
         }
         
         @media (max-width: 576px) {
+            .header {
+                padding: 8px 15px;
+            }
+            
+            .logo-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .brand-title {
+                font-size: 1.2rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.65rem;
+            }
+            
             .container {
-                padding: 0;
+                padding: 0 10px 10px 10px;
             }
             
             .card {
@@ -805,11 +918,25 @@ if(isset($_POST['collect_payment'])){
     ?>
     <?php endif; ?>
     
-    <div class="container">
-        <a href="dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
+    <!-- Header -->
+    <div class="header">
+        <a href="dashboard.php" class="logo-section">
+            <div class="logo-image">
+                <img src="../vendor/EZlogonew.png" alt="EZ">
+            </div>
+            <div class="brand-info">
+                <div class="brand-title">ELECTROZOT</div>
+                <div class="brand-subtitle">We Make Perfect</div>
+            </div>
         </a>
-        
+        <div class="header-actions">
+            <a href="dashboard.php" class="notif-icon-btn" title="Dashboard">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="container">
         <?php if(!empty($error)): ?>
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>

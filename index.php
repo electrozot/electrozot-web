@@ -202,6 +202,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <!-- Hidden field to store selected subcategory -->
+                                        <input type="hidden" name="sb_subcategory" id="guestSubcategoryHidden" value="">
                                         <div class="text-center mt-2">
                                             <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
                                                 <i class="fas fa-paper-plane"></i> Submit Booking
@@ -587,6 +589,12 @@
                         var subcategory = this.value;
                         
                         console.log('Selected subcategory:', subcategory);
+                        
+                        // Update hidden field with selected subcategory
+                        var hiddenSubcategory = document.getElementById('guestSubcategoryHidden');
+                        if(hiddenSubcategory) {
+                            hiddenSubcategory.value = subcategory;
+                        }
                         
                         serviceSelect.innerHTML = '<option value="">Loading...</option>';
                         serviceSelect.disabled = true;

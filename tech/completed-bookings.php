@@ -5,6 +5,10 @@ include('includes/checklogin.php');
 
 $tech_id = $_SESSION['t_id'];
 
+// Get filter and search parameters
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
 // Get completed bookings stats
 $total_completed_query = "SELECT COUNT(*) as count FROM tms_service_booking 
                           WHERE sb_technician_id = ? AND sb_status = 'Completed'";
@@ -13,29 +17,83 @@ $stmt->bind_param('i', $tech_id);
 $stmt->execute();
 $total_completed = $stmt->get_result()->fetch_object()->count;
 
-// Get this month's earnings
-$month_earnings_query = "SELECT SUM(sb_total_price) as total FROM tms_service_booking 
-                         WHERE sb_technician_id = ? 
-                         AND sb_status = 'Completed'
-                         AND MONTH(sb_updated_at) = MONTH(CURRENT_DATE())
-                         AND YEAR(sb_updated_at) = YEAR(CURRENT_DATE())";
+// Get today's earnings from payment collection
+$today_earnings_query = "SELECT SUM(pc.pc_amount) as total 
+                         FROM tms_payment_collection pc
+                         INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
+                         WHERE sb.sb_technician_id = ? 
+                         AND sb.sb_status = 'Completed'
+                         AND DATE(pc.pc_collected_at) = CURDATE()";
+$stmt = $mysqli->prepare($today_earnings_query);
+$stmt->bind_param('i', $tech_id);
+$stmt->execute();
+$today_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
+
+// Get this month's earnings from payment collection
+$month_earnings_query = "SELECT SUM(pc.pc_amount) as total 
+                         FROM tms_payment_collection pc
+                         INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
+                         WHERE sb.sb_technician_id = ? 
+                         AND sb.sb_status = 'Completed'
+                         AND MONTH(pc.pc_collected_at) = MONTH(CURRENT_DATE())
+                         AND YEAR(pc.pc_collected_at) = YEAR(CURRENT_DATE())";
 $stmt = $mysqli->prepare($month_earnings_query);
 $stmt->bind_param('i', $tech_id);
 $stmt->execute();
 $month_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
 
-// Get all completed bookings
-$bookings_query = "SELECT sb.*, 
-                          CONCAT(u.u_fname, ' ', u.u_lname) as customer_name,
-                          u.u_phone as customer_phone,
-                          s.s_name as service_name
-                   FROM tms_service_booking sb
-                   LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
-                   LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
-                   WHERE sb.sb_technician_id = ? AND sb.sb_status = 'Completed'
-                   ORDER BY sb.sb_updated_at DESC";
-$stmt = $mysqli->prepare($bookings_query);
+// Get total earnings from payment collection
+$total_earnings_query = "SELECT SUM(pc.pc_amount) as total 
+                         FROM tms_payment_collection pc
+                         INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
+                         WHERE sb.sb_technician_id = ? 
+                         AND sb.sb_status = 'Completed'";
+$stmt = $mysqli->prepare($total_earnings_query);
 $stmt->bind_param('i', $tech_id);
+$stmt->execute();
+$total_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
+
+// Build dynamic query based on filter and search
+$base_query = "SELECT sb.*, 
+                      CONCAT(u.u_fname, ' ', u.u_lname) as customer_name,
+                      u.u_phone as customer_phone,
+                      s.s_name as service_name,
+                      pc.pc_amount as payment_amount,
+                      pc.pc_method as payment_method,
+                      pc.pc_collected_at as payment_collected_at,
+                      pc.pc_status as payment_status
+               FROM tms_service_booking sb
+               LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
+               LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+               LEFT JOIN tms_payment_collection pc ON sb.sb_id = pc.pc_booking_id
+               WHERE sb.sb_technician_id = ? AND sb.sb_status = 'Completed'";
+
+// Add filter conditions
+if($filter == 'new') {
+    // New: Completed in last 7 days
+    $base_query .= " AND sb.sb_completed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+} elseif($filter == 'pending') {
+    // Pending: Payment collected but not verified
+    $base_query .= " AND pc.pc_status = 'Collected'";
+}
+
+// Add search condition
+if(!empty($search)) {
+    $base_query .= " AND (sb.sb_id LIKE ? OR CONCAT(u.u_fname, ' ', u.u_lname) LIKE ? OR sb.sb_phone LIKE ? OR s.s_name LIKE ?)";
+}
+
+$base_query .= " ORDER BY sb.sb_updated_at DESC";
+
+// Prepare and execute query
+$stmt = $mysqli->prepare($base_query);
+
+if(!empty($search)) {
+    $search_param = "%$search%";
+    $stmt->bind_param('issss', $tech_id, $search_param, $search_param, $search_param, $search_param);
+} else {
+    $stmt->bind_param('i', $tech_id);
+}
+
 $stmt->execute();
 $bookings = $stmt->get_result();
 ?>
@@ -185,28 +243,75 @@ $bookings = $stmt->get_result();
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         .stats-card {
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
-            color: white;
             border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-            transition: transform 0.3s ease;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            min-height: 80px;
         }
+        
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
         .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
-        .stats-card h3 {
-            font-size: 2rem;
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-content {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
             font-weight: 900;
             margin: 0;
+            line-height: 1.2;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
-        .stats-card p {
-            margin: 5px 0 0 0;
+        
+        .stat-label {
+            margin: 2px 0 0 0;
             opacity: 0.95;
             font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .booking-card {
             background: white;
@@ -298,26 +403,64 @@ $bookings = $stmt->get_result();
 
     <div class="container">
         <div class="page-header">
-            <h2 style="margin: 0; color: #10b981; font-weight: 900;">
+            <h2 style="margin: 0 0 15px 0; color: #10b981; font-weight: 900; font-size: 1.5rem;">
                 <i class="fas fa-check-circle"></i> Completed Bookings
             </h2>
+            
+            <!-- Search Bar -->
+            <form method="GET" action="">
+                <div style="position: relative;">
+                    <input type="text" 
+                           name="search" 
+                           id="searchInput"
+                           placeholder="Search by ID, customer, phone, service..." 
+                           value="<?php echo htmlspecialchars($search); ?>"
+                           style="width: 100%; padding: 12px 50px 12px 15px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.3s;">
+                    <button type="submit" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 700;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Stats Cards -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="stats-card">
-                    <i class="fas fa-clipboard-check" style="font-size: 2rem; opacity: 0.3; float: right;"></i>
-                    <h3><?php echo $total_completed; ?></h3>
-                    <p>Total Completed Bookings</p>
-                </div>
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 12px;">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-day"></i>
             </div>
-            <div class="col-md-6">
-                <div class="stats-card" style="background: linear-gradient(135deg, #00c853 0%, #00F260 100%);">
-                    <i class="fas fa-rupee-sign" style="font-size: 2rem; opacity: 0.3; float: right;"></i>
-                    <h3>₹<?php echo number_format($month_earnings, 2); ?></h3>
-                    <p>This Month's Earnings</p>
-                </div>
+            <div class="stat-content">
+                <div class="stat-value">₹<?php echo number_format($today_earnings, 2); ?></div>
+                <div class="stat-label">Today's Earnings</div>
+            </div>
+        </div>
+        
+        <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); margin-bottom: 12px;">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">₹<?php echo number_format($month_earnings, 2); ?></div>
+                <div class="stat-label">This Month's Earnings</div>
+            </div>
+        </div>
+        
+        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); margin-bottom: 12px;">
+            <div class="stat-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">₹<?php echo number_format($total_earnings, 2); ?></div>
+                <div class="stat-label">Total Earnings</div>
+            </div>
+        </div>
+        
+        <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); margin-bottom: 20px;">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value"><?php echo $total_completed; ?></div>
+                <div class="stat-label">Total Completed Bookings</div>
             </div>
         </div>
 
@@ -331,7 +474,7 @@ $bookings = $stmt->get_result();
                             <i class="fas fa-hashtag"></i> <?php echo $booking->sb_id; ?>
                         </div>
                         <div class="price-badge">
-                            ₹<?php echo number_format($booking->sb_total_price, 2); ?>
+                            ₹<?php echo number_format($booking->payment_amount ?? $booking->sb_total_price ?? 0, 2); ?>
                         </div>
                     </div>
                     
@@ -346,6 +489,19 @@ $bookings = $stmt->get_result();
                         <i class="fas fa-calendar"></i> Booking Date: <?php echo date('d M Y', strtotime($booking->sb_booking_date)); ?>
                         <br>
                         <i class="fas fa-check"></i> Completed: <?php echo date('d M Y h:i A', strtotime($booking->sb_updated_at)); ?>
+                        <?php if($booking->payment_amount): ?>
+                        <br>
+                        <i class="fas fa-credit-card"></i> Payment: 
+                        <?php 
+                        if($booking->payment_method == 'QR') {
+                            echo '<span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">Company QR</span>';
+                        } elseif($booking->payment_method == 'TechQR') {
+                            echo '<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">Tech QR</span>';
+                        } elseif($booking->payment_method == 'Cash') {
+                            echo '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">Cash</span>';
+                        }
+                        ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <?php endwhile; ?>

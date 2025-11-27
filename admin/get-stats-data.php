@@ -26,7 +26,7 @@ function getBookingStats($mysqli, $start_date, $end_date = null) {
                 SUM(CASE WHEN sb_status = 'Approved' THEN 1 ELSE 0 END) as approved,
                 SUM(CASE WHEN sb_status = 'Rejected' THEN 1 ELSE 0 END) as rejected,
                 SUM(CASE WHEN sb_status = 'Cancelled' THEN 1 ELSE 0 END) as cancelled,
-                SUM(CASE WHEN sb_status = 'Completed' THEN sb_total_price ELSE 0 END) as revenue
+                SUM(CASE WHEN sb_status = 'Completed' THEN COALESCE(sb_final_price, sb_total_price, 0) ELSE 0 END) as revenue
               FROM tms_service_booking 
               WHERE DATE(sb_created_at) BETWEEN ? AND ?";
     
@@ -46,7 +46,7 @@ $year_stats = getBookingStats($mysqli, $this_year_start, $today);
 $last_month_stats = getBookingStats($mysqli, $last_month_start, $last_month_end);
 
 // Get top services
-$top_services_query = "SELECT s.s_name, s.s_category, COUNT(*) as booking_count, SUM(sb.sb_total_price) as total_revenue
+$top_services_query = "SELECT s.s_name, s.s_category, COUNT(*) as booking_count, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as total_revenue
                        FROM tms_service_booking sb
                        JOIN tms_service s ON sb.sb_service_id = s.s_id
                        WHERE sb.sb_status = 'Completed'
@@ -56,7 +56,7 @@ $top_services_query = "SELECT s.s_name, s.s_category, COUNT(*) as booking_count,
 $top_services = $mysqli->query($top_services_query);
 
 // Get top technicians
-$top_techs_query = "SELECT t.t_name, COUNT(*) as completed_jobs, SUM(sb.sb_total_price) as total_revenue
+$top_techs_query = "SELECT t.t_name, COUNT(*) as completed_jobs, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as total_revenue
                     FROM tms_service_booking sb
                     JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                     WHERE sb.sb_status = 'Completed'

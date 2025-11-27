@@ -20,7 +20,6 @@ if (!isset($user)) {
             </div>
         </a>
         <div class="user-section">
-            <div class="user-name"><?php echo htmlspecialchars($user->u_fname); ?></div>
             <div class="header-icons">
                 <a href="user-view-profile.php" class="header-icon">
                     <i class="fas fa-user"></i>

@@ -4,15 +4,21 @@
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding-top: 75px;
         padding-bottom: 65px;
         min-height: 100vh;
     }
     
     .top-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
         background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
         color: white;
         padding: 10px 15px;
         box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+        z-index: 1000;
     }
     
     .header-content {
@@ -53,12 +59,6 @@
         align-items: center;
         gap: 12px;
         margin-left: auto;
-    }
-    
-    .user-name {
-        font-size: 16px;
-        font-weight: 600;
-        white-space: nowrap;
     }
     
     .header-icons {

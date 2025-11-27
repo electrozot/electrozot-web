@@ -522,6 +522,31 @@ $booking_stats = $booking_result->fetch_object();
         </a>
     </div>
 
+    <script>
+    // Live dashboard updates
+    function updateDashboardStats() {
+        fetch('api-dashboard-stats.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update stats if elements exist
+                    const pendingEl = document.querySelector('[data-stat="pending"]');
+                    const approvedEl = document.querySelector('[data-stat="approved"]');
+                    const completedEl = document.querySelector('[data-stat="completed"]');
+                    const totalEl = document.querySelector('[data-stat="total"]');
+                    
+                    if (pendingEl) pendingEl.textContent = data.stats.pending;
+                    if (approvedEl) approvedEl.textContent = data.stats.approved;
+                    if (completedEl) completedEl.textContent = data.stats.completed;
+                    if (totalEl) totalEl.textContent = data.stats.total;
+                }
+            })
+            .catch(error => console.error('Error updating dashboard:', error));
+    }
+    
+    // Update every 10 seconds
+    setInterval(updateDashboardStats, 10000);
+    </script>
 
 </body>
 </html>

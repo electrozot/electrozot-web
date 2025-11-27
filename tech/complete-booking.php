@@ -74,7 +74,10 @@ $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
 )");
 
 // PAYMENT VERIFICATION - Check if payment has been collected and get details
-$payment_check = $mysqli->prepare("SELECT * FROM tms_payment_collection WHERE pc_booking_id = ?");
+$payment_check = $mysqli->prepare("SELECT pc.*, t.t_name as technician_name 
+                                   FROM tms_payment_collection pc
+                                   LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
+                                   WHERE pc.pc_booking_id = ?");
 $payment_check->bind_param('i', $sb_id);
 $payment_check->execute();
 $payment_result = $payment_check->get_result();
@@ -313,37 +316,127 @@ if(isset($_POST['mark_not_done'])){
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../admin/vendor/fontawesome-free/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding-top: 80px;
+            padding-bottom: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Navbar Styles */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
+            padding: 12px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 8px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-icon-btn:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
         }
         
         .container {
             max-width: 700px;
             margin: 0 auto;
-        }
-        
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.3s;
-        }
-        
-        .back-btn:hover {
-            background: rgba(255,255,255,0.3);
-            color: white;
-            text-decoration: none;
+            padding: 0 20px;
         }
         
         .card {
@@ -367,7 +460,7 @@ if(isset($_POST['mark_not_done'])){
         }
         
         .card h3 {
-            color: #667eea;
+            color: #4facfe;
             font-weight: 900;
             margin-bottom: 30px;
             font-size: 2rem;
@@ -404,7 +497,7 @@ if(isset($_POST['mark_not_done'])){
         
         .info-row label {
             font-weight: 700;
-            color: #667eea;
+            color: #4facfe;
             font-size: 1rem;
         }
         
@@ -434,8 +527,8 @@ if(isset($_POST['mark_not_done'])){
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
             outline: none;
         }
         
@@ -450,8 +543,8 @@ if(isset($_POST['mark_not_done'])){
         }
         
         .file-upload:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: #4facfe;
+            background: #e6f7ff;
         }
         
         .file-upload i {
@@ -551,9 +644,223 @@ if(isset($_POST['mark_not_done'])){
             min-height: 120px;
             resize: vertical;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+                padding-bottom: 10px;
+            }
+            
+            .top-navbar {
+                padding: 10px 15px;
+            }
+            
+            .logo-image {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .brand-title {
+                font-size: 1.1rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.6rem;
+            }
+            
+            .nav-icon-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                border-radius: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            .booking-info {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+            
+            .info-row label {
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+            
+            .info-row span {
+                font-size: 0.95rem;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .form-group label {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+            
+            .form-control {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .file-upload {
+                padding: 20px;
+            }
+            
+            .file-upload i {
+                font-size: 2rem;
+            }
+            
+            .file-upload p {
+                font-size: 0.85rem;
+            }
+            
+            .btn-submit {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .btn-not-done {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            
+            .alert {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            textarea.form-control {
+                min-height: 100px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding-top: 65px;
+                padding-bottom: 5px;
+            }
+            
+            .top-navbar {
+                padding: 8px 10px;
+            }
+            
+            .logo-section {
+                gap: 8px;
+            }
+            
+            .logo-image {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .brand-title {
+                font-size: 1rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.55rem;
+            }
+            
+            .nav-icon-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            
+            .booking-info {
+                padding: 12px;
+            }
+            
+            .info-row label {
+                font-size: 0.8rem;
+            }
+            
+            .info-row span {
+                font-size: 0.9rem;
+            }
+            
+            .file-upload {
+                padding: 15px;
+            }
+            
+            .file-upload i {
+                font-size: 1.5rem;
+            }
+            
+            .file-upload p {
+                font-size: 0.8rem;
+            }
+            
+            .btn-submit {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .btn-not-done {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="logo-section">
+                <div class="logo-image">
+                    <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">Electrozot</span>
+                    <span class="brand-subtitle">We Make Perfect</span>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="dashboard.php" class="nav-icon-btn" title="Dashboard">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="notifications.php" class="nav-icon-btn" title="Notifications">
+                <i class="fas fa-bell"></i>
+            </a>
+        </div>
+    </nav>
+    
     <!-- Success Modal -->
     <?php if(isset($_GET['success']) && isset($_SESSION['completion_success'])): ?>
     <div id="successModal" style="
@@ -687,10 +994,6 @@ if(isset($_POST['mark_not_done'])){
     <?php endif; ?>
     
     <div class="container">
-        <a href="dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
         <?php if(!empty($error)): ?>
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
@@ -700,6 +1003,12 @@ if(isset($_POST['mark_not_done'])){
         <?php if(!empty($success)): ?>
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success); ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if($debug_mode): ?>
+        <div class="alert alert-success">
+            Debug Info: Action = "<?php echo htmlspecialchars($action); ?>", Payment Collected = <?php echo $payment_collected ? 'Yes' : 'No'; ?>, Booking ID = <?php echo $sb_id; ?>
         </div>
         <?php endif; ?>
         
@@ -753,31 +1062,60 @@ if(isset($_POST['mark_not_done'])){
                 <!-- Bill Amount - Show payment collected amount -->
                 <?php if($payment_collected && $payment_data): ?>
                     <input type="hidden" name="bill_amount" value="<?php echo $payment_data->pc_amount; ?>">
-                    <div class="alert alert-success" style="border-left: 4px solid #10b981; padding: 20px; border-radius: 15px; margin-bottom: 20px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fas fa-check-circle" style="font-size: 2.5rem; color: #10b981;"></i>
+                    <div style="border-left: 6px solid #ec4899; padding: 20px; border-radius: 15px; margin-bottom: 25px; background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.15);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-check" style="font-size: 2rem; color: white;"></i>
+                            </div>
                             <div style="flex: 1;">
-                                <strong style="color: #065f46; font-size: 1.1rem; display: block; margin-bottom: 5px;">
-                                    <i class="fas fa-rupee-sign"></i> Payment Collected: ₹<?php echo number_format($payment_data->pc_amount, 2); ?>
-                                </strong>
-                                <p style="margin: 0; color: #047857; font-size: 0.9rem;">
-                                    <i class="fas fa-info-circle"></i> 
-                                    Payment Method: 
-                                    <?php 
-                                    if($payment_data->pc_method == 'QR') {
-                                        echo '<span class="badge badge-primary">Company QR</span>';
-                                    } elseif($payment_data->pc_method == 'TechQR') {
-                                        echo '<span class="badge badge-warning">Technician QR</span>';
-                                    } else {
-                                        echo '<span class="badge badge-success">Cash</span>';
-                                    }
-                                    ?>
-                                </p>
-                                <small style="color: #065f46; opacity: 0.8;">
-                                    Collected at: <?php echo date('d M Y, h:i A', strtotime($payment_data->pc_collected_at)); ?>
-                                </small>
+                                <h4 style="color: #065f46; font-size: 1.1rem; font-weight: 700; margin: 0 0 5px 0;">
+                                    <i class="fas fa-rupee-sign"></i> Payment Collected:
+                                </h4>
+                                <div style="color: #065f46; font-size: 1.8rem; font-weight: 900; line-height: 1;">
+                                    ₹<?php echo number_format($payment_data->pc_amount, 2); ?>
+                                </div>
                             </div>
                         </div>
+                        
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(236, 72, 153, 0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-credit-card"></i> Payment Method:
+                                </span>
+                                <span>
+                                    <?php 
+                                    if($payment_data->pc_method == 'QR') {
+                                        echo '<span style="background: #3b82f6; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Company QR</span>';
+                                    } elseif($payment_data->pc_method == 'TechQR') {
+                                        echo '<span style="background: #f59e0b; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Tech QR</span>';
+                                    } else {
+                                        echo '<span style="background: #10b981; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Cash</span>';
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-clock"></i> Collected At:
+                                </span>
+                                <span style="color: #065f46; font-weight: 700; font-size: 0.9rem;">
+                                    <?php echo date('d M Y, h:i A', strtotime($payment_data->pc_collected_at)); ?>
+                                </span>
+                            </div>
+                            
+                            <?php if(isset($payment_data->technician_name)): ?>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-user"></i> Collected By:
+                                </span>
+                                <span style="color: #065f46; font-weight: 700; font-size: 0.9rem;">
+                                    <?php echo htmlspecialchars($payment_data->technician_name); ?>
+                                </span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
                     </div>
                 <?php elseif($admin_price_set): ?>
                     <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">

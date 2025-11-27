@@ -34,27 +34,247 @@ if(!$booking) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php include('vendor/inc/head.php'); ?>
-<body id="page-top">
-    <?php include('vendor/inc/nav.php'); ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Booking Details - Electrozot</title>
+    <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <?php include('vendor/inc/user-header-styles.php'); ?>
+    <style>
+        body {
+            padding-top: 0;
+        }
+        
+        .content {
+            padding: 15px;
+        }
 
-    <div id="wrapper">
-        <?php include('vendor/inc/sidebar.php'); ?>
+        
+        .status-header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            text-align: center;
+        }
+        
+        .booking-number {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        
+        .service-name {
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .section-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            flex: 0 0 120px;
+            font-size: 13px;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .image-gallery {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .image-item {
+            position: relative;
+        }
+        
+        .image-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .image-wrapper {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .image-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .btn i {
+            margin-right: 6px;
+        }
+        
+        .btn-view {
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+        }
+        
+        .btn-download {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #6366f1;
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-track {
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+        }
+        
+        .btn-orders {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #6366f1;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        
+        .alert-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <?php include('vendor/inc/user-header.php'); ?>
 
-        <div id="content-wrapper">
-            <div class="container-fluid">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="user-dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="user-manage-booking.php">My Bookings</a>
-                    </li>
-                    <li class="breadcrumb-item active">Booking #<?php echo $booking->sb_id; ?></li>
-                </ol>
+    <div class="content">
+        <!-- Status Header -->
+        <div class="status-header">
+            <div class="booking-number">
+                <i class="fas fa-receipt"></i> Booking #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?>
+            </div>
+            <div class="service-name"><?php echo htmlspecialchars($booking->s_name); ?></div>
+            <?php
+            $badge_style = '';
+            if($booking->sb_status == 'Completed') {
+                $badge_style = 'background: #10b981;';
+            } elseif($booking->sb_status == 'In Progress') {
+                $badge_style = 'background: #8b5cf6;';
+            } elseif($booking->sb_status == 'Pending') {
+                $badge_style = 'background: #f59e0b;';
+            } elseif(in_array($booking->sb_status, ['Cancelled', 'Rejected', 'Not Done'])) {
+                $badge_style = 'background: #ef4444;';
+            } else {
+                $badge_style = 'background: #6366f1;';
+            }
+            ?>
+            <div class="status-badge" style="<?php echo $badge_style; ?>">
+                <?php echo $booking->sb_status; ?>
+            </div>
+        </div>
 
-                <!-- Booking Header -->
-                <div class="card shadow-lg mb-4" style="border: none; border-radius: 15px;">
+        <!-- Service Details -->
+        <div class="section-card">
                     <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px 15px 0 0;">
                         <div class="row align-items-center">
                             <div class="col-md-6">

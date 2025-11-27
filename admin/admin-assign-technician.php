@@ -3,6 +3,7 @@
   include('vendor/inc/config.php');
   include('vendor/inc/checklogin.php');
   include('check-technician-availability.php'); // Include availability checker
+  include('includes/smart-technician-matcher.php'); // Include smart matcher for custom bookings
   check_login();
   $aid=$_SESSION['a_id'];
   
@@ -13,22 +14,29 @@
             $sb_id = isset($_POST['sb_id']) ? intval($_POST['sb_id']) : (isset($_GET['sb_id']) ? intval($_GET['sb_id']) : 0);
             $sb_technician_id = isset($_POST['sb_technician_id']) ? intval($_POST['sb_technician_id']) : 0;
             $sb_service_id = isset($_POST['sb_service_id']) ? intval($_POST['sb_service_id']) : 0;
-            $sb_status = isset($_POST['sb_status']) ? trim($_POST['sb_status']) : '';
+            $is_custom_booking = isset($_POST['is_custom_booking']) ? intval($_POST['is_custom_booking']) : 0;
             
-            // Get service deadline from form
-            $service_deadline_date = isset($_POST['service_deadline_date']) ? $_POST['service_deadline_date'] : null;
-            $service_deadline_time = isset($_POST['service_deadline_time']) ? $_POST['service_deadline_time'] : null;
+            // For custom bookings, use simplified validation and auto-set values
+            if($is_custom_booking) {
+                $sb_status = 'Approved'; // Auto-approve custom bookings
+                $service_deadline_date = date('Y-m-d', strtotime('+3 days')); // Default 3 days deadline
+                $service_deadline_time = '18:00:00'; // Default 6 PM
+            } else {
+                $sb_status = isset($_POST['sb_status']) ? trim($_POST['sb_status']) : '';
+                $service_deadline_date = isset($_POST['service_deadline_date']) ? $_POST['service_deadline_date'] : null;
+                $service_deadline_time = isset($_POST['service_deadline_time']) ? $_POST['service_deadline_time'] : null;
+            }
             
             // Validation
             if($sb_id <= 0) {
                 $err = "Booking ID is missing. Please try again.";
-            } elseif($sb_service_id <= 0) {
-                $err = "Please select a service.";
             } elseif($sb_technician_id <= 0) {
                 $err = "Please select a technician.";
-            } elseif(empty($sb_status)) {
+            } elseif(!$is_custom_booking && $sb_service_id <= 0) {
+                $err = "Please select a service.";
+            } elseif(!$is_custom_booking && empty($sb_status)) {
                 $err = "Please select a booking status.";
-            } elseif(empty($service_deadline_date) || empty($service_deadline_time)) {
+            } elseif(!$is_custom_booking && (empty($service_deadline_date) || empty($service_deadline_time))) {
                 $err = "Please set service deadline date and time.";
             } else {
                 // START TRANSACTION to prevent race conditions
@@ -124,15 +132,29 @@
                     // STEP 6: Auto-set status based on technician assignment
                     $auto_status = $sb_technician_id > 0 ? 'Approved' : 'Pending';
                     
-                    // STEP 7: Update the booking with new service, technician, service deadline, and assignment timestamp
-                    $query="UPDATE tms_service_booking SET sb_service_id=?, sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
-                    $stmt = $mysqli->prepare($query);
-                    
-                    if(!$stmt) {
-                        throw new Exception("Database error: " . $mysqli->error);
+                    // STEP 7: Update the booking - different query for custom bookings (no service_id update)
+                    if($is_custom_booking) {
+                        // Custom booking: Don't update sb_service_id (it's NULL and should stay NULL)
+                        $query="UPDATE tms_service_booking SET sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
+                        $stmt = $mysqli->prepare($query);
+                        
+                        if(!$stmt) {
+                            throw new Exception("Database error: " . $mysqli->error);
+                        }
+                        
+                        $stmt->bind_param('isssi', $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
+                    } else {
+                        // Regular booking: Update sb_service_id as well
+                        $query="UPDATE tms_service_booking SET sb_service_id=?, sb_technician_id=?, sb_status=?, sb_service_deadline_date=?, sb_service_deadline_time=?, sb_assigned_at=NOW(), sb_updated_at=NOW() WHERE sb_id=?";
+                        $stmt = $mysqli->prepare($query);
+                        
+                        if(!$stmt) {
+                            throw new Exception("Database error: " . $mysqli->error);
+                        }
+                        
+                        $stmt->bind_param('iisssi', $sb_service_id, $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     }
                     
-                    $stmt->bind_param('iisssi', $sb_service_id, $sb_technician_id, $auto_status, $service_deadline_date, $service_deadline_time, $sb_id);
                     $result = $stmt->execute();
                     
                     if(!$result || $stmt->affected_rows == 0) {
@@ -167,7 +189,13 @@
                     // Redirect with success modal parameters
                     $success_message = "Technician assigned successfully to Booking #" . $sb_id;
                     $redirect_url = "admin-manage-service-booking.php";
-                    header("Location: admin-assign-technician.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+                    
+                    // For custom bookings, show quick success and redirect faster
+                    if($is_custom_booking) {
+                        header("Location: admin-assign-technician.php?success=1&quick=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+                    } else {
+                        header("Location: admin-assign-technician.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+                    }
                     exit();
                     
                 } catch(Exception $e) {
@@ -332,6 +360,109 @@
                                  <input type="hidden" name="sb_service_id" value="<?php echo htmlspecialchars($booking_data->sb_service_id ?? ''); ?>">
                              </div>
                              
+                             <?php 
+                             // Check if this is a custom service booking
+                             // A booking is custom if: 
+                             // 1. sb_custom_service is set (admin-created custom booking)
+                             // 2. sb_service_id is NULL/empty (admin quick booking)
+                             // 3. Service name is "Custom Service Request" (user-created custom booking)
+                             $is_custom_service_booking = !empty($booking_data->sb_custom_service) 
+                                                       || empty($booking_data->sb_service_id) 
+                                                       || (isset($booking_data->s_name) && $booking_data->s_name === 'Custom Service Request');
+                             
+                             // Show prominent button for custom bookings
+                             if($is_custom_service_booking):
+                             ?>
+                             <!-- Custom Booking Alert Box -->
+                             <!-- ALWAYS show subcategory selection for custom bookings -->
+                             <?php if(true): // Changed from: if(empty($booking_data->sb_subcategory)) ?>
+                                 <!-- Subcategory Selection - Always visible for custom bookings -->
+                                 <div class="alert" style="background: linear-gradient(135deg, <?php echo empty($booking_data->sb_subcategory) ? '#fef3c7 0%, #fde68a 100%' : '#d1fae5 0%, #a7f3d0 100%'; ?>); border-left: 5px solid <?php echo empty($booking_data->sb_subcategory) ? '#f59e0b' : '#10b981'; ?>; padding: 25px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(<?php echo empty($booking_data->sb_subcategory) ? '245, 158, 11' : '16, 185, 129'; ?>, 0.2);">
+                                     <h5 style="color: <?php echo empty($booking_data->sb_subcategory) ? '#92400e' : '#065f46'; ?>; font-weight: 700; margin-bottom: 15px;">
+                                         <i class="fas fa-<?php echo empty($booking_data->sb_subcategory) ? 'exclamation-triangle' : 'check-circle'; ?>" style="color: <?php echo empty($booking_data->sb_subcategory) ? '#f59e0b' : '#10b981'; ?>;"></i> Custom Service Booking - <?php echo empty($booking_data->sb_subcategory) ? 'Select' : 'Change'; ?> Subcategory
+                                     </h5>
+                                     <?php if(!empty($booking_data->sb_subcategory)): ?>
+                                     <p style="color: #047857; margin-bottom: 15px; font-size: 0.95rem;">
+                                         <strong>Current:</strong> <span class="badge" style="background: #10b981; color: white; padding: 5px 12px; border-radius: 15px; font-size: 0.9rem;"><?php echo htmlspecialchars($booking_data->sb_subcategory); ?></span>
+                                         <br><small>Click a different subcategory below to change the filter</small>
+                                     </p>
+                                     <?php else: ?>
+                                     <p style="color: #78350f; margin-bottom: 20px; font-size: 0.95rem;">
+                                         <strong>Select the service subcategory below to filter technicians with relevant skills:</strong>
+                                     </p>
+                                     <?php endif; ?>
+                                     
+                                     <!-- Subcategory Selection Buttons -->
+                                     <div class="row">
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Wiring & Fixtures" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-plug" style="color: #667eea;"></i><br>Wiring & Fixtures
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Safety & Power" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-shield-alt" style="color: #667eea;"></i><br>Safety & Power
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Major Appliances" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-tv" style="color: #ec4899;"></i><br>Major Appliances
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Other Gadgets" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-mobile-alt" style="color: #ec4899;"></i><br>Other Gadgets
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Appliance Setup" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-tools" style="color: #10b981;"></i><br>Appliance Setup
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Tech & Security" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-video" style="color: #10b981;"></i><br>Tech & Security
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Routine Care" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-wrench" style="color: #f59e0b;"></i><br>Routine Care
+                                             </button>
+                                         </div>
+                                         <div class="col-md-3 col-6 mb-2">
+                                             <button type="button" class="subcategory-select-btn" data-subcategory="Fixtures & Taps" style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; background: white; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.3s;">
+                                                 <i class="fas fa-faucet" style="color: #3b82f6;"></i><br>Fixtures & Taps
+                                             </button>
+                                         </div>
+                                     </div>
+                                     
+                                     <div id="subcategorySelectedMsg" style="display: none; margin-top: 15px; padding: 12px; background: #d1fae5; border-radius: 8px; color: #065f46;">
+                                         <i class="fas fa-check-circle"></i> <strong>Selected:</strong> <span id="selectedSubcategoryName"></span>
+                                         <br><small>Technician list will update automatically</small>
+                                     </div>
+                                 </div>
+                                 
+                                 <style>
+                                     .subcategory-select-btn:hover {
+                                         background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                                         border-color: #667eea;
+                                         transform: translateY(-2px);
+                                         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+                                         cursor: pointer;
+                                     }
+                                     .subcategory-select-btn.active {
+                                         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                         border-color: #667eea;
+                                         color: white;
+                                         box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                                     }
+                                     .subcategory-select-btn.active i {
+                                         color: white !important;
+                                     }
+                                 </style>
+                             <?php endif; ?>
+                             <?php endif; ?>
+                             
                              <div class="form-group">
                                  <label for="sb_technician_id">Select Technician *</label>
                                  <select class="form-control" name="sb_technician_id" id="sb_technician_id" required>
@@ -351,40 +482,92 @@
                                      $service_result = $service_stmt->get_result();
                                      $current_service = $service_result->fetch_object();
                                      
-                                     // Check if this is a custom service booking
-                                     $is_custom_service_booking = !empty($booking_data->sb_custom_service);
+                                     // Check if this is a custom service booking (recheck here)
+                                     // Same logic as above: check sb_custom_service, NULL service_id, or "Custom Service Request" name
+                                     $is_custom_service_booking = !empty($booking_data->sb_custom_service) 
+                                                               || empty($booking_data->sb_service_id) 
+                                                               || (isset($booking_data->s_name) && $booking_data->s_name === 'Custom Service Request');
                                      
-                                     // SKILL-BASED MATCHING: Only show technicians who can perform this service
-                                     // Query gets technicians who have this service in their skills
-                                     $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
-                                                                  (t.t_booking_limit - t.t_current_bookings) as available_slots,
-                                                                  t.t_phone, t.t_email
-                                                           FROM tms_technician t
-                                                           INNER JOIN tms_technician_skills ts ON t.t_id = ts.ts_technician_id
-                                                           WHERE ts.ts_service_id = ?
-                                                           AND t.t_status != 'Inactive'
-                                                           AND t.t_current_bookings < t.t_booking_limit
-                                                           ORDER BY 
-                                                               t.t_current_bookings ASC,
-                                                               t.t_experience DESC,
-                                                               t.t_name ASC";
-                                     
-                                     $all_techs_stmt = $mysqli->prepare($skill_match_query);
-                                     $all_techs_stmt->bind_param('i', $current_service_id);
-                                     $all_techs_stmt->execute();
-                                     $all_techs_result = $all_techs_stmt->get_result();
-                                     $available_techs = [];
-                                     
-                                     while($tech = $all_techs_result->fetch_assoc()) {
-                                         $available_techs[] = [
-                                             't_id' => $tech['t_id'],
-                                             't_name' => $tech['t_name'],
-                                             't_experience' => $tech['t_experience'],
-                                             'available_slots' => $tech['available_slots'],
-                                             'is_available' => ($tech['available_slots'] > 0),
-                                             'match_type' => 'exact_skill',
-                                             'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
-                                         ];
+                                     // For custom bookings WITH subcategory, use subcategory-based matching
+                                     if($is_custom_service_booking && !empty($booking_data->sb_subcategory)) {
+                                         // Use smart matcher to find technicians by subcategory
+                                         $matcher = new SmartTechnicianMatcher($mysqli);
+                                         $matched_techs = $matcher->findTechniciansBySubcategory(
+                                             $booking_data->sb_subcategory,
+                                             $booking_data->sb_booking_date,
+                                             $booking_data->sb_booking_time
+                                         );
+                                         
+                                         $available_techs = [];
+                                         foreach($matched_techs as $tech) {
+                                             $available_slots = $tech['t_booking_limit'] - $tech['t_current_bookings'];
+                                             $available_techs[] = [
+                                                 't_id' => $tech['t_id'],
+                                                 't_name' => $tech['t_name'],
+                                                 't_experience' => 0, // Not fetched in smart matcher
+                                                 'available_slots' => $available_slots,
+                                                 'is_available' => ($available_slots > 0),
+                                                 'match_type' => 'subcategory_match',
+                                                 'slot_message' => ($available_slots > 0) ? 'Available' : 'At capacity',
+                                                 't_skills' => $tech['matched_skills']
+                                             ];
+                                         }
+                                     } elseif($is_custom_service_booking && empty($booking_data->sb_subcategory)) {
+                                         // Custom booking WITHOUT subcategory - show ALL available technicians
+                                         $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
+                                                                    (t.t_booking_limit - t.t_current_bookings) as available_slots
+                                                             FROM tms_technician t
+                                                             WHERE t.t_status != 'Inactive'
+                                                             AND t.t_current_bookings < t.t_booking_limit
+                                                             ORDER BY t.t_current_bookings ASC, t.t_name ASC";
+                                         
+                                         $all_techs_result = $mysqli->query($all_techs_query);
+                                         $available_techs = [];
+                                         
+                                         while($tech = $all_techs_result->fetch_assoc()) {
+                                             $available_techs[] = [
+                                                 't_id' => $tech['t_id'],
+                                                 't_name' => $tech['t_name'],
+                                                 't_experience' => $tech['t_experience'],
+                                                 'available_slots' => $tech['available_slots'],
+                                                 'is_available' => ($tech['available_slots'] > 0),
+                                                 'match_type' => 'all_available',
+                                                 'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
+                                             ];
+                                         }
+                                     } else {
+                                         // REGULAR SERVICE: SKILL-BASED MATCHING
+                                         // Query gets technicians who have this service in their skills
+                                         $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
+                                                                      (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                      t.t_phone, t.t_email
+                                                               FROM tms_technician t
+                                                               INNER JOIN tms_technician_skills ts ON t.t_id = ts.ts_technician_id
+                                                               WHERE ts.ts_service_id = ?
+                                                               AND t.t_status != 'Inactive'
+                                                               AND t.t_current_bookings < t.t_booking_limit
+                                                               ORDER BY 
+                                                                   t.t_current_bookings ASC,
+                                                                   t.t_experience DESC,
+                                                                   t.t_name ASC";
+                                         
+                                         $all_techs_stmt = $mysqli->prepare($skill_match_query);
+                                         $all_techs_stmt->bind_param('i', $current_service_id);
+                                         $all_techs_stmt->execute();
+                                         $all_techs_result = $all_techs_stmt->get_result();
+                                         $available_techs = [];
+                                         
+                                         while($tech = $all_techs_result->fetch_assoc()) {
+                                             $available_techs[] = [
+                                                 't_id' => $tech['t_id'],
+                                                 't_name' => $tech['t_name'],
+                                                 't_experience' => $tech['t_experience'],
+                                                 'available_slots' => $tech['available_slots'],
+                                                 'is_available' => ($tech['available_slots'] > 0),
+                                                 'match_type' => 'exact_skill',
+                                                 'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
+                                             ];
+                                         }
                                      }
                                      
                                      if(empty($available_techs)) {
@@ -491,14 +674,13 @@
                                      $tech_count = count($available_techs);
                                      
                                      if($is_custom_service_booking) {
-                                         // Custom service message
-                                         echo '<br><span class="text-info"><i class="fas fa-info-circle"></i> <strong>Custom Service:</strong> Showing all technicians with available capacity. Review the service description above and assign based on technician skills.</span>';
+                                         // Custom service - simplified message (button shown above)
                                          if($available_count > 0) {
-                                             echo '<br><span class="text-success"><i class="fas fa-check-circle"></i> '.$available_count.' technician(s) have capacity to take this booking';
+                                             echo '<br><span class="text-success" style="font-weight: 600;"><i class="fas fa-check-circle"></i> '.$available_count.' technician(s) available';
                                              if($busy_count > 0) echo ' ('.$busy_count.' at capacity)';
                                              echo '</span>';
                                          } else {
-                                             echo '<br><span class="text-danger"><i class="fas fa-exclamation-triangle"></i> All technicians are at capacity!</span>';
+                                             echo '<br><span class="text-danger" style="font-weight: 600;"><i class="fas fa-times-circle"></i> All technicians are at capacity!</span>';
                                          }
                                      } else {
                                          // Regular service message
@@ -564,6 +746,12 @@
                                      <?php endif; ?>
                                  <?php endif; ?>
                              </div>
+                             
+                             <!-- Hidden field to indicate custom booking -->
+                             <input type="hidden" name="is_custom_booking" value="<?php echo $is_custom_service_booking ? '1' : '0'; ?>">
+                             
+                             <?php if(!$is_custom_service_booking): ?>
+                             <!-- Regular booking: Show status and deadline fields -->
                              <div class="form-group">
                                  <label for="sb_status">Booking Status *</label>
                                  <select class="form-control" name="sb_status" id="sb_status" required>
@@ -596,11 +784,20 @@
                                      </div>
                                  </div>
                              </div>
+                             <?php else: ?>
+                             <!-- Custom booking: Auto-assign with defaults, no fields needed -->
+                             <div class="alert" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-left: 5px solid #3b82f6; padding: 15px; border-radius: 10px;">
+                                 <i class="fas fa-info-circle" style="color: #1e40af;"></i> 
+                                 <strong style="color: #1e3a8a;">Quick Assign for Custom Booking</strong><br>
+                                 <small style="color: #1e40af;">Status will be set to "Approved" and deadline to 3 days automatically. Just select technician and click assign!</small>
+                             </div>
+                             <?php endif; ?>
+                             
                              </fieldset>
                              
                              <hr>
-                             <button type="submit" name="assign_technician" class="btn btn-success" id="submitBtn">
-                                 <?php echo $is_assigned ? 'Change Technician' : 'Assign Technician'; ?>
+                             <button type="submit" name="assign_technician" class="btn btn-success btn-lg" id="submitBtn" style="padding: 12px 40px; font-weight: 700;">
+                                 <i class="fas fa-user-check"></i> <?php echo $is_assigned ? 'Change Technician' : 'Assign Technician'; ?>
                              </button>
                              <a href="admin-manage-service-booking.php" class="btn btn-secondary">Cancel</a>
                          </form>
@@ -730,11 +927,57 @@
              });
          }
          
-         // Auto-hide alerts after 5 seconds
+         // Auto-hide alerts after 5 seconds (but NOT the subcategory selection box)
          $(document).ready(function() {
              setTimeout(function() {
-                 $('.alert').fadeOut('slow');
+                 $('.alert').not('.alert:has(.subcategory-select-btn)').fadeOut('slow');
              }, 5000);
+             
+             // Handle subcategory button clicks for custom bookings
+             $('.subcategory-select-btn').on('click', function() {
+                 const subcategory = $(this).data('subcategory');
+                 const bookingId = <?php echo $sb_id; ?>;
+                 
+                 // Visual feedback - mark as active
+                 $('.subcategory-select-btn').removeClass('active');
+                 $(this).addClass('active');
+                 
+                 // Show selected message
+                 $('#selectedSubcategoryName').text(subcategory);
+                 $('#subcategorySelectedMsg').slideDown();
+                 
+                 // Update booking with selected subcategory via AJAX
+                 $.ajax({
+                     url: 'admin-edit-custom-booking.php',
+                     method: 'POST',
+                     data: {
+                         sb_id: bookingId,
+                         sb_subcategory: subcategory,
+                         ajax_update: 1
+                     },
+                     success: function(response) {
+                         // Reload page to refresh technician list
+                         setTimeout(function() {
+                             window.location.reload();
+                         }, 800);
+                     },
+                     error: function() {
+                         alert('Error updating subcategory. Please try again.');
+                     }
+                 });
+             });
+             
+             // Pre-select current subcategory if set
+             <?php if(!empty($booking_data->sb_subcategory)): ?>
+             const currentSubcategory = '<?php echo addslashes($booking_data->sb_subcategory); ?>';
+             $('.subcategory-select-btn').each(function() {
+                 if($(this).data('subcategory') === currentSubcategory) {
+                     $(this).addClass('active');
+                     $('#selectedSubcategoryName').text(currentSubcategory);
+                     $('#subcategorySelectedMsg').show();
+                 }
+             });
+             <?php endif; ?>
          });
          </script>
          

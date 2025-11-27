@@ -70,13 +70,19 @@ $query = "SELECT
             COALESCE(s.s_description, '') as s_description,
             t.t_name, t.t_id_no, 
             COALESCE(t.t_phone, '') as t_phone, 
-            COALESCE(t.t_specialization, '') as t_specialization
+            COALESCE(t.t_specialization, '') as t_specialization,
+            COALESCE(sb.sb_final_price, sb.sb_total_price, 0) as display_price
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
           $where_clause
-          ORDER BY sb.sb_id DESC";
+          ORDER BY 
+            CASE 
+              WHEN sb.sb_status = 'Completed' THEN sb.sb_completed_at
+              ELSE sb.sb_updated_at
+            END DESC,
+            sb.sb_id DESC";
 
 $stmt = $mysqli->prepare($query);
 if(!$stmt) {
@@ -98,7 +104,7 @@ $stats_query = "SELECT
                 SUM(CASE WHEN sb_status = 'In Progress' THEN 1 ELSE 0 END) as in_progress,
                 SUM(CASE WHEN sb_status = 'Completed' THEN 1 ELSE 0 END) as completed,
                 SUM(CASE WHEN sb_status = 'Cancelled' THEN 1 ELSE 0 END) as cancelled,
-                SUM(sb_total_price) as total_revenue
+                SUM(COALESCE(sb_final_price, sb_total_price, 0)) as total_revenue
                 FROM tms_service_booking";
 $stats_result = $mysqli->query($stats_query);
 $stats = $stats_result->fetch_object();
@@ -344,7 +350,10 @@ $stats = $stats_result->fetch_object();
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <strong class="text-success">₹<?php echo isset($booking->sb_total_price) ? number_format($booking->sb_total_price, 0) : '0'; ?></strong>
+                                                <strong class="text-success">₹<?php echo number_format($booking->display_price, 0); ?></strong>
+                                                <?php if($booking->sb_price_set_by_tech == 1): ?>
+                                                <br><small class="badge badge-info" title="Price set by technician"><i class="fas fa-user-cog"></i> Tech</small>
+                                                <?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php
@@ -371,8 +380,31 @@ $stats = $stats_result->fetch_object();
                                                 <button class="btn btn-sm btn-outline-primary" onclick="viewDetails(<?php echo $booking->sb_id; ?>)" title="View Full Details" style="padding: 1px 4px; cursor: pointer;">
                                                     <i class="fas fa-eye" style="font-size: 0.65rem;"></i>
                                                 </button>
+                                                <?php 
+                                                // Check if this is a custom booking
+                                                $is_custom_booking = (empty($booking->sb_service_id) || !empty($booking->sb_custom_service));
+                                                ?>
                                                 <?php if($booking->sb_status == 'Pending' || $booking->sb_status == 'Approved'): ?>
-                                                    <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-success" title="Assign Technician" style="padding: 1px 4px;">
+                                                    <?php if($is_custom_booking): ?>
+                                                        <?php if(empty($booking->sb_subcategory)): ?>
+                                                            <!-- No subcategory - MUST edit first -->
+                                                            <a href="admin-edit-custom-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-warning" title="⚠️ Add Subcategory (Required)" style="padding: 1px 4px;">
+                                                                <i class="fas fa-exclamation-triangle" style="font-size: 0.65rem;"></i>
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <!-- Has subcategory - Can assign directly, edit optional -->
+                                                            <a href="admin-edit-custom-booking.php?sb_id=<?php echo $booking->sb_id; ?>" class="btn btn-sm btn-outline-secondary" title="✓ Subcategory Set: <?php echo htmlspecialchars($booking->sb_subcategory); ?> (Click to edit)" style="padding: 1px 4px;">
+                                                                <i class="fas fa-check-circle" style="font-size: 0.65rem;"></i>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+                                                    <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id; ?>" 
+                                                       class="btn btn-sm btn-outline-success" 
+                                                       title="Assign Technician" 
+                                                       style="padding: 1px 4px;"
+                                                       <?php if($is_custom_booking && empty($booking->sb_subcategory)): ?>
+                                                       onclick="return confirm('⚠️ Subcategory not set!\n\nIt\'s recommended to add subcategory first for better technician matching.\n\nDo you want to proceed anyway?');"
+                                                       <?php endif; ?>>
                                                         <i class="fas fa-user-plus" style="font-size: 0.65rem;"></i>
                                                     </a>
                                                 <?php endif; ?>

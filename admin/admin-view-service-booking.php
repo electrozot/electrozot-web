@@ -296,20 +296,48 @@
                                      </tr>
                                      <tr>
                                          <th>Booking Price:</th>
-                                         <td>₹<?php echo number_format($booking->sb_total_price, 2);?></td>
+                                         <td>
+                                             <?php 
+                                                 // For completed bookings with technician-set price, show final price
+                                                 if($booking->sb_status == 'Completed' && isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1) {
+                                                     $display_price = $booking->sb_final_price ?? $booking->sb_total_price;
+                                                 } else {
+                                                     $display_price = !empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_total_price;
+                                                 }
+                                                 
+                                                 // Show price
+                                                 if($display_price > 0) {
+                                                     echo '<strong style="color: #28a745;">₹' . number_format($display_price, 2) . '</strong>';
+                                                 } else {
+                                                     echo '<span style="color: #6c757d;">₹0.00</span>';
+                                                 }
+                                             ?>
+                                             <?php if($booking->sb_price_set_by_tech == 1): ?>
+                                             <br><small class="badge badge-info"><i class="fas fa-user-cog"></i> Price set by technician</small>
+                                             <?php elseif(empty($booking->sb_final_price) && $booking->sb_total_price == 0 && $booking->sb_status != 'Completed'): ?>
+                                             <br><small class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Price not set yet</small>
+                                             <?php endif; ?>
+                                         </td>
                                      </tr>
                                      <?php if($booking->sb_status == 'Completed'): ?>
                                      <tr>
-                                         <th>Final Charged Price:</th>
+                                         <th>Final Charged Price (Bill Amount):</th>
                                          <td>
+                                             <?php 
+                                                 $final_price = $booking->sb_final_price ?? $booking->sb_total_price;
+                                             ?>
                                              <strong style="color: #007bff; font-size: 1.2rem;">
-                                                 ₹<?php echo number_format($booking->sb_final_price ?? $booking->sb_total_price, 2);?>
+                                                 ₹<?php echo number_format($final_price, 2);?>
                                              </strong>
                                              <?php if(isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1): ?>
                                              <br>
                                              <span class="badge badge-info mt-1">
-                                                 <i class="fas fa-user-cog"></i> Price set by Technician for this booking
+                                                 <i class="fas fa-user-cog"></i> Price set by Technician - Same as Booking Price
                                              </span>
+                                             <br>
+                                             <small class="text-muted">
+                                                 <i class="fas fa-info-circle"></i> For this booking, the technician decided the price based on actual work done
+                                             </small>
                                              <?php elseif($booking->s_price !== null && $booking->s_price > 0): ?>
                                              <br>
                                              <span class="badge badge-success mt-1">

@@ -1,5 +1,11 @@
 <?php
+ob_start();
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: 0");
+
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
 check_login();
@@ -350,6 +356,89 @@ $user = $user_result->fetch_object();
         .btn-book i {
             margin-right: 8px;
         }
+        
+        .technician-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+        
+        .tech-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .tech-photo {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            margin-right: 15px;
+            background: white;
+        }
+        
+        .tech-info {
+            flex: 1;
+        }
+        
+        .tech-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tech-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .tech-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .tech-contact {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tech-contact-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .tech-contact-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        
+        .tech-contact-btn i {
+            margin-right: 6px;
+        }
     </style>
 </head>
 <body>
@@ -373,18 +462,20 @@ $user = $user_result->fetch_object();
         $booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
         
         if($booking_id > 0) {
-            // Get specific booking
-            $booking_query = "SELECT sb.*, s.s_name, s.s_category 
+            // Get specific booking with technician info
+            $booking_query = "SELECT sb.*, s.s_name, s.s_category, t.t_name, t.t_pic, t.t_phone 
                              FROM tms_service_booking sb 
                              LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                             LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id 
                              WHERE sb.sb_id = ? AND sb.sb_user_id = ?";
             $booking_stmt = $mysqli->prepare($booking_query);
             $booking_stmt->bind_param('ii', $booking_id, $aid);
         } else {
-            // Get latest booking
-            $booking_query = "SELECT sb.*, s.s_name, s.s_category 
+            // Get latest booking with technician info
+            $booking_query = "SELECT sb.*, s.s_name, s.s_category, t.t_name, t.t_pic, t.t_phone 
                              FROM tms_service_booking sb 
                              LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                             LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id 
                              WHERE sb.sb_user_id = ? 
                              ORDER BY sb.sb_created_at DESC 
                              LIMIT 1";
@@ -503,6 +594,23 @@ $user = $user_result->fetch_object();
             <div class="status-text" style="color: <?php echo $status_color; ?>;"><?php echo $display_status; ?></div>
             <div class="status-desc"><?php echo $status_message; ?></div>
         </div>
+        
+        <!-- Technician Card (Show only if technician is assigned) -->
+        <?php if ($has_technician && !empty($booking->t_name)): ?>
+        <div class="technician-card">
+            <div class="tech-header">
+                <?php 
+                $tech_photo = !empty($booking->t_pic) ? '../admin/assets/img/technicians/' . $booking->t_pic : '../admin/assets/img/default-avatar.png';
+                ?>
+                <img src="<?php echo htmlspecialchars($tech_photo); ?>" alt="Technician" class="tech-photo" onerror="this.src='../admin/assets/img/default-avatar.png'">
+                <div class="tech-info">
+                    <div class="tech-label">Your Technician</div>
+                    <div class="tech-name"><?php echo htmlspecialchars($booking->t_name); ?></div>
+                    <span class="tech-badge"><i class="fas fa-tools"></i> Assigned</span>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
         
         <!-- Timeline Card -->
         <div class="timeline-card">
@@ -643,5 +751,34 @@ $user = $user_result->fetch_object();
     </div>
 
     <?php include('vendor/inc/user-footer.php'); ?>
+    
+    <script>
+    // Live update functionality
+    <?php if ($booking): ?>
+    const bookingId = <?php echo $booking->sb_id; ?>;
+    let lastStatus = '<?php echo $status; ?>';
+    let lastTechnicianId = '<?php echo $booking->sb_technician_id ?? ''; ?>';
+    
+    function updateBookingData() {
+        fetch('api-live-booking-data.php?booking_id=' + bookingId)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const booking = data.data;
+                    
+                    // Check if status changed
+                    if (booking.sb_status !== lastStatus || booking.sb_technician_id !== lastTechnicianId) {
+                        // Reload page to show updated data with smooth transition
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(error => console.error('Error fetching booking data:', error));
+    }
+    
+    // Update every 5 seconds
+    setInterval(updateBookingData, 5000);
+    <?php endif; ?>
+    </script>
 </body>
 </html>

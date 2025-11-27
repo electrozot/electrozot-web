@@ -17,6 +17,7 @@ $user = $result->fetch_object();
 if(isset($_POST['submit_custom_booking'])) {
     $service_name = trim($_POST['service_name']);
     $service_description = trim($_POST['service_description']);
+    $subcategory = isset($_POST['subcategory']) ? trim($_POST['subcategory']) : '';
     $preferred_date = $_POST['preferred_date'];
     $preferred_time = $_POST['preferred_time'];
     $address = trim($_POST['address']);
@@ -40,8 +41,8 @@ if(isset($_POST['submit_custom_booking'])) {
         $error = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
     }
     // Validation
-    elseif(empty($service_name) || empty($service_description) || empty($preferred_date) || empty($address) || empty($pincode)) {
-        $error = "Please fill all required fields";
+    elseif(empty($service_name) || empty($service_description) || empty($subcategory) || empty($preferred_date) || empty($address) || empty($pincode)) {
+        $error = "Please fill all required fields including service category";
     } else {
         // Check if "Custom Service" exists in tms_service table, if not create it
         $check_service = "SELECT s_id FROM tms_service WHERE s_name = 'Custom Service Request' LIMIT 1";
@@ -343,6 +344,52 @@ if(isset($_POST['submit_custom_booking'])) {
             color: #6366f1;
         }
         
+        .subcategory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .subcategory-btn {
+            padding: 15px 10px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .subcategory-btn i {
+            font-size: 24px;
+            color: #6366f1;
+        }
+        
+        .subcategory-btn:hover {
+            border-color: #d13abd;
+            background: linear-gradient(135deg, rgba(209, 58, 189, 0.05) 0%, rgba(236, 110, 173, 0.05) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(209, 58, 189, 0.15);
+        }
+        
+        .subcategory-btn.active {
+            border-color: #d13abd;
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+        }
+        
+        .subcategory-btn.active i {
+            color: white;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 8px;
@@ -490,6 +537,48 @@ if(isset($_POST['submit_custom_booking'])) {
 
                 <div class="form-group">
                     <label class="form-label">
+                        Service Category <span class="required">*</span>
+                    </label>
+                    <div class="subcategory-grid">
+                        <button type="button" class="subcategory-btn" data-subcategory="Wiring & Fixtures">
+                            <i class="fas fa-plug"></i>
+                            <span>Wiring & Fixtures</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Safety & Power">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Safety & Power</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Major Appliances">
+                            <i class="fas fa-tv"></i>
+                            <span>Major Appliances</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Other Gadgets">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Other Gadgets</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Appliance Setup">
+                            <i class="fas fa-tools"></i>
+                            <span>Appliance Setup</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Tech & Security">
+                            <i class="fas fa-video"></i>
+                            <span>Tech & Security</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Routine Care">
+                            <i class="fas fa-wrench"></i>
+                            <span>Routine Care</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Fixtures & Taps">
+                            <i class="fas fa-faucet"></i>
+                            <span>Fixtures & Taps</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="subcategory" id="subcategoryInput" required>
+                    <div class="form-hint" id="subcategoryHint">Select the category that best matches your service</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
                         Preferred Date <span class="required">*</span>
                     </label>
                     <input type="date" name="preferred_date" class="form-input" required 
@@ -565,5 +654,35 @@ if(isset($_POST['submit_custom_booking'])) {
             <span>Main</span>
         </a>
     </div>
+
+    <script>
+        // Handle subcategory button clicks
+        document.querySelectorAll('.subcategory-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.subcategory-btn').forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Set hidden input value
+                const subcategory = this.getAttribute('data-subcategory');
+                document.getElementById('subcategoryInput').value = subcategory;
+                
+                // Update hint
+                document.getElementById('subcategoryHint').innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> Selected: <strong>' + subcategory + '</strong>';
+            });
+        });
+        
+        // Form validation - ensure subcategory is selected
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const subcategoryInput = document.getElementById('subcategoryInput');
+            if(!subcategoryInput.value) {
+                e.preventDefault();
+                alert('Please select a service category');
+                document.querySelector('.subcategory-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
 </body>
 </html>

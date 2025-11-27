@@ -11,10 +11,10 @@
          <i class="fas fa-bars" style="font-size: 16px;"></i>
      </button>
 
-     <!-- Quick Booking Button - Compact -->
+     <!-- Quick Booking Button - Larger -->
      <div class="mx-auto d-none d-md-block">
-         <a href="admin-quick-booking.php" class="btn btn-success btn-sm shadow-sm" style="padding: 6px 18px; border-radius: 20px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; transition: all 0.3s ease;">
-             <i class="fas fa-phone-alt" style="font-size: 12px;"></i>
+         <a href="admin-quick-booking.php" class="btn btn-success shadow-sm" style="padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+             <i class="fas fa-phone-alt" style="font-size: 16px;"></i>
              <span>Quick Booking</span>
          </a>
      </div>

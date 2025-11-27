@@ -1,8 +1,10 @@
 <?php
+ob_start();
 session_start();
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
+header("Expires: 0");
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -60,145 +62,85 @@ if($status == 'Approved' && $has_technician) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Booking Details - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <?php include('vendor/inc/user-header-styles.php'); ?>
+    <!-- Force reload: <?php echo time(); ?> -->
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-            padding-top: 75px;
-            padding-bottom: 70px;
-        }
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-        
-        .header-title {
-            flex: 1;
-            text-align: center;
-            padding: 0 10px;
-        }
-        
-        .header-title h2 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
-        
-        .header-title p {
-            font-size: 12px;
-            opacity: 0.85;
-            margin: 2px 0 0 0;
-        }
-        
-        .header-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        
         .content {
             padding: 15px;
         }
         
         .status-header {
-            background: white;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
             text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.1);
         }
         
         .booking-number {
-            font-size: 13px;
-            color: #999;
+            font-size: 12px;
+            color: #6366f1;
             margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
         
         .service-name {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
+            color: #1e293b;
+            margin-bottom: 12px;
+            line-height: 1.3;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
             color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .section-card {
             background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(99, 102, 241, 0.08);
         }
         
         .section-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            color: #333;
+            color: #1e293b;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
         }
         
         .section-title i {
-            width: 35px;
-            height: 35px;
+            width: 32px;
+            height: 32px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            margin-right: 12px;
-            font-size: 16px;
+            margin-right: 10px;
+            font-size: 14px;
         }
         
         .info-row {
             display: flex;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
         }
         
         .info-row:last-child {
@@ -206,36 +148,39 @@ if($status == 'Approved' && $has_technician) {
         }
         
         .info-label {
-            flex: 0 0 120px;
-            font-size: 13px;
-            color: #666;
+            flex: 0 0 110px;
+            font-size: 12px;
+            color: #64748b;
             font-weight: 600;
         }
         
         .info-value {
             flex: 1;
-            font-size: 14px;
-            color: #333;
+            font-size: 13px;
+            color: #1e293b;
             font-weight: 500;
         }
         
         .price-highlight {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 15px;
-            border-radius: 15px;
+            padding: 14px;
+            border-radius: 12px;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 12px;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
         }
         
         .price-label {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.9;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .price-amount {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
         }
         
@@ -314,8 +259,9 @@ if($status == 'Approved' && $has_technician) {
         }
         
         .btn-view {
-            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
         
         .btn-download {
@@ -332,12 +278,13 @@ if($status == 'Approved' && $has_technician) {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .btn-track {
-            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
         
         .btn-orders {
@@ -385,18 +332,7 @@ if($status == 'Approved' && $has_technician) {
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <a href="user-manage-booking.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <div class="header-title">
-            <h2>Booking Details</h2>
-            <p>Complete Information</p>
-        </div>
-        <a href="user-view-profile.php" class="header-icon">
-            <i class="fas fa-user"></i>
-        </a>
-    </div>
+    <?php include('vendor/inc/user-header.php'); ?>
 
     <div class="content">
         <!-- Status Header -->
@@ -727,5 +663,7 @@ if($status == 'Approved' && $has_technician) {
             </a>
         </div>
     </div>
+
+    <?php include('vendor/inc/user-footer.php'); ?>
 </body>
 </html>

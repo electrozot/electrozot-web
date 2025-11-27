@@ -8,18 +8,35 @@ $t_name = $_SESSION['t_name'];
 $t_id_no = $_SESSION['t_id_no'];
 $page_title = "Notifications";
 
-// Get recent bookings as notifications
+// Get recent bookings as notifications (excluding Completed and Cancelled)
 $query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, s.s_name
           FROM tms_service_booking sb
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+          LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
           WHERE sb.sb_technician_id = ?
+          AND sb.sb_status NOT IN ('Completed', 'Cancelled', 'Not Done')
+          AND cb.cb_id IS NULL
           ORDER BY sb.sb_created_at DESC
           LIMIT 20";
 $stmt = $mysqli->prepare($query);
-$stmt->bind_param('i', $t_id);
+$stmt->bind_param('ii', $t_id, $t_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Get count of new bookings (Pending status only) for badge
+$count_query = "SELECT COUNT(*) as new_count 
+                FROM tms_service_booking sb
+                LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
+                WHERE sb.sb_technician_id = ?
+                AND sb.sb_status = 'Pending'
+                AND cb.cb_id IS NULL";
+$count_stmt = $mysqli->prepare($count_query);
+$count_stmt->bind_param('ii', $t_id, $t_id);
+$count_stmt->execute();
+$count_result = $count_stmt->get_result();
+$count_data = $count_result->fetch_assoc();
+$new_bookings_count = $count_data['new_count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,10 +57,11 @@ $result = $stmt->get_result();
             background: #f5f7fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            padding-top: 80px;
-            padding-bottom: 100px;
+            padding-top: 90px;
+            padding-bottom: 120px;
             position: relative;
             overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* Header */
@@ -154,10 +172,46 @@ $result = $stmt->get_result();
             color: white;
         }
         
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #ff4757;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
+            animation: notificationPulse 2s infinite, notificationGlow 2s infinite;
+        }
+        
+        @keyframes notificationPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        @keyframes notificationGlow {
+            0%, 100% { 
+                box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
+            }
+            50% { 
+                box-shadow: 0 5px 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.4);
+            }
+        }
+        
         .container {
             max-width: 900px;
             margin: 0 auto;
             padding: 15px;
+            position: relative;
+            z-index: 1;
         }
         
         .page-header {
@@ -166,6 +220,8 @@ $result = $stmt->get_result();
             box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             margin-bottom: 30px;
             border-radius: 20px;
+            position: relative;
+            z-index: 2;
         }
 
         .page-header h1 {
@@ -352,10 +408,14 @@ $result = $stmt->get_result();
         }
         
         @media (max-width: 768px) {
+            body {
+                padding-top: 90px;
+                padding-bottom: 120px;
+            }
+            
             .container {
-                padding: 0 15px;
-                margin: 20px auto;
-                padding-bottom: 100px;
+                padding: 0 15px 120px 15px;
+                margin: 0 auto;
             }
 
             .page-header {
@@ -405,6 +465,9 @@ $result = $stmt->get_result();
         <div class="header-actions">
             <a href="notifications.php" class="notif-icon-btn">
                 <i class="fas fa-bell"></i>
+                <?php if($new_bookings_count > 0): ?>
+                    <span class="notification-count"><?php echo $new_bookings_count; ?></span>
+                <?php endif; ?>
             </a>
         </div>
     </div>

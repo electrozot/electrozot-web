@@ -57,10 +57,24 @@
       header('Location: index.php');
       exit();
     }
-    if($t_pwd !== $row->t_pwd){
-      $_SESSION['tech_err'] = 'Incorrect password. Please try again or contact Admin if you forgot your password.';
-      header('Location: index.php');
-      exit();
+    
+    // Check if password is hashed (starts with $2y$ for bcrypt)
+    $is_hashed = (strpos($row->t_pwd, '$2y$') === 0 || strpos($row->t_pwd, '$2a$') === 0 || strpos($row->t_pwd, '$2b$') === 0);
+    
+    if($is_hashed) {
+      // Use password_verify for hashed passwords (guest technicians)
+      if(!password_verify($t_pwd, $row->t_pwd)){
+        $_SESSION['tech_err'] = 'Incorrect password. Please try again or contact Admin if you forgot your password.';
+        header('Location: index.php');
+        exit();
+      }
+    } else {
+      // Plain text comparison for admin-created technicians
+      if($t_pwd !== $row->t_pwd){
+        $_SESSION['tech_err'] = 'Incorrect password. Please try again or contact Admin if you forgot your password.';
+        header('Location: index.php');
+        exit();
+      }
     }
   } else {
     // Legacy fallback: password equals Technician ID
