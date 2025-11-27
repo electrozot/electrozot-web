@@ -5,6 +5,67 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
+// Load all services from database
+$services_query = "SELECT s_id, s_name, s_category, s_subcategory FROM tms_service ORDER BY s_name";
+$services_result = $mysqli->query($services_query);
+
+// Define EXACT order matching booking form and add service form
+$category_order = [
+    'BASIC ELECTRICAL WORK',
+    'ELECTRONIC REPAIR',
+    'INSTALLATION & SETUP',
+    'SERVICING & MAINTENANCE',
+    'PLUMBING WORK'
+];
+
+$subcategory_order = [
+    'Wiring & Fixtures',
+    'Safety & Power',
+    'Major Appliances',
+    'Other Gadgets',
+    'Appliance Setup',
+    'Tech & Security',
+    'Routine Care',
+    'Fixtures & Taps'
+];
+
+$all_services_temp = [];
+$categories = [];
+$subcategories = [];
+
+while ($row = $services_result->fetch_assoc()) {
+    $subcategory = $row['s_subcategory'];
+    $category = $row['s_category'];
+    
+    if (!in_array($category, $categories)) {
+        $categories[] = $category;
+    }
+    if (!in_array($subcategory, $subcategories)) {
+        $subcategories[] = $subcategory;
+    }
+    
+    if (!isset($all_services_temp[$subcategory])) {
+        $all_services_temp[$subcategory] = [];
+    }
+    $all_services_temp[$subcategory][] = [
+        'id' => $row['s_id'],
+        'name' => $row['s_name'],
+        'category' => $category
+    ];
+}
+
+// Reorder services to match exact order
+$all_services = [];
+foreach ($subcategory_order as $subcat) {
+    if (isset($all_services_temp[$subcat])) {
+        $all_services[$subcat] = $all_services_temp[$subcat];
+    }
+}
+
+// Reorder categories
+$categories = $category_order;
+$subcategories = $subcategory_order;
+
 // Handle approval with password verification
 if(isset($_POST['approve_guest'])){
     $guest_id = intval($_POST['guest_id']);
@@ -63,8 +124,16 @@ if(isset($_POST['approve_guest'])){
             // Add payment QR column if not exists
             $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_payment_qr VARCHAR(255) DEFAULT NULL");
             
-            // Handle payment QR upload
-            $t_payment_qr = '';
+            // Get existing QR code from guest technician
+            $existing_qr_query = "SELECT t_payment_qr FROM tms_technician WHERE t_id = ?";
+            $existing_qr_stmt = $mysqli->prepare($existing_qr_query);
+            $existing_qr_stmt->bind_param('i', $guest_id);
+            $existing_qr_stmt->execute();
+            $existing_qr_result = $existing_qr_stmt->get_result();
+            $existing_qr_data = $existing_qr_result->fetch_object();
+            $t_payment_qr = $existing_qr_data->t_payment_qr ?? '';
+            
+            // Handle payment QR upload (only if admin uploads a new one)
             if(!empty($_FILES["t_payment_qr"]["name"])) {
                 $qr_dir = "../uploads/technician_qr/";
                 if(!file_exists($qr_dir)) {
@@ -107,14 +176,47 @@ if(isset($_POST['approve_guest'])){
             
             if($approve_stmt->execute()){
                 // Insert technician skills if provided
-                if(isset($_POST['tech_skills']) && is_array($_POST['tech_skills'])) {
-                    foreach($_POST['tech_skills'] as $skill) {
-                        $insert_skill = "INSERT INTO tms_technician_skills (t_id, skill_name) VALUES (?, ?)";
-                        $stmt_skill = $mysqli->prepare($insert_skill);
-                        $stmt_skill->bind_param('is', $guest_id, $skill);
-                        $stmt_skill->execute();
+                $selected_skill_ids = isset($_POST['skills']) ? $_POST['skills'] : [];
+                
+                if(!empty($selected_skill_ids)) {
+                    // Check which column names exist in the table
+                    $columns_check = $mysqli->query("SHOW COLUMNS FROM tms_technician_skills");
+                    $column_names = [];
+                    while($col = $columns_check->fetch_assoc()) {
+                        $column_names[] = $col['Field'];
                     }
-                    $_SESSION['success'] = "Guest technician approved successfully with " . count($_POST['tech_skills']) . " skills! Now a regular EZ Technician.";
+                    
+                    // Determine correct column names based on what exists
+                    $tech_col = 'ts_technician_id';
+                    $service_col = 'ts_service_id';
+                    
+                    if(in_array('technician_id', $column_names)) {
+                        $tech_col = 'technician_id';
+                    } elseif(in_array('t_id', $column_names)) {
+                        $tech_col = 't_id';
+                    }
+                    
+                    if(in_array('service_id', $column_names)) {
+                        $service_col = 'service_id';
+                    } elseif(in_array('s_id', $column_names)) {
+                        $service_col = 's_id';
+                    }
+                    
+                    // Insert skills with detected column names
+                    $skill_insert = "INSERT INTO tms_technician_skills ($tech_col, $service_col) VALUES (?, ?)";
+                    $skill_stmt = $mysqli->prepare($skill_insert);
+                    
+                    $success_count = 0;
+                    foreach ($selected_skill_ids as $service_id) {
+                        $service_id = intval($service_id);
+                        $skill_stmt->bind_param("ii", $guest_id, $service_id);
+                        if ($skill_stmt->execute()) {
+                            $success_count++;
+                        }
+                    }
+                    $skill_stmt->close();
+                    
+                    $_SESSION['success'] = "Guest technician approved successfully with " . $success_count . " skills! Now a regular EZ Technician.";
                 } else {
                     $_SESSION['success'] = "Guest technician approved successfully! Now a regular EZ Technician.";
                 }
@@ -317,193 +419,63 @@ $guest_result = $mysqli->query($guest_query);
                                                                 <i class="fas fa-info-circle"></i> Select all specific services this technician can perform
                                                             </p>
                                                             
-                                                            <!-- BASIC ELECTRICAL WORK -->
-                                                            <div class="card border-primary mb-3">
-                                                                <div class="card-header bg-primary text-white py-2">
-                                                                    <strong><i class="fas fa-bolt"></i> BASIC ELECTRICAL WORK</strong>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_1_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Home Wiring (New installation and repair)">
-                                                                                <label class="custom-control-label" for="skill_1_<?php echo $guest->t_id; ?>">Home Wiring</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_2_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Switch/Socket Installation and Replacement">
-                                                                                <label class="custom-control-label" for="skill_2_<?php echo $guest->t_id; ?>">Switch/Socket Installation</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_3_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Light Fixture Installation">
-                                                                                <label class="custom-control-label" for="skill_3_<?php echo $guest->t_id; ?>">Light Fixture Installation</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_4_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Circuit Breaker troubleshooting">
-                                                                                <label class="custom-control-label" for="skill_4_<?php echo $guest->t_id; ?>">Circuit Breaker troubleshooting</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_5_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Inverter/UPS installation">
-                                                                                <label class="custom-control-label" for="skill_5_<?php echo $guest->t_id; ?>">Inverter/UPS installation</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_6_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Electrical fault finding">
-                                                                                <label class="custom-control-label" for="skill_6_<?php echo $guest->t_id; ?>">Electrical fault finding</label>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            <?php 
+                                                            $colors = ['primary', 'info', 'success', 'warning', 'secondary', 'dark', 'danger', 'primary'];
+                                                            $counter = 1;
                                                             
-                                                            <!-- ELECTRONIC REPAIR -->
-                                                            <div class="card border-success mb-3">
-                                                                <div class="card-header bg-success text-white py-2">
-                                                                    <strong><i class="fas fa-wrench"></i> ELECTRONIC REPAIR</strong>
+                                                            foreach ($all_services as $subcategory => $services): 
+                                                                $color = isset($colors[$counter-1]) ? $colors[$counter-1] : 'secondary';
+                                                            ?>
+                                                            <div class="card border-<?php echo $color; ?> mb-3">
+                                                                <div class="card-header bg-<?php echo $color; ?> text-white py-2">
+                                                                    <strong><i class="fas fa-wrench"></i> <?php echo $counter; ?>. <?php echo htmlspecialchars($subcategory); ?></strong>
+                                                                    <span class="badge badge-light text-dark ml-2"><?php echo count($services); ?> services</span>
                                                                 </div>
                                                                 <div class="card-body">
                                                                     <div class="row">
-                                                                        <div class="col-md-6">
+                                                                        <?php foreach ($services as $service): ?>
+                                                                        <div class="col-md-6 col-lg-4">
                                                                             <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_7_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Air Conditioner (AC) Repair">
-                                                                                <label class="custom-control-label" for="skill_7_<?php echo $guest->t_id; ?>">AC Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_8_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Refrigerator Repair">
-                                                                                <label class="custom-control-label" for="skill_8_<?php echo $guest->t_id; ?>">Refrigerator Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_9_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Washing Machine Repair">
-                                                                                <label class="custom-control-label" for="skill_9_<?php echo $guest->t_id; ?>">Washing Machine Repair</label>
+                                                                                <input type="checkbox" class="custom-control-input" 
+                                                                                       id="skill_<?php echo $service['id']; ?>_<?php echo $guest->t_id; ?>" 
+                                                                                       name="skills[]" 
+                                                                                       value="<?php echo $service['id']; ?>">
+                                                                                <label class="custom-control-label" for="skill_<?php echo $service['id']; ?>_<?php echo $guest->t_id; ?>">
+                                                                                    <?php echo htmlspecialchars($service['name']); ?>
+                                                                                </label>
                                                                             </div>
                                                                         </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_10_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Microwave Oven Repair">
-                                                                                <label class="custom-control-label" for="skill_10_<?php echo $guest->t_id; ?>">Microwave Oven Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_11_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Geyser Repair">
-                                                                                <label class="custom-control-label" for="skill_11_<?php echo $guest->t_id; ?>">Geyser Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_12_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Fan Repair">
-                                                                                <label class="custom-control-label" for="skill_12_<?php echo $guest->t_id; ?>">Fan Repair</label>
-                                                                            </div>
-                                                                        </div>
+                                                                        <?php endforeach; ?>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            
-                                                            <!-- INSTALLATION & SETUP -->
-                                                            <div class="card border-warning mb-3">
-                                                                <div class="card-header bg-warning text-dark py-2">
-                                                                    <strong><i class="fas fa-cogs"></i> INSTALLATION & SETUP</strong>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_13_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="CCTV Camera Installation">
-                                                                                <label class="custom-control-label" for="skill_13_<?php echo $guest->t_id; ?>">CCTV Camera Installation</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_14_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="WiFi Router Setup">
-                                                                                <label class="custom-control-label" for="skill_14_<?php echo $guest->t_id; ?>">WiFi Router Setup</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_15_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Smart Home Device Setup">
-                                                                                <label class="custom-control-label" for="skill_15_<?php echo $guest->t_id; ?>">Smart Home Device Setup</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_16_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="TV Wall Mounting">
-                                                                                <label class="custom-control-label" for="skill_16_<?php echo $guest->t_id; ?>">TV Wall Mounting</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_17_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Appliance Installation">
-                                                                                <label class="custom-control-label" for="skill_17_<?php echo $guest->t_id; ?>">Appliance Installation</label>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- SERVICING & MAINTENANCE -->
-                                                            <div class="card border-info mb-3">
-                                                                <div class="card-header bg-info text-white py-2">
-                                                                    <strong><i class="fas fa-tools"></i> SERVICING & MAINTENANCE</strong>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_18_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="AC Servicing & Cleaning">
-                                                                                <label class="custom-control-label" for="skill_18_<?php echo $guest->t_id; ?>">AC Servicing & Cleaning</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_19_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Chimney Cleaning">
-                                                                                <label class="custom-control-label" for="skill_19_<?php echo $guest->t_id; ?>">Chimney Cleaning</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_20_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Water Purifier Servicing">
-                                                                                <label class="custom-control-label" for="skill_20_<?php echo $guest->t_id; ?>">Water Purifier Servicing</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_21_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Geyser Servicing">
-                                                                                <label class="custom-control-label" for="skill_21_<?php echo $guest->t_id; ?>">Geyser Servicing</label>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <!-- PLUMBING WORK -->
-                                                            <div class="card border-danger mb-3">
-                                                                <div class="card-header bg-danger text-white py-2">
-                                                                    <strong><i class="fas fa-wrench"></i> PLUMBING WORK</strong>
-                                                                </div>
-                                                                <div class="card-body">
-                                                                    <div class="row">
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_22_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Tap/Faucet Repair">
-                                                                                <label class="custom-control-label" for="skill_22_<?php echo $guest->t_id; ?>">Tap/Faucet Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_23_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Toilet Repair">
-                                                                                <label class="custom-control-label" for="skill_23_<?php echo $guest->t_id; ?>">Toilet Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_24_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Washbasin Installation">
-                                                                                <label class="custom-control-label" for="skill_24_<?php echo $guest->t_id; ?>">Washbasin Installation</label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-6">
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_25_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Pipe Leakage Repair">
-                                                                                <label class="custom-control-label" for="skill_25_<?php echo $guest->t_id; ?>">Pipe Leakage Repair</label>
-                                                                            </div>
-                                                                            <div class="custom-control custom-checkbox mb-2">
-                                                                                <input type="checkbox" class="custom-control-input" id="skill_26_<?php echo $guest->t_id; ?>" name="tech_skills[]" value="Drainage Cleaning">
-                                                                                <label class="custom-control-label" for="skill_26_<?php echo $guest->t_id; ?>">Drainage Cleaning</label>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            <?php 
+                                                                $counter++;
+                                                            endforeach; ?>
                                                         </div>
                                                     </div>
                                                     
                                                     <div class="row mt-3">
                                                         <div class="col-md-12">
                                                             <div class="form-group">
-                                                                <label><i class="fas fa-qrcode"></i> Payment QR Code (Optional)</label>
+                                                                <label><i class="fas fa-qrcode"></i> Payment QR Code</label>
+                                                                <?php if(!empty($guest->t_payment_qr)): ?>
+                                                                    <div class="alert alert-success">
+                                                                        <i class="fas fa-check-circle"></i> Technician has already uploaded a payment QR code
+                                                                        <div class="mt-2">
+                                                                            <img src="../<?php echo htmlspecialchars($guest->t_payment_qr); ?>" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                                                        </div>
+                                                                        <small class="d-block mt-2 text-muted">You can replace it by uploading a new one below (optional)</small>
+                                                                    </div>
+                                                                <?php endif; ?>
                                                                 <input type="file" class="form-control-file" name="t_payment_qr" accept="image/*">
-                                                                <small class="text-muted">Upload technician's personal payment QR for direct payments</small>
+                                                                <small class="text-muted">
+                                                                    <?php if(!empty($guest->t_payment_qr)): ?>
+                                                                        Upload only if you want to replace the existing QR code
+                                                                    <?php else: ?>
+                                                                        Upload technician's personal payment QR for direct payments (Optional)
+                                                                    <?php endif; ?>
+                                                                </small>
                                                             </div>
                                                         </div>
                                                     </div>

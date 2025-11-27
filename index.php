@@ -20,106 +20,13 @@
     <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #F0E5D8 0%, #E8D5C4 100%); padding: 136px 0 80px 0; position: relative; overflow: hidden;">
-            
-            <!-- Enhanced Background Decorative Elements -->
-            <div class="hero-bg-elements">
-                <!-- Animated Large Circles with Glow -->
-                <div class="hero-circle hero-circle-1" style="position: absolute; top: -100px; right: -100px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255, 215, 0, 0.15) 0%, rgba(255, 215, 0, 0.05) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 8s ease-in-out infinite;"></div>
-                <div class="hero-circle hero-circle-2" style="position: absolute; bottom: -150px; left: -150px; width: 550px; height: 550px; background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 50%, transparent 100%); border-radius: 50%; z-index: 1; animation: float 10s ease-in-out infinite reverse;"></div>
-                <div class="hero-circle hero-circle-3" style="position: absolute; top: 50%; right: 10%; width: 250px; height: 250px; background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: pulse 6s ease-in-out infinite;"></div>
-                <div class="hero-circle hero-circle-4" style="position: absolute; top: 20%; left: 15%; width: 180px; height: 180px; background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%); border-radius: 50%; z-index: 1; animation: float 7s ease-in-out infinite;"></div>
-                
-                <!-- Enhanced Floating Icons with Animation -->
-                <div class="floating-icon" style="position: absolute; top: 15%; left: 8%; z-index: 1; opacity: 0.25; animation: floatIcon 4s ease-in-out infinite;">
-                    <i class="fas fa-bolt" style="font-size: 3.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
-                </div>
-                <div class="floating-icon" style="position: absolute; top: 60%; right: 15%; z-index: 1; opacity: 0.2; animation: floatIcon 5s ease-in-out infinite 1s;">
-                    <i class="fas fa-tools" style="font-size: 3rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
-                </div>
-                <div class="floating-icon" style="position: absolute; bottom: 20%; left: 12%; z-index: 1; opacity: 0.18; animation: floatIcon 6s ease-in-out infinite 2s;">
-                    <i class="fas fa-cog" style="font-size: 2.5rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); animation: rotate 20s linear infinite;"></i>
-                </div>
-                <div class="floating-icon" style="position: absolute; top: 25%; right: 25%; z-index: 1; opacity: 0.15; animation: floatIcon 5.5s ease-in-out infinite 1.5s;">
-                    <i class="fas fa-wrench" style="font-size: 2.8rem; color: #ffffff; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));"></i>
-                </div>
-                <div class="floating-icon" style="position: absolute; top: 70%; left: 25%; z-index: 1; opacity: 0.2; animation: floatIcon 4.5s ease-in-out infinite 0.5s;">
-                    <i class="fas fa-plug" style="font-size: 2.3rem; color: #ffd700; filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));"></i>
-                </div>
-                
-                <!-- Enhanced Geometric Shapes with Glow -->
-                <div class="hero-shape" style="position: absolute; top: 10%; left: 5%; width: 90px; height: 90px; border: 4px solid rgba(255, 215, 0, 0.3); border-radius: 18px; transform: rotate(45deg); z-index: 1; box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); animation: rotate 15s linear infinite;"></div>
-                <div class="hero-shape" style="position: absolute; bottom: 15%; right: 8%; width: 70px; height: 70px; border: 4px solid rgba(255, 255, 255, 0.25); border-radius: 50%; z-index: 1; box-shadow: 0 0 15px rgba(255, 255, 255, 0.15); animation: pulse 4s ease-in-out infinite;"></div>
-                <div class="hero-shape" style="position: absolute; top: 40%; left: 3%; width: 50px; height: 50px; background: rgba(255, 215, 0, 0.15); border-radius: 10px; transform: rotate(25deg); z-index: 1; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2); animation: float 6s ease-in-out infinite;"></div>
-                <div class="hero-shape" style="position: absolute; top: 35%; right: 5%; width: 65px; height: 65px; border: 3px solid rgba(255, 255, 255, 0.2); border-radius: 12px; transform: rotate(-30deg); z-index: 1; animation: rotate 12s linear infinite reverse;"></div>
-                
-                <!-- Enhanced Dots Pattern with Glow -->
-                <div class="dots-pattern" style="position: absolute; top: 30%; right: 5%; z-index: 1; opacity: 0.3; animation: pulse 3s ease-in-out infinite;">
-                    <div style="display: grid; grid-template-columns: repeat(4, 10px); gap: 15px;">
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                        <div style="width: 10px; height: 10px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);"></div>
-                    </div>
-                </div>
-                
-                <!-- Additional Dots Pattern -->
-                <div class="dots-pattern" style="position: absolute; bottom: 25%; left: 8%; z-index: 1; opacity: 0.25; animation: pulse 4s ease-in-out infinite 1s;">
-                    <div style="display: grid; grid-template-columns: repeat(3, 8px); gap: 12px;">
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                        <div style="width: 8px; height: 8px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);"></div>
-                    </div>
-                </div>
-                
-                <!-- Enhanced Wave Lines with Multiple Layers -->
-                <svg class="hero-wave" style="position: absolute; bottom: 0; left: 0; width: 100%; height: 180px; z-index: 1; opacity: 0.15;" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                    <path d="M0,50 Q300,0 600,50 T1200,50 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.4)"></path>
-                    <path d="M0,70 Q300,40 600,70 T1200,70 L1200,120 L0,120 Z" fill="rgba(255,215,0,0.2)"></path>
-                </svg>
-                
-                <!-- Sparkle Effects -->
-                <div style="position: absolute; top: 18%; right: 12%; width: 4px; height: 4px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 15px #ffd700; animation: sparkle 2s ease-in-out infinite;"></div>
-                <div style="position: absolute; top: 45%; left: 18%; width: 3px; height: 3px; background: #ffffff; border-radius: 50%; box-shadow: 0 0 12px #ffffff; animation: sparkle 3s ease-in-out infinite 1s;"></div>
-                <div style="position: absolute; bottom: 30%; right: 20%; width: 5px; height: 5px; background: #ffd700; border-radius: 50%; box-shadow: 0 0 18px #ffd700; animation: sparkle 2.5s ease-in-out infinite 0.5s;"></div>
-            </div>
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #E0F2FE 0%, #FECDD3 25%, #D1FAE5 50%, #FBCFE8 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 100px 0 80px 0; position: relative; overflow: hidden;">
             
             <style>
-                @keyframes float {
-                    0%, 100% { transform: translateY(0px); }
-                    50% { transform: translateY(-20px); }
-                }
-                
-                @keyframes floatIcon {
-                    0%, 100% { transform: translateY(0px) translateX(0px); }
-                    25% { transform: translateY(-15px) translateX(5px); }
-                    75% { transform: translateY(15px) translateX(-5px); }
-                }
-                
-                @keyframes pulse {
-                    0%, 100% { transform: scale(1); opacity: 0.3; }
-                    50% { transform: scale(1.1); opacity: 0.5; }
-                }
-                
-                @keyframes rotate {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                
-                @keyframes sparkle {
-                    0%, 100% { opacity: 0; transform: scale(0); }
-                    50% { opacity: 1; transform: scale(1); }
+                @keyframes gradientShift {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
                 }
                 
                 /* Mobile responsive heading */
@@ -174,26 +81,26 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
                         <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); font-size: 4.5rem;">
-                            <span class="electrozot-animated">Electrozot</span>
+                            <span class="electrozot-animated" style="-webkit-text-stroke: 0.5px #1a202c; text-stroke: 0.5px #1a202c;">Electrozot</span>
                         </h1>
-                        <p class="lead mb-4 hero-description" style="font-size: 1.3rem; line-height: 1.8; color: #4a5568; text-shadow: 1px 1px 2px rgba(255,255,255,0.3); font-weight: 700;">
+                        <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.5; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700;">
                             Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
                         </p>
                         <div class="hero-buttons-wrapper d-flex flex-wrap" style="gap: 12px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 150px; text-align: center;">
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%); color: white; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); transition: all 0.3s ease; min-width: 160px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
                                 <i class="fas fa-bolt"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: #2d3748; color: white; padding: 10px 25px; border-radius: 25px; font-weight: 600; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(45, 55, 72, 0.4); transition: all 0.3s ease; min-width: 180px; text-align: center;">
+                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); color: white; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4); transition: all 0.3s ease; min-width: 190px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
                                 <i class="fas fa-phone"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #8b0000;">
+                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #A855F7;">
                                 
-                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #0d7a6f 0%, #2bc569 100%); position: relative; z-index: 3; border-bottom: 3px solid #0d7a6f; overflow: hidden;">
-                                    <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.4rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); position: relative; z-index: 3; border-bottom: 3px solid #A855F7; overflow: hidden; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);">
+                                    <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.5rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 6px rgba(0,0,0,0.3);">
                                         <i class="fas fa-calendar-check" style="color: white; margin-right: 8px;"></i>
                                         Book Service Now
                                     </h3>
@@ -768,71 +675,67 @@
         </script>
 
         <!-- Features Section -->
-        <section class="py-5 features-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative;">
+        <section class="features-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative; padding: 20px 0 15px 0;">
             <div class="container">
-                <div class="row text-center mb-5">
+                <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3 section-title">
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem;">
                             <span class="gradient-text-2">Why Choose Electrozot?</span>
                         </h2>
-                        <p class="lead" style="color: #6c757d; font-weight: 500;">Professional service you can trust</p>
+                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Professional service you can trust</p>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-lg-4 mb-4">
-                        <div class="feature-card card h-100 border-0 feature-card-1" style="border-radius: 20px; overflow: hidden; position: relative;">
-                            <div class="feature-gradient-bg"></div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="feature-card card h-100 border-0 feature-card-1" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FDF5FF 0%, #FAE8FF 100%);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-3 icon-bounce" style="font-size: 1.8rem;">
+                                <div class="feature-icon mb-2 icon-bounce" style="font-size: 1.5rem; color: #A855F7; background: linear-gradient(135deg, #FAE8FF 0%, #F3E8FF 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-user-cog"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">Professional Trained Teams</h5>
-                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">We have professional trained teams and experts for every service. Our skilled technicians are certified and experienced to handle all your electrical, plumbing, and appliance repair needs with precision and care.</p>
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #7C3AED; font-size: 1rem;">Professional Trained Teams</h5>
+                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">We have professional trained teams and experts for every service. Our skilled technicians are certified and experienced.</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 mb-4">
-                        <div class="feature-card card h-100 border-0 feature-card-2" style="border-radius: 20px; overflow: hidden; position: relative;">
-                            <div class="feature-gradient-bg-2"></div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="feature-card card h-100 border-0 feature-card-2" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FFF5F7 0%, #FFE4E9 100%);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-3 icon-bounce" style="animation-delay: 0.2s; font-size: 1.8rem;">
+                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.2s; font-size: 1.5rem; color: #EC4899; background: linear-gradient(135deg, #FFE4E9 0%, #FECDD6 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-handshake"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">On-Time & Affordable Service</h5>
-                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">
-                                    We commit our service on time with affordable and transparent prices for all. No hidden charges, no surprises - just honest pricing and punctual service delivery that respects your time and budget.
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #DB2777; font-size: 1rem;">On-Time & Affordable Service</h5>
+                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">
+                                    We commit our service on time with affordable and transparent prices. No hidden charges, just honest pricing and punctual delivery.
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 mb-4">
-                        <div class="feature-card card h-100 border-0 feature-card-3" style="border-radius: 20px; overflow: hidden; position: relative;">
-                            <div class="feature-gradient-bg-3"></div>
+                    <div class="col-lg-4 mb-3">
+                        <div class="feature-card card h-100 border-0 feature-card-3" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FCF5FF 0%, #F5E8FF 100%);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-3 icon-bounce" style="animation-delay: 0.4s; font-size: 1.8rem;">
+                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.4s; font-size: 1.5rem; color: #9333EA; background: linear-gradient(135deg, #F5E8FF 0%, #EDD5FF 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-shield-alt"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748;">1 Month Warranty & Trust</h5>
-                                <p class="card-text" style="color: #4a5568; line-height: 1.6; font-size: 0.95rem;">
-                                    We provide you 1 month warranty on all repairs and parts we provide, so we are trusted. Your satisfaction is guaranteed with our comprehensive warranty coverage and reliable after-service support.
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #7E22CE; font-size: 1rem;">1 Month Warranty & Trust</h5>
+                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">
+                                    We provide 1 month warranty on all repairs and parts. Your satisfaction is guaranteed with comprehensive warranty coverage.
                                 </p>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>
 
         <!-- Services Portfolio Section -->
-        <section class="py-5 services-section" style="background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%);">
+        <section class="services-section" style="background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%); padding: 20px 0 15px 0;">
             <div class="container">
-                <div class="row text-center mb-5">
+                <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3 section-title">
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem;">
                             <span class="gradient-text-2">Our Popular Services</span>
                         </h2>
-                        <p class="lead" style="color: #6c757d; font-weight: 500;">Expert technicians for all your needs</p>
+                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Expert technicians for all your needs</p>
                     </div>
                 </div>
                 <div class="row">
@@ -859,24 +762,24 @@
                     while($row=$res->fetch_object()) {
                         $gradient = $gradients[($cnt-1) % count($gradients)];
                     ?>
-                    <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="col-lg-4 col-md-6 mb-3">
                         <a href="#booking-form" class="service-card-link" style="text-decoration: none; display: block;">
-                        <div class="service-card card h-100 border-0 service-card-hover" style="border-radius: 20px; overflow: hidden; position: relative; cursor: pointer;">
+                        <div class="service-card card h-100 border-0 service-card-hover" style="border-radius: 15px; overflow: hidden; position: relative; cursor: pointer;">
                             <div class="service-gradient-overlay" style="background: <?php echo $gradient; ?>;"></div>
-                            <div class="card-img-wrapper service-img-wrapper" style="height: 220px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-tools text-white service-icon" style="font-size: 5rem; position: relative; z-index: 2; transition: all 0.4s ease;"></i>
+                            <div class="card-img-wrapper service-img-wrapper" style="height: 150px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-tools text-white service-icon" style="font-size: 3.5rem; position: relative; z-index: 2; transition: all 0.4s ease;"></i>
                                 <div class="service-shine"></div>
                             </div>
-                            <div class="card-body p-4" style="background: white; position: relative; z-index: 2;">
-                                <h4 class="card-title font-weight-bold mb-3 service-title" style="color: #2d3748; transition: color 0.3s ease;">
+                            <div class="card-body p-3" style="background: white; position: relative; z-index: 2;">
+                                <h4 class="card-title font-weight-bold mb-2 service-title" style="color: #2d3748; transition: color 0.3s ease; font-size: 1.1rem;">
                                     <?php echo $row->s_name; ?>
                                 </h4>
-                                <p class="text-muted mb-4" style="line-height: 1.7;"><?php echo substr($row->s_description, 0, 100); ?>...</p>
+                                <p class="text-muted mb-3" style="line-height: 1.5; font-size: 0.85rem;"><?php echo substr($row->s_description, 0, 80); ?>...</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price-badge px-4 py-2" style="background: <?php echo $gradient; ?>; color: white; font-size: 1.1rem; font-weight: 700; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                    <span class="price-badge px-3 py-1" style="background: <?php echo $gradient; ?>; color: white; font-size: 0.95rem; font-weight: 700; border-radius: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.15);">
                                         ₹<?php echo number_format($row->s_price, 0); ?>
                                     </span>
-                                    <span class="text-muted" style="font-weight: 500;">
+                                    <span class="text-muted" style="font-weight: 500; font-size: 0.8rem;">
                                         <i class="fas fa-clock"></i> <?php echo $row->s_duration; ?>
                                     </span>
                                 </div>
@@ -890,19 +793,19 @@
         </section>
 
         <!-- Our Work Showcase Section -->
-        <section class="py-5" style="background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);">
-            <div class="container">
-                <div class="row text-center mb-5">
+        <section id="portfolioSection" style="background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%); padding: 15px 0 0 0; margin-bottom: 0;">
+            <div class="container" style="padding-bottom: 0; margin-bottom: 0;">
+                <div class="row text-center" style="margin-bottom: 10px;">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3" style="color: #2d3748;">
+                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.3rem; margin-bottom: 5px;">
                             <span class="gradient-text-2">Our Work</span> Portfolio
                         </h2>
-                        <p class="lead text-muted">See the quality of our completed projects</p>
+                        <p class="text-muted d-none d-md-block" style="font-size: 0.9rem; margin-bottom: 0;">See the quality of our completed projects</p>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-lg-10 mx-auto">
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="col-lg-10 mx-auto" style="padding-bottom: 0; margin-bottom: 0;">
                         <?php
                         // Get active sliders from database
                         $slider_query = "SELECT * FROM tms_home_slider WHERE slider_status = 'Active' ORDER BY slider_order ASC, slider_id DESC";
@@ -911,9 +814,9 @@
                         ?>
                         
                         <?php if($slider_count > 0): ?>
-                            <div id="workCarousel" class="carousel slide shadow-lg" data-ride="carousel" style="border-radius: 15px; overflow: hidden;">
+                            <div id="workCarousel" class="carousel slide shadow" data-ride="carousel" style="border-radius: 10px; overflow: hidden; margin: 0; padding: 0; height: 250px;">
                                 <!-- Indicators -->
-                                <ol class="carousel-indicators">
+                                <ol class="carousel-indicators d-none d-md-flex">
                                     <?php 
                                     $slider_result->data_seek(0);
                                     $index = 0;
@@ -927,20 +830,20 @@
                                 </ol>
 
                                 <!-- Slides -->
-                                <div class="carousel-inner">
+                                <div class="carousel-inner" style="margin: 0; padding: 0; height: 250px;">
                                     <?php 
                                     $slider_result->data_seek(0);
                                     $index = 0;
                                     while($slider = $slider_result->fetch_object()): 
                                     ?>
-                                        <div class="carousel-item <?php echo $index == 0 ? 'active' : ''; ?>">
+                                        <div class="carousel-item <?php echo $index == 0 ? 'active' : ''; ?>" style="height: 250px; margin: 0; padding: 0; position: relative;">
                                             <img src="admin/vendor/img/slider/<?php echo $slider->slider_image; ?>" 
                                                  class="d-block w-100" 
                                                  alt="<?php echo htmlspecialchars($slider->slider_title); ?>" 
-                                                 style="height: 500px; object-fit: cover;">
-                                            <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.7); padding: 20px; border-radius: 10px;">
-                                                <h5 class="font-weight-bold"><?php echo htmlspecialchars($slider->slider_title); ?></h5>
-                                                <p><?php echo htmlspecialchars($slider->slider_description); ?></p>
+                                                 style="height: 250px; object-fit: cover; display: block; margin: 0; padding: 0;">
+                                            <div class="carousel-caption d-block" style="background: rgba(0,0,0,0.8); padding: 6px 10px; border-radius: 6px; bottom: 8px; left: 8px; right: 8px; z-index: 10; position: absolute;">
+                                                <h5 class="font-weight-bold mb-0" style="font-size: 0.8rem; color: white; line-height: 1.2;"><?php echo htmlspecialchars($slider->slider_title); ?></h5>
+                                                <p class="d-none d-md-block mb-0" style="font-size: 0.75rem; color: white; margin-top: 4px;"><?php echo htmlspecialchars($slider->slider_description); ?></p>
                                             </div>
                                         </div>
                                     <?php 
@@ -959,9 +862,98 @@
                                     <span class="sr-only">Next</span>
                                 </a>
                             </div>
+                            
+                            <style>
+                                #workCarousel {
+                                    margin-bottom: 0 !important;
+                                }
+                                #workCarousel .carousel-inner {
+                                    margin-bottom: 0 !important;
+                                }
+                                #workCarousel .carousel-item {
+                                    margin-bottom: 0 !important;
+                                }
+                                /* Mobile - Fixed height */
+                                @media (max-width: 767px) {
+                                    #workCarousel {
+                                        height: 250px !important;
+                                    }
+                                    #workCarousel .carousel-inner {
+                                        height: 250px !important;
+                                    }
+                                    #workCarousel .carousel-item {
+                                        height: 250px !important;
+                                    }
+                                    #workCarousel .carousel-item img {
+                                        height: 250px !important;
+                                    }
+                                }
+                                
+                                /* Desktop - Larger height */
+                                @media (min-width: 768px) {
+                                    #workCarousel {
+                                        height: 400px !important;
+                                    }
+                                    #workCarousel .carousel-inner {
+                                        height: 400px !important;
+                                    }
+                                    #workCarousel .carousel-item {
+                                        height: 400px !important;
+                                    }
+                                    #workCarousel .carousel-inner img {
+                                        height: 400px !important;
+                                    }
+                                    #portfolioSection {
+                                        padding: 3rem 0 !important;
+                                    }
+                                }
+                                @media (max-width: 767px) {
+                                    #portfolioSection {
+                                        padding: 10px 0 0 0 !important;
+                                        margin-bottom: 0 !important;
+                                    }
+                                    #portfolioSection .container {
+                                        padding-bottom: 0 !important;
+                                        margin-bottom: 0 !important;
+                                    }
+                                    #portfolioSection .row {
+                                        margin-bottom: 0 !important;
+                                    }
+                                    #portfolioSection .col-lg-10 {
+                                        padding-bottom: 0 !important;
+                                        margin-bottom: 0 !important;
+                                    }
+                                    #workCarousel,
+                                    #workCarousel .carousel-inner,
+                                    #workCarousel .carousel-item,
+                                    #workCarousel .carousel-item img {
+                                        margin-bottom: 0 !important;
+                                        padding-bottom: 0 !important;
+                                    }
+                                    .testimonials-section {
+                                        margin-top: 0 !important;
+                                        padding-top: 10px !important;
+                                    }
+                                    /* Force caption to show on mobile */
+                                    #workCarousel .carousel-caption {
+                                        display: block !important;
+                                        visibility: visible !important;
+                                        opacity: 1 !important;
+                                        position: absolute !important;
+                                        bottom: 8px !important;
+                                        left: 8px !important;
+                                        right: 8px !important;
+                                        z-index: 100 !important;
+                                    }
+                                    #workCarousel .carousel-caption h5 {
+                                        display: block !important;
+                                        visibility: visible !important;
+                                    }
+                                }
+                            </style>
                         <?php else: ?>
-                            <div class="alert alert-info text-center">
-                                <i class="fas fa-info-circle"></i> No portfolio images available at the moment.
+                            <div class="alert alert-info text-center" style="font-size: 0.85rem; padding: 10px;">
+                                <i class="fas fa-info-circle"></i> No portfolio images available.
                             </div>
                         <?php endif; ?>
                     </div>
@@ -970,15 +962,14 @@
         </section>
 
         <!-- Testimonials Section with Auto-Sliding -->
-        <section class="py-5 testimonials-section" style="background: linear-gradient(135deg, #89c9c6 0%, #e8b4c0 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden;">
+        <section class="testimonials-section" style="background: linear-gradient(135deg, #89c9c6 0%, #e8b4c0 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden; padding: 15px 0;">
             <div class="testimonial-overlay"></div>
             <div class="container" style="position: relative; z-index: 2;">
-                <div class="row text-center mb-5">
+                <div class="row text-center mb-2">
                     <div class="col-12">
-                        <h2 class="display-5 font-weight-bold mb-3" style="color: #2d3748; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">
+                        <h2 class="font-weight-bold" style="color: #2d3748; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); font-size: 1.3rem; margin-bottom: 0;">
                             Client Testimonials
                         </h2>
-                        <p class="lead" style="color: #4a5568; font-weight: 400;">What our customers say about us</p>
                     </div>
                 </div>
                 
@@ -999,26 +990,26 @@
                         while($row=$res->fetch_object()) {
                             $testGradient = $testimonialGradients[($cnt-1) % count($testimonialGradients)];
                         ?>
-                        <div class="testimonial-slide" style="display: inline-block; width: 350px; margin: 0 15px; vertical-align: top;">
-                            <div class="testimonial-card card border-0" style="border-radius: 20px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.15); height: 100%;">
-                                <div class="card-body p-4">
-                                    <div class="mb-3">
-                                        <i class="fas fa-quote-left testimonial-quote" style="font-size: 2.5rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
+                        <div class="testimonial-slide" style="display: inline-block; width: 220px; margin: 0 8px; vertical-align: top;">
+                            <div class="testimonial-card card border-0" style="border-radius: 10px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); height: 100%;">
+                                <div class="card-body" style="padding: 10px;">
+                                    <div style="margin-bottom: 6px;">
+                                        <i class="fas fa-quote-left testimonial-quote" style="font-size: 1rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
                                     </div>
-                                    <p class="card-text mb-4 testimonial-text" style="font-style: italic; line-height: 1.9; color: #2d3748; font-size: 1.05rem; min-height: 120px;">
+                                    <p class="card-text testimonial-text" style="font-style: italic; line-height: 1.4; color: #2d3748; font-size: 0.75rem; min-height: 55px; margin-bottom: 8px;">
                                         "<?php echo $row->f_content; ?>"
                                     </p>
                                     <div class="d-flex align-items-center">
                                         <?php if(isset($row->f_photo) && $row->f_photo) { ?>
-                                            <img src="<?php echo $row->f_photo; ?>" alt="<?php echo $row->f_uname; ?>" class="mr-3" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                            <img src="<?php echo $row->f_photo; ?>" alt="<?php echo $row->f_uname; ?>" class="mr-2" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
                                         <?php } else { ?>
-                                            <div class="avatar-circle mr-3" style="width: 60px; height: 60px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                                            <div class="avatar-circle mr-2" style="width: 30px; height: 30px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
                                                 <?php echo strtoupper(substr($row->f_uname, 0, 1)); ?>
                                             </div>
                                         <?php } ?>
                                         <div>
-                                            <h6 class="mb-0 font-weight-bold" style="color: #2d3748;"><?php echo $row->f_uname; ?></h6>
-                                            <small class="text-muted" style="font-weight: 500;">Verified Customer</small>
+                                            <h6 class="mb-0 font-weight-bold" style="color: #2d3748; font-size: 0.75rem;"><?php echo $row->f_uname; ?></h6>
+                                            <small class="text-muted" style="font-weight: 500; font-size: 0.65rem;">Verified</small>
                                         </div>
                                     </div>
                                 </div>

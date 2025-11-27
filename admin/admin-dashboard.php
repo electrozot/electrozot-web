@@ -387,154 +387,34 @@
                     </div>
                 </div>
                 
-                <!-- Payment Collection Summary -->
-                <div class="row mt-3 mb-3">
-                    <div class="col-12">
-                        <div class="card shadow-sm" style="border: none; border-radius: 15px; overflow: hidden;">
-                            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 15px 20px;">
-                                <h5 class="mb-0" style="color: white; font-weight: 700;">
-                                    <i class="fas fa-money-bill-wave"></i> Payment Collections Summary
-                                </h5>
-                            </div>
-                            <div class="card-body" style="padding: 20px;">
-                                <?php
-                                // Ensure payment collection table exists
-                                $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
-                                    pc_id INT AUTO_INCREMENT PRIMARY KEY,
-                                    pc_booking_id INT NOT NULL,
-                                    pc_amount DECIMAL(10,2) NOT NULL,
-                                    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
-                                    pc_collected_by INT NOT NULL,
-                                    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
-                                    INDEX(pc_booking_id),
-                                    INDEX(pc_collected_by)
-                                )");
-                                
-                                // Get payment statistics
-                                $payment_stats_query = "SELECT 
-                                    COUNT(*) as total_payments,
-                                    SUM(pc_amount) as total_amount,
-                                    SUM(CASE WHEN pc_method = 'QR' THEN pc_amount ELSE 0 END) as qr_amount,
-                                    SUM(CASE WHEN pc_method = 'TechQR' THEN pc_amount ELSE 0 END) as techqr_amount,
-                                    SUM(CASE WHEN pc_method = 'Cash' THEN pc_amount ELSE 0 END) as cash_amount,
-                                    SUM(CASE WHEN pc_method = 'QR' THEN 1 ELSE 0 END) as qr_count,
-                                    SUM(CASE WHEN pc_method = 'TechQR' THEN 1 ELSE 0 END) as techqr_count,
-                                    SUM(CASE WHEN pc_method = 'Cash' THEN 1 ELSE 0 END) as cash_count
-                                FROM tms_payment_collection";
-                                $payment_stats = $mysqli->query($payment_stats_query);
-                                $stats = $payment_stats->fetch_object();
-                                
-                                // Get recent payments with technician details
-                                $recent_payments_query = "SELECT pc.*, t.t_name, sb.sb_id 
-                                    FROM tms_payment_collection pc
-                                    LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
-                                    LEFT JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
-                                    ORDER BY pc.pc_collected_at DESC 
-                                    LIMIT 10";
-                                $recent_payments = $mysqli->query($recent_payments_query);
-                                ?>
-                                
-                                <div class="row mb-3">
-                                    <div class="col-md-3">
-                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
-                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->total_amount ?? 0, 2); ?></h3>
-                                            <small style="opacity: 0.9;">Total Collected</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
-                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->qr_amount ?? 0, 2); ?></h3>
-                                            <small style="opacity: 0.9;">Company QR (<?php echo $stats->qr_count ?? 0; ?>)</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 10px; color: white;">
-                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->techqr_amount ?? 0, 2); ?></h3>
-                                            <small style="opacity: 0.9;">Tech QR (<?php echo $stats->techqr_count ?? 0; ?>)</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-center p-3" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 10px; color: white;">
-                                            <h3 class="mb-0" style="font-weight: 900;">₹<?php echo number_format($stats->cash_amount ?? 0, 2); ?></h3>
-                                            <small style="opacity: 0.9;">Cash (<?php echo $stats->cash_count ?? 0; ?>)</small>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <?php if($recent_payments && $recent_payments->num_rows > 0): ?>
-                                <h6 class="mb-3" style="font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-history"></i> Recent Payment Collections
-                                </h6>
-                                <div class="table-responsive">
-                                    <table class="table table-sm table-hover">
-                                        <thead style="background: #f8f9fa;">
-                                            <tr>
-                                                <th>Booking ID</th>
-                                                <th>Amount</th>
-                                                <th>Method</th>
-                                                <th>Collected By</th>
-                                                <th>Date & Time</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php while($payment = $recent_payments->fetch_object()): ?>
-                                            <tr>
-                                                <td><strong>#<?php echo $payment->sb_id; ?></strong></td>
-                                                <td><strong style="color: #10b981;">₹<?php echo number_format($payment->pc_amount, 2); ?></strong></td>
-                                                <td>
-                                                    <?php if($payment->pc_method == 'QR'): ?>
-                                                        <span class="badge badge-primary">Company QR</span>
-                                                    <?php elseif($payment->pc_method == 'TechQR'): ?>
-                                                        <span class="badge badge-warning">Tech QR</span>
-                                                    <?php else: ?>
-                                                        <span class="badge badge-success">Cash</span>
-                                                    <?php endif; ?>
-                                                </td>
-                                                <td><?php echo htmlspecialchars($payment->t_name); ?></td>
-                                                <td><?php echo date('d M Y, h:i A', strtotime($payment->pc_collected_at)); ?></td>
-                                            </tr>
-                                            <?php endwhile; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <?php else: ?>
-                                <div class="alert alert-info">
-                                    <i class="fas fa-info-circle"></i> No payment collections yet.
-                                </div>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
+
                 <!--Recent Bookings-->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white border-bottom py-3">
+                <div class="card shadow-lg border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
+                    <div class="card-header py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
                         <div class="row align-items-center">
                             <div class="col-md-6">
-                                <h5 class="mb-0" style="color: #2d3748;">
-                                    <i class="fas fa-clipboard-list text-primary"></i> Recent Bookings
+                                <h5 class="mb-0" style="color: white; font-weight: 700;">
+                                    <i class="fas fa-clipboard-list"></i> Recent Bookings
                                 </h5>
                             </div>
                             <div class="col-md-6 text-right">
-                                <input id="dashboardSearch" class="form-control form-control-sm d-inline-block" style="max-width:250px;" type="search" placeholder="🔍 Search...">
+                                <input id="dashboardSearch" class="form-control form-control-sm d-inline-block" style="max-width:250px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.9);" type="search" placeholder="🔍 Search...">
                             </div>
                         </div>
                     </div>
-                    <div class="card-body p-2">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped table-hover table-sm" id="dataTable" width="100%" cellspacing="0" style="font-size: 0.875rem;">
-                                <thead class="thead-light">
+                            <table class="table table-hover table-sm mb-0" id="dataTable" width="100%" cellspacing="0" style="font-size: 0.875rem;">
+                                <thead style="background: #f8f9fa; border-bottom: 2px solid #e9ecef;">
                                     <tr>
-                                        <th style="width: 40px;">#</th>
-                                        <th>Name</th>
-                                        <th>Phone</th>
-                                        <th style="width: 120px;">Type</th>
-                                        <th>Details</th>
-                                        <th style="width: 110px;">Date</th>
-                                        <th style="width: 90px;">Status</th>
-                                        <th style="width: 80px;">Action</th>
+                                        <th style="width: 50px; padding: 12px 15px; font-weight: 600; color: #495057;">#</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Name</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Phone</th>
+                                        <th style="width: 130px; padding: 12px 15px; font-weight: 600; color: #495057;">Type</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Details</th>
+                                        <th style="width: 120px; padding: 12px 15px; font-weight: 600; color: #495057;">Date</th>
+                                        <th style="width: 100px; padding: 12px 15px; font-weight: 600; color: #495057;">Status</th>
+                                        <th style="width: 90px; padding: 12px 15px; font-weight: 600; color: #495057;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -554,34 +434,67 @@
                                     $cnt = 1;
                                     while($row_service = $res_service->fetch_object()) {
                                     ?>
-                                    <tr>
-                                        <td><?php echo $cnt;?></td>
-                                        <td>
-                                            <?php 
-                                            if(!empty($row_service->u_fname)) {
-                                                echo $row_service->u_fname . ' ' . $row_service->u_lname;
-                                            } else {
-                                                echo '<span class="text-muted">Customer</span>';
-                                            }
-                                            ?>
+                                    <tr style="transition: all 0.3s ease;">
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 5px 10px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;"><?php echo $cnt;?></span>
                                         </td>
-                                        <td><?php echo $row_service->sb_phone;?></td>
-                                        <td><span class="badge badge-primary">Service Booking</span></td>
-                                        <td><?php echo $row_service->s_name;?></td>
-                                        <td><?php echo date('M d, Y', strtotime($row_service->sb_booking_date));?></td>
-                                        <td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem;">
+                                                    <?php 
+                                                    if(!empty($row_service->u_fname)) {
+                                                        echo strtoupper(substr($row_service->u_fname, 0, 1));
+                                                    } else {
+                                                        echo 'C';
+                                                    }
+                                                    ?>
+                                                </div>
+                                                <div>
+                                                    <strong style="color: #2d3748; font-size: 0.9rem;">
+                                                        <?php 
+                                                        if(!empty($row_service->u_fname)) {
+                                                            echo $row_service->u_fname . ' ' . $row_service->u_lname;
+                                                        } else {
+                                                            echo '<span class="text-muted">Customer</span>';
+                                                        }
+                                                        ?>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #4a5568; font-weight: 500;">
+                                                <i class="fas fa-phone" style="color: #667eea; font-size: 0.8rem;"></i> <?php echo $row_service->sb_phone;?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span class="badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                <i class="fas fa-tools"></i> Service
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #4a5568; font-weight: 500;"><?php echo $row_service->s_name;?></span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #718096; font-size: 0.85rem;">
+                                                <i class="far fa-calendar-alt" style="color: #667eea;"></i> <?php echo date('M d, Y', strtotime($row_service->sb_booking_date));?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
                                             <?php 
                                             if($row_service->sb_status == "Pending"){
-                                                echo '<span class="badge badge-warning">'.$row_service->sb_status.'</span>';
+                                                echo '<span class="badge badge-warning" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-clock"></i> '.$row_service->sb_status.'</span>';
                                             } elseif($row_service->sb_status == "Approved"){
-                                                echo '<span class="badge badge-info">'.$row_service->sb_status.'</span>';
+                                                echo '<span class="badge badge-info" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-check"></i> '.$row_service->sb_status.'</span>';
                                             } else {
-                                                echo '<span class="badge badge-danger">'.$row_service->sb_status.'</span>';
+                                                echo '<span class="badge badge-danger" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-times"></i> '.$row_service->sb_status.'</span>';
                                             }
                                             ?>
                                         </td>
-                                        <td>
-                                            <a href="admin-view-service-booking.php?sb_id=<?php echo $row_service->sb_id;?>" class="badge badge-info">View</a>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <a href="admin-view-service-booking.php?sb_id=<?php echo $row_service->sb_id;?>" class="btn btn-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 20px; padding: 5px 15px; font-weight: 600; font-size: 0.75rem; transition: all 0.3s ease;">
+                                                <i class="fas fa-eye"></i> View
+                                            </a>
                                         </td>
                                     </tr>
                                     <?php $cnt++; } ?>
@@ -597,29 +510,60 @@
                                     $res_legacy = $stmt_legacy->get_result();
                                     while($row_legacy = $res_legacy->fetch_object()) {
                                     ?>
-                                    <tr>
-                                        <td><?php echo $cnt;?></td>
-                                        <td><?php echo $row_legacy->u_fname;?> <?php echo $row_legacy->u_lname;?></td>
-                                        <td><?php echo $row_legacy->u_phone;?></td>
-                                        <td><span class="badge badge-secondary">Legacy Booking</span></td>
-                                        <td>Technician: <?php echo $row_legacy->t_tech_category;?></td>
-                                        <td><?php echo $row_legacy->t_booking_date;?></td>
-                                        <td>
+                                    <tr style="transition: all 0.3s ease;">
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; padding: 5px 10px; border-radius: 8px; font-weight: 600; font-size: 0.85rem;"><?php echo $cnt;?></span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #6c757d 0%, #495057 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem;">
+                                                    <?php echo strtoupper(substr($row_legacy->u_fname, 0, 1)); ?>
+                                                </div>
+                                                <div>
+                                                    <strong style="color: #2d3748; font-size: 0.9rem;"><?php echo $row_legacy->u_fname;?> <?php echo $row_legacy->u_lname;?></strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #4a5568; font-weight: 500;">
+                                                <i class="fas fa-phone" style="color: #6c757d; font-size: 0.8rem;"></i> <?php echo $row_legacy->u_phone;?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span class="badge badge-secondary" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                <i class="fas fa-history"></i> Legacy
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #4a5568; font-weight: 500;">Technician: <?php echo $row_legacy->t_tech_category;?></span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #718096; font-size: 0.85rem;">
+                                                <i class="far fa-calendar-alt" style="color: #6c757d;"></i> <?php echo $row_legacy->t_booking_date;?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
                                             <?php 
                                             if($row_legacy->t_booking_status == "Pending"){
-                                                echo '<span class="badge badge-warning">'.$row_legacy->t_booking_status.'</span>';
+                                                echo '<span class="badge badge-warning" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-clock"></i> '.$row_legacy->t_booking_status.'</span>';
                                             } elseif($row_legacy->t_booking_status == "Rejected"){
-                                                echo '<span class="badge badge-danger">'.$row_legacy->t_booking_status.'</span>';
+                                                echo '<span class="badge badge-danger" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-times"></i> '.$row_legacy->t_booking_status.'</span>';
                                             } else {
-                                                echo '<span class="badge badge-info">'.$row_legacy->t_booking_status.'</span>';
+                                                echo '<span class="badge badge-info" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><i class="fas fa-check"></i> '.$row_legacy->t_booking_status.'</span>';
                                             }
                                             ?>
                                         </td>
-                                        <td>
-                                            <?php if($row_legacy->t_booking_status == "Pending"): ?>
-                                                <a href="admin-approve-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="badge badge-success"><i class="fa fa-check"></i> Approve</a>
-                                            <?php endif; ?>
-                                            <a href="admin-delete-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="badge badge-danger"><i class="fa fa-trash"></i> Delete</a>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                                <?php if($row_legacy->t_booking_status == "Pending"): ?>
+                                                    <a href="admin-approve-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="btn btn-sm btn-success" style="border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600;">
+                                                        <i class="fa fa-check"></i> Approve
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="admin-delete-booking.php?u_id=<?php echo $row_legacy->u_id;?>" class="btn btn-sm btn-danger" style="border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; font-weight: 600;">
+                                                    <i class="fa fa-trash"></i> Delete
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                     <?php $cnt++; } ?>
@@ -627,13 +571,47 @@
                             </table>
                         </div>
                     </div>
-                    <div class="card-footer small text-muted py-1" style="font-size: 0.75rem;">
-                        <?php
-                        date_default_timezone_set("Africa/Nairobi");
-                        echo "Generated: " . date("h:i:sa");
-                        ?>
+                    <div class="card-footer py-3" style="background: #f8f9fa; border-top: 2px solid #e9ecef;">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <small style="color: #718096; font-weight: 500;">
+                                    <i class="fas fa-clock" style="color: #667eea;"></i> Last updated: 
+                                    <?php
+                                    date_default_timezone_set("Africa/Nairobi");
+                                    echo date("h:i:sa");
+                                    ?>
+                                </small>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <a href="admin-all-bookings.php" class="btn btn-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 20px; padding: 6px 20px; font-weight: 600; font-size: 0.8rem;">
+                                    <i class="fas fa-list"></i> View All Bookings
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
+                <style>
+                    /* Hover effects for table rows */
+                    #dataTable tbody tr:hover {
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                        transform: translateX(5px);
+                        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+                    }
+                    
+                    /* Button hover effects */
+                    .btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                    }
+                    
+                    /* Search input focus */
+                    #dashboardSearch:focus {
+                        outline: none;
+                        border-color: rgba(255,255,255,0.8);
+                        box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+                    }
+                </style>
 
                 <!-- Rejected/Cancelled Bookings Section -->
                 <?php
@@ -649,51 +627,88 @@
                 
                 if($rejected_result && $rejected_result->num_rows > 0):
                 ?>
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-header bg-danger text-white py-2" style="font-size: 0.95rem;">
-                        <i class="fas fa-exclamation-triangle"></i> Rejected/Cancelled Bookings
-                        <span class="badge badge-light float-right"><?php echo $rejected_result->num_rows; ?></span>
+                <div class="card shadow-lg border-0 mb-4" style="border-radius: 15px; overflow: hidden;">
+                    <div class="card-header py-3" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); border: none;">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0" style="color: white; font-weight: 700;">
+                                    <i class="fas fa-exclamation-triangle"></i> Rejected/Cancelled Bookings
+                                </h5>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <span class="badge" style="background: rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 700;">
+                                    <?php echo $rejected_result->num_rows; ?> Bookings
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body p-2">
+                    <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover table-sm" style="font-size: 0.875rem;">
-                                <thead class="thead-light">
+                            <table class="table table-hover table-sm mb-0" style="font-size: 0.875rem;">
+                                <thead style="background: #f8f9fa; border-bottom: 2px solid #e9ecef;">
                                     <tr>
-                                        <th style="width: 60px;">ID</th>
-                                        <th>Customer</th>
-                                        <th>Service</th>
-                                        <th style="width: 100px;">Category</th>
-                                        <th>Technician</th>
-                                        <th style="width: 100px;">Date</th>
-                                        <th style="width: 90px;">Status</th>
-                                        <th>Reason</th>
-                                        <th style="width: 100px;">Action</th>
+                                        <th style="width: 70px; padding: 12px 15px; font-weight: 600; color: #495057;">ID</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Customer</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Service</th>
+                                        <th style="width: 110px; padding: 12px 15px; font-weight: 600; color: #495057;">Category</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Technician</th>
+                                        <th style="width: 110px; padding: 12px 15px; font-weight: 600; color: #495057;">Date</th>
+                                        <th style="width: 100px; padding: 12px 15px; font-weight: 600; color: #495057;">Status</th>
+                                        <th style="padding: 12px 15px; font-weight: 600; color: #495057;">Reason</th>
+                                        <th style="width: 110px; padding: 12px 15px; font-weight: 600; color: #495057;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php while($booking = $rejected_result->fetch_object()): ?>
-                                    <tr>
-                                        <td><strong>#<?php echo $booking->sb_id; ?></strong></td>
-                                        <td>
-                                            <?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?><br>
-                                            <small><i class="fas fa-phone"></i> <?php echo $booking->u_phone; ?></small>
+                                    <tr style="transition: all 0.3s ease;">
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); color: white; padding: 5px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem;">
+                                                #<?php echo $booking->sb_id; ?>
+                                            </span>
                                         </td>
-                                        <td><?php echo htmlspecialchars($booking->s_name); ?></td>
-                                        <td><span class="badge badge-secondary"><?php echo $booking->s_category; ?></span></td>
-                                        <td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <div style="display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem;">
+                                                    <?php echo strtoupper(substr($booking->u_fname, 0, 1)); ?>
+                                                </div>
+                                                <div>
+                                                    <strong style="color: #2d3748; font-size: 0.9rem;"><?php echo htmlspecialchars($booking->u_fname . ' ' . $booking->u_lname); ?></strong><br>
+                                                    <small style="color: #718096;"><i class="fas fa-phone" style="color: #ff6b6b; font-size: 0.75rem;"></i> <?php echo $booking->u_phone; ?></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #4a5568; font-weight: 500;"><?php echo htmlspecialchars($booking->s_name); ?></span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span class="badge badge-secondary" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                <?php echo $booking->s_category; ?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
                                             <?php if($booking->technician_name): ?>
-                                                <span class="badge badge-info">
+                                                <span class="badge badge-info" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
                                                     <i class="fas fa-user"></i> <?php echo htmlspecialchars($booking->technician_name); ?>
                                                 </span>
                                             <?php else: ?>
-                                                <span class="text-muted"><i>Not assigned</i></span>
+                                                <span class="text-muted" style="font-style: italic; font-size: 0.85rem;">Not assigned</span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?></td>
-                                        <td><span class="badge badge-danger"><?php echo $booking->sb_status; ?></span></td>
-                                        <td><small><?php echo htmlspecialchars(substr($booking->sb_rejection_reason, 0, 50)); ?></small></td>
-                                        <td>
-                                            <button class="btn btn-primary btn-sm" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_category); ?>', '<?php echo addslashes($booking->s_name); ?>', '<?php echo addslashes($booking->s_gadget_name); ?>')">
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span style="color: #718096; font-size: 0.85rem;">
+                                                <i class="far fa-calendar-alt" style="color: #ff6b6b;"></i> <?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <span class="badge badge-danger" style="padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">
+                                                <i class="fas fa-times-circle"></i> <?php echo $booking->sb_status; ?>
+                                            </span>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <small style="color: #718096; font-size: 0.8rem;"><?php echo htmlspecialchars(substr($booking->sb_rejection_reason, 0, 50)); ?></small>
+                                        </td>
+                                        <td style="padding: 15px; vertical-align: middle;">
+                                            <button class="btn btn-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 20px; padding: 6px 15px; font-weight: 600; font-size: 0.75rem; transition: all 0.3s ease;" onclick="openReassignModal(<?php echo $booking->sb_id; ?>, '<?php echo addslashes($booking->s_category); ?>', '<?php echo addslashes($booking->s_name); ?>', '<?php echo addslashes($booking->s_gadget_name); ?>')">
                                                 <i class="fas fa-user-plus"></i> Reassign
                                             </button>
                                         </td>
@@ -702,9 +717,13 @@
                                 </tbody>
                             </table>
                         </div>
-                        <a href="admin-rejected-bookings.php" class="btn btn-danger btn-sm">
-                            <i class="fas fa-list"></i> View All Rejected Bookings
-                        </a>
+                    </div>
+                    <div class="card-footer py-3" style="background: #f8f9fa; border-top: 2px solid #e9ecef;">
+                        <div class="text-center">
+                            <a href="admin-rejected-bookings.php" class="btn" style="background: linear-gradient(135deg, #ff6b6b 0%, #c92a2a 100%); color: white; border: none; border-radius: 20px; padding: 10px 30px; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease;">
+                                <i class="fas fa-list"></i> View All Rejected Bookings
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <?php endif; ?>

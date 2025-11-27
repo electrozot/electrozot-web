@@ -33,7 +33,7 @@ $booking_stats = $booking_result->fetch_object();
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             padding-top: 75px;
             padding-bottom: 70px;
             min-height: 100vh;
@@ -44,10 +44,10 @@ $booking_stats = $booking_result->fetch_object();
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
             z-index: 1000;
         }
         
@@ -55,12 +55,14 @@ $booking_stats = $booking_result->fetch_object();
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
         }
         
         .logo {
@@ -137,7 +139,7 @@ $booking_stats = $booking_result->fetch_object();
         
         .section-title i {
             margin-right: 6px;
-            color: #6366f1;
+            color: #d13abd;
             font-size: 16px;
         }
         
@@ -153,15 +155,15 @@ $booking_stats = $booking_result->fetch_object();
             padding: 15px 8px;
             text-align: center;
             text-decoration: none;
-            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.08);
+            box-shadow: 0 2px 10px rgba(209, 58, 189, 0.08);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(99, 102, 241, 0.08);
+            border: 1px solid rgba(236, 110, 173, 0.08);
         }
         
         .action-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
-            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.2);
+            border-color: rgba(236, 110, 173, 0.3);
         }
         
         .action-item:active {
@@ -195,8 +197,8 @@ $booking_stats = $booking_result->fetch_object();
             transform: translateX(-50%);
             width: calc(100% - 16px);
             max-width: 450px;
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
-            box-shadow: 0 3px 20px rgba(6, 182, 212, 0.35), 0 1px 5px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
             padding: 4px 6px;
@@ -515,8 +517,8 @@ $booking_stats = $booking_result->fetch_object();
             <span>Profile</span>
         </a>
         <a href="../index.php" class="nav-item">
-            <i class="fas fa-globe"></i>
-            <span>Website</span>
+            <i class="fas fa-store"></i>
+            <span>Main</span>
         </a>
     </div>
 

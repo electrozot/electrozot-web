@@ -21,6 +21,13 @@
      
      <!-- Navbar -->
      <ul class="navbar-nav ml-auto" style="align-items: center;">
+         <!-- Stats Button -->
+         <li class="nav-item no-arrow mx-1">
+             <a class="nav-link" href="admin-stats.php" id="statsButton" style="position: relative; padding: 6px 10px;" title="View Statistics">
+                 <i class="fas fa-chart-line fa-fw" style="font-size: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></i>
+             </a>
+         </li>
+         
          <!-- Notification Bell -->
          <li class="nav-item dropdown no-arrow mx-1">
              <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative; padding: 6px 10px;" title="View All Notifications">
@@ -271,6 +278,16 @@
      background: rgba(255,255,255,0.1);
  }
  
+ /* Stats Button Hover */
+ #statsButton {
+     transition: all 0.3s ease;
+ }
+ 
+ #statsButton:hover {
+     background: rgba(255,255,255,0.1);
+     border-radius: 50%;
+ }
+ 
  /* Smooth transitions for all nav items */
  .nav-link {
      transition: all 0.3s ease;
@@ -279,6 +296,50 @@
 
 <!-- Unified Notification System - Works on ALL admin pages -->
 <?php include('unified-notification-system.php'); ?>
+
+ <!-- Stats Modal -->
+ <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalLabel" aria-hidden="true">
+     <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+         <div class="modal-content" style="border: none; border-radius: 15px; overflow: hidden;">
+             <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 20px 30px;">
+                 <h5 class="modal-title" id="statsModalLabel" style="color: white; font-weight: 700; font-size: 1.5rem;">
+                     <i class="fas fa-chart-line"></i> Business Statistics
+                 </h5>
+                 <button class="close" type="button" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 1;">
+                     <span aria-hidden="true" style="font-size: 2rem;">&times;</span>
+                 </button>
+             </div>
+             <div class="modal-body" style="padding: 30px; background: #f8f9fa;">
+                 <div id="statsContent">
+                     <div class="text-center py-5">
+                         <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: #667eea;"></i>
+                         <p class="mt-3" style="color: #718096;">Loading statistics...</p>
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+
+ <script>
+ // Load stats when modal is opened
+ $('#statsModal').on('show.bs.modal', function (e) {
+     loadStats();
+ });
+ 
+ function loadStats() {
+     $.ajax({
+         url: 'get-stats-data.php',
+         method: 'GET',
+         success: function(response) {
+             $('#statsContent').html(response);
+         },
+         error: function() {
+             $('#statsContent').html('<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i> Failed to load statistics</div>');
+         }
+     });
+ }
+ </script>
 
  <!-- Logout Modal-->
  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

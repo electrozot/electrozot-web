@@ -3,28 +3,30 @@
     
     body {
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         padding-bottom: 65px;
         min-height: 100vh;
     }
     
     .top-header {
-        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+        background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
         color: white;
         padding: 10px 15px;
-        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
     }
     
     .header-content {
         display: flex;
         align-items: center;
         gap: 15px;
+        padding-left: 0;
+        margin-left: -5px;
     }
     
     .brand-section {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 4px;
     }
     
     .logo {
@@ -90,8 +92,8 @@
         transform: translateX(-50%);
         width: calc(100% - 16px);
         max-width: 450px;
-        background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
-        box-shadow: 0 3px 20px rgba(6, 182, 212, 0.35), 0 1px 5px rgba(0,0,0,0.1);
+        background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+        box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
         display: flex;
         justify-content: space-around;
         padding: 4px 6px;

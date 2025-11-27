@@ -238,7 +238,7 @@ if(isset($_POST['register_technician'])){
     }
 
     .registration-container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
       background: white;
       border-radius: 20px;
@@ -248,25 +248,26 @@ if(isset($_POST['register_technician'])){
 
     .registration-header {
       background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
-      padding: 40px;
+      padding: 25px 30px;
       text-align: center;
       color: white;
     }
 
     .registration-header i {
-      font-size: 3rem;
-      margin-bottom: 15px;
+      font-size: 2rem;
+      margin-bottom: 8px;
     }
 
     .registration-header h2 {
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 900;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     .registration-header p {
-      font-size: 1rem;
+      font-size: 0.9rem;
       opacity: 0.95;
+      margin-bottom: 0;
     }
 
     .registration-body {
@@ -370,16 +371,74 @@ if(isset($_POST['register_technician'])){
     }
 
     @media (max-width: 768px) {
+      body {
+        padding: 20px 10px;
+      }
+
+      .registration-container {
+        max-width: 100%;
+        border-radius: 15px;
+      }
+
       .registration-body {
-        padding: 20px;
+        padding: 15px;
       }
 
       .registration-header {
-        padding: 30px 20px;
+        padding: 20px 15px;
       }
 
       .registration-header h2 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+      }
+
+      .registration-header i {
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+      }
+
+      .registration-header p {
+        font-size: 0.8rem;
+      }
+
+      .form-group label {
+        font-size: 0.8rem;
+        margin-bottom: 5px;
+      }
+
+      .form-control {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        margin-bottom: 15px;
+      }
+
+      .form-group {
+        margin-bottom: 12px;
+      }
+
+      small.text-muted {
+        font-size: 0.65rem;
+        display: block;
+        margin-top: 2px;
+      }
+
+      .btn-register {
+        padding: 12px 30px;
+        font-size: 1rem;
+      }
+
+      .row {
+        margin-left: -5px;
+        margin-right: -5px;
+      }
+
+      .col-6 {
+        padding-left: 5px;
+        padding-right: 5px;
       }
     }
   </style>
@@ -412,26 +471,28 @@ if(isset($_POST['register_technician'])){
             Personal Information
           </div>
 
-          <div class="form-group">
-            <label for="t_name">
-              <i class="fas fa-id-card"></i>
-              Full Name <span class="required">*</span>
-            </label>
-            <input type="text" name="t_name" id="t_name" class="form-control" placeholder="Enter your full name" required value="<?php echo isset($_POST['t_name']) ? htmlspecialchars($_POST['t_name']) : ''; ?>">
-          </div>
-
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_name">
+                  <i class="fas fa-id-card"></i>
+                  Full Name <span class="required">*</span>
+                </label>
+                <input type="text" name="t_name" id="t_name" class="form-control" placeholder="Enter your full name" required value="<?php echo isset($_POST['t_name']) ? htmlspecialchars($_POST['t_name']) : ''; ?>">
+              </div>
+            </div>
+
+            <div class="col-6">
               <div class="form-group">
                 <label for="t_phone">
                   <i class="fas fa-mobile-alt"></i>
                   Mobile Number <span class="required">*</span>
                 </label>
-                <input type="tel" name="t_phone" id="t_phone" class="form-control" placeholder="10-digit mobile number" required pattern="[0-9]{10}" maxlength="10" value="<?php echo isset($_POST['t_phone']) ? htmlspecialchars($_POST['t_phone']) : ''; ?>">
+                <input type="tel" name="t_phone" id="t_phone" class="form-control" placeholder="10-digit mobile" required pattern="[0-9]{10}" maxlength="10" value="<?php echo isset($_POST['t_phone']) ? htmlspecialchars($_POST['t_phone']) : ''; ?>">
               </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-6">
               <div class="form-group">
                 <label for="t_email">
                   <i class="fas fa-envelope"></i>
@@ -440,32 +501,58 @@ if(isset($_POST['register_technician'])){
                 <input type="email" name="t_email" id="t_email" class="form-control" placeholder="your.email@example.com" required value="<?php echo isset($_POST['t_email']) ? htmlspecialchars($_POST['t_email']) : ''; ?>">
               </div>
             </div>
-          </div>
 
-          <div class="form-group">
-            <label for="t_aadhar">
-              <i class="fas fa-id-card-alt"></i>
-              Aadhaar Number <span class="required">*</span>
-            </label>
-            <input type="text" name="t_aadhar" id="t_aadhar" class="form-control" placeholder="12-digit Aadhaar number" required pattern="[0-9]{12}" maxlength="12" value="<?php echo isset($_POST['t_aadhar']) ? htmlspecialchars($_POST['t_aadhar']) : ''; ?>">
-          </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_aadhar">
+                  <i class="fas fa-id-card-alt"></i>
+                  Aadhaar Number <span class="required">*</span>
+                </label>
+                <input type="text" name="t_aadhar" id="t_aadhar" class="form-control" placeholder="12-digit Aadhaar" required pattern="[0-9]{12}" maxlength="12" value="<?php echo isset($_POST['t_aadhar']) ? htmlspecialchars($_POST['t_aadhar']) : ''; ?>">
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label for="t_pic">
-              <i class="fas fa-camera"></i>
-              Profile Photo <span class="required">*</span>
-            </label>
-            <input type="file" name="t_pic" id="t_pic" class="form-control" accept="image/*" required>
-            <small class="text-muted">Upload a clear photo for your ID card (JPG, PNG, max 2MB)</small>
-          </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_service_pincode">
+                  <i class="fas fa-map-pin"></i>
+                  Service Pincode <span class="required">*</span>
+                </label>
+                <input type="text" name="t_service_pincode" id="t_service_pincode" class="form-control" placeholder="6-digit pincode" required pattern="[0-9]{6}" maxlength="6" value="<?php echo isset($_POST['t_service_pincode']) ? htmlspecialchars($_POST['t_service_pincode']) : ''; ?>">
+              </div>
+            </div>
 
-          <div class="form-group">
-            <label for="t_payment_qr">
-              <i class="fas fa-qrcode"></i>
-              Payment QR Code (Optional)
-            </label>
-            <input type="file" name="t_payment_qr" id="t_payment_qr" class="form-control" accept="image/*">
-            <small class="text-muted">Upload your personal payment QR code for receiving payments directly (Optional)</small>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_experience">
+                  <i class="fas fa-clock"></i>
+                  Years of Experience
+                </label>
+                <input type="text" name="t_experience" id="t_experience" class="form-control" placeholder="e.g., 5 years" value="<?php echo isset($_POST['t_experience']) ? htmlspecialchars($_POST['t_experience']) : ''; ?>">
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_pic">
+                  <i class="fas fa-camera"></i>
+                  Profile Photo <span class="required">*</span>
+                </label>
+                <input type="file" name="t_pic" id="t_pic" class="form-control" accept="image/*" required>
+                <small class="text-muted">JPG, PNG, max 2MB</small>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="form-group">
+                <label for="t_payment_qr">
+                  <i class="fas fa-qrcode"></i>
+                  Payment QR Code (Optional)
+                </label>
+                <input type="file" name="t_payment_qr" id="t_payment_qr" class="form-control" accept="image/*">
+                <small class="text-muted">Your payment QR (Optional)</small>
+              </div>
+            </div>
           </div>
 
           <div class="form-group">
@@ -473,31 +560,7 @@ if(isset($_POST['register_technician'])){
               <i class="fas fa-map-marker-alt"></i>
               Complete Address <span class="required">*</span>
             </label>
-            <textarea name="t_addr" id="t_addr" class="form-control" rows="3" placeholder="Enter your complete address" required><?php echo isset($_POST['t_addr']) ? htmlspecialchars($_POST['t_addr']) : ''; ?></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="t_service_pincode">
-              <i class="fas fa-map-pin"></i>
-              Service Pincode <span class="required">*</span>
-            </label>
-            <input type="text" name="t_service_pincode" id="t_service_pincode" class="form-control" placeholder="6-digit pincode where you provide service" required pattern="[0-9]{6}" maxlength="6" value="<?php echo isset($_POST['t_service_pincode']) ? htmlspecialchars($_POST['t_service_pincode']) : ''; ?>">
-          </div>
-        </div>
-
-        <!-- Professional Information -->
-        <div class="form-section">
-          <div class="section-title">
-            <i class="fas fa-briefcase"></i>
-            Professional Information
-          </div>
-
-          <div class="form-group">
-            <label for="t_experience">
-              <i class="fas fa-clock"></i>
-              Years of Experience
-            </label>
-            <input type="text" name="t_experience" id="t_experience" class="form-control" placeholder="e.g., 5 years" value="<?php echo isset($_POST['t_experience']) ? htmlspecialchars($_POST['t_experience']) : ''; ?>">
+            <textarea name="t_addr" id="t_addr" class="form-control" rows="2" placeholder="Enter your complete address" required><?php echo isset($_POST['t_addr']) ? htmlspecialchars($_POST['t_addr']) : ''; ?></textarea>
           </div>
 
           <div class="form-group">
@@ -505,7 +568,7 @@ if(isset($_POST['register_technician'])){
               <i class="fas fa-tools"></i>
               Skills & Expertise
             </label>
-            <textarea name="t_skills" id="t_skills" class="form-control" rows="3" placeholder="List your skills (e.g., Electrical work, Plumbing, AC repair, etc.)"><?php echo isset($_POST['t_skills']) ? htmlspecialchars($_POST['t_skills']) : ''; ?></textarea>
+            <textarea name="t_skills" id="t_skills" class="form-control" rows="2" placeholder="List your skills (e.g., Electrical work, Plumbing, AC repair, etc.)"><?php echo isset($_POST['t_skills']) ? htmlspecialchars($_POST['t_skills']) : ''; ?></textarea>
           </div>
         </div>
 
@@ -517,7 +580,7 @@ if(isset($_POST['register_technician'])){
           </div>
 
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-6">
               <div class="form-group">
                 <label for="t_pwd">
                   <i class="fas fa-key"></i>
@@ -527,7 +590,7 @@ if(isset($_POST['register_technician'])){
               </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-6">
               <div class="form-group">
                 <label for="t_pwd_confirm">
                   <i class="fas fa-check-circle"></i>

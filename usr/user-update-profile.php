@@ -54,7 +54,7 @@ if (isset($_POST['update_profile'])) {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
             padding-top: 75px;
             padding-bottom: 55px;
@@ -65,12 +65,12 @@ if (isset($_POST['update_profile'])) {
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 12px 15px 15px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
             z-index: 1000;
             z-index: 100;
         }
@@ -137,7 +137,7 @@ if (isset($_POST['update_profile'])) {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -145,7 +145,7 @@ if (isset($_POST['update_profile'])) {
             font-size: 40px;
             color: white;
             font-weight: 700;
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 25px rgba(209, 58, 189, 0.3);
         }
         
         .form-card {
@@ -172,7 +172,7 @@ if (isset($_POST['update_profile'])) {
         
         .form-label i {
             margin-right: 8px;
-            color: #6366f1;
+            color: #d13abd;
             font-size: 16px;
         }
         
@@ -188,8 +188,8 @@ if (isset($_POST['update_profile'])) {
         
         .form-control:focus {
             outline: none;
-            border-color: #6366f1;
-            background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+            border-color: #d13abd;
+            background: linear-gradient(135deg, #fff5f7 0%, #ffffff 100%);
         }
         
         .form-control:disabled {
@@ -204,7 +204,7 @@ if (isset($_POST['update_profile'])) {
         
         .btn-submit {
             width: 100%;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 16px;
             border: none;
@@ -216,12 +216,12 @@ if (isset($_POST['update_profile'])) {
             align-items: center;
             justify-content: center;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
         }
         
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 6px 20px rgba(209, 58, 189, 0.4);
         }
         
         .btn-submit:active {
@@ -234,39 +234,83 @@ if (isset($_POST['update_profile'])) {
         
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 10px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 16px);
+            max-width: 450px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
-            z-index: 100;
+            padding: 4px 6px;
+            z-index: 1000;
+            border-radius: 20px;
         }
         
         .nav-item {
             flex: 1;
             text-align: center;
             text-decoration: none;
-            color: #999;
-            padding: 8px;
-            transition: all 0.3s;
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 2px;
+            position: relative;
+            border-radius: 12px;
         }
         
-        .nav-item.active {
-            color: #6366f1;
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active { 
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
         }
         
         .nav-item i {
-            font-size: 20px;
+            font-size: 16px;
             display: block;
-            margin-bottom: 4px;
+            margin-bottom: 1px;
+        }
+        
+        .nav-item.active i {
+            animation: bounce 0.4s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
         
         .nav-item span {
-            font-size: 11px;
+            font-size: 8px;
             font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-nav {
+                max-width: 400px;
+                bottom: 10px;
+                padding: 5px 8px;
+            }
+            
+            .nav-item {
+                padding: 5px 4px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+            
+            .nav-item span {
+                font-size: 9px;
+            }
         }
         
         @media (min-width: 768px) {
@@ -375,8 +419,8 @@ if (isset($_POST['update_profile'])) {
             <span>Profile</span>
         </a>
         <a href="../index.php" class="nav-item">
-            <i class="fas fa-globe"></i>
-            <span>Website</span>
+            <i class="fas fa-store"></i>
+            <span>Main</span>
         </a>
     </div>
 </body>

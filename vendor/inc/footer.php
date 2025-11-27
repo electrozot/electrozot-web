@@ -17,85 +17,90 @@ $whatsapp_number = !empty($settings['whatsapp_number']) ? $settings['whatsapp_nu
 $primary_phone = !empty($settings['primary_phone']) ? $settings['primary_phone'] : '7559606925';
 $primary_email = !empty($settings['primary_email']) ? $settings['primary_email'] : 'electrozot.in@gmail.com';
 ?>
-<footer style="background: linear-gradient(135deg, #4a5568 0%, #5a6c7d 100%); color: white; padding: 40px 0 20px 0;">
+<footer style="background: linear-gradient(135deg, #1F2937 0%, #374151 100%); color: white; padding: 20px 0 8px 0; border-top: 3px solid #A78BFA;">
     <div class="container">
-        <div class="row justify-content-center">
-            <!-- Contact Us -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 style="font-weight: 600; margin-bottom: 25px; color: #87ceeb; font-size: 1.1rem;">Contact Us</h5>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 18px; display: flex; align-items: start; gap: 12px;">
-                        <i class="fas fa-map-marker-alt" style="color: #87ceeb; margin-top: 3px; font-size: 1rem;"></i>
-                        <span style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.5;">Electrozot, Dharamshala</span>
-                    </li>
-                    <li style="margin-bottom: 18px;">
-                        <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
-                            <i class="fas fa-phone" style="color: #87ceeb; font-size: 1rem;"></i>
-                            <span><?php echo htmlspecialchars($primary_phone); ?></span>
+        <div class="row align-items-start">
+            <!-- Contact -->
+            <div class="col-6 col-md-3 mb-2">
+                <h5 style="font-weight: 700; margin-bottom: 12px; color: #A78BFA; font-size: 0.95rem; letter-spacing: 0.5px;">CONTACT</h5>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 8px;">
+                        <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.3s; font-size: 0.8rem;" onmouseover="this.style.color='#F9A8D4'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
+                            <i class="fas fa-phone" style="color: #F9A8D4; font-size: 0.75rem;"></i>
+                            <?php echo htmlspecialchars($primary_phone); ?>
                         </a>
                     </li>
                     <li style="margin-bottom: 8px;">
-                        <a href="mailto:<?php echo htmlspecialchars($primary_email); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 12px; transition: all 0.3s; word-break: break-all;" onmouseover="this.style.color='#87ceeb'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
-                            <i class="fas fa-envelope" style="color: #87ceeb; font-size: 1rem;"></i>
-                            <span><?php echo htmlspecialchars($primary_email); ?></span>
+                        <a href="mailto:<?php echo htmlspecialchars($primary_email); ?>" style="color: rgba(255,255,255,0.85); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: all 0.3s; font-size: 0.8rem; word-break: break-word;" onmouseover="this.style.color='#F9A8D4'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
+                            <i class="fas fa-envelope" style="color: #F9A8D4; font-size: 0.75rem;"></i>
+                            <?php echo htmlspecialchars($primary_email); ?>
                         </a>
                     </li>
-                    <li style="margin-bottom: 18px; display: flex; align-items: start; gap: 12px;">
-                        <i class="fas fa-clock" style="color: #87ceeb; margin-top: 3px; font-size: 1rem;"></i>
-                        <span style="color: rgba(255,255,255,0.85); font-size: 0.95rem; line-height: 1.5;">Mon - Sun: 7:00 AM - 9:00 PM</span>
+                    <li style="margin-bottom: 0;">
+                        <span style="color: rgba(255,255,255,0.85); display: flex; align-items: center; gap: 6px; font-size: 0.8rem;">
+                            <i class="fas fa-clock" style="color: #F9A8D4; font-size: 0.75rem;"></i>
+                            7:00 AM - 9:00 PM
+                        </span>
                     </li>
                 </ul>
             </div>
-
-            <!-- Follow Us -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 style="font-weight: 600; margin-bottom: 25px; color: #87ceeb; font-size: 1.1rem;">Follow Us</h5>
-                <p style="color: rgba(255,255,255,0.75); margin-bottom: 25px; font-size: 0.95rem; line-height: 1.6;">Stay connected with us on social media</p>
-                <div style="display: flex; gap: 15px;">
+            
+            <!-- Social Icons -->
+            <div class="col-6 col-md-3 mb-2">
+                <h5 style="font-weight: 700; margin-bottom: 12px; color: #A78BFA; font-size: 0.95rem; letter-spacing: 0.5px;">SOCIAL</h5>
+                <div style="display: flex; gap: 18px; flex-wrap: wrap;">
                     <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(240, 147, 251, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(240, 147, 251, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(240, 147, 251, 0.2)'">
+                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 38px; height: 38px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(240, 147, 251, 0.3);" onmouseover="this.style.transform='translateY(-2px) scale(1.05)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
                         <i class="fab fa-instagram"></i>
                     </a>
                     <?php endif; ?>
                     
                     <?php if(!empty($facebook_url) && $facebook_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #4267B2 0%, #3b5998 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(66, 103, 178, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(66, 103, 178, 0.2)'">
+                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 38px; height: 38px; background: linear-gradient(135deg, #4267B2 0%, #3b5998 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(66, 103, 178, 0.3);" onmouseover="this.style.transform='translateY(-2px) scale(1.05)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
                         <i class="fab fa-facebook-f"></i>
                     </a>
                     <?php endif; ?>
                     
-                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 50px; height: 50px; background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(37, 211, 102, 0.2)'">
+                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 38px; height: 38px; background: linear-gradient(135deg, #25d366 0%, #128c7e 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);" onmouseover="this.style.transform='translateY(-2px) scale(1.05)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
                         <i class="fab fa-whatsapp"></i>
                     </a>
-                    <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="width: 50px; height: 50px; background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.4rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(0, 212, 255, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0, 212, 255, 0.2)'">
+                    <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="width: 38px; height: 38px; background: linear-gradient(135deg, #A78BFA 0%, #EC4899 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s; box-shadow: 0 2px 8px rgba(167, 139, 250, 0.3);" onmouseover="this.style.transform='translateY(-2px) scale(1.05)'" onmouseout="this.style.transform='translateY(0) scale(1)'">
                         <i class="fas fa-phone"></i>
                     </a>
                 </div>
             </div>
-
-            <!-- Quick Links -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <h5 style="font-weight: 600; margin-bottom: 25px; color: #87ceeb; font-size: 1.1rem;">Quick Access</h5>
-                <div style="display: flex; flex-direction: column; gap: 15px;">
-                    <a href="tech/index.php" class="footer-login-btn footer-tech-btn" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); color: #4a5568; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 3px 15px rgba(255, 255, 255, 0.3); font-weight: 600; font-size: 0.9rem; border: 2px solid rgba(255, 255, 255, 0.5);" onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(135, 206, 235, 0.5)'; this.style.background='linear-gradient(135deg, #87ceeb 0%, #4facfe 100%)'; this.style.color='#000'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 3px 15px rgba(255, 255, 255, 0.3)'; this.style.background='linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'; this.style.color='#4a5568'">
-                        <i class="fas fa-user-cog" style="font-size: 1rem;"></i>
-                        <span>Technician</span>
-                    </a>
-                    
-                    <a href="admin/index.php" class="footer-login-btn footer-admin-btn" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); color: #4a5568; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 20px; border-radius: 10px; transition: all 0.3s; box-shadow: 0 3px 15px rgba(255, 255, 255, 0.3); font-weight: 600; font-size: 0.9rem; border: 2px solid rgba(255, 255, 255, 0.5);" onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 6px 20px rgba(135, 206, 235, 0.5)'; this.style.background='linear-gradient(135deg, #87ceeb 0%, #4facfe 100%)'; this.style.color='#000'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 3px 15px rgba(255, 255, 255, 0.3)'; this.style.background='linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'; this.style.color='#4a5568'">
-                        <i class="fas fa-user-shield" style="font-size: 1rem;"></i>
-                        <span>Admin</span>
-                    </a>
-                    
-                    
-                </div>
+            
+            <!-- Brand -->
+            <div class="col-6 col-md-3 mb-2">
+                <h5 style="font-weight: 700; margin-bottom: 12px; color: #A78BFA; font-size: 0.95rem; letter-spacing: 0.5px;">ELECTROZOT</h5>
+                <?php
+                // Check if technician is logged in
+                if(!isset($_SESSION)) {
+                    session_start();
+                }
+                $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
+                $tech_link = $tech_logged_in ? 'tech/dashboard.php' : 'tech/index.php';
+                $tech_text = $tech_logged_in ? 'Dashboard' : 'Technician';
+                ?>
+                <a href="<?php echo $tech_link; ?>" style="background: linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%); color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 24px; border-radius: 12px; transition: all 0.3s; font-weight: 700; font-size: 0.95rem; border: 2px solid rgba(167, 139, 250, 0.5); box-shadow: 0 4px 15px rgba(167, 139, 250, 0.2);" onmouseover="this.style.background='linear-gradient(135deg, rgba(167, 139, 250, 0.4) 0%, rgba(236, 72, 153, 0.4) 100%)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 6px 20px rgba(167, 139, 250, 0.4)'; this.style.borderColor='#A78BFA'" onmouseout="this.style.background='linear-gradient(135deg, rgba(167, 139, 250, 0.25) 0%, rgba(236, 72, 153, 0.25) 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(167, 139, 250, 0.2)'; this.style.borderColor='rgba(167, 139, 250, 0.5)'">
+                    <?php if($tech_logged_in): ?>
+                        <i class="fas fa-chart-line" style="font-size: 1.1rem; color: #A78BFA;"></i>
+                    <?php else: ?>
+                        <i class="fas fa-tools" style="font-size: 1.1rem; color: #A78BFA;"></i>
+                    <?php endif; ?>
+                    <span style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);"><?php echo $tech_text; ?></span>
+                </a>
+            </div>
+            
+            <!-- Empty space for balance -->
+            <div class="col-6 col-md-3 mb-2">
             </div>
         </div>
 
         <!-- Bottom Bar -->
-        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 35px; padding-top: 20px; text-align: center;">
-            <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 0.9rem;">
-                Copyright &copy; <?php echo date('Y');?> Electrozot. All rights reserved.
+        <div style="border-top: 1px solid rgba(167, 139, 250, 0.2); margin-top: 15px; padding-top: 10px; text-align: center;">
+            <p style="margin: 0; color: rgba(255,255,255,0.6); font-size: 0.75rem;">
+                &copy; <?php echo date('Y');?> <span style="color: #F9A8D4; font-weight: 600;">Electrozot</span> - All rights reserved
             </p>
         </div>
     </div>

@@ -130,3 +130,30 @@ This will verify:
   ✓ System files
 
 ================================================================================
+
+================================================================================
+🔐 DEFAULT ADMIN CREDENTIALS
+================================================================================
+
+ADMIN LOGIN DETAILS:
+-------------------
+Email:    admin@electrozot.in
+Password: admin123
+
+SQL INSERT COMMAND:
+------------------
+INSERT INTO `tms_admin` (`a_id`, `a_name`, `a_email`, `a_pwd`, `a_photo`, `a_phone`) 
+VALUES (4, 'Admin User', 'admin@electrozot.in', '0192023a7bbd73250516f069df18b500', 'null', '9876543210');
+
+NOTES:
+------
+- Password is MD5 hashed: 0192023a7bbd73250516f069df18b500 = admin123
+- Admin ID: 4
+- Phone: 9876543210
+- Photo: null (no profile picture set)
+
+⚠️ SECURITY RECOMMENDATION:
+After first login, please change the default password immediately!
+Go to: Admin Panel → Profile → Change Password
+
+================================================================================

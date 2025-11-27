@@ -122,31 +122,34 @@ if ($show_success) {
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
             padding-top: 75px;
+            padding-bottom: 80px;
         }
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
             z-index: 1000;
         }
         .header-content {
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
         }
         
         .logo {
@@ -192,62 +195,216 @@ if ($show_success) {
             text-decoration: none;
             font-size: 14px;
         }
-        .content { padding: 15px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
-        .service-info {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        .content { 
+            padding: 15px; 
+            padding-bottom: 25px; 
+            max-width: 600px; 
+            margin: 0 auto; 
         }
-        .service-name {
-            font-size: 18px;
+        
+        .page-title {
+            font-size: 24px;
             font-weight: 700;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        
+        .page-title i {
+            color: #d13abd;
+        }
+        
+        .service-info {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            border: 1px solid rgba(236, 110, 173, 0.1);
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ffe8f0;
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+        }
+        
+        .service-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
         .service-detail {
             font-size: 14px;
             color: #666;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
+        .service-detail i {
+            color: #d13abd;
+            width: 20px;
+        }
+        
         .form-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            border: 1px solid rgba(236, 110, 173, 0.1);
         }
+        
         .form-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-title i {
+            color: #d13abd;
         }
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+        
         .form-label {
             font-size: 14px;
             font-weight: 600;
             color: #333;
-            margin-bottom: 5px;
-            display: block;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
+        .form-label i {
+            color: #d13abd;
+            font-size: 16px;
+        }
+        
+        .form-label .required {
+            color: #ef4444;
+        }
+        
         .form-control {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.3s;
         }
+        
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #d13abd;
+            background: #fff5f7;
+            box-shadow: 0 0 0 3px rgba(209, 58, 189, 0.1);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
         }
         .btn-submit {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(209, 58, 189, 0.4);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .alert i {
+            font-size: 20px;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #ffe8f0 0%, #ffd6e8 100%);
+            border-left: 4px solid #d13abd;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box i {
+            color: #d13abd;
+            margin-right: 8px;
+        }
+        
+        .info-box p {
+            font-size: 13px;
+            color: #b91c9e;
+            margin: 0;
+            line-height: 1.6;
+        }
             padding: 15px;
             border: none;
             border-radius: 10px;
@@ -302,13 +459,15 @@ if ($show_success) {
         .bottom-nav {
             position: fixed;
             bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 16px);
+            max-width: 450px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
-            padding: 6px 0;
+            padding: 4px 6px;
             z-index: 1000;
             border-radius: 20px;
         }
@@ -317,22 +476,65 @@ if ($show_success) {
             flex: 1;
             text-align: center;
             text-decoration: none;
-            color: #999;
-            transition: all 0.3s;
-            padding: 4px;
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 2px;
+            position: relative;
+            border-radius: 12px;
         }
         
-        .nav-item.active { color: #667eea; }
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active { 
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
         
         .nav-item i {
-            font-size: 20px;
+            font-size: 16px;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
+        }
+        
+        .nav-item.active i {
+            animation: bounce 0.4s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
         
         .nav-item span {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-nav {
+                max-width: 400px;
+                bottom: 10px;
+                padding: 5px 8px;
+            }
+            
+            .nav-item {
+                padding: 5px 4px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+            
+            .nav-item span {
+                font-size: 9px;
+            }
         }
         
         @media (min-width: 768px) {
@@ -449,42 +651,78 @@ if ($show_success) {
 
     <div class="content">
         <?php if (isset($error_msg)): ?>
-        <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
-            <i class="fas fa-exclamation-circle"></i> <?php echo $error_msg; ?>
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span><?php echo $error_msg; ?></span>
         </div>
         <?php endif; ?>
 
+        <div class="page-title">
+            <i class="fas fa-check-circle"></i>
+            Confirm Your Booking
+        </div>
+        
+        <div class="info-box">
+            <p><i class="fas fa-info-circle"></i> Please review your service details and provide your contact information to complete the booking.</p>
+        </div>
+        
         <div class="service-info">
-            <div class="service-name"><?php echo htmlspecialchars($service_name); ?></div>
-            <div class="service-detail"><i class="fas fa-tag"></i> <?php echo htmlspecialchars($category); ?> > <?php echo htmlspecialchars($subcategory); ?></div>
+            <div class="service-header">
+                <div class="service-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div>
+                    <div class="service-name"><?php echo htmlspecialchars($service_name); ?></div>
+                    <div class="service-detail">
+                        <i class="fas fa-tag"></i> 
+                        <?php echo htmlspecialchars($category); ?> › <?php echo htmlspecialchars($subcategory); ?>
+                    </div>
+                </div>
+            </div>
             <div class="service-detail"><i class="far fa-clock"></i> Duration: <?php echo htmlspecialchars($duration); ?></div>
         </div>
 
         <div class="form-card">
-            <div class="form-title">Enter Booking Details</div>
+            <div class="form-title">
+                <i class="fas fa-edit"></i>
+                Enter Booking Details
+            </div>
             <form method="POST" action="">
                 <div class="form-group">
-                    <label class="form-label">Full Name</label>
-                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($user->u_fname . ' ' . $user->u_lname); ?>" readonly>
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        Full Name
+                    </label>
+                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($user->u_fname . ' ' . $user->u_lname); ?>" readonly style="background: #f9fafb; cursor: not-allowed;">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Phone Number</label>
-                    <input type="tel" name="phone" class="form-control" value="<?php echo htmlspecialchars($user->u_phone); ?>" required>
+                    <label class="form-label">
+                        <i class="fas fa-phone"></i>
+                        Phone Number <span class="required">*</span>
+                    </label>
+                    <input type="tel" name="phone" class="form-control" value="<?php echo htmlspecialchars($user->u_phone); ?>" placeholder="Enter your phone number" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Pincode *</label>
+                    <label class="form-label">
+                        <i class="fas fa-map-pin"></i>
+                        Pincode <span class="required">*</span>
+                    </label>
                     <input type="text" name="pincode" class="form-control" placeholder="Enter 6-digit pincode" pattern="[0-9]{6}" maxlength="6" required>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Complete Address *</label>
-                    <textarea name="address" class="form-control" rows="3" placeholder="House/Flat No., Street, Area, Landmark" required><?php echo htmlspecialchars($user->u_addr); ?></textarea>
+                    <label class="form-label">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Complete Address <span class="required">*</span>
+                    </label>
+                    <textarea name="address" class="form-control" placeholder="House/Flat No., Street, Area, Landmark" required><?php echo htmlspecialchars($user->u_addr); ?></textarea>
                 </div>
 
                 <button type="submit" name="confirm_booking" class="btn-submit">
-                    <i class="fas fa-check-circle"></i> Confirm Booking
+                    <i class="fas fa-check-circle"></i> 
+                    Confirm Booking
                 </button>
             </form>
         </div>
@@ -509,8 +747,8 @@ if ($show_success) {
             <span>Profile</span>
         </a>
         <a href="../index.php" class="nav-item">
-            <i class="fas fa-globe"></i>
-            <span>Website</span>
+            <i class="fas fa-store"></i>
+            <span>Main</span>
         </a>
     </div>
 </body>

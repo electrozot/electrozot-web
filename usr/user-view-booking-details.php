@@ -65,7 +65,7 @@ if($status == 'Approved' && $has_technician) {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             min-height: 100vh;
             padding-top: 75px;
             padding-bottom: 70px;
@@ -76,10 +76,10 @@ if($status == 'Approved' && $has_technician) {
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
             z-index: 1000;
             display: flex;
             align-items: center;
@@ -139,7 +139,7 @@ if($status == 'Approved' && $has_technician) {
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
             text-align: center;
         }
         
@@ -170,7 +170,7 @@ if($status == 'Approved' && $has_technician) {
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
         }
         
         .section-title {
@@ -186,7 +186,7 @@ if($status == 'Approved' && $has_technician) {
             width: 35px;
             height: 35px;
             border-radius: 10px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -314,7 +314,7 @@ if($status == 'Approved' && $has_technician) {
         }
         
         .btn-view {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
         }
         
@@ -336,7 +336,7 @@ if($status == 'Approved' && $has_technician) {
         }
         
         .btn-track {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
         }
         

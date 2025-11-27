@@ -4,10 +4,20 @@
     include('vendor/inc/session-config.php');
     session_start();
     include('vendor/inc/config.php');//get configuration file
+    
+    // Check if user is already logged in - redirect to last page or dashboard
+    if(isset($_SESSION['u_id']) && strlen($_SESSION['u_id']) > 0) {
+        // User is already logged in, redirect to last visited page or dashboard
+        $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'user-dashboard.php';
+        header("location: $redirect_page");
+        exit;
+    }
+    
     if(isset($_POST['user_login']))
     {
       $u_phone=$_POST['u_phone']; // Changed to phone
       $u_pwd=($_POST['u_pwd']);//
+      $remember_me = isset($_POST['remember_me']) ? true : false;
      
       $stmt=$mysqli->prepare("SELECT u_phone, u_pwd, u_id FROM tms_user WHERE u_phone=? and u_pwd=? ");//sql to log in user using phone
       $stmt->bind_param('ss',$u_phone,$u_pwd);//bind fetched parameters
@@ -26,13 +36,23 @@
         // Regenerate session ID for security
         session_regenerate_id(true);
         
+        // Set remember me cookie if checked (extends session permanently - 10 years)
+        if($remember_me) {
+            // Cookie will last 10 years (effectively permanent)
+            setcookie(session_name(), session_id(), time() + 315360000, '/');
+        }
+        
         // Link any guest bookings with this phone number to this user account
         include('link-guest-bookings.php');
         $linked = linkBookingsByPhone($mysqli, $u_id, $u_phone);
         if($linked > 0) {
             $_SESSION['linked_bookings'] = $linked;
         }
-        header("location:user-dashboard.php");
+        
+        // Redirect to last visited page or dashboard
+        $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'user-dashboard.php';
+        header("location: $redirect_page");
+        exit;
       }
 
       else
@@ -69,11 +89,9 @@
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, #FFE4F0 0%, #FFC9E0 50%, #FFB3D9 100%);
+            background-attachment: fixed;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
@@ -147,7 +165,7 @@
         .logo-section .brand-name {
             font-size: 1.6rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -155,11 +173,11 @@
         
         .login-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             width: 100%;
             max-width: 450px;
             padding: 0 15px;
-            margin: 80px auto 20px;
+            margin: 100px auto 40px;
         }
         
         .login-card {
@@ -183,7 +201,7 @@
         }
         
         .login-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             padding: 40px 30px;
             text-align: center;
             position: relative;
@@ -226,7 +244,7 @@
         
         .logo-circle i {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -251,6 +269,7 @@
         
         .login-body {
             padding: 40px 35px;
+            background: linear-gradient(180deg, #FFFEF0 0%, #FFF9E0 100%);
         }
         
         .form-group {
@@ -266,7 +285,7 @@
         }
         
         .form-group label i {
-            color: #667eea;
+            color: #ec6ead;
             margin-right: 8px;
         }
         
@@ -286,9 +305,9 @@
         
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ec6ead;
             background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(236, 110, 173, 0.1);
         }
         
         .toggle-password {
@@ -297,13 +316,13 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #667eea;
+            color: #ec6ead;
             font-size: 1.2rem;
             transition: all 0.3s ease;
         }
         
         .toggle-password:hover {
-            color: #764ba2;
+            color: #d13abd;
             transform: translateY(-50%) scale(1.1);
         }
         
@@ -319,7 +338,7 @@
         .btn-login {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -327,7 +346,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(236, 110, 173, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -352,7 +371,7 @@
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 25px rgba(236, 110, 173, 0.6);
         }
         
         .btn-login span {
@@ -369,7 +388,7 @@
         
         .links-section a {
             display: inline-block;
-            color: #667eea;
+            color: #ec6ead;
             text-decoration: none;
             font-weight: 500;
             margin: 8px 15px;
@@ -384,12 +403,12 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: #667eea;
+            background: #ec6ead;
             transition: width 0.3s ease;
         }
         
         .links-section a:hover {
-            color: #764ba2;
+            color: #d13abd;
         }
         
         .links-section a:hover::after {
@@ -578,6 +597,14 @@
                 </script>
                 <?php } ?>
                 
+                <?php if(isset($_GET['registered']) && $_GET['registered'] == 'success') {?>
+                <script>
+                setTimeout(function() {
+                    swal("Success!", "Account created successfully! Please login with your mobile number and password.", "success");
+                }, 100);
+                </script>
+                <?php } ?>
+                
                 <form method="POST">
                     <div class="form-group">
                         <label>
@@ -600,6 +627,13 @@
                             <input type="password" name="u_pwd" id="inputPassword" class="form-control" required placeholder="Enter your password">
                             <i class="fas fa-eye toggle-password" id="toggleUserPassword" onclick="togglePasswordVisibility('inputPassword', 'toggleUserPassword')"></i>
                         </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; cursor: pointer; font-weight: 500; color: #4a5568;">
+                            <input type="checkbox" name="remember_me" id="rememberMe" checked style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #ec6ead;">
+                            <span><i class="fas fa-infinity" style="color: #ec6ead; margin-right: 5px;"></i> Keep me logged in permanently</span>
+                        </label>
                     </div>
                     
                     <button type="submit" name="user_login" class="btn-login">

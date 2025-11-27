@@ -1,4 +1,16 @@
  <style>
+ /* Pulse animation for notification badge */
+ @keyframes pulse {
+     0%, 100% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+     }
+     50% {
+         transform: scale(1.05);
+         box-shadow: 0 0 0 5px rgba(220, 53, 69, 0);
+     }
+ }
+ 
  /* Reduce Sidebar Width Only */
  .sidebar {
      width: 200px !important;
@@ -132,19 +144,28 @@
          <a class="nav-link dropdown-toggle" href="#" id="techniciansDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-user-cog"></i>
              <span>Technicians</span>
+             <?php
+             $guest_count_main_query = "SELECT COUNT(*) as count FROM tms_technician WHERE t_is_guest = 1 AND t_status = 'Pending'";
+             $guest_count_main_result = $mysqli->query($guest_count_main_query);
+             $guest_count_main = $guest_count_main_result->fetch_object()->count;
+             if($guest_count_main > 0):
+             ?>
+                 <span class="badge badge-danger badge-counter ml-auto" style="animation: pulse 2s infinite;"><?php echo $guest_count_main; ?></span>
+             <?php endif; ?>
          </a>
          <div class="dropdown-menu" aria-labelledby="techniciansDropdown">
              <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add Technician</a>
              <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage All</a>
              <a class="dropdown-item" href="admin-guest-technicians.php" style="background: linear-gradient(135deg, rgba(5, 117, 230, 0.1) 0%, rgba(0, 242, 96, 0.1) 100%); font-weight: 700;">
-                 <i class="fas fa-user-clock"></i> Guest Technicians
+                 <i class="fas fa-user-clock"></i> 
+                 <span>Guest Technicians</span>
                  <?php
                  $guest_count_query = "SELECT COUNT(*) as count FROM tms_technician WHERE t_is_guest = 1 AND t_status = 'Pending'";
                  $guest_count_result = $mysqli->query($guest_count_query);
                  $guest_count = $guest_count_result->fetch_object()->count;
                  if($guest_count > 0):
                  ?>
-                     <span class="badge badge-warning ml-1"><?php echo $guest_count; ?></span>
+                     <span class="badge badge-danger ml-auto" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; animation: pulse 2s infinite;"><?php echo $guest_count; ?> NEW</span>
                  <?php endif; ?>
              </a>
              <div class="dropdown-divider"></div>

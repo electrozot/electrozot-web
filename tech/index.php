@@ -26,7 +26,7 @@
 
     body {
       min-height: 100vh;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
@@ -42,7 +42,7 @@
       right: -100px;
       width: 400px;
       height: 400px;
-      background: rgba(255, 215, 0, 0.08);
+      background: rgba(67, 233, 123, 0.15);
       border-radius: 50%;
       z-index: 0;
     }
@@ -54,7 +54,7 @@
       left: -150px;
       width: 500px;
       height: 500px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(79, 172, 254, 0.12);
       border-radius: 50%;
       z-index: 0;
     }
@@ -109,11 +109,28 @@
       object-fit: contain;
     }
 
+    .brand-text-wrapper {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
     .brand-text {
       color: white;
       font-size: 1.5rem;
       font-weight: 800;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      margin: 0;
+    }
+
+    .brand-tagline {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin: 0;
     }
     
     .login-container {
@@ -131,10 +148,10 @@
       width: 100%;
       background: white;
       border-radius: 25px;
-      box-shadow: 0 25px 80px rgba(0,0,0,0.25);
+      box-shadow: 0 25px 80px rgba(79, 172, 254, 0.3);
       overflow: hidden;
       animation: slideUp 0.6s ease-out;
-      border: 3px solid var(--accent);
+      border: 3px solid #43e97b;
     }
 
     @keyframes slideUp {
@@ -149,9 +166,9 @@
     }
     
     .card-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 40px 30px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
+      color: #1a202c;
+      padding: 25px 30px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -180,39 +197,40 @@
     }
 
     .header-icon {
-      width: 80px;
-      height: 80px;
-      background: rgba(255,255,255,0.2);
+      width: 60px;
+      height: 60px;
+      background: rgba(255,255,255,0.3);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
+      margin: 0 auto 12px;
       backdrop-filter: blur(10px);
-      border: 3px solid rgba(255,255,255,0.3);
+      border: 3px solid rgba(255,255,255,0.5);
     }
 
     .header-icon i {
-      font-size: 2.5rem;
-      color: white;
+      font-size: 1.8rem;
+      color: #1a202c;
     }
     
     .card-header h3 {
-      margin: 0 0 10px 0;
-      font-size: 2rem;
+      margin: 0 0 5px 0;
+      font-size: 1.5rem;
       font-weight: 800;
       letter-spacing: -0.5px;
+      color: #1a202c;
     }
 
     .card-header p {
       margin: 0;
-      font-size: 1rem;
-      opacity: 0.95;
-      font-weight: 500;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #2d3748;
     }
     
     .card-body { 
-      padding: 40px 35px;
+      padding: 30px 35px;
     }
 
     .alert {
@@ -244,21 +262,21 @@
     }
     
     .form-group {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
     .form-group label {
       display: block;
       font-weight: 700;
       color: var(--dark);
-      margin-bottom: 10px;
-      font-size: 0.95rem;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     
     .form-group label i {
-      color: var(--primary);
+      color: #4facfe;
       margin-right: 8px;
       font-size: 1rem;
     }
@@ -270,10 +288,10 @@
     
     .form-control { 
       width: 100%;
-      border-radius: 15px;
+      border-radius: 12px;
       border: 2px solid #e2e8f0;
-      padding: 15px 20px;
-      font-size: 1rem;
+      padding: 12px 18px;
+      font-size: 0.95rem;
       transition: all 0.3s ease;
       background: #f7fafc;
       font-weight: 500;
@@ -287,9 +305,9 @@
     
     .form-control:focus {
       outline: none;
-      border-color: var(--primary);
+      border-color: #4facfe;
       background: white;
-      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.15);
       transform: translateY(-2px);
     }
 
@@ -310,7 +328,7 @@
     }
 
     .toggle-password:hover {
-      color: var(--primary);
+      color: #4facfe;
       transform: translateY(-50%) scale(1.1);
     }
     
@@ -326,46 +344,46 @@
 
     .helper i {
       font-size: 0.8rem;
-      color: var(--primary);
+      color: #4facfe;
     }
 
     .security-notice {
-      background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
-      padding: 18px 20px;
-      border-radius: 15px;
-      margin-bottom: 25px;
-      border-left: 4px solid var(--primary);
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.1), rgba(67, 233, 123, 0.1));
+      padding: 12px 15px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border-left: 4px solid #4facfe;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .security-notice i {
-      font-size: 1.5rem;
-      color: var(--primary);
+      font-size: 1.2rem;
+      color: #4facfe;
       flex-shrink: 0;
     }
 
     .security-notice p {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--dark);
       font-weight: 600;
-      line-height: 1.5;
+      line-height: 1.4;
     }
     
     .btn-gradient {
       width: 100%;
-      color: white;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #1a202c;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
       border: none;
-      border-radius: 15px;
-      padding: 16px 32px;
-      font-size: 1.1rem;
+      border-radius: 12px;
+      padding: 13px 28px;
+      font-size: 1rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 1px;
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      box-shadow: 0 10px 30px rgba(79, 172, 254, 0.4);
       transition: all 0.3s ease;
       cursor: pointer;
       display: flex;
@@ -376,8 +394,9 @@
     
     .btn-gradient:hover { 
       transform: translateY(-3px);
-      box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
-      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+      box-shadow: 0 15px 40px rgba(67, 233, 123, 0.5);
+      background: linear-gradient(135deg, #43e97b 0%, #00f2fe 50%, #4facfe 100%);
+      color: #1a202c;
     }
 
     .btn-gradient:active {
@@ -390,38 +409,38 @@
     
     .register-link {
       text-align: center;
-      margin-top: 20px;
-      padding: 20px;
-      background: linear-gradient(135deg, rgba(5, 117, 230, 0.1) 0%, rgba(0, 242, 96, 0.1) 100%);
-      border-radius: 15px;
-      border: 2px solid rgba(5, 117, 230, 0.2);
+      margin-top: 18px;
+      padding: 15px;
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(67, 233, 123, 0.1) 100%);
+      border-radius: 12px;
+      border: 2px solid rgba(79, 172, 254, 0.3);
     }
 
     .register-link p {
-      margin: 0 0 12px 0;
+      margin: 0 0 10px 0;
       color: #2d3748;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .register-btn {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+      gap: 8px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
       color: white;
-      padding: 12px 30px;
+      padding: 10px 25px;
       border-radius: 50px;
       text-decoration: none;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.95rem;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
     }
 
     .register-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(5, 117, 230, 0.4);
+      box-shadow: 0 8px 25px rgba(67, 233, 123, 0.5);
       color: white;
       text-decoration: none;
     }
@@ -432,13 +451,13 @@
 
     .back-link {
       text-align: center;
-      margin-top: 25px;
-      padding-top: 25px;
+      margin-top: 18px;
+      padding-top: 18px;
       border-top: 2px solid #e2e8f0;
     }
     
     .back-link a {
-      color: var(--primary);
+      color: #4facfe;
       text-decoration: none;
       font-weight: 700;
       font-size: 1rem;
@@ -449,7 +468,7 @@
     }
     
     .back-link a:hover {
-      color: var(--secondary);
+      color: #43e97b;
       gap: 12px;
     }
 
@@ -474,40 +493,82 @@
       .brand-text {
         font-size: 1.3rem;
       }
+
+      .brand-tagline {
+        font-size: 0.7rem;
+      }
       
       .card-header {
-        padding: 35px 25px;
+        padding: 20px 20px;
       }
 
       .header-icon {
-        width: 70px;
-        height: 70px;
+        width: 50px;
+        height: 50px;
+        margin-bottom: 8px;
       }
 
       .header-icon i {
-        font-size: 2rem;
+        font-size: 1.5rem;
       }
       
       .card-header h3 {
-        font-size: 1.6rem;
+        font-size: 1.3rem;
       }
 
       .card-header p {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
       }
       
       .card-body {
-        padding: 30px 25px;
+        padding: 20px 20px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
       }
 
       .form-control {
-        padding: 13px 18px;
-        font-size: 0.95rem;
+        padding: 10px 15px;
+        font-size: 0.9rem;
       }
 
       .btn-gradient {
-        padding: 14px 28px;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+      }
+
+      .security-notice {
+        padding: 10px 12px;
+        margin-bottom: 15px;
+      }
+
+      .security-notice i {
         font-size: 1rem;
+      }
+
+      .security-notice p {
+        font-size: 0.8rem;
+      }
+
+      .register-link {
+        padding: 12px;
+        margin-top: 15px;
+      }
+
+      .register-btn {
+        padding: 8px 20px;
+        font-size: 0.9rem;
+      }
+
+      .back-link {
+        margin-top: 15px;
+        padding-top: 15px;
       }
     }
   </style>
@@ -518,7 +579,10 @@
       <div class="logo-container">
         <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
       </div>
-      <span class="brand-text">Electrozot</span>
+      <div class="brand-text-wrapper">
+        <span class="brand-text">Electrozot</span>
+        <span class="brand-tagline">We Make Perfect</span>
+      </div>
     </a>
   </nav>
   
@@ -612,6 +676,13 @@
               <i class="fas fa-info-circle"></i>
               <span>Forgot password? Contact Admin for password reset</span>
             </small>
+          </div>
+          
+          <div class="form-group" style="margin-bottom: 20px;">
+            <label style="display: flex; align-items: center; cursor: pointer; font-weight: 500; color: var(--dark);">
+              <input type="checkbox" name="remember_me" id="rememberMe" checked style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: var(--primary);">
+              <span><i class="fas fa-infinity" style="color: var(--primary); margin-right: 5px;"></i> Keep me logged in permanently</span>
+            </label>
           </div>
           
           <div class="security-notice">

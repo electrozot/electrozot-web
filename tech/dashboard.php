@@ -62,13 +62,12 @@ $where_clause = "WHERE sb.sb_technician_id = ?";
 $params = [$t_id];
 $types = 'i';
 
-if($filter == 'new') {
-    $where_clause .= " AND sb.sb_status = 'Pending'";
-} elseif($filter == 'pending') {
+if($filter == 'pending') {
     $where_clause .= " AND sb.sb_status = 'In Progress'";
 } elseif($filter == 'completed') {
     $where_clause .= " AND sb.sb_status = 'Completed'";
 }
+// Note: "All" filter shows everything with Pending bookings automatically at top due to status_priority sorting
 
 if(!empty($search)) {
     $where_clause .= " AND u.u_phone LIKE ?";
@@ -1883,13 +1882,6 @@ $completed_count = $counts->completed_count;
     <!-- Control Bar -->
     <div class="control-bar">
         <div class="filter-buttons-row">
-            <a href="?filter=new" class="filter-btn <?php echo $filter == 'new' ? 'active' : ''; ?>">
-                <i class="fas fa-plus-circle"></i> New
-                <?php if($new_count > 0): ?>
-                    <span class="badge"><?php echo $new_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
             <a href="?filter=pending" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
                 <i class="fas fa-clock"></i> Pending
                 <?php if($pending_count > 0): ?>

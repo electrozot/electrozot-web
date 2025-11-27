@@ -1,11 +1,11 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #dc143c 0%, #a01030 50%, #5a0a0a 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px); padding: 6px 0;">
-    <div class="container-fluid" style="max-width: 1400px; padding: 0 20px;">
-        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0;">
-            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 60px; width: auto; margin-right: 15px; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <i class="fas fa-bolt logo-fallback" style="font-size: 2.2rem; margin-right: 15px; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #dc143c 0%, #a01030 50%, #5a0a0a 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px); padding: 12px 0;">
+    <div class="container-fluid" style="max-width: 1400px; padding: 0 10px;">
+        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 3px;">
+            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
             <div class="d-flex flex-column">
-                <span style="font-size: 1.8rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
-                <small class="navbar-tagline" style="font-size: 0.85rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
+                <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
+                <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
             </div>
         </a>
         <!-- Mobile Login Button (visible only on mobile) - Direct to Client Login -->
@@ -99,30 +99,33 @@
             /* Responsive logo sizing */
             @media (max-width: 768px) {
                 .navbar-logo {
-                    height: 50px !important;
+                    height: 55px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.5rem !important;
+                    font-size: 1.6rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.75rem !important;
+                    font-size: 0.8rem !important;
                 }
             }
             
             @media (max-width: 576px) {
                 .navbar-logo {
-                    height: 45px !important;
-                    margin-right: 12px !important;
+                    height: 50px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.3rem !important;
+                    font-size: 1.4rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.7rem !important;
+                    font-size: 0.75rem !important;
+                }
+                
+                .navbar-brand {
+                    gap: 3px !important;
                 }
             }
             

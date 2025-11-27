@@ -4,6 +4,14 @@
   session_start();
   include('../admin/vendor/inc/config.php');
 
+  // Check if technician is already logged in - redirect to last page or dashboard
+  if(isset($_SESSION['t_id']) && strlen($_SESSION['t_id']) > 0) {
+      // Technician is already logged in, redirect to last visited page or dashboard
+      $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'dashboard.php';
+      header("location: $redirect_page");
+      exit;
+  }
+
   if($_SERVER['REQUEST_METHOD'] !== 'POST'){
     
     header('Location: index.php');
@@ -71,6 +79,15 @@
   // Regenerate session ID for security
   session_regenerate_id(true);
   
-  header('Location: dashboard.php');
+  // Set remember me cookie if checked (extends session permanently - 10 years)
+  $remember_me = isset($_POST['remember_me']) ? true : false;
+  if($remember_me) {
+      // Cookie will last 10 years (effectively permanent)
+      setcookie(session_name(), session_id(), time() + 315360000, '/');
+  }
+  
+  // Redirect to last visited page or dashboard
+  $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'dashboard.php';
+  header("Location: $redirect_page");
   exit();
 ?>

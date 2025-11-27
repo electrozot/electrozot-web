@@ -48,7 +48,9 @@
                 
                 if($stmt)
                 {
-                    $succ = "Account Created Successfully! Please Log In";
+                    // Redirect to login page after successful registration
+                    header("Location: index.php?registered=success");
+                    exit;
                 }
                 else 
                 {
@@ -78,11 +80,9 @@
         html { overflow-x: hidden; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, #FFE4F0 0%, #FFC9E0 50%, #FFB3D9 100%);
+            background-attachment: fixed;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;
@@ -138,18 +138,18 @@
         .logo-section .brand-name {
             font-size: 1.6rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .register-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             width: 100%;
             max-width: 550px;
             padding: 0 15px;
-            margin: 80px auto 20px;
+            margin: 100px auto 40px;
         }
         .register-card {
             background: rgba(255, 255, 255, 0.95);
@@ -164,7 +164,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .register-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             padding: 40px 30px;
             text-align: center;
             position: relative;
@@ -202,7 +202,7 @@
         }
         .logo-circle i {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -222,7 +222,10 @@
             position: relative;
             z-index: 1;
         }
-        .register-body { padding: 40px 35px; }
+        .register-body { 
+            padding: 40px 35px;
+            background: linear-gradient(180deg, #FFFEF0 0%, #FFF9E0 100%);
+        }
         .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
@@ -232,7 +235,7 @@
             font-size: 0.95rem;
         }
         .form-group label i {
-            color: #667eea;
+            color: #ec6ead;
             margin-right: 8px;
         }
         .form-control {
@@ -242,13 +245,13 @@
             border-radius: 12px;
             font-size: 1rem;
             transition: all 0.3s ease;
-            background: #f7fafc;
+            background: #ffffff;
         }
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ec6ead;
             background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(236, 110, 173, 0.1);
         }
         .helper-text {
             font-size: 0.85rem;
@@ -261,7 +264,7 @@
         .btn-register {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -305,7 +308,7 @@
         }
         .links-section a {
             display: inline-block;
-            color: #667eea;
+            color: #ec6ead;
             text-decoration: none;
             font-weight: 500;
             margin: 8px 15px;
@@ -323,7 +326,7 @@
             transition: width 0.3s ease;
         }
         .links-section a:hover {
-            color: #764ba2;
+            color: #d13abd;
         }
         .links-section a:hover::after {
             width: 100%;
@@ -405,22 +408,29 @@
             </div>
             <div class="register-body">
                 <form method="post">
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> First Name</label>
-                        <input type="text" required class="form-control" name="u_fname" placeholder="Enter your first name">
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-user" style="color: #ec6ead; margin-right: 8px;"></i> First Name</label>
+                            <input type="text" required class="form-control" name="u_fname" placeholder="First name">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-user" style="color: #ec6ead; margin-right: 8px;"></i> Last Name</label>
+                            <input type="text" required class="form-control" name="u_lname" placeholder="Last name">
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> Last Name</label>
-                        <input type="text" required class="form-control" name="u_lname" placeholder="Enter your last name">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-phone"></i> Mobile Number <span class="text-danger">*</span></label>
-                        <input type="tel" required class="form-control" name="u_phone" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)">
-                        <div class="helper-text">
-                            <i class="fas fa-info-circle"></i> Enter exactly 10 digits
-                            <span>10-digit mobile number for login</span>
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-phone" style="color: #ec6ead; margin-right: 8px;"></i> Mobile Number</label>
+                            <div style="position: relative;">
+                                <input type="tel" required class="form-control" id="u_phone" name="u_phone" placeholder="10-digit mobile" pattern="[0-9]{10}" maxlength="10" title="Enter exactly 10 digits" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10); checkPhoneAvailability(this.value);">
+                                <span id="phone-status" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 1.2rem;"></span>
+                            </div>
+                            <small id="phone-message" style="display: block; margin-top: 5px; font-size: 0.85rem;"></small>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-envelope" style="color: #ec6ead; margin-right: 8px;"></i> Email</label>
+                            <input type="email" required class="form-control" name="u_email" placeholder="Email address">
                         </div>
                     </div>
                     
@@ -429,17 +439,14 @@
                         <input type="text" required class="form-control" name="u_addr" placeholder="Enter your complete address">
                     </div>
                     
-                    <div class="form-group">
-                        <label><i class="fas fa-map-signs"></i> Area / Locality</label>
-                        <input type="text" required class="form-control" name="u_area" placeholder="Enter your area or locality">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label><i class="fas fa-map-pin"></i> Pincode</label>
-                        <input type="text" required class="form-control" name="u_pincode" placeholder="Enter 6-digit pincode" pattern="[0-9]{6}" maxlength="6">
-                        <div class="helper-text">
-                            <i class="fas fa-info-circle"></i>
-                            <span>6-digit postal pincode</span>
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-map-signs" style="color: #ec6ead; margin-right: 8px;"></i> Area</label>
+                            <input type="text" required class="form-control" name="u_area" placeholder="Area or locality">
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #4a5568; font-weight: 600; margin-bottom: 10px; font-size: 0.95rem;"><i class="fas fa-map-pin" style="color: #ec6ead; margin-right: 8px;"></i> Pincode</label>
+                            <input type="text" required class="form-control" name="u_pincode" placeholder="6-digit pincode" pattern="[0-9]{6}" maxlength="6">
                         </div>
                     </div>
                     
@@ -448,15 +455,10 @@
                     </div>
                     
                     <div class="form-group">
-                        <label><i class="fas fa-envelope"></i> Email Address</label>
-                        <input type="email" required class="form-control" name="u_email" placeholder="Enter your email address">
-                    </div>
-                    
-                    <div class="form-group">
                         <label><i class="fas fa-lock"></i> Password</label>
                         <div style="position: relative;">
                             <input type="password" required class="form-control" name="u_pwd" id="registerPassword" placeholder="Create a strong password" minlength="6">
-                            <i class="fas fa-eye" id="toggleRegisterPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #667eea;"></i>
+                            <i class="fas fa-eye" id="toggleRegisterPassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ec6ead;"></i>
                         </div>
                         <div class="helper-text">
                             <i class="fas fa-shield-alt"></i>
@@ -488,6 +490,67 @@
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
+        
+        // Real-time phone number availability check
+        let phoneCheckTimeout;
+        function checkPhoneAvailability(phone) {
+            const statusIcon = document.getElementById('phone-status');
+            const messageText = document.getElementById('phone-message');
+            const submitBtn = document.querySelector('button[name="add_user"]');
+            
+            // Clear previous timeout
+            clearTimeout(phoneCheckTimeout);
+            
+            // Reset if empty
+            if(phone.length === 0) {
+                statusIcon.innerHTML = '';
+                messageText.innerHTML = '';
+                messageText.style.color = '';
+                return;
+            }
+            
+            // Show checking status
+            if(phone.length === 10) {
+                statusIcon.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: #ffc107;"></i>';
+                messageText.innerHTML = 'Checking availability...';
+                messageText.style.color = '#ffc107';
+                
+                // Delay the check to avoid too many requests
+                phoneCheckTimeout = setTimeout(function() {
+                    // Make AJAX request
+                    fetch('check-phone-availability.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'phone=' + encodeURIComponent(phone)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.available) {
+                            statusIcon.innerHTML = '<i class="fas fa-check-circle" style="color: #28a745;"></i>';
+                            messageText.innerHTML = '✓ ' + data.message;
+                            messageText.style.color = '#28a745';
+                            submitBtn.disabled = false;
+                        } else {
+                            statusIcon.innerHTML = '<i class="fas fa-times-circle" style="color: #dc3545;"></i>';
+                            messageText.innerHTML = '✗ ' + data.message;
+                            messageText.style.color = '#dc3545';
+                            submitBtn.disabled = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        statusIcon.innerHTML = '';
+                        messageText.innerHTML = '';
+                    });
+                }, 500); // Wait 500ms after user stops typing
+            } else {
+                statusIcon.innerHTML = '';
+                messageText.innerHTML = 'Enter 10-digit mobile number';
+                messageText.style.color = '#718096';
+            }
+        }
     </script>
 
     <!-- Bootstrap core JavaScript-->

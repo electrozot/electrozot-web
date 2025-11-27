@@ -31,7 +31,7 @@ $user = $user_result->fetch_object();
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
             text-align: center;
         }
         
@@ -82,7 +82,7 @@ $user = $user_result->fetch_object();
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
         }
         
         .timeline-title {
@@ -96,7 +96,7 @@ $user = $user_result->fetch_object();
         
         .timeline-title i {
             margin-right: 8px;
-            color: #6366f1;
+            color: #d13abd;
         }
         
         .timeline {
@@ -164,7 +164,7 @@ $user = $user_result->fetch_object();
         }
         
         .timeline-step.active .step-icon {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 100%);
             color: white;
             animation: pulse 2s infinite;
         }
@@ -211,6 +211,9 @@ $user = $user_result->fetch_object();
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            padding: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
         }
         
@@ -225,7 +228,7 @@ $user = $user_result->fetch_object();
         
         .info-title i {
             margin-right: 8px;
-            color: #6366f1;
+            color: #d13abd;
         }
         
         .info-grid {
@@ -259,7 +262,7 @@ $user = $user_result->fetch_object();
             border-radius: 20px;
             padding: 50px 20px;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
             margin-top: 50px;
         }
         
@@ -267,13 +270,13 @@ $user = $user_result->fetch_object();
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #ffe8f0 0%, #ffd6e8 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
             font-size: 40px;
-            color: #6366f1;
+            color: #d13abd;
         }
         
         .empty-title {
@@ -295,7 +298,7 @@ $user = $user_result->fetch_object();
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
         }
         
         .selector-title {
@@ -309,7 +312,7 @@ $user = $user_result->fetch_object();
         
         .selector-title i {
             margin-right: 8px;
-            color: #6366f1;
+            color: #d13abd;
         }
         
         .booking-select {
@@ -327,12 +330,12 @@ $user = $user_result->fetch_object();
         
         .booking-select:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: #d13abd;
             background: white;
         }
         
         .btn-book {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 15px 35px;
             border-radius: 25px;
@@ -614,10 +617,10 @@ $user = $user_result->fetch_object();
             </div>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" style="background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%); color: white; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-eye" style="margin-right: 6px;"></i> View Full Details
                 </a>
-                <a href="user-manage-booking.php" style="background: white; color: #6366f1; border: 2px solid #6366f1; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                <a href="user-manage-booking.php" style="background: white; color: #d13abd; border: 2px solid #d13abd; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-list" style="margin-right: 6px;"></i> All Orders
                 </a>
             </div>

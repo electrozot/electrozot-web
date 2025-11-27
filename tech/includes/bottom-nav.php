@@ -21,7 +21,7 @@ if($tech_id > 0) {
 <!-- Bottom Navigation Bar -->
 <div class="bottom-nav">
     <a href="dashboard.php" class="nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
-        <i class="fas fa-home"></i>
+        <i class="fas fa-chart-line"></i>
         <span>Dashboard</span>
         <?php if($new_count > 0): ?>
         <span class="badge"><?php echo $new_count; ?></span>
@@ -30,6 +30,10 @@ if($tech_id > 0) {
     <a href="completed-bookings.php" class="nav-item <?php echo ($current_page == 'completed-bookings.php') ? 'active' : ''; ?>">
         <i class="fas fa-check-circle"></i>
         <span>Completed</span>
+    </a>
+    <a href="../index.php" class="nav-item" target="_blank">
+        <i class="fas fa-home"></i>
+        <span>Main Site</span>
     </a>
     <a href="my-profile.php" class="nav-item <?php echo ($current_page == 'my-profile.php') ? 'active' : ''; ?>">
         <i class="fas fa-user"></i>
@@ -42,147 +46,104 @@ if($tech_id > 0) {
 </div>
 
 <style>
-/* Bottom Navigation Bar - Matching User Dashboard Style */
+/* Bottom Navigation Bar - Optimized Performance */
 .bottom-nav {
     position: fixed;
     bottom: 8px;
     left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 8px);
+    transform: translateX(-50%) translateZ(0);
+    width: calc(100% - 16px);
     max-width: 600px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 3px 20px rgba(102, 126, 234, 0.35), 0 1px 5px rgba(0,0,0,0.1);
+    background: linear-gradient(135deg, #EEBD89 0%, #F5A8B8 35%, #E87BA8 70%, #D13ABD 100%);
+    box-shadow: 0 4px 20px rgba(238, 189, 137, 0.4);
     display: flex;
     justify-content: space-around;
-    padding: 2px 6px;
+    padding: 8px 6px;
     z-index: 1000;
     border-radius: 20px;
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
 .nav-item {
     flex: 1;
     text-align: center;
     text-decoration: none;
-    color: rgba(255, 255, 255, 0.75);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 4px 4px;
+    color: rgba(255, 255, 255, 0.9);
+    transition: all 0.2s ease;
+    padding: 6px 4px;
     position: relative;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.nav-item::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.nav-item:active::before {
-    width: 100px;
-    height: 100px;
+    border-radius: 12px;
 }
 
 .nav-item:hover {
     color: white;
     background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .nav-item.active { 
     color: white;
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 3px rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .nav-item i {
-    font-size: 18px;
+    font-size: 22px;
     display: block;
-    margin-bottom: 1px;
+    margin-bottom: 3px;
     transition: all 0.3s ease;
-    position: relative;
-    z-index: 1;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
 }
 
 .nav-item:hover i {
-    transform: scale(1.2) rotate(5deg);
+    transform: scale(1.15) translateY(-2px);
+    filter: drop-shadow(0 4px 6px rgba(255, 255, 255, 0.3));
 }
 
 .nav-item.active i {
-    animation: bounceRotate 0.6s ease;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transform: scale(1.2);
+    filter: drop-shadow(0 3px 8px rgba(255, 255, 255, 0.5));
+    animation: iconPulse 2s ease-in-out infinite;
 }
 
-@keyframes bounceRotate {
-    0% { transform: scale(1) rotate(0deg); }
-    25% { transform: scale(1.2) rotate(-10deg); }
-    50% { transform: scale(1.3) rotate(10deg); }
-    75% { transform: scale(1.2) rotate(-5deg); }
-    100% { transform: scale(1.1) rotate(0deg); }
+@keyframes iconPulse {
+    0%, 100% { 
+        transform: scale(1.2);
+    }
+    50% { 
+        transform: scale(1.25);
+    }
 }
 
 .nav-item span:not(.badge) {
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.3px;
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
+    display: block;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.nav-item:hover span:not(.badge) {
-    transform: scale(1.05);
-    letter-spacing: 0.5px;
-}
-
-.nav-item.active span:not(.badge) {
-    font-weight: 900;
-    transform: scale(1.1);
 }
 
 .nav-item .badge {
     position: absolute;
-    top: 0;
-    right: 4px;
-    background: linear-gradient(135deg, #ff4757 0%, #ff6b81 100%);
-    color: white;
-    border-radius: 12px;
-    padding: 3px 6px;
+    top: 2px;
+    right: 8px;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #856404;
+    border-radius: 10px;
+    padding: 2px 6px;
     font-size: 10px;
     font-weight: 900;
     min-width: 18px;
     text-align: center;
-    animation: pulseBounce 2s infinite;
-    box-shadow: 0 3px 10px rgba(255, 71, 87, 0.5), 0 0 0 3px rgba(255, 71, 87, 0.2);
     border: 2px solid white;
-    z-index: 2;
+    box-shadow: 0 2px 6px rgba(255, 215, 0, 0.5);
+    animation: simplePulse 2s ease-in-out infinite;
 }
 
-@keyframes pulseBounce {
+@keyframes simplePulse {
     0%, 100% { 
-        transform: scale(1) translateY(0); 
-        box-shadow: 0 3px 10px rgba(255, 71, 87, 0.5), 0 0 0 3px rgba(255, 71, 87, 0.2);
-    }
-    25% { 
-        transform: scale(1.15) translateY(-2px); 
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.7), 0 0 0 5px rgba(255, 71, 87, 0.3);
+        transform: scale(1);
     }
     50% { 
-        transform: scale(1.2) translateY(-3px); 
-        box-shadow: 0 6px 20px rgba(255, 71, 87, 0.8), 0 0 0 6px rgba(255, 71, 87, 0.4);
-    }
-    75% { 
-        transform: scale(1.15) translateY(-2px); 
-        box-shadow: 0 5px 15px rgba(255, 71, 87, 0.7), 0 0 0 5px rgba(255, 71, 87, 0.3);
+        transform: scale(1.1);
     }
 }
 
