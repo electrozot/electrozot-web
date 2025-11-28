@@ -298,11 +298,21 @@
                                          <th>Booking Price:</th>
                                          <td>
                                              <?php 
-                                                 // For completed bookings with technician-set price, show final price
-                                                 if($booking->sb_status == 'Completed' && isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1) {
-                                                     $display_price = $booking->sb_final_price ?? $booking->sb_total_price;
+                                                 // Check all price fields: sb_bill_amount > sb_final_price > sb_tech_decided_price > sb_total_price
+                                                 $display_price = 0;
+                                                 $is_tech_set = false;
+                                                 
+                                                 if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                                     $display_price = $booking->sb_bill_amount;
+                                                     $is_tech_set = true;
+                                                 } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                                     $display_price = $booking->sb_final_price;
+                                                     $is_tech_set = true;
+                                                 } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                                     $display_price = $booking->sb_tech_decided_price;
+                                                     $is_tech_set = true;
                                                  } else {
-                                                     $display_price = !empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_total_price;
+                                                     $display_price = $booking->sb_total_price;
                                                  }
                                                  
                                                  // Show price
@@ -312,9 +322,9 @@
                                                      echo '<span style="color: #6c757d;">₹0.00</span>';
                                                  }
                                              ?>
-                                             <?php if($booking->sb_price_set_by_tech == 1): ?>
+                                             <?php if($is_tech_set): ?>
                                              <br><small class="badge badge-info"><i class="fas fa-user-cog"></i> Price set by technician</small>
-                                             <?php elseif(empty($booking->sb_final_price) && $booking->sb_total_price == 0 && $booking->sb_status != 'Completed'): ?>
+                                             <?php elseif($display_price == 0 && $booking->sb_status != 'Completed'): ?>
                                              <br><small class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Price not set yet</small>
                                              <?php endif; ?>
                                          </td>
@@ -324,12 +334,22 @@
                                          <th>Final Charged Price (Bill Amount):</th>
                                          <td>
                                              <?php 
-                                                 $final_price = $booking->sb_final_price ?? $booking->sb_total_price;
+                                                 // Use same logic as booking price
+                                                 $final_price = 0;
+                                                 if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                                     $final_price = $booking->sb_bill_amount;
+                                                 } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                                     $final_price = $booking->sb_final_price;
+                                                 } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                                     $final_price = $booking->sb_tech_decided_price;
+                                                 } else {
+                                                     $final_price = $booking->sb_total_price;
+                                                 }
                                              ?>
                                              <strong style="color: #007bff; font-size: 1.2rem;">
                                                  ₹<?php echo number_format($final_price, 2);?>
                                              </strong>
-                                             <?php if(isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1): ?>
+                                             <?php if($final_price > 0 && ($booking->sb_bill_amount > 0 || $booking->sb_final_price > 0 || $booking->sb_tech_decided_price > 0)): ?>
                                              <br>
                                              <span class="badge badge-info mt-1">
                                                  <i class="fas fa-user-cog"></i> Price set by Technician - Same as Booking Price
@@ -346,12 +366,24 @@
                                              <?php endif; ?>
                                          </td>
                                      </tr>
-                                     <?php if(isset($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price !== null): ?>
+                                     <?php 
+                                     // Show technician decided price if available
+                                     $tech_price = 0;
+                                     if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                         $tech_price = $booking->sb_bill_amount;
+                                     } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                         $tech_price = $booking->sb_tech_decided_price;
+                                     } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                         $tech_price = $booking->sb_final_price;
+                                     }
+                                     
+                                     if($tech_price > 0): 
+                                     ?>
                                      <tr>
                                          <th>Technician Decided Price:</th>
                                          <td>
                                              <span class="badge badge-warning" style="font-size: 1rem; padding: 8px 12px;">
-                                                 ₹<?php echo number_format($booking->sb_tech_decided_price, 2);?>
+                                                 ₹<?php echo number_format($tech_price, 2);?>
                                              </span>
                                              <br>
                                              <small class="text-muted">

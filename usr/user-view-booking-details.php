@@ -443,25 +443,40 @@ if($status == 'Approved' && $has_technician) {
                 <span>Payment Details</span>
             </div>
             
-            <div class="info-row">
-                <div class="info-label">Base Price</div>
-                <div class="info-value">₹<?php echo number_format($booking->sb_total_price, 2); ?></div>
-            </div>
+            <?php 
+            // Calculate bill amount - check all possible price fields
+            $bill_amount = 0;
             
-            <?php if(!empty($booking->sb_final_price) || !empty($booking->sb_charged_price)): ?>
+            // Priority order: sb_bill_amount > sb_final_price > sb_tech_decided_price > sb_total_price
+            if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                $bill_amount = $booking->sb_bill_amount;
+            } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                $bill_amount = $booking->sb_final_price;
+            } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                $bill_amount = $booking->sb_tech_decided_price;
+            } else {
+                $bill_amount = $booking->sb_total_price;
+            }
+            ?>
+            
+            <!-- Show Bill Amount Charged for all bookings -->
             <div class="info-row">
-                <div class="info-label">Final Amount</div>
-                <div class="info-value" style="color: #10b981; font-weight: 700;">
-                    ₹<?php echo number_format(!empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_charged_price, 2); ?>
+                <div class="info-label">Bill Amount Charged</div>
+                <div class="info-value" style="color: #10b981; font-weight: 700; font-size: 18px;">
+                    ₹<?php echo number_format($bill_amount, 2); ?>
                 </div>
             </div>
-            <?php endif; ?>
             
             <div class="info-row">
                 <div class="info-label">Payment Status</div>
                 <div class="info-value">
                     <?php 
-                    $payment_status = $booking->sb_payment_status ?? 'Pending';
+                    // If booking is completed, payment should be marked as Paid
+                    if($display_status == 'Completed') {
+                        $payment_status = 'Paid';
+                    } else {
+                        $payment_status = $booking->sb_payment_status ?? 'Pending';
+                    }
                     $payment_class = ($payment_status == 'Paid') ? 'payment-paid' : 'payment-pending';
                     ?>
                     <span class="payment-status <?php echo $payment_class; ?>">
@@ -493,11 +508,32 @@ if($status == 'Approved' && $has_technician) {
             </div>
             <?php endif; ?>
             
-            <?php if($display_status == 'Completed' && (!empty($booking->sb_final_price) || !empty($booking->sb_charged_price))): ?>
-            <div class="price-highlight">
-                <div class="price-label">Total Amount Charged</div>
-                <div class="price-amount">
-                    ₹<?php echo number_format(!empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_charged_price, 2); ?>
+            
+            <?php 
+            // Show bill image for completed bookings
+            $bill_img = '';
+            if(!empty($booking->sb_bill_img)) {
+                $bill_img = $booking->sb_bill_img;
+            } elseif(!empty($booking->sb_bill_image)) {
+                $bill_img = $booking->sb_bill_image;
+            }
+            
+            if($display_status == 'Completed' && !empty($bill_img)): 
+            ?>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f5f9;">
+                <div style="font-size: 13px; font-weight: 600; color: #666; margin-bottom: 8px;">
+                    <i class="fas fa-file-invoice-dollar"></i> Payment Bill
+                </div>
+                <div class="image-wrapper">
+                    <img src="../vendor/img/bills/<?php echo htmlspecialchars($bill_img); ?>" alt="Payment Bill" style="width: 100%; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                </div>
+                <div class="image-actions" style="display: flex; gap: 8px; margin-top: 10px;">
+                    <a href="../vendor/img/bills/<?php echo htmlspecialchars($bill_img); ?>" target="_blank" class="btn btn-view" style="flex: 1; padding: 10px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);">
+                        <i class="fas fa-eye" style="margin-right: 6px;"></i> View Bill
+                    </a>
+                    <a href="../vendor/img/bills/<?php echo htmlspecialchars($bill_img); ?>" download class="btn btn-download" style="flex: 1; padding: 10px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; background: white; color: #6366f1; border: 2px solid #6366f1;">
+                        <i class="fas fa-download" style="margin-right: 6px;"></i> Download
+                    </a>
                 </div>
             </div>
             <?php endif; ?>
@@ -665,5 +701,58 @@ if($status == 'Approved' && $has_technician) {
     </div>
 
     <?php include('vendor/inc/user-footer.php'); ?>
+    
+    <script>
+    // Auto-refresh when booking status changes
+    let lastStatus = '<?php echo $booking->sb_status; ?>';
+    let isPageVisible = true;
+    
+    document.addEventListener('visibilitychange', function() {
+        isPageVisible = !document.hidden;
+    });
+    
+    function checkBookingStatus() {
+        if (!isPageVisible) return;
+        
+        fetch('get-booking-status.php?booking_id=<?php echo $booking_id; ?>')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.status !== lastStatus) {
+                    // Status changed - show notification and reload
+                    showNotification('Booking status updated to: ' + data.status);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                }
+            })
+            .catch(error => console.log('Status check error:', error));
+    }
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            z-index: 9999;
+            font-weight: 600;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        `;
+        notification.innerHTML = `<i class="fas fa-sync-alt fa-spin" style="margin-right: 8px;"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    // Check every 10 seconds
+    setInterval(checkBookingStatus, 10000);
+    </script>
 </body>
 </html>

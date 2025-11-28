@@ -41,46 +41,71 @@ switch($period) {
 }
 
 // Get booking statistics
+// Use payment collection for revenue (actual money collected by technicians)
+// Ensure tables and columns exist
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_completed_at TIMESTAMP NULL DEFAULT NULL");
+$mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+    pc_booking_id INT NOT NULL,
+    pc_amount DECIMAL(10,2) NOT NULL,
+    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+    pc_collected_by INT NOT NULL,
+    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pc_status ENUM('Collected','Verified','Pending') DEFAULT 'Collected',
+    INDEX(pc_booking_id)
+)");
+
 $stats_query = "SELECT 
                 COUNT(*) as total_bookings,
-                SUM(CASE WHEN sb_status = 'Completed' THEN 1 ELSE 0 END) as completed,
-                SUM(CASE WHEN sb_status = 'Pending' THEN 1 ELSE 0 END) as pending,
-                SUM(CASE WHEN sb_status = 'Approved' THEN 1 ELSE 0 END) as approved,
-                SUM(CASE WHEN sb_status = 'Rejected' THEN 1 ELSE 0 END) as rejected,
-                SUM(CASE WHEN sb_status = 'Cancelled' THEN 1 ELSE 0 END) as cancelled,
-                SUM(CASE WHEN sb_status = 'Completed' THEN COALESCE(sb_final_price, sb_total_price, 0) ELSE 0 END) as revenue
-              FROM tms_service_booking 
-              WHERE DATE(sb_created_at) BETWEEN ? AND ?";
+                SUM(CASE WHEN sb.sb_status = 'Completed' THEN 1 ELSE 0 END) as completed,
+                SUM(CASE WHEN sb.sb_status = 'Pending' THEN 1 ELSE 0 END) as pending,
+                SUM(CASE WHEN sb.sb_status = 'Approved' THEN 1 ELSE 0 END) as approved,
+                SUM(CASE WHEN sb.sb_status = 'Rejected' THEN 1 ELSE 0 END) as rejected,
+                SUM(CASE WHEN sb.sb_status = 'Cancelled' THEN 1 ELSE 0 END) as cancelled,
+                IFNULL((SELECT SUM(pc.pc_amount) 
+                        FROM tms_payment_collection pc
+                        INNER JOIN tms_service_booking sb2 ON pc.pc_booking_id = sb2.sb_id
+                        WHERE sb2.sb_status = 'Completed'
+                        AND DATE(pc.pc_collected_at) BETWEEN ? AND ?), 0) as revenue
+              FROM tms_service_booking sb
+              WHERE DATE(sb.sb_created_at) BETWEEN ? AND ?";
 
 $stmt = $mysqli->prepare($stats_query);
-$stmt->bind_param('ss', $start_date, $end_date);
+// Bind parameters: 2 for revenue subquery + 2 for WHERE clause
+$stmt->bind_param('ssss', $start_date, $end_date, $start_date, $end_date);
 $stmt->execute();
 $result = $stmt->get_result();
 $stats = $result->fetch_object();
 
-// Get all services with bookings
-$all_services_query = "SELECT s.s_name, s.s_category, COUNT(*) as count, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as revenue
+// Get all services with bookings (use completion date for revenue)
+// Use ONLY sb_final_price (Bill Amount Charged) for completed bookings
+$all_services_query = "SELECT s.s_name, s.s_category, COUNT(*) as count, SUM(IFNULL(sb.sb_final_price, 0)) as revenue
                        FROM tms_service_booking sb
                        JOIN tms_service s ON sb.sb_service_id = s.s_id
                        WHERE sb.sb_status = 'Completed' 
-                       AND DATE(sb.sb_created_at) BETWEEN ? AND ?
+                       AND (DATE(sb.sb_completed_at) BETWEEN ? AND ? 
+                            OR (sb.sb_completed_at IS NULL AND DATE(sb.sb_updated_at) BETWEEN ? AND ?)
+                            OR (sb.sb_completed_at IS NULL AND sb.sb_updated_at IS NULL AND DATE(sb.sb_created_at) BETWEEN ? AND ?))
                        GROUP BY sb.sb_service_id
                        ORDER BY count DESC";
 $stmt_services = $mysqli->prepare($all_services_query);
-$stmt_services->bind_param('ss', $start_date, $end_date);
+$stmt_services->bind_param('ssssss', $start_date, $end_date, $start_date, $end_date, $start_date, $end_date);
 $stmt_services->execute();
 $all_services = $stmt_services->get_result();
 
-// Get all technicians with completed jobs
-$all_techs_query = "SELECT t.t_name, t.t_ez_id, COUNT(*) as jobs, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as revenue
+// Get all technicians with completed jobs (use completion date for revenue)
+// Use ONLY sb_final_price (Bill Amount Charged) for completed bookings
+$all_techs_query = "SELECT t.t_name, t.t_ez_id, COUNT(*) as jobs, SUM(IFNULL(sb.sb_final_price, 0)) as revenue
                     FROM tms_service_booking sb
                     JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                     WHERE sb.sb_status = 'Completed'
-                    AND DATE(sb.sb_created_at) BETWEEN ? AND ?
+                    AND (DATE(sb.sb_completed_at) BETWEEN ? AND ? 
+                         OR (sb.sb_completed_at IS NULL AND DATE(sb.sb_updated_at) BETWEEN ? AND ?)
+                         OR (sb.sb_completed_at IS NULL AND sb.sb_updated_at IS NULL AND DATE(sb.sb_created_at) BETWEEN ? AND ?))
                     GROUP BY sb.sb_technician_id
                     ORDER BY jobs DESC";
 $stmt_techs = $mysqli->prepare($all_techs_query);
-$stmt_techs->bind_param('ss', $start_date, $end_date);
+$stmt_techs->bind_param('ssssss', $start_date, $end_date, $start_date, $end_date, $start_date, $end_date);
 $stmt_techs->execute();
 $all_techs = $stmt_techs->get_result();
 
@@ -90,32 +115,39 @@ $completion_rate = $stats->total_bookings > 0 ? round(($stats->completed / $stat
 // Get average booking value
 $avg_booking_value = $stats->completed > 0 ? round($stats->revenue / $stats->completed, 0) : 0;
 
-// Get category-wise revenue
-$category_revenue_query = "SELECT s.s_category, COUNT(*) as bookings, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as revenue
+// Get category-wise revenue (use completion date)
+// Use ONLY sb_final_price (Bill Amount Charged) for completed bookings
+$category_revenue_query = "SELECT s.s_category, COUNT(*) as bookings, SUM(IFNULL(sb.sb_final_price, 0)) as revenue
                            FROM tms_service_booking sb
                            JOIN tms_service s ON sb.sb_service_id = s.s_id
                            WHERE sb.sb_status = 'Completed'
-                           AND DATE(sb.sb_created_at) BETWEEN ? AND ?
+                           AND (DATE(sb.sb_completed_at) BETWEEN ? AND ? 
+                                OR (sb.sb_completed_at IS NULL AND DATE(sb.sb_updated_at) BETWEEN ? AND ?)
+                                OR (sb.sb_completed_at IS NULL AND sb.sb_updated_at IS NULL AND DATE(sb.sb_created_at) BETWEEN ? AND ?))
                            GROUP BY s.s_category
                            ORDER BY revenue DESC";
 $stmt_cat = $mysqli->prepare($category_revenue_query);
-$stmt_cat->bind_param('ss', $start_date, $end_date);
+$stmt_cat->bind_param('ssssss', $start_date, $end_date, $start_date, $end_date, $start_date, $end_date);
 $stmt_cat->execute();
 $category_revenue = $stmt_cat->get_result();
 
-// Get daily trend (last 7 days for week/month/year view)
+// Get daily trend (last 7 days for week/month/year view) - use completion date for revenue
 if($period != 'today' && $period != 'yesterday') {
     $trend_days = 7;
     $trend_start = date('Y-m-d', strtotime("-$trend_days days"));
-    $daily_trend_query = "SELECT DATE(sb_created_at) as date, 
+    $daily_trend_query = "SELECT 
+                          COALESCE(DATE(sb_completed_at), DATE(sb_updated_at), DATE(sb_created_at)) as date, 
                           COUNT(*) as bookings,
-                          SUM(CASE WHEN sb_status = 'Completed' THEN COALESCE(sb_final_price, sb_total_price, 0) ELSE 0 END) as revenue
+                          SUM(CASE WHEN sb_status = 'Completed' THEN IFNULL(sb_final_price, 0) ELSE 0 END) as revenue
                           FROM tms_service_booking
-                          WHERE DATE(sb_created_at) BETWEEN ? AND ?
-                          GROUP BY DATE(sb_created_at)
+                          WHERE sb_status = 'Completed'
+                          AND (DATE(sb_completed_at) BETWEEN ? AND ? 
+                               OR (sb_completed_at IS NULL AND DATE(sb_updated_at) BETWEEN ? AND ?)
+                               OR (sb_completed_at IS NULL AND sb_updated_at IS NULL AND DATE(sb_created_at) BETWEEN ? AND ?))
+                          GROUP BY date
                           ORDER BY date ASC";
     $stmt_trend = $mysqli->prepare($daily_trend_query);
-    $stmt_trend->bind_param('ss', $trend_start, $end_date);
+    $stmt_trend->bind_param('ssssss', $trend_start, $end_date, $trend_start, $end_date, $trend_start, $end_date);
     $stmt_trend->execute();
     $daily_trend = $stmt_trend->get_result();
 }

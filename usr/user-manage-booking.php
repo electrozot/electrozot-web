@@ -42,7 +42,16 @@ $bookings_result = $bookings_stmt->get_result();
 
 // Check for cancel success/error
 $cancel_success = isset($_GET['cancelled']) && $_GET['cancelled'] == 1;
-$cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
+$cancel_error = isset($_GET['error']);
+$error_message = '';
+if($cancel_error) {
+    if(isset($_SESSION['cancel_error'])) {
+        $error_message = $_SESSION['cancel_error'];
+        unset($_SESSION['cancel_error']);
+    } else {
+        $error_message = 'Failed to cancel booking. Please try again.';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -476,7 +485,7 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
         <?php if ($cancel_error): ?>
         <div class="alert alert-error">
             <i class="fas fa-exclamation-circle"></i>
-            Failed to cancel booking. Please try again.
+            <?php echo htmlspecialchars($error_message); ?>
         </div>
         <?php endif; ?>
         
@@ -585,14 +594,14 @@ $cancel_error = isset($_GET['error']) && $_GET['error'] == 1;
                 <?php endif; ?>
             </div>
             
-            <div class="action-buttons" style="grid-template-columns: 1fr 1fr 1fr;">
+            <div class="action-buttons" style="grid-template-columns: <?php echo ($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)) ? '1fr 1fr 1fr' : '1fr 1fr'; ?>;">
                 <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-eye"></i> View
                 </a>
                 <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-map-marker-alt"></i> Track
                 </a>
-                <?php if ($status != 'Cancelled' && $status != 'Completed'): ?>
+                <?php if ($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)): ?>
                 <a href="user-delete-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-cancel" onclick="return confirm('Cancel this booking?');">
                     <i class="fas fa-times"></i> Cancel
                 </a>

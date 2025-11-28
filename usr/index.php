@@ -16,22 +16,35 @@
     if(isset($_POST['user_login']))
     {
       $u_phone=$_POST['u_phone']; // Changed to phone
-      $u_pwd=($_POST['u_pwd']);//
+      $u_pwd_input=$_POST['u_pwd']; // Store input password
       $remember_me = isset($_POST['remember_me']) ? true : false;
      
-      $stmt=$mysqli->prepare("SELECT u_phone, u_pwd, u_id FROM tms_user WHERE u_phone=? and u_pwd=? ");//sql to log in user using phone
-      $stmt->bind_param('ss',$u_phone,$u_pwd);//bind fetched parameters
-      $stmt->execute();//execute bind
-      $stmt -> bind_result($u_phone,$u_pwd,$u_id);//bind result
+      // Get user by phone number only
+      $stmt=$mysqli->prepare("SELECT u_phone, u_pwd, u_id FROM tms_user WHERE u_phone=?");
+      $stmt->bind_param('s',$u_phone);
+      $stmt->execute();
+      $stmt->bind_result($u_phone,$u_pwd_hash,$u_id);
       $rs=$stmt->fetch();
-      $_SESSION['u_id']=$u_id;//assaign session to user id
-      //$uip=$_SERVER['REMOTE_ADDR'];
-      //$ldate=date('d/m/Y h:i:s', time());
       
       // Close the statement before running other queries
       $stmt->close();
       
-      if($rs)
+      // Verify password using password_verify for hashed passwords
+      $password_valid = false;
+      if($rs) {
+          // Check if password is hashed (starts with $2y$)
+          if(strpos($u_pwd_hash, '$2y$') === 0) {
+              // Use password_verify for hashed passwords
+              $password_valid = password_verify($u_pwd_input, $u_pwd_hash);
+          } else {
+              // For old non-hashed passwords, compare directly
+              $password_valid = ($u_pwd_input === $u_pwd_hash);
+          }
+      }
+      
+      $_SESSION['u_id']=$u_id;//assign session to user id
+      
+      if($rs && $password_valid)
       {//if its sucessfull
         // Regenerate session ID for security
         session_regenerate_id(true);

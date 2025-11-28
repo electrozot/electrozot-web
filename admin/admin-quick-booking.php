@@ -99,7 +99,12 @@ if(isset($_POST['create_booking'])) {
         $user_id = $user->u_id;
     } else {
         // Create new user with area and pincode
-        $password = password_hash('electrozot123', PASSWORD_DEFAULT);
+        // Generate password: first 3 letters of name (lowercase) + last 3 digits of phone
+        $name_for_pwd = strtolower(substr($customer_name, 0, 3));
+        $phone_for_pwd = substr($customer_phone, -3);
+        $auto_password = $name_for_pwd . $phone_for_pwd;
+        $password = password_hash($auto_password, PASSWORD_DEFAULT);
+        
         $insert_user = "INSERT INTO tms_user (u_fname, u_phone, u_email, u_addr, u_area, u_pincode, u_pwd, u_category, registration_type) 
                        VALUES (?, ?, ?, ?, ?, ?, ?, 'User', 'admin')";
         $stmt_user = $mysqli->prepare($insert_user);

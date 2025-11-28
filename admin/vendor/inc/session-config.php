@@ -8,19 +8,22 @@
  * Include this file BEFORE session_start() in all pages.
  */
 
-// Set session cookie to last 15 hours (54000 seconds)
-ini_set('session.gc_maxlifetime', 54000);
-ini_set('session.cookie_lifetime', 54000);
+// Only set ini settings if session hasn't started yet
+if (session_status() === PHP_SESSION_NONE) {
+    // Set session cookie to last 15 hours (54000 seconds)
+    ini_set('session.gc_maxlifetime', 54000);
+    ini_set('session.cookie_lifetime', 54000);
 
-// Set session cookie parameters
-session_set_cookie_params([
-    'lifetime' => 54000,  // 15 hours
-    'path' => '/',
-    'domain' => '',
-    'secure' => false,      // Set to true if using HTTPS
-    'httponly' => true,     // Prevent JavaScript access to session cookie
-    'samesite' => 'Lax'     // CSRF protection
-]);
+    // Set session cookie parameters
+    session_set_cookie_params([
+        'lifetime' => 54000,  // 15 hours
+        'path' => '/',
+        'domain' => '',
+        'secure' => false,      // Set to true if using HTTPS
+        'httponly' => true,     // Prevent JavaScript access to session cookie
+        'samesite' => 'Lax'     // CSRF protection
+    ]);
+}
 
 // Optional: Set session save path if needed
 // session_save_path('/path/to/sessions');

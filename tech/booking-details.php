@@ -332,5 +332,35 @@ if($is_cancelled && isset($_POST['update_status'])){
     
     <!-- Bottom Navigation Bar -->
     <?php include('includes/bottom-nav.php'); ?>
+    
+    <script>
+    // Auto-refresh when booking status changes
+    let lastStatus = '<?php echo $booking->sb_status ?? ""; ?>';
+    let isPageVisible = true;
+    
+    document.addEventListener('visibilitychange', function() {
+        isPageVisible = !document.hidden;
+    });
+    
+    function checkBookingStatus() {
+        if (!isPageVisible) return;
+        
+        fetch('api-get-my-bookings.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const currentBooking = data.bookings.find(b => b.sb_id == <?php echo $sb_id; ?>);
+                    if (currentBooking && currentBooking.sb_status !== lastStatus) {
+                        // Status changed - reload page
+                        window.location.reload();
+                    }
+                }
+            })
+            .catch(error => console.log('Status check error:', error));
+    }
+    
+    // Check every 10 seconds
+    setInterval(checkBookingStatus, 10000);
+    </script>
 </body>
 </html>

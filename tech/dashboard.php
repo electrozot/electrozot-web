@@ -2295,6 +2295,63 @@ $completed_count = $counts->completed_count;
     
     // Update every 8 seconds
     setInterval(updateTechDashboardStats, 8000);
+    
+    // Auto-refresh page when booking status changes
+    let lastBookingData = null;
+    let isPageVisible = true;
+    
+    document.addEventListener('visibilitychange', function() {
+        isPageVisible = !document.hidden;
+    });
+    
+    function checkForBookingChanges() {
+        if (!isPageVisible) return;
+        
+        fetch('api-get-my-bookings.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const currentData = JSON.stringify(data.bookings);
+                    
+                    if (lastBookingData !== null && lastBookingData !== currentData) {
+                        // Booking status changed - show notification and reload
+                        showNotification('Booking status updated!');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                    
+                    lastBookingData = currentData;
+                }
+            })
+            .catch(error => console.log('Auto-refresh error:', error));
+    }
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            z-index: 9999;
+            font-weight: 600;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        `;
+        notification.innerHTML = `<i class="fas fa-sync-alt fa-spin" style="margin-right: 8px;"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    // Check every 10 seconds
+    setInterval(checkForBookingChanges, 10000);
     </script>
 </body>
 </html>

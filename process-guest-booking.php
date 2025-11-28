@@ -134,9 +134,15 @@ if(isset($_POST['book_service_guest'])) {
         $stmt_check->close();
     } else {
         // New customer - insert into tms_user table as guest user with area and pincode
-        $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
+        // Generate password: first 3 letters of name (lowercase) + last 3 digits of phone
+        $name_for_pwd = strtolower(substr($u_fname, 0, 3));
+        $phone_for_pwd = substr($customer_phone, -3);
+        $auto_password = $name_for_pwd . $phone_for_pwd;
+        $hashed_password = password_hash($auto_password, PASSWORD_DEFAULT);
+        
+        $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', ?, 'guest')";
         $stmt_user = $mysqli->prepare($query_user);
-        $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
+        $stmt_user->bind_param('ssssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode, $hashed_password);
         
         if(!$stmt_user->execute()) {
             $_SESSION['booking_error'] = "Failed to create customer profile. Please try again.";

@@ -39,14 +39,24 @@ switch($period) {
         $label = 'Today';
 }
 
-// Get all technicians with completed jobs
-$all_techs_query = "SELECT t.t_name, t.t_ez_id, t.t_phone, t.t_category, COUNT(*) as jobs, SUM(COALESCE(sb.sb_final_price, sb.sb_total_price, 0)) as revenue
+// Get all technicians with completed jobs and accurate revenue
+$all_techs_query = "SELECT 
+                        t.t_name, 
+                        t.t_ez_id, 
+                        t.t_phone, 
+                        t.t_category, 
+                        COUNT(*) as jobs,
+                        SUM(COALESCE(sb.sb_bill_amount, sb.sb_final_price, sb.sb_tech_decided_price, sb.sb_total_price, 0)) as revenue,
+                        SUM(CASE WHEN DATE(sb.sb_completed_at) = CURDATE() THEN COALESCE(sb.sb_bill_amount, sb.sb_final_price, sb.sb_tech_decided_price, sb.sb_total_price, 0) ELSE 0 END) as today_revenue,
+                        SUM(CASE WHEN MONTH(sb.sb_completed_at) = MONTH(CURDATE()) AND YEAR(sb.sb_completed_at) = YEAR(CURDATE()) THEN COALESCE(sb.sb_bill_amount, sb.sb_final_price, sb.sb_tech_decided_price, sb.sb_total_price, 0) ELSE 0 END) as monthly_revenue,
+                        COUNT(CASE WHEN DATE(sb.sb_completed_at) = CURDATE() THEN 1 END) as today_jobs,
+                        COUNT(CASE WHEN MONTH(sb.sb_completed_at) = MONTH(CURDATE()) AND YEAR(sb.sb_completed_at) = YEAR(CURDATE()) THEN 1 END) as monthly_jobs
                     FROM tms_service_booking sb
                     JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                     WHERE sb.sb_status = 'Completed'
-                    AND DATE(sb.sb_created_at) BETWEEN ? AND ?
+                    AND DATE(sb.sb_completed_at) BETWEEN ? AND ?
                     GROUP BY sb.sb_technician_id
-                    ORDER BY jobs DESC";
+                    ORDER BY revenue DESC";
 $stmt_techs = $mysqli->prepare($all_techs_query);
 $stmt_techs->bind_param('ss', $start_date, $end_date);
 $stmt_techs->execute();
@@ -100,9 +110,10 @@ $all_techs = $stmt_techs->get_result();
                                             <th>EZ ID</th>
                                             <th>Phone</th>
                                             <th>Category</th>
-                                            <th class="text-center">Jobs Completed</th>
+                                            <th class="text-center">Jobs</th>
+                                            <th class="text-right">Today Revenue</th>
+                                            <th class="text-right">Monthly Revenue</th>
                                             <th class="text-right">Total Revenue</th>
-                                            <th class="text-right">Avg/Job</th>
                                             <th class="text-center">Performance</th>
                                         </tr>
                                     </thead>
@@ -140,16 +151,20 @@ $all_techs = $stmt_techs->get_result();
                                                 <td><span class="badge badge-secondary"><?php echo htmlspecialchars($tech->t_category ?? 'N/A'); ?></span></td>
                                                 <td class="text-center">
                                                     <span class="badge badge-success badge-pill"><?php echo $tech->jobs; ?></span>
+                                                    <br><small class="text-muted">(Today: <?php echo $tech->today_jobs; ?>)</small>
+                                                </td>
+                                                <td class="text-right">
+                                                    <strong class="text-primary">₹<?php echo number_format($tech->today_revenue, 0); ?></strong>
+                                                </td>
+                                                <td class="text-right">
+                                                    <strong class="text-info">₹<?php echo number_format($tech->monthly_revenue, 0); ?></strong>
                                                 </td>
                                                 <td class="text-right">
                                                     <strong class="text-success">₹<?php echo number_format($tech->revenue, 0); ?></strong>
                                                 </td>
-                                                <td class="text-right text-muted">
-                                                    ₹<?php echo number_format($avg_per_job, 0); ?>
-                                                </td>
                                                 <td class="text-center">
                                                     <div class="progress" style="height: 20px;">
-                                                        <div class="progress-bar bg-info" role="progressbar" style="width: <?php echo $revenue_percentage; ?>%" aria-valuenow="<?php echo $revenue_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
+                                                        <div class="progress-bar bg-info" role="progressbar" style="width: <?php echo $revenue_percentage; %>%" aria-valuenow="<?php echo $revenue_percentage; ?>" aria-valuemin="0" aria-valuemax="100">
                                                             <?php echo $revenue_percentage; ?>%
                                                         </div>
                                                     </div>

@@ -84,7 +84,7 @@ if (isset($_POST['add_technician'])) {
         .skill-checkbox label { cursor: pointer; padding: 8px 12px; border-radius: 5px; transition: all 0.2s; display: inline-block; width: 100%; }
         .skill-checkbox input:checked + label { background: #e0e7ff; color: #667eea; font-weight: 600; }
         .select-all-btn { background: #10b981; color: white; border: none; padding: 5px 15px; border-radius: 5px; font-size: 12px; margin-left: 10px; }
-        .skill-count { background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; position: fixed; bottom: 20px; right: 20px; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .skill-count { display: none; }
     </style>
 </head>
 <body>

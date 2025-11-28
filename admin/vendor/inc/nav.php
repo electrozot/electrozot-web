@@ -1,10 +1,11 @@
- <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.3rem 1rem; min-height: 50px;">
+ <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%); padding: 0.3rem 1rem; min-height: 50px;">
 
-     <a class="navbar-brand mr-1" href="admin-dashboard.php" style="display: flex; align-items: center; gap: 8px; padding: 4px 10px;">
-         <div class="logo-container" style="background: white; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.15); padding: 4px;">
-             <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" style="width: 100%; height: 100%; object-fit: contain;">
+     <a class="navbar-brand mr-1 d-flex align-items-center" href="admin-dashboard.php" style="gap: 6px; padding: 4px 10px;">
+         <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 45px; width: auto; transition: transform 0.3s ease; object-fit: contain;">
+         <div class="d-none d-md-flex flex-column">
+             <span style="font-size: 1.3rem; line-height: 1.1; font-weight: 700; color: #1e293b; text-shadow: 1px 1px 2px rgba(255,255,255,0.3);">Electrozot</span>
+             <small class="navbar-tagline" style="font-size: 0.65rem; font-weight: 600; font-style: italic; line-height: 1; color: #1e293b; letter-spacing: 0.3px; opacity: 0.85;">We Make Perfect</small>
          </div>
-         <span style="font-size: 16px; font-weight: 700; color: white; display: none; display: md-block;">Electrozot</span>
      </a>
 
      <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#" style="padding: 4px 8px;">
@@ -13,7 +14,7 @@
 
      <!-- Quick Booking Button - Larger -->
      <div class="mx-auto d-none d-md-block">
-         <a href="admin-quick-booking.php" class="btn btn-success shadow-sm" style="padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+         <a href="admin-quick-booking.php" class="btn shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
              <i class="fas fa-phone-alt" style="font-size: 16px;"></i>
              <span>Quick Booking</span>
          </a>
@@ -21,17 +22,97 @@
      
      <!-- Navbar -->
      <ul class="navbar-nav ml-auto" style="align-items: center;">
+         <!-- Live Today's Revenue Display -->
+         <li class="nav-item no-arrow mx-2">
+             <?php
+             // Get today's revenue for live display
+             $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+                 pc_id INT AUTO_INCREMENT PRIMARY KEY,
+                 pc_booking_id INT NOT NULL,
+                 pc_amount DECIMAL(10,2) NOT NULL,
+                 pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+                 pc_collected_by INT NOT NULL,
+                 pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                 pc_status ENUM('Collected','Verified','Pending') DEFAULT 'Collected',
+                 INDEX(pc_booking_id)
+             )");
+             
+             $nav_today_revenue_query = "SELECT SUM(IFNULL(pc.pc_amount, 0)) as revenue
+                                    FROM tms_payment_collection pc
+                                    INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
+                                    WHERE sb.sb_status = 'Completed'
+                                    AND DATE(pc.pc_collected_at) = CURDATE()";
+             $nav_today_revenue_result = $mysqli->query($nav_today_revenue_query);
+             $nav_today_revenue = 0;
+             if($nav_today_revenue_result) {
+                 $nav_today_revenue = $nav_today_revenue_result->fetch_object()->revenue;
+             }
+             ?>
+             <div id="liveRevenueDisplay" style="
+                 background: transparent;
+                 color: #1e293b;
+                 padding: 6px 10px;
+                 border-radius: 15px;
+                 display: flex;
+                 flex-direction: column;
+                 align-items: center;
+                 gap: 1px;
+                 cursor: pointer;
+                 border: none;
+                 min-width: 100px;
+                 transition: all 0.3s ease;
+             " onclick="updateLiveRevenue()" title="Click to refresh revenue">
+                 <div style="font-size: 8px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: #1e293b; opacity: 0.8;">
+                     Today Revenue
+                 </div>
+                 <div style="display: flex; align-items: center; gap: 4px; font-weight: 900; font-size: 16px; color: #1e293b;">
+                     <i class="fas fa-rupee-sign" style="font-size: 13px;"></i>
+                     <span id="revenueAmount"><?php echo number_format($nav_today_revenue, 0); ?></span>
+                     <i class="fas fa-sync-alt" id="revenueRefreshIcon" style="font-size: 9px; opacity: 0.6;"></i>
+                 </div>
+             </div>
+         </li>
+         
          <!-- Stats Button -->
          <li class="nav-item no-arrow mx-1">
-             <a class="nav-link" href="admin-stats.php" id="statsButton" style="position: relative; padding: 6px 10px;" title="View Statistics">
-                 <i class="fas fa-chart-line fa-fw" style="font-size: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></i>
+             <a class="nav-link" href="admin-stats.php" id="statsButton" 
+                style="position: relative; padding: 6px 10px;">
+                 <i class="fas fa-chart-line fa-fw" style="font-size: 16px; color: #1e293b; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></i>
              </a>
          </li>
          
          <!-- Notification Bell -->
          <li class="nav-item dropdown no-arrow mx-1">
-             <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative; padding: 6px 10px;" title="View All Notifications">
-                 <i class="fas fa-bell fa-fw" style="font-size: 16px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
+             <?php
+             // Get total pending bookings count
+             $pending_notif_query = "SELECT COUNT(*) as pending_count 
+                                    FROM tms_service_booking 
+                                    WHERE sb_status = 'Pending'";
+             $pending_result = $mysqli->query($pending_notif_query);
+             $pending_count = 0;
+             if($pending_result) {
+                 $pending_count = $pending_result->fetch_object()->pending_count;
+             }
+             ?>
+             <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative; padding: 6px 10px;" title="<?php echo $pending_count; ?> Pending Bookings">
+                 <i class="fas fa-bell fa-fw" style="font-size: 16px; color: #1e293b; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
+                 <?php if($pending_count > 0): ?>
+                     <span class="badge badge-danger" id="notificationBadge" style="
+                         position: absolute;
+                         top: 2px;
+                         right: 2px;
+                         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                         color: white;
+                         font-size: 9px;
+                         font-weight: 700;
+                         padding: 2px 5px;
+                         border-radius: 10px;
+                         min-width: 18px;
+                         text-align: center;
+                         box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5);
+                         border: none;
+                     "><?php echo $pending_count > 99 ? '99+' : $pending_count; ?></span>
+                 <?php endif; ?>
              </a>
          </li>
 
@@ -43,9 +124,9 @@
                           style="width: 28px; height: 28px; object-fit: cover; border: 2px solid #fff;"
                           alt="Admin Photo">
                  <?php else: ?>
-                     <i class="fas fa-user-circle fa-fw" style="font-size: 20px;"></i>
+                     <i class="fas fa-user-circle fa-fw" style="font-size: 20px; color: #1e293b;"></i>
                  <?php endif; ?>
-                 <span class="d-none d-md-inline" style="font-size: 14px; font-weight: 600; margin: 0;">
+                 <span class="d-none d-md-inline" style="font-size: 14px; font-weight: 600; margin: 0; color: #1e293b;">
                      <?php 
                      if(isset($_SESSION['a_name'])) {
                          echo htmlspecialchars($_SESSION['a_name']);
@@ -66,9 +147,43 @@
  </nav>
 
  <style>
+ /* Custom Tooltip Styling for Revenue */
+ .tooltip {
+     z-index: 9999 !important;
+ }
+ 
+ .tooltip-inner {
+     background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+     color: white !important;
+     padding: 12px 20px !important;
+     border-radius: 10px !important;
+     box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;
+     font-size: 15px !important;
+     font-weight: 700 !important;
+     min-width: 200px !important;
+     text-align: center !important;
+ }
+ 
+ .tooltip.show {
+     opacity: 1 !important;
+ }
+ 
+ .tooltip.bs-tooltip-bottom .arrow::before {
+     border-bottom-color: #1e293b !important;
+ }
+ 
+ .tooltip.bs-tooltip-top .arrow::before {
+     border-top-color: #1e293b !important;
+ }
+ 
+ /* Logo hover effect */
+ .navbar-logo:hover {
+     transform: scale(1.05) rotate(2deg);
+ }
+ 
  /* Slim Navbar Styling */
  nav.navbar {
-     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+     background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%) !important;
      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
      position: sticky;
      top: 0;
@@ -189,15 +304,15 @@
  
  /* Quick Booking Button Styling - Compact */
  .btn-success {
-     background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+     background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
      border: none !important;
-     box-shadow: 0 2px 8px rgba(40, 167, 69, 0.25) !important;
+     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4) !important;
  }
  
  .btn-success:hover {
-     background: linear-gradient(135deg, #218838 0%, #1aa179 100%) !important;
+     background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
      transform: translateY(-1px);
-     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35) !important;
+     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.6) !important;
  }
  
  .btn-success:active {
@@ -264,8 +379,25 @@
  }
  
  #notificationBell:hover {
-     background: rgba(255,255,255,0.1);
+     background: rgba(30, 41, 59, 0.15);
      border-radius: 50%;
+     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+ }
+ 
+ /* Notification Badge Animation */
+ #notificationBadge {
+     animation: badgePulse 2s ease-in-out infinite;
+ }
+ 
+ @keyframes badgePulse {
+     0%, 100% {
+         transform: scale(1);
+         box-shadow: 0 2px 6px rgba(239, 68, 68, 0.5);
+     }
+     50% {
+         transform: scale(1.1);
+         box-shadow: 0 3px 10px rgba(239, 68, 68, 0.8);
+     }
  }
  
  /* User Dropdown Hover */
@@ -275,7 +407,8 @@
  }
  
  #userDropdown:hover {
-     background: rgba(255,255,255,0.1);
+     background: rgba(30, 41, 59, 0.15);
+     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
  }
  
  /* Stats Button Hover */
@@ -284,18 +417,94 @@
  }
  
  #statsButton:hover {
-     background: rgba(255,255,255,0.1);
+     background: rgba(30, 41, 59, 0.15);
      border-radius: 50%;
+     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
  }
  
  /* Smooth transitions for all nav items */
  .nav-link {
      transition: all 0.3s ease;
  }
+ 
+ /* Live Revenue Display Animation */
+ @keyframes revenueUpdate {
+     0%, 100% { transform: scale(1); }
+     50% { transform: scale(1.05); }
+ }
+ 
+ .revenue-updating {
+     animation: revenueUpdate 0.5s ease;
+ }
+ 
+ @keyframes spin {
+     from { transform: rotate(0deg); }
+     to { transform: rotate(360deg); }
+ }
+ 
+ .spinning {
+     animation: spin 0.6s linear;
+ }
+ 
+ /* Revenue Display Hover Effect */
+ #liveRevenueDisplay:hover {
+     background: rgba(30, 41, 59, 0.1) !important;
+     transform: scale(1.02);
+ }
  </style>
 
 <!-- Unified Notification System - Works on ALL admin pages -->
 <?php include('unified-notification-system.php'); ?>
+
+<script>
+// Live Revenue Update - Auto refresh every 30 seconds
+function updateLiveRevenue() {
+    const revenueAmount = document.getElementById('revenueAmount');
+    const refreshIcon = document.getElementById('revenueRefreshIcon');
+    const revenueDisplay = document.getElementById('liveRevenueDisplay');
+    
+    if (!revenueAmount) return;
+    
+    // Add spinning animation to refresh icon
+    refreshIcon.classList.add('spinning');
+    
+    // Fetch today's revenue
+    fetch('get-live-revenue.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.revenue !== undefined) {
+                // Format the number with commas
+                const formattedRevenue = new Intl.NumberFormat('en-IN').format(data.revenue);
+                
+                // Update with animation
+                revenueDisplay.classList.add('revenue-updating');
+                revenueAmount.textContent = formattedRevenue;
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    revenueDisplay.classList.remove('revenue-updating');
+                }, 500);
+            }
+        })
+        .catch(error => console.log('Revenue update error:', error))
+        .finally(() => {
+            // Remove spinning animation
+            setTimeout(() => {
+                refreshIcon.classList.remove('spinning');
+            }, 600);
+        });
+}
+
+// Update revenue every 30 seconds
+setInterval(updateLiveRevenue, 30000);
+
+// Also update when page becomes visible again
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        updateLiveRevenue();
+    }
+});
+</script>
 
  <!-- Stats Modal -->
  <div class="modal fade" id="statsModal" tabindex="-1" role="dialog" aria-labelledby="statsModalLabel" aria-hidden="true">
@@ -339,6 +548,8 @@
          }
      });
  }
+ 
+
  </script>
 
  <!-- Logout Modal-->
@@ -359,3 +570,6 @@
          </div>
      </div>
  </div>
+
+ <!-- Include Pending Bookings Alert -->
+ <?php include('pending-alert.php'); ?>
