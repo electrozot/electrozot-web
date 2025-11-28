@@ -1,0 +1,125 @@
+===============================================
+ELECTROZOT COMMISSION TRACKING SYSTEM
+Automated System for 1000+ Technicians
+===============================================
+
+FEATURES:
+---------
+1. Automatic 12% commission calculation
+2. Real-time tracking of paid/pending amounts
+3. Daily automated reports
+4. Dashboard alerts
+5. CSV export for records
+6. Filter and search capabilities
+
+FILES CREATED:
+--------------
+1. admin-stats-technicians.php - Main revenue & commission page
+2. admin-pending-commissions.php - Shows ONLY pending payments (for 1000+ techs)
+3. admin-record-commission-payment.php - Record payments
+4. tech-commission-details.php - Technician view of their commission
+5. cron-daily-commission-report.php - Automated daily report
+6. widget-pending-commission-alert.php - Dashboard alert widget
+
+HOW TO USE:
+-----------
+
+FOR DAILY OPERATIONS:
+1. Go to: admin-pending-commissions.php
+   - Shows ONLY technicians who haven't paid
+   - Even with 1000+ technicians, you see only pending ones
+   - Export CSV for your records
+   - Click "Record" button to mark payment
+
+2. Dashboard Alert:
+   - Add this to admin-dashboard.php:
+     <?php include('widget-pending-commission-alert.php'); ?>
+   - Shows alert if any pending payments exist
+
+AUTOMATED TRACKING (RECOMMENDED):
+----------------------------------
+
+Setup Cron Job (Linux/Mac):
+1. Open terminal
+2. Type: crontab -e
+3. Add this line:
+   0 23 * * * php /path/to/admin/cron-daily-commission-report.php
+   
+   This runs every day at 11:00 PM and:
+   - Generates report of pending payments
+   - Saves to reports/commission/ folder
+   - Creates admin notification
+   - Logs to system
+
+Setup Task Scheduler (Windows):
+1. Open Task Scheduler
+2. Create Basic Task
+3. Name: "Daily Commission Report"
+4. Trigger: Daily at 11:00 PM
+5. Action: Start a program
+6. Program: C:\xampp\php\php.exe
+7. Arguments: C:\path\to\admin\cron-daily-commission-report.php
+
+WORKFLOW FOR 1000+ TECHNICIANS:
+--------------------------------
+
+MORNING:
+- Check dashboard alert (shows if any pending from yesterday)
+- Go to admin-pending-commissions.php
+- See filtered list of ONLY pending payments
+- Export CSV if needed
+
+DURING DAY:
+- Technicians complete jobs
+- System automatically calculates 12% commission
+- Technicians can see their pending amount in tech-commission-details.php
+
+EVENING:
+- Go to admin-pending-commissions.php
+- Record payments as technicians pay
+- System updates pending amounts in real-time
+
+END OF DAY (11:00 PM):
+- Automated cron job runs
+- Generates report of all pending payments
+- Creates notification for admin
+- Saves report file for records
+
+NEXT MORNING:
+- Check dashboard alert
+- Review yesterday's pending list
+- Follow up with technicians who didn't pay
+
+BENEFITS:
+---------
+✓ No manual calculation needed
+✓ Instant view of who owes money
+✓ Automated daily reports
+✓ CSV export for accounting
+✓ Technicians can see their own dues
+✓ Scales to unlimited technicians
+✓ Historical records maintained
+
+TIPS:
+-----
+1. Use admin-pending-commissions.php as your main page
+   - It shows ONLY pending payments
+   - Much faster than viewing all 1000+ technicians
+
+2. Export CSV daily for your records
+
+3. Set up the cron job for automated tracking
+
+4. Add dashboard widget for instant alerts
+
+5. Share tech-commission-details.php link with technicians
+   - They can check their own pending amounts
+   - Reduces phone calls asking "how much do I owe?"
+
+SUPPORT:
+--------
+All data is stored in tms_commission_payments table
+Reports saved in: admin/reports/commission/
+System logs in: tms_system_logs table
+
+===============================================

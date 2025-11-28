@@ -2,6 +2,7 @@
 session_start();
 include('../admin/vendor/inc/config.php');
 include('includes/checklogin.php');
+include('check-account-status.php'); // Check if account is locked
 
 $t_id = $_SESSION['t_id'];
 $t_name = $_SESSION['t_name'];
