@@ -70,6 +70,10 @@ function getSmartAvailableTechnicians($mysqli, $service_id, $booking_date, $book
                             t.t_current_bookings,
                             t.t_skills,
                             (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                            (SELECT COUNT(*) FROM tms_service_booking sb 
+                             WHERE sb.sb_technician_id = t.t_id 
+                             AND sb.sb_technician_id IS NOT NULL
+                             AND DATE(COALESCE(sb.sb_assigned_at, sb.sb_created_at)) = CURDATE()) as today_booking_count,
                             CASE
                                 WHEN FIND_IN_SET(?, t.t_skills) > 0 THEN 'exact_skill'
                                 WHEN t.t_skills LIKE CONCAT('%', ?, '%') THEN 'partial_skill'
@@ -253,17 +257,30 @@ function formatSmartTechnicianOptions($technicians, $selected_id = 0) {
         $options .= '<optgroup label="✅ Available Now - Has Required Skill (' . count($available_exact) . ')">';
         foreach ($available_exact as $tech) {
             $selected = ($tech['t_id'] == $selected_id) ? 'selected' : '';
-            $exp = $tech['t_experience'] ? $tech['t_experience'] . ' yrs' : 'New';
             $slots = $tech['available_slots'];
             
+            // Add technician tier badge based on booking limit
+            $tier_badge = '';
+            if ($tech['t_booking_limit'] >= 5) {
+                $tier_badge = '⭐ '; // Star technician (5 bookings)
+            } elseif ($tech['t_booking_limit'] >= 3) {
+                $tier_badge = '💎 '; // Premium technician (3 bookings)
+            }
+            // Regular technicians (1 booking) get no badge
+            
+            // Add today's booking count badge (RED)
+            $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+            $today_badge = $today_count > 0 ? " 🔴[{$today_count} today]" : '';
+            
             $options .= sprintf(
-                '<option value="%d" %s>%s (%s exp, %d/%d slots) - %s</option>',
+                '<option value="%d" %s>%s%s (%d/%d slots)%s - %s</option>',
                 $tech['t_id'],
                 $selected,
+                $tier_badge,
                 htmlspecialchars($tech['t_name']),
-                $exp,
                 $slots,
                 $tech['t_booking_limit'],
+                $today_badge,
                 $tech['slot_message']
             );
         }
@@ -275,17 +292,30 @@ function formatSmartTechnicianOptions($technicians, $selected_id = 0) {
         $options .= '<optgroup label="⚡ Available - Same Category (Can Handle) (' . count($available_category) . ')">';
         foreach ($available_category as $tech) {
             $selected = ($tech['t_id'] == $selected_id) ? 'selected' : '';
-            $exp = $tech['t_experience'] ? $tech['t_experience'] . ' yrs' : 'New';
             $slots = $tech['available_slots'];
             
+            // Add technician tier badge based on booking limit
+            $tier_badge = '';
+            if ($tech['t_booking_limit'] >= 5) {
+                $tier_badge = '⭐ '; // Star technician (5 bookings)
+            } elseif ($tech['t_booking_limit'] >= 3) {
+                $tier_badge = '💎 '; // Premium technician (3 bookings)
+            }
+            // Regular technicians (1 booking) get no badge
+            
+            // Add today's booking count badge (RED)
+            $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+            $today_badge = $today_count > 0 ? " 🔴[{$today_count} today]" : '';
+            
             $options .= sprintf(
-                '<option value="%d" %s>%s (%s exp, %d/%d slots) - %s</option>',
+                '<option value="%d" %s>%s%s (%d/%d slots)%s - %s</option>',
                 $tech['t_id'],
                 $selected,
+                $tier_badge,
                 htmlspecialchars($tech['t_name']),
-                $exp,
                 $slots,
                 $tech['t_booking_limit'],
+                $today_badge,
                 $tech['slot_message']
             );
         }
@@ -298,11 +328,25 @@ function formatSmartTechnicianOptions($technicians, $selected_id = 0) {
         foreach ($unavailable_exact as $tech) {
             $exp = $tech['t_experience'] ? $tech['t_experience'] . ' yrs' : 'New';
             
+            // Add technician tier badge based on booking limit
+            $tier_badge = '';
+            if ($tech['t_booking_limit'] >= 5) {
+                $tier_badge = '⭐ '; // Star technician (5 bookings)
+            } elseif ($tech['t_booking_limit'] >= 3) {
+                $tier_badge = '💎 '; // Premium technician (3 bookings)
+            }
+            // Regular technicians (1 booking) get no badge
+            
+            // Add today's booking count badge (RED)
+            $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+            $today_badge = $today_count > 0 ? " 🔴[{$today_count} today]" : '';
+            
             $options .= sprintf(
-                '<option value="%d" disabled>%s (%s exp) - %s</option>',
+                '<option value="%d" disabled>%s%s%s - %s</option>',
                 $tech['t_id'],
+                $tier_badge,
                 htmlspecialchars($tech['t_name']),
-                $exp,
+                $today_badge,
                 $tech['unavailable_reason']
             );
         }
@@ -315,11 +359,25 @@ function formatSmartTechnicianOptions($technicians, $selected_id = 0) {
         foreach ($unavailable_category as $tech) {
             $exp = $tech['t_experience'] ? $tech['t_experience'] . ' yrs' : 'New';
             
+            // Add technician tier badge based on booking limit
+            $tier_badge = '';
+            if ($tech['t_booking_limit'] >= 5) {
+                $tier_badge = '⭐ '; // Star technician (5 bookings)
+            } elseif ($tech['t_booking_limit'] >= 3) {
+                $tier_badge = '💎 '; // Premium technician (3 bookings)
+            }
+            // Regular technicians (1 booking) get no badge
+            
+            // Add today's booking count badge (RED)
+            $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+            $today_badge = $today_count > 0 ? " 🔴[{$today_count} today]" : '';
+            
             $options .= sprintf(
-                '<option value="%d" disabled>%s (%s exp) - %s</option>',
+                '<option value="%d" disabled>%s%s%s - %s</option>',
                 $tech['t_id'],
+                $tier_badge,
                 htmlspecialchars($tech['t_name']),
-                $exp,
+                $today_badge,
                 $tech['unavailable_reason']
             );
         }

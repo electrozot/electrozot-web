@@ -306,6 +306,39 @@
                         </div>
                     </div>
 
+                    <!-- Hold Bookings -->
+                    <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
+                        <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); border: none; border-radius: 10px;">
+                            <div class="card-body p-3">
+                                <div class="card-body-icon" style="opacity: 0.2; position: absolute; right: 10px; top: 10px;">
+                                    <i class="fas fa-pause-circle" style="font-size: 2rem;"></i>
+                                </div>
+                                <?php
+                                // Ensure hold column exists
+                                $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+                                
+                                $hold_query = "SELECT COUNT(*) FROM tms_service_booking 
+                                              WHERE sb_is_on_hold = 1 AND sb_status = 'On Hold'";
+                                $stmt_hold = $mysqli->prepare($hold_query);
+                                $stmt_hold->execute();
+                                $stmt_hold->bind_result($hold_count);
+                                $stmt_hold->fetch();
+                                $stmt_hold->close();
+                                ?>
+                                <div style="position: relative; z-index: 2;">
+                                    <h3 class="mb-0" style="font-size: 1.5rem; font-weight: 700;"><?php echo $hold_count;?></h3>
+                                    <p class="mb-0" style="font-size: 0.75rem; opacity: 0.9;">On Hold</p>
+                                </div>
+                            </div>
+                            <a class="card-footer text-white clearfix small z-1 py-1" href="admin-manage-hold-bookings.php" style="background: rgba(0,0,0,0.2); border: none; font-size: 0.75rem;">
+                                <span class="float-left">Manage Holds</span>
+                                <span class="float-right">
+                                    <i class="fas fa-arrow-circle-right"></i>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+
                     <!-- Today's Sales -->
                     <div class="col-xl col-lg col-md-3 col-sm-6 mb-2">
                         <div class="card text-white o-hidden shadow" style="background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); border: none; border-radius: 10px;">

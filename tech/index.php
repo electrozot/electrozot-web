@@ -24,14 +24,23 @@
       --light: #f7fafc;
     }
 
+    html {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
     body {
       min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
       background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
       position: relative;
       overflow-x: hidden;
+      margin: 0;
+      padding: 0;
     }
     
     /* Decorative Background Elements */
@@ -141,6 +150,8 @@
       padding: 40px 20px;
       position: relative;
       z-index: 1;
+      width: 100%;
+      max-width: 100%;
     }
     
     .login-card {
@@ -152,6 +163,7 @@
       overflow: hidden;
       animation: slideUp 0.6s ease-out;
       border: 3px solid #43e97b;
+      margin: 0 auto;
     }
 
     @keyframes slideUp {
@@ -481,25 +493,43 @@
     }
     
     @media (max-width: 576px) {
+      body::before,
+      body::after {
+        display: none;
+      }
+
+      .navbar {
+        padding: 10px 0;
+      }
+
       .navbar-brand {
-        padding: 0 15px;
+        padding: 0 10px;
       }
 
       .logo-container {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
       }
 
       .brand-text {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
       }
 
       .brand-tagline {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
+      }
+
+      .login-container {
+        padding: 20px 15px;
+      }
+
+      .login-card {
+        border-radius: 20px;
+        border-width: 2px;
       }
       
       .card-header {
-        padding: 20px 20px;
+        padding: 20px 15px;
       }
 
       .header-icon {
@@ -521,7 +551,7 @@
       }
       
       .card-body {
-        padding: 20px 20px;
+        padding: 20px 15px;
       }
 
       .form-group {
@@ -536,16 +566,28 @@
       .form-control {
         padding: 10px 15px;
         font-size: 0.9rem;
+        border-radius: 10px;
+      }
+
+      .password-input {
+        padding-right: 50px;
+      }
+
+      .toggle-password {
+        right: 15px;
+        font-size: 1.1rem;
       }
 
       .btn-gradient {
-        padding: 12px 24px;
-        font-size: 0.95rem;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        border-radius: 10px;
       }
 
       .security-notice {
         padding: 10px 12px;
         margin-bottom: 15px;
+        border-radius: 10px;
       }
 
       .security-notice i {
@@ -559,16 +601,21 @@
       .register-link {
         padding: 12px;
         margin-top: 15px;
+        border-radius: 10px;
       }
 
       .register-btn {
-        padding: 8px 20px;
-        font-size: 0.9rem;
+        padding: 8px 18px;
+        font-size: 0.85rem;
       }
 
       .back-link {
         margin-top: 15px;
         padding-top: 15px;
+      }
+
+      .back-link a {
+        font-size: 0.9rem;
       }
     }
   </style>

@@ -60,7 +60,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: rgba(255,255,255,0.75);
+        color: #374151;
         text-decoration: none;
         padding: 4px 8px;
         border-radius: 10px;

@@ -7,9 +7,8 @@
     
     // Check if user is already logged in - redirect to last page or dashboard
     if(isset($_SESSION['u_id']) && strlen($_SESSION['u_id']) > 0) {
-        // User is already logged in, redirect to last visited page or dashboard
-        $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'user-dashboard.php';
-        header("location: $redirect_page");
+        // User is already logged in, redirect to dashboard
+        header("location: user-dashboard.php");
         exit;
     }
     
@@ -62,9 +61,8 @@
             $_SESSION['linked_bookings'] = $linked;
         }
         
-        // Redirect to last visited page or dashboard
-        $redirect_page = isset($_SESSION['last_page']) ? $_SESSION['last_page'] : 'user-dashboard.php';
-        header("location: $redirect_page");
+        // Always redirect to dashboard after login
+        header("location: user-dashboard.php");
         exit;
       }
 

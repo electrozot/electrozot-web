@@ -8,14 +8,14 @@
     <?php include("vendor/inc/nav.php");?>
     
     <!-- Hero Section -->
-    <section class="contact-hero" style="background: linear-gradient(135deg, #e0f29fff 0%, #fc8cb1ff 25%, #aef198ff 50%, #ff6b9d 75%, #ff4757 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px; position: relative; overflow: hidden;">
+    <section class="contact-hero" style="background: linear-gradient(135deg, #F0FBFF 0%, #FFE5EE 25%, #E5FFE5 50%, #ff6b9d 75%, #ff4757 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px; position: relative; overflow: hidden;">
         <div class="contact-hero-overlay"></div>
         <div class="container" style="position: relative; z-index: 2;">
-            <div class="text-center text-white">
-                <h1 class="display-4 font-weight-bold mb-3 contact-title" style="text-shadow: 3px 3px 6px rgba(0,0,0,0.3);">
+            <div class="text-center">
+                <h1 class="display-4 font-weight-bold mb-3 contact-title" style="color: #4a5568; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
                     <i class="fas fa-envelope-open-text"></i> Contact Us
                 </h1>
-                <p class="lead contact-subtitle" style="font-size: 1.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+                <p class="lead contact-subtitle" style="font-size: 1.2rem; color: #5a6c7d; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);">
                     Get in touch with us - We'd love to hear from you!
                 </p>
             </div>
@@ -27,7 +27,7 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb contact-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
                 <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #EC4899; text-decoration: none; font-weight: 500;">
+                    <a href="index.php" style="color: #0891b2; text-decoration: none; font-weight: 500;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
@@ -39,7 +39,7 @@
             <!-- Contact Form -->
             <div class="col-lg-8 mb-4">
                 <div class="card contact-form-card border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-                    <div class="card-header contact-form-header text-white text-center py-4" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);">
+                    <div class="card-header contact-form-header text-white text-center py-4" style="background: linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%);">
                         <h3 class="mb-0">
                             <i class="fas fa-paper-plane"></i> Send us a Message
                         </h3>
@@ -52,7 +52,7 @@
                                     <div class="control-group form-group contact-form-group">
                                         <div class="controls">
                                             <label class="contact-label">
-                                                <i class="fas fa-user" style="color: #EC4899;"></i> Full Name *
+                                                <i class="fas fa-user" style="color: #0891b2;"></i> Full Name *
                                             </label>
                                             <input type="text" class="form-control contact-input" id="name" required data-validation-required-message="Please enter your name." placeholder="Your name">
                                             <p class="help-block"></p>
@@ -63,7 +63,7 @@
                                     <div class="control-group form-group contact-form-group">
                                         <div class="controls">
                                             <label class="contact-label">
-                                                <i class="fas fa-phone" style="color: #EC4899;"></i> Phone *
+                                                <i class="fas fa-phone" style="color: #0891b2;"></i> Phone *
                                             </label>
                                             <input type="tel" class="form-control contact-input" id="phone" required data-validation-required-message="Please enter your phone number." placeholder="Your phone">
                                         </div>
@@ -73,7 +73,7 @@
                             <div class="control-group form-group contact-form-group">
                                 <div class="controls">
                                     <label class="contact-label">
-                                        <i class="fas fa-envelope" style="color: #EC4899;"></i> Email *
+                                        <i class="fas fa-envelope" style="color: #0891b2;"></i> Email *
                                     </label>
                                     <input type="email" class="form-control contact-input" id="email" required data-validation-required-message="Please enter your email address." placeholder="Your email">
                                 </div>
@@ -81,13 +81,13 @@
                             <div class="control-group form-group contact-form-group">
                                 <div class="controls">
                                     <label class="contact-label">
-                                        <i class="fas fa-comment-alt" style="color: #EC4899;"></i> Message *
+                                        <i class="fas fa-comment-alt" style="color: #0891b2;"></i> Message *
                                     </label>
                                     <textarea rows="5" class="form-control contact-input" id="message" required data-validation-required-message="Please enter your message" maxlength="999" style="resize:none" placeholder="Your message..."></textarea>
                                 </div>
                             </div>
                             <div id="success"></div>
-                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; position: relative; overflow: hidden;">
+                            <button type="submit" class="btn btn-block contact-submit-btn text-white" id="sendMessageButton" style="background: linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%); border: none; padding: 12px; font-weight: 600; border-radius: 12px; font-size: 1rem; position: relative; overflow: hidden;">
                                 <span style="position: relative; z-index: 2;">
                                     <i class="fas fa-paper-plane"></i> Send Message
                                 </span>
@@ -194,7 +194,7 @@
 
         .contact-form-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(236, 72, 153, 0.3) !important;
+            box-shadow: 0 15px 40px rgba(8, 145, 178, 0.3) !important;
         }
 
         .contact-details-card:hover {
@@ -212,8 +212,8 @@
         }
 
         .contact-input:focus {
-            border-color: #EC4899;
-            box-shadow: 0 0 0 0.3rem rgba(236, 72, 153, 0.2), 0 4px 15px rgba(236, 72, 153, 0.15);
+            border-color: #0891b2;
+            box-shadow: 0 0 0 0.3rem rgba(8, 145, 178, 0.2), 0 4px 15px rgba(8, 145, 178, 0.15);
             transform: translateY(-2px);
             background: #fff;
         }
@@ -232,7 +232,7 @@
         }
 
         .contact-form-group:focus-within .contact-label {
-            color: #EC4899;
+            color: #0891b2;
         }
 
         .contact-form-group:focus-within .contact-label i {
@@ -265,8 +265,8 @@
 
         .contact-submit-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(236, 72, 153, 0.5);
-            background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%) !important;
+            box-shadow: 0 15px 35px rgba(8, 145, 178, 0.5);
+            background: linear-gradient(135deg, #22d3ee 0%, #06b6d4 50%, #0891b2 100%) !important;
         }
 
         .contact-info-item {
@@ -322,7 +322,7 @@
         }
 
         .contact-breadcrumb a:hover {
-            color: #F472B6 !important;
+            color: #22d3ee !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
         }

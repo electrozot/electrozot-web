@@ -29,12 +29,19 @@ if (!$user) {
     die("User not found. Please login again.");
 }
 
-// Get ALL bookings from tms_service_booking table
-$bookings_query = "SELECT sb.*, s.s_name, s.s_category, s.s_duration 
+// Get ALL bookings sorted: On Hold → New/In Progress → Completed
+$bookings_query = "SELECT sb.*, s.s_name, s.s_category, s.s_duration, t.t_name,
+                   CASE 
+                       WHEN sb.sb_is_on_hold = 1 THEN 1
+                       WHEN sb.sb_status IN ('Pending', 'Approved', 'In Progress') THEN 2
+                       WHEN sb.sb_status = 'Completed' THEN 3
+                       ELSE 4
+                   END as sort_order
                    FROM tms_service_booking sb 
                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                   LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                    WHERE sb.sb_user_id = ? 
-                   ORDER BY sb.sb_created_at DESC";
+                   ORDER BY sort_order ASC, sb.sb_created_at DESC";
 $bookings_stmt = $mysqli->prepare($bookings_query);
 $bookings_stmt->bind_param('i', $aid);
 $bookings_stmt->execute();

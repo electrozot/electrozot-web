@@ -47,6 +47,58 @@
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
+  
+  // Ensure hold system columns exist
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_reason TEXT NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_start_date TIMESTAMP NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_end_date TIMESTAMP NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_priority_reason VARCHAR(255) NULL");
+  
+  // Handle hold/unhold actions
+  if(isset($_POST['hold_action'])) {
+      $action = $_POST['hold_action'];
+      
+      if($action == 'hold') {
+          $reason = $_POST['hold_reason'] ?? 'Admin hold - requires attention';
+          $hold_start = date('Y-m-d H:i:s');
+          $hold_end = date('Y-m-d H:i:s', strtotime('+4 days'));
+          
+          $update = "UPDATE tms_service_booking 
+                     SET sb_is_on_hold = 1,
+                         sb_hold_reason = ?,
+                         sb_hold_start_date = ?,
+                         sb_hold_end_date = ?,
+                         sb_status = 'On Hold'
+                     WHERE sb_id = ?";
+          $stmt_hold = $mysqli->prepare($update);
+          $stmt_hold->bind_param('sssi', $reason, $hold_start, $hold_end, $sb_id);
+          if($stmt_hold->execute()) {
+              $_SESSION['success'] = "Booking put on hold successfully";
+              header("Location: admin-view-service-booking.php?sb_id=$sb_id");
+              exit;
+          }
+          
+      } elseif($action == 'unhold') {
+          $update = "UPDATE tms_service_booking 
+                     SET sb_is_on_hold = 0,
+                         sb_hold_reason = NULL,
+                         sb_hold_start_date = NULL,
+                         sb_hold_end_date = NULL,
+                         sb_is_high_priority = 1,
+                         sb_priority_reason = 'Admin unholded - high priority',
+                         sb_status = 'In Progress'
+                     WHERE sb_id = ?";
+          $stmt_unhold = $mysqli->prepare($update);
+          $stmt_unhold->bind_param('i', $sb_id);
+          if($stmt_unhold->execute()) {
+              $_SESSION['success'] = "Booking unholded and marked as high priority";
+              header("Location: admin-view-service-booking.php?sb_id=$sb_id");
+              exit;
+          }
+      }
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -288,12 +340,29 @@
                                                  echo '<span class="badge badge-primary">'.$booking->sb_status.'</span>'; 
                                              } elseif($booking->sb_status == "Completed"){ 
                                                  echo '<span class="badge badge-success">'.$booking->sb_status.'</span>'; 
+                                             } elseif($booking->sb_status == "On Hold"){ 
+                                                 echo '<span class="badge badge-warning" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);"><i class="fas fa-pause-circle"></i> '.$booking->sb_status.'</span>'; 
                                              } else { 
                                                  echo '<span class="badge badge-danger">'.$booking->sb_status.'</span>'; 
                                              }
                                              ?>
+                                             <?php if($booking->sb_is_high_priority == 1): ?>
+                                             <br><span class="badge badge-danger mt-1" style="background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);"><i class="fas fa-fire"></i> HIGH PRIORITY</span>
+                                             <?php endif; ?>
                                          </td>
                                      </tr>
+                                     <?php if($booking->sb_is_on_hold == 1): ?>
+                                     <tr>
+                                         <th>Hold Information:</th>
+                                         <td>
+                                             <div class="alert alert-warning mb-0" style="background: #fff3cd; border-left: 4px solid #ffa502;">
+                                                 <strong><i class="fas fa-pause-circle"></i> Booking is On Hold</strong><br>
+                                                 <small><strong>Reason:</strong> <?php echo htmlspecialchars($booking->sb_hold_reason); ?></small><br>
+                                                 <small><strong>Hold Until:</strong> <?php echo date('M d, Y h:i A', strtotime($booking->sb_hold_end_date)); ?></small>
+                                             </div>
+                                         </td>
+                                     </tr>
+                                     <?php endif; ?>
                                      <tr>
                                          <th>Booking Price:</th>
                                          <td>
@@ -443,14 +512,36 @@
                          <?php endif; ?>
                          
                          <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
-                         <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Are you sure you want to CANCEL this booking? The technician will be freed up.')">
-                             <i class="fas fa-ban"></i> Cancel Booking
-                         </a>
+                             <?php if($booking->sb_is_on_hold == 1): ?>
+                             <!-- Unhold Button -->
+                             <button type="button" class="btn btn-success" onclick="unholdBooking()">
+                                 <i class="fas fa-play-circle"></i> Unhold Booking
+                             </button>
+                             <?php else: ?>
+                             <!-- Hold Button -->
+                             <button type="button" class="btn" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); color: white;" onclick="holdBooking()">
+                                 <i class="fas fa-pause-circle"></i> Put on Hold
+                             </button>
+                             <?php endif; ?>
+                             
+                             <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Are you sure you want to CANCEL this booking? The technician will be freed up.')">
+                                 <i class="fas fa-ban"></i> Cancel Booking
+                             </a>
                          <?php endif; ?>
                          
                          <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-danger" onclick="return confirm('Delete this booking permanently? This cannot be undone!')">
                              <i class="fas fa-trash"></i> Delete Permanently
                          </a>
+                         
+                         <!-- Hidden forms for hold/unhold actions -->
+                         <form id="holdForm" method="POST" style="display: none;">
+                             <input type="hidden" name="hold_action" value="hold">
+                             <input type="hidden" name="hold_reason" id="holdReason">
+                         </form>
+                         
+                         <form id="unholdForm" method="POST" style="display: none;">
+                             <input type="hidden" name="hold_action" value="unhold">
+                         </form>
                      </div>
                  </div>
              </div>
@@ -501,6 +592,22 @@
 
      <!-- Demo scripts for this page-->
      <script src="vendor/js/demo/datatables-demo.js"></script>
+     
+     <script>
+     function holdBooking() {
+         const reason = prompt('Enter reason for holding this booking:', 'Admin hold - requires attention');
+         if(reason && reason.trim() !== '') {
+             document.getElementById('holdReason').value = reason;
+             document.getElementById('holdForm').submit();
+         }
+     }
+     
+     function unholdBooking() {
+         if(confirm('Unhold this booking? It will be marked as HIGH PRIORITY and returned to In Progress status.')) {
+             document.getElementById('unholdForm').submit();
+         }
+     }
+     </script>
  </body>
 
  </html>

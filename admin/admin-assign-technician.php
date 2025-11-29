@@ -515,7 +515,11 @@
                                      } elseif($is_custom_service_booking && empty($booking_data->sb_subcategory)) {
                                          // Custom booking WITHOUT subcategory - show ALL available technicians
                                          $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
-                                                                    (t.t_booking_limit - t.t_current_bookings) as available_slots
+                                                                    (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                    (SELECT COUNT(*) FROM tms_service_booking sb 
+                                                                     WHERE sb.sb_technician_id = t.t_id 
+                                                                     AND sb.sb_technician_id IS NOT NULL
+                                                                     AND DATE(COALESCE(sb.sb_assigned_at, sb.sb_created_at)) = CURDATE()) as today_booking_count
                                                              FROM tms_technician t
                                                              WHERE t.t_status != 'Inactive'
                                                              AND t.t_current_bookings < t.t_booking_limit
@@ -529,7 +533,9 @@
                                                  't_id' => $tech['t_id'],
                                                  't_name' => $tech['t_name'],
                                                  't_experience' => $tech['t_experience'],
+                                                 't_booking_limit' => $tech['t_booking_limit'],
                                                  'available_slots' => $tech['available_slots'],
+                                                 'today_booking_count' => $tech['today_booking_count'],
                                                  'is_available' => ($tech['available_slots'] > 0),
                                                  'match_type' => 'all_available',
                                                  'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
@@ -540,6 +546,10 @@
                                          // Query gets technicians who have this service in their skills
                                          $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
                                                                       (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                      (SELECT COUNT(*) FROM tms_service_booking sb 
+                                                                       WHERE sb.sb_technician_id = t.t_id 
+                                                                       AND sb.sb_technician_id IS NOT NULL
+                                                                       AND DATE(COALESCE(sb.sb_assigned_at, sb.sb_created_at)) = CURDATE()) as today_booking_count,
                                                                       t.t_phone, t.t_email
                                                                FROM tms_technician t
                                                                INNER JOIN tms_technician_skills ts ON t.t_id = ts.ts_technician_id
@@ -562,7 +572,9 @@
                                                  't_id' => $tech['t_id'],
                                                  't_name' => $tech['t_name'],
                                                  't_experience' => $tech['t_experience'],
+                                                 't_booking_limit' => $tech['t_booking_limit'],
                                                  'available_slots' => $tech['available_slots'],
+                                                 'today_booking_count' => $tech['today_booking_count'],
                                                  'is_available' => ($tech['available_slots'] > 0),
                                                  'match_type' => 'exact_skill',
                                                  'slot_message' => ($tech['available_slots'] > 0) ? 'Available' : 'At capacity'
@@ -588,11 +600,24 @@
                                              echo '<optgroup label="✅ Available Technicians - Has Capacity ('.count($available_custom).')">';
                                              foreach($available_custom as $tech) {
                                                  $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
                                                  $slots = $tech['available_slots'];
                                                  $skills = !empty($tech['t_skills']) ? ' | Skills: '.htmlspecialchars($tech['t_skills']) : '';
+                                                 
+                                                 // Add technician tier badge based on booking limit
+                                                 $tier_badge = '';
+                                                 if (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 5) {
+                                                     $tier_badge = '⭐ '; // Star technician (5 bookings)
+                                                 } elseif (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 3) {
+                                                     $tier_badge = '💎 '; // Premium technician (3 bookings)
+                                                 }
+                                                 // Regular technicians (1 booking) get no badge
+                                                 
+                                                 // Add today's booking count badge (RED)
+                                                 $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+                                                 $today_badge = $today_count > 0 ? ' 🔴['.$today_count.' today]' : '';
+                                                 
                                                  echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)'.$skills;
+                                                 echo $tier_badge . htmlspecialchars($tech['t_name']) . ' ('.$slots.' slot'.($slots!=1?'s':'').' free)'.$today_badge.$skills;
                                                  echo '</option>';
                                              }
                                              echo '</optgroup>';
@@ -602,10 +627,23 @@
                                          if(!empty($busy_custom)) {
                                              echo '<optgroup label="🔴 At Capacity - Cannot Take More Bookings ('.count($busy_custom).')">';
                                              foreach($busy_custom as $tech) {
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
                                                  $skills = !empty($tech['t_skills']) ? ' | Skills: '.htmlspecialchars($tech['t_skills']) : '';
+                                                 
+                                                 // Add technician tier badge based on booking limit
+                                                 $tier_badge = '';
+                                                 if (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 5) {
+                                                     $tier_badge = '⭐ '; // Star technician (5 bookings)
+                                                 } elseif (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 3) {
+                                                     $tier_badge = '💎 '; // Premium technician (3 bookings)
+                                                 }
+                                                 // Regular technicians (1 booking) get no badge
+                                                 
+                                                 // Add today's booking count badge (RED)
+                                                 $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+                                                 $today_badge = $today_count > 0 ? ' 🔴['.$today_count.' today]' : '';
+                                                 
                                                  echo '<option value="'.$tech['t_id'].'" disabled>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.') - At capacity'.$skills;
+                                                 echo $tier_badge . htmlspecialchars($tech['t_name']) . $today_badge.' - At capacity'.$skills;
                                                  echo '</option>';
                                              }
                                              echo '</optgroup>';
@@ -625,10 +663,23 @@
                                              echo '<optgroup label="✅ Available Now - Has Required Skill ('.count($available_exact).')">';
                                              foreach($available_exact as $tech) {
                                                  $selected = ($tech['t_id'] == $current_tech_id) ? 'selected' : '';
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
                                                  $slots = $tech['available_slots'];
+                                                 
+                                                 // Add technician tier badge based on booking limit
+                                                 $tier_badge = '';
+                                                 if (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 5) {
+                                                     $tier_badge = '⭐ '; // Star technician (5 bookings)
+                                                 } elseif (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 3) {
+                                                     $tier_badge = '💎 '; // Premium technician (3 bookings)
+                                                 }
+                                                 // Regular technicians (1 booking) get no badge
+                                                 
+                                                 // Add today's booking count badge (RED)
+                                                 $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+                                                 $today_badge = $today_count > 0 ? ' 🔴['.$today_count.' today]' : '';
+                                                 
                                                  echo '<option value="'.$tech['t_id'].'" '.$selected.'>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free) - '.$tech['slot_message'];
+                                                 echo $tier_badge . htmlspecialchars($tech['t_name']) . ' ('.$slots.' slot'.($slots!=1?'s':'').' free)'.$today_badge.' - '.$tech['slot_message'];
                                                  echo '</option>';
                                              }
                                              echo '</optgroup>';
@@ -640,9 +691,21 @@
                                          if(!empty($busy_exact)) {
                                              echo '<optgroup label="🔴 Busy at This Time - Has Required Skill ('.count($busy_exact).')">';
                                              foreach($busy_exact as $tech) {
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
+                                                 // Add technician tier badge based on booking limit
+                                                 $tier_badge = '';
+                                                 if (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 5) {
+                                                     $tier_badge = '⭐ '; // Star technician (5 bookings)
+                                                 } elseif (isset($tech['t_booking_limit']) && $tech['t_booking_limit'] >= 3) {
+                                                     $tier_badge = '💎 '; // Premium technician (3 bookings)
+                                                 }
+                                                 // Regular technicians (1 booking) get no badge
+                                                 
+                                                 // Add today's booking count badge (RED)
+                                                 $today_count = isset($tech['today_booking_count']) ? intval($tech['today_booking_count']) : 0;
+                                                 $today_badge = $today_count > 0 ? ' 🔴['.$today_count.' today]' : '';
+                                                 
                                                  echo '<option value="'.$tech['t_id'].'" disabled>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.') - '.$tech['slot_message'];
+                                                 echo $tier_badge . htmlspecialchars($tech['t_name']) . $today_badge.' - '.$tech['slot_message'];
                                                  echo '</option>';
                                              }
                                              echo '</optgroup>';
@@ -652,9 +715,8 @@
                                          if(!empty($busy_category)) {
                                              echo '<optgroup label="🔴 Busy at This Time - Category Match ('.count($busy_category).')">';
                                              foreach($busy_category as $tech) {
-                                                 $exp = $tech['t_experience'] ? $tech['t_experience'].' yrs' : 'New';
                                                  echo '<option value="'.$tech['t_id'].'" disabled>';
-                                                 echo htmlspecialchars($tech['t_name']) . ' ('.$exp.') - '.$tech['slot_message'];
+                                                 echo htmlspecialchars($tech['t_name']) . ' - '.$tech['slot_message'];
                                                  echo '</option>';
                                              }
                                              echo '</optgroup>';

@@ -5,6 +5,54 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
+// Ensure hold system columns exist
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_reason TEXT NULL");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_start_date TIMESTAMP NULL");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_end_date TIMESTAMP NULL");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+$mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_priority_reason VARCHAR(255) NULL");
+
+// Handle hold/unhold actions
+if(isset($_POST['hold_action']) && isset($_POST['booking_id'])) {
+    $booking_id = intval($_POST['booking_id']);
+    $action = $_POST['hold_action'];
+    
+    if($action == 'hold') {
+        $reason = $_POST['hold_reason'] ?? 'Admin hold - requires attention';
+        $hold_start = date('Y-m-d H:i:s');
+        $hold_end = date('Y-m-d H:i:s', strtotime('+4 days'));
+        
+        $update = "UPDATE tms_service_booking 
+                   SET sb_is_on_hold = 1,
+                       sb_hold_reason = ?,
+                       sb_hold_start_date = ?,
+                       sb_hold_end_date = ?,
+                       sb_status = 'On Hold'
+                   WHERE sb_id = ?";
+        $stmt_hold = $mysqli->prepare($update);
+        $stmt_hold->bind_param('sssi', $reason, $hold_start, $hold_end, $booking_id);
+        $stmt_hold->execute();
+        
+    } elseif($action == 'unhold') {
+        $update = "UPDATE tms_service_booking 
+                   SET sb_is_on_hold = 0,
+                       sb_hold_reason = NULL,
+                       sb_hold_start_date = NULL,
+                       sb_hold_end_date = NULL,
+                       sb_is_high_priority = 1,
+                       sb_priority_reason = 'Admin unholded - high priority',
+                       sb_status = 'In Progress'
+                   WHERE sb_id = ?";
+        $stmt_unhold = $mysqli->prepare($update);
+        $stmt_unhold->bind_param('i', $booking_id);
+        $stmt_unhold->execute();
+    }
+    
+    header("Location: admin-notifications.php");
+    exit;
+}
+
 // Pagination
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $per_page = 20;
@@ -76,6 +124,7 @@ $query = "SELECT sb.*,
                  u.u_fname, u.u_lname, u.u_phone, u.u_email,
                  s.s_name, s.s_category, s.s_price,
                  t.t_name as technician_name, t.t_phone as technician_phone,
+                 sb.sb_is_on_hold, sb.sb_is_high_priority,
                  CASE 
                      WHEN sb.sb_status IN ('Rejected', 'Rejected by Technician', 'Cancelled', 'Not Done', 'Not Completed') THEN 1
                      WHEN sb.sb_status = 'Pending' THEN 2
@@ -292,6 +341,11 @@ if(!empty($params)) {
                                             <span class="badge <?php echo $status_badge; ?> badge-pill px-3 py-2">
                                                 <?php echo $row['sb_status']; ?>
                                             </span>
+                                            <?php if($row['sb_is_high_priority'] == 1): ?>
+                                            <br><span class="badge badge-danger badge-pill px-2 py-1 mt-1" style="background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%); font-size: 10px;">
+                                                <i class="fas fa-fire"></i> PRIORITY
+                                            </span>
+                                            <?php endif; ?>
                                             <br>
                                             <small class="text-muted"><?php echo $time_ago; ?></small>
                                         </div>
@@ -323,6 +377,19 @@ if(!empty($params)) {
                                         <a href="admin-view-service-booking.php?sb_id=<?php echo $row['sb_id']; ?>" class="btn btn-sm btn-primary">
                                             <i class="fas fa-eye"></i> View Details
                                         </a>
+                                        <?php if($row['sb_status'] != 'Cancelled' && $row['sb_status'] != 'Completed'): ?>
+                                            <?php if($row['sb_is_on_hold'] == 1): ?>
+                                            <!-- Unhold Button -->
+                                            <button type="button" class="btn btn-sm btn-success" onclick="unholdBooking(<?php echo $row['sb_id']; ?>)">
+                                                <i class="fas fa-play-circle"></i> Unhold
+                                            </button>
+                                            <?php else: ?>
+                                            <!-- Hold Button -->
+                                            <button type="button" class="btn btn-sm" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); color: white;" onclick="holdBooking(<?php echo $row['sb_id']; ?>)">
+                                                <i class="fas fa-pause-circle"></i> Hold
+                                            </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                         <?php if($row['sb_status'] == 'Pending' || $row['sb_status'] == 'Approved'): ?>
                                         <a href="admin-assign-technician.php?sb_id=<?php echo $row['sb_id']; ?>" class="btn btn-sm btn-info">
                                             <i class="fas fa-user-plus"></i> Assign Technician
@@ -393,6 +460,37 @@ if(!empty($params)) {
     <!-- Custom scripts for all pages-->
     <script src="vendor/js/sb-admin.min.js"></script>
 
+    <!-- Hold/Unhold Functions -->
+    <script>
+    function holdBooking(bookingId) {
+        const reason = prompt('Enter reason for holding this booking:', 'Admin hold - requires attention');
+        if(reason && reason.trim() !== '') {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="booking_id" value="${bookingId}">
+                <input type="hidden" name="hold_action" value="hold">
+                <input type="hidden" name="hold_reason" value="${reason}">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    
+    function unholdBooking(bookingId) {
+        if(confirm('Unhold this booking? It will be marked as HIGH PRIORITY and returned to In Progress status.')) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="booking_id" value="${bookingId}">
+                <input type="hidden" name="hold_action" value="unhold">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    </script>
+    
     <!-- Notification System Script -->
     <script>
         $(document).ready(function() {

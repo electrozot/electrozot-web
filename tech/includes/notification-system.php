@@ -4,6 +4,7 @@
     let techNotificationAudio = null;
     let audioEnabled = false;
     let audioInitialized = false;
+    let userInteracted = false;
     
     // Initialize audio
     function initializeAudio() {
@@ -14,7 +15,7 @@
                 techNotificationAudio.preload = 'auto';
                 techNotificationAudio.load();
                 audioInitialized = true;
-                console.log('✅ Audio initialized');
+                console.log('✅ Audio initialized - Path: ../admin/vendor/sounds/arived.mp3');
             } catch(e) {
                 console.error('❌ Audio initialization error:', e);
             }
@@ -23,14 +24,30 @@
     
     // Enable audio on first user interaction
     function enableAudio() {
-        if (!audioEnabled && audioInitialized) {
+        if (!userInteracted) {
+            userInteracted = true;
+            console.log('👆 User interaction detected - enabling audio');
+        }
+        
+        if (!audioEnabled && audioInitialized && techNotificationAudio) {
             techNotificationAudio.play().then(() => {
                 techNotificationAudio.pause();
                 techNotificationAudio.currentTime = 0;
                 audioEnabled = true;
-                console.log('✅ Audio enabled and ready');
+                console.log('✅ Audio enabled and ready to play');
             }).catch((err) => {
-                console.log('⚠️ Audio will be enabled on next interaction:', err);
+                console.log('⚠️ Audio enable attempt:', err.message);
+                // Try again on next interaction
+                setTimeout(() => {
+                    if (!audioEnabled && techNotificationAudio) {
+                        techNotificationAudio.play().then(() => {
+                            techNotificationAudio.pause();
+                            techNotificationAudio.currentTime = 0;
+                            audioEnabled = true;
+                            console.log('✅ Audio enabled on retry');
+                        }).catch(() => {});
+                    }
+                }, 500);
             });
         }
     }
@@ -38,30 +55,47 @@
     // Initialize audio immediately
     initializeAudio();
     
-    // Enable audio on any user interaction
-    ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'].forEach(event => {
-        document.addEventListener(event, function() {
+    // Enable audio on any user interaction - more aggressive approach
+    ['click', 'touchstart', 'touchend', 'keydown', 'keyup', 'mousedown', 'scroll'].forEach(event => {
+        document.addEventListener(event, function enableOnInteraction() {
             if (!audioEnabled) {
                 enableAudio();
             }
-        }, { once: true, passive: true });
+            // Keep trying until audio is enabled
+            if (audioEnabled) {
+                document.removeEventListener(event, enableOnInteraction);
+            }
+        }, { passive: true });
     });
     
     // Force enable audio after 1 second
     setTimeout(() => {
         if (!audioEnabled) {
+            console.log('⏱️ Attempting to enable audio after 1 second...');
             enableAudio();
         }
     }, 1000);
     
+    // Try again after 3 seconds
+    setTimeout(() => {
+        if (!audioEnabled) {
+            console.log('⏱️ Attempting to enable audio after 3 seconds...');
+            enableAudio();
+        }
+    }, 3000);
+    
     function playTechNotificationSound() {
+        console.log('🔊 playTechNotificationSound() called');
+        console.log('📊 Audio Status - Initialized:', audioInitialized, 'Enabled:', audioEnabled, 'User Interacted:', userInteracted);
+        
         try {
             if (!audioInitialized) {
+                console.log('⚠️ Audio not initialized, initializing now...');
                 initializeAudio();
             }
             
             if (!techNotificationAudio) {
-                console.error('❌ Audio not initialized');
+                console.error('❌ Audio object is null');
                 return;
             }
             
@@ -69,25 +103,71 @@
             techNotificationAudio.currentTime = 0;
             techNotificationAudio.volume = 1.0;
             
+            console.log('▶️ Attempting to play sound...');
             const playPromise = techNotificationAudio.play();
             
             if (playPromise !== undefined) {
                 playPromise
                     .then(() => {
-                        console.log('🔊 Notification sound played successfully!');
+                        console.log('✅ 🔊 NOTIFICATION SOUND PLAYED SUCCESSFULLY!');
                         audioEnabled = true;
                     })
                     .catch((error) => {
-                        console.error('❌ Error playing sound:', error);
-                        console.log('💡 Trying to enable audio...');
+                        console.error('❌ Error playing sound:', error.name, '-', error.message);
+                        
+                        if (error.name === 'NotAllowedError') {
+                            console.log('🚫 Browser blocked autoplay. User interaction required.');
+                            console.log('💡 Please click anywhere on the page to enable sound.');
+                            
+                            // Show visual alert to user
+                            if (!document.getElementById('audio-enable-alert')) {
+                                const alert = document.createElement('div');
+                                alert.id = 'audio-enable-alert';
+                                alert.style.cssText = `
+                                    position: fixed;
+                                    top: 80px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                                    color: white;
+                                    padding: 15px 25px;
+                                    border-radius: 10px;
+                                    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+                                    z-index: 99999;
+                                    font-weight: bold;
+                                    text-align: center;
+                                    cursor: pointer;
+                                    animation: pulse 1s infinite;
+                                `;
+                                alert.innerHTML = '🔊 Click here to enable notification sounds';
+                                alert.onclick = function() {
+                                    enableAudio();
+                                    this.remove();
+                                    // Try playing again
+                                    setTimeout(() => playTechNotificationSound(), 200);
+                                };
+                                document.body.appendChild(alert);
+                                
+                                // Auto-remove after 10 seconds
+                                setTimeout(() => {
+                                    if (alert.parentNode) alert.remove();
+                                }, 10000);
+                            }
+                        }
                         
                         // Try to enable audio and play again
-                        enableAudio();
-                        setTimeout(() => {
-                            techNotificationAudio.play().catch(e => {
-                                console.error('❌ Still cannot play:', e);
-                            });
-                        }, 100);
+                        if (!audioEnabled) {
+                            console.log('💡 Attempting to enable audio...');
+                            enableAudio();
+                            setTimeout(() => {
+                                if (techNotificationAudio) {
+                                    console.log('🔄 Retrying sound playback...');
+                                    techNotificationAudio.play()
+                                        .then(() => console.log('✅ Sound played on retry!'))
+                                        .catch(e => console.error('❌ Retry failed:', e.message));
+                                }
+                            }, 500);
+                        }
                     });
             }
         } catch(e) {
@@ -362,6 +442,15 @@
                 to {
                     transform: translateX(0);
                     opacity: 1;
+                }
+            }
+            
+            @keyframes pulse {
+                0%, 100% {
+                    transform: translateX(-50%) scale(1);
+                }
+                50% {
+                    transform: translateX(-50%) scale(1.05);
                 }
             }
             

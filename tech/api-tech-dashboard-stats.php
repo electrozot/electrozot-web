@@ -1,8 +1,21 @@
 <?php
+// Suppress any PHP errors/warnings that would break JSON
+error_reporting(0);
+ini_set('display_errors', 0);
+
+// Start output buffering to catch any stray output
+ob_start();
+
 session_start();
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
 check_login();
+
+// Ensure hold system columns exist before querying
+try {
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+} catch(Exception $e) {}
 
 header('Content-Type: application/json');
 
@@ -51,6 +64,9 @@ while ($row = $recent_result->fetch_assoc()) {
     $recent_bookings[] = $row;
 }
 
+// Clear any buffered output
+ob_clean();
+
 echo json_encode([
     'success' => true,
     'stats' => [
@@ -61,4 +77,7 @@ echo json_encode([
     ],
     'recent_bookings' => $recent_bookings
 ]);
+
+// End output buffering
+ob_end_flush();
 ?>

@@ -360,6 +360,36 @@ if($status == 'Approved' && $has_technician) {
             </div>
         </div>
 
+        <!-- On Hold Alert with Unhold Button -->
+        <?php if(isset($booking->sb_is_on_hold) && $booking->sb_is_on_hold == 1): ?>
+        <div style="background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%); border: 3px solid #ffc107; border-radius: 15px; padding: 15px; margin-bottom: 15px; animation: pulse 2s infinite;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #856404; font-size: 15px; margin-bottom: 5px;">
+                        <i class="fas fa-pause-circle"></i> ⚠️ Booking On Hold
+                    </div>
+                    <div style="color: #666; font-size: 13px; margin-bottom: 3px;">
+                        <strong>Reason:</strong> <?php echo htmlspecialchars($booking->sb_hold_reason); ?>
+                    </div>
+                    <div style="color: #666; font-size: 12px;">
+                        <i class="fas fa-clock"></i> Until: <?php echo date('M d, Y', strtotime($booking->sb_hold_end_date)); ?>
+                    </div>
+                </div>
+                <button onclick="unholdBooking(<?php echo $booking->sb_id; ?>)" 
+                   style="background: linear-gradient(135deg, #00c853 0%, #00F260 100%); color: white; padding: 12px 18px; border-radius: 10px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 3px 10px rgba(0, 200, 83, 0.3); white-space: nowrap;">
+                    <i class="fas fa-play-circle"></i> Resume
+                </button>
+            </div>
+        </div>
+        
+        <style>
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.02); }
+            }
+        </style>
+        <?php endif; ?>
+
         <!-- Service Details -->
         <div class="section-card">
             <div class="section-title">
@@ -703,6 +733,36 @@ if($status == 'Approved' && $has_technician) {
     <?php include('vendor/inc/user-footer.php'); ?>
     
     <script>
+    // Unhold booking function - Single click
+    function unholdBooking(bookingId) {
+        if(confirm('Resume this booking?\n\n✓ Booking will be marked as HIGH PRIORITY\n✓ Technician will be notified immediately\n✓ Service will continue\n\nClick OK to resume now.')) {
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Resuming...';
+            btn.disabled = true;
+            
+            fetch('api-unhold-booking.php?id=' + bookingId, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Booking resumed successfully!\n\nYour booking is now HIGH PRIORITY.\nTechnician has been notified.');
+                    location.reload();
+                } else {
+                    alert('❌ Error: ' + (data.message || 'Failed to resume booking'));
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('❌ Error: Could not resume booking. Please try again.');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            });
+        }
+    }
+    
     // Auto-refresh when booking status changes
     let lastStatus = '<?php echo $booking->sb_status; ?>';
     let isPageVisible = true;

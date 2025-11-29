@@ -29,6 +29,11 @@
                     100% { background-position: 0% 50%; }
                 }
                 
+                @keyframes textGradientShift {
+                    0% { background-position: 0% center; }
+                    100% { background-position: 200% center; }
+                }
+                
                 /* Mobile responsive heading */
                 @media (max-width: 768px) {
                     .hero-title {
@@ -81,25 +86,25 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
                         <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); font-size: 4.5rem;">
-                            <span class="electrozot-animated" style="-webkit-text-stroke: 0.5px #1a202c; text-stroke: 0.5px #1a202c;">Electrozot</span>
+                            <span class="electrozot-animated">Electrozot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.5; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700;">
                             Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
                         </p>
                         <div class="hero-buttons-wrapper d-flex flex-wrap" style="gap: 12px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #7C3AED 0%, #A855F7 100%); color: white; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4); transition: all 0.3s ease; min-width: 160px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
-                                <i class="fas fa-bolt"></i> Book Service
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(232, 138, 119, 0.5); transition: all 0.3s ease; min-width: 160px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
+                                <i class="fas fa-bolt" style="color: #000000;"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); color: white; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4); transition: all 0.3s ease; min-width: 190px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
-                                <i class="fas fa-phone"></i> 7559606925
+                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(232, 138, 119, 0.5); transition: all 0.3s ease; min-width: 190px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
+                                <i class="fas fa-phone" style="color: #000000;"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #A855F7;">
+                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #E88A77;">
                                 
-                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #7C3AED 0%, #EC4899 100%); position: relative; z-index: 3; border-bottom: 3px solid #A855F7; overflow: hidden; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);">
+                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); position: relative; z-index: 3; border-bottom: 3px solid #E88A77; overflow: hidden; box-shadow: 0 4px 15px rgba(232, 138, 119, 0.4);">
                                     <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.5rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 6px rgba(0,0,0,0.3);">
                                         <i class="fas fa-calendar-check" style="color: white; margin-right: 8px;"></i>
                                         Book Service Now
@@ -205,8 +210,8 @@
                                         <!-- Hidden field to store selected subcategory -->
                                         <input type="hidden" name="sb_subcategory" id="guestSubcategoryHidden" value="">
                                         <div class="text-center mt-2">
-                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
-                                                <i class="fas fa-paper-plane"></i> Submit Booking
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: linear-gradient(135deg, #A0F0E8 0%, #38B2AC 50%, #2C7A7B 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
+                                                <i class="fas fa-paper-plane" id="submitIcon"></i> <span id="submitText">Submit Booking</span>
                                             </button>
                                         </div>
                                     </form>
@@ -412,11 +417,22 @@
             /* Submit button hover effect */
             .booking-submit-btn:hover {
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5) !important;
+                box-shadow: 0 8px 25px rgba(56, 178, 172, 0.6) !important;
             }
             
             .booking-submit-btn:active {
-                transform: translateY(0) !important;
+                transform: translateY(0) scale(0.95) !important;
+            }
+            
+            /* Click success animation */
+            @keyframes successPulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 178, 172, 0.8); }
+                100% { transform: scale(1); }
+            }
+            
+            .booking-submit-btn.clicked {
+                animation: successPulse 0.6s ease;
             }
             
             /* Button shine effect */
@@ -679,6 +695,8 @@
                         }
                     });
                 }
+                
+
             });
         </script>
 

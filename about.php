@@ -25,7 +25,6 @@ include('admin/vendor/inc/config.php');
                     <span style="color: #7C3AED; font-weight: 700; font-size: 0.9rem; letter-spacing: 2px;">ABOUT US</span>
                 </div>
                 <h1 class="about-title" style="font-size: 2.5rem; font-weight: 900; color: #2d3748; margin-bottom: 15px; text-shadow: 2px 2px 8px rgba(0,0,0,0.05);">
-                    <i class="fas fa-bolt" style="color: #A855F7; margin-right: 10px;"></i>
                     ELECTROZOT
                 </h1>
                 <p class="about-subtitle" style="font-size: 1.1rem; color: #6B7280; max-width: 650px; margin: 0 auto; line-height: 1.7; font-weight: 400;">
@@ -117,7 +116,7 @@ include('admin/vendor/inc/config.php');
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                             <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
                                 <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: white;"></i>
+                                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: #6c757d;"></i>
                                 </div>
                                 <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Electronic Repair</h4>
                                 <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Diagnosis & Restoration</small>
@@ -134,7 +133,7 @@ include('admin/vendor/inc/config.php');
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                             <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
                                 <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: white;"></i>
+                                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: #6c757d;"></i>
                                 </div>
                                 <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Electrical Installation</h4>
                                 <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Safety & Upgrade Specialists</small>
@@ -151,7 +150,7 @@ include('admin/vendor/inc/config.php');
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
                             <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
                                 <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-tint" style="font-size: 2.5rem; color: white;"></i>
+                                    <i class="fas fa-tint" style="font-size: 2.5rem; color: #6c757d;"></i>
                                 </div>
                                 <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Plumbing Solutions</h4>
                                 <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Leak Repair & System Maintenance</small>

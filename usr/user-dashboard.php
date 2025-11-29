@@ -5,6 +5,67 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['u_id'];
 
+// Ensure booking hold system tables and columns exist
+try {
+    // Add booking hold system columns
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_reason TEXT NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_start_date TIMESTAMP NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_end_date TIMESTAMP NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_priority_reason VARCHAR(255) NULL");
+    
+    // Create booking hold requests table
+    $create_hold_table = "CREATE TABLE IF NOT EXISTS tms_booking_hold_requests (
+        bhr_id INT AUTO_INCREMENT PRIMARY KEY,
+        bhr_booking_id INT NOT NULL,
+        bhr_technician_id INT NOT NULL,
+        bhr_reason TEXT NOT NULL,
+        bhr_status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+        bhr_requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        bhr_responded_at TIMESTAMP NULL,
+        bhr_customer_response TEXT NULL,
+        INDEX(bhr_booking_id),
+        INDEX(bhr_technician_id),
+        INDEX(bhr_status)
+    )";
+    $mysqli->query($create_hold_table);
+    
+    // Create customer notifications table
+    $create_customer_notif = "CREATE TABLE IF NOT EXISTS tms_customer_notifications (
+        cn_id INT AUTO_INCREMENT PRIMARY KEY,
+        cn_user_id INT NOT NULL,
+        cn_booking_id INT NOT NULL,
+        cn_type VARCHAR(50) NOT NULL,
+        cn_title VARCHAR(255) NOT NULL,
+        cn_message TEXT NOT NULL,
+        cn_is_read TINYINT(1) DEFAULT 0,
+        cn_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        cn_action_required TINYINT(1) DEFAULT 0,
+        cn_action_url VARCHAR(255) NULL,
+        INDEX(cn_user_id),
+        INDEX(cn_booking_id),
+        INDEX(cn_is_read)
+    )";
+    $mysqli->query($create_customer_notif);
+    
+    // Create technician notifications table
+    $create_tech_notif = "CREATE TABLE IF NOT EXISTS tms_technician_notifications (
+        tn_id INT AUTO_INCREMENT PRIMARY KEY,
+        tn_technician_id INT NOT NULL,
+        tn_booking_id INT NOT NULL,
+        tn_type VARCHAR(50) NOT NULL,
+        tn_title VARCHAR(255) NOT NULL,
+        tn_message TEXT NOT NULL,
+        tn_is_read TINYINT(1) DEFAULT 0,
+        tn_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(tn_technician_id),
+        INDEX(tn_booking_id),
+        INDEX(tn_is_read)
+    )";
+    $mysqli->query($create_tech_notif);
+} catch(Exception $e) {}
+
 // Get user info
 $query = "SELECT * FROM tms_user WHERE u_id = ?";
 $stmt = $mysqli->prepare($query);
@@ -20,6 +81,39 @@ $booking_stmt->bind_param('i', $aid);
 $booking_stmt->execute();
 $booking_result = $booking_stmt->get_result();
 $booking_stats = $booking_result->fetch_object();
+
+// Get pending hold requests for this customer
+$hold_requests_query = "SELECT bhr.*, sb.sb_id, t.t_name, t.t_phone, s.s_name
+                        FROM tms_booking_hold_requests bhr
+                        LEFT JOIN tms_service_booking sb ON bhr.bhr_booking_id = sb.sb_id
+                        LEFT JOIN tms_technician t ON bhr.bhr_technician_id = t.t_id
+                        LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                        WHERE sb.sb_user_id = ? AND bhr.bhr_status = 'Pending'
+                        ORDER BY bhr.bhr_requested_at DESC";
+$hold_stmt = $mysqli->prepare($hold_requests_query);
+$hold_stmt->bind_param('i', $aid);
+$hold_stmt->execute();
+$hold_requests_result = $hold_stmt->get_result();
+$pending_hold_count = $hold_requests_result->num_rows;
+
+// Get active bookings only (exclude completed): On Hold → New/In Progress → Rejected
+$all_bookings_query = "SELECT sb.*, s.s_name, t.t_name,
+                       CASE 
+                           WHEN sb.sb_is_on_hold = 1 THEN 1
+                           WHEN sb.sb_status IN ('Pending', 'Approved', 'In Progress') THEN 2
+                           WHEN sb.sb_status IN ('Rejected', 'Not Done', 'Cancelled') THEN 3
+                           ELSE 4
+                       END as sort_order
+                       FROM tms_service_booking sb
+                       LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
+                       LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+                       WHERE sb.sb_user_id = ? AND sb.sb_status != 'Completed'
+                       ORDER BY sort_order ASC, sb.sb_created_at DESC
+                       LIMIT 20";
+$all_bookings_stmt = $mysqli->prepare($all_bookings_query);
+$all_bookings_stmt->bind_param('i', $aid);
+$all_bookings_stmt->execute();
+$all_bookings_result = $all_bookings_stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -413,6 +507,148 @@ $booking_stats = $booking_result->fetch_object();
     </div>
     <?php unset($_SESSION['linked_bookings']); endif; ?>
 
+    <!-- Pending Hold Requests Alert -->
+    <?php if($pending_hold_count > 0): ?>
+    <div style="margin: 15px; padding: 0; background: white; border-radius: 15px; box-shadow: 0 4px 20px rgba(255, 165, 2, 0.3); border: 3px solid #ffa502; overflow: hidden; animation: pulse 2s infinite;">
+        <div style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); padding: 12px 15px; color: white;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 24px; animation: shake 1s infinite;"></i>
+                <div>
+                    <div style="font-weight: 700; font-size: 16px;">⚠️ Action Required!</div>
+                    <div style="font-size: 13px; opacity: 0.95;">
+                        You have <?php echo $pending_hold_count; ?> pending hold request<?php echo $pending_hold_count > 1 ? 's' : ''; ?> from technician
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="padding: 15px;">
+            <?php 
+            $hold_requests_result->data_seek(0);
+            while($hold_req = $hold_requests_result->fetch_object()): 
+            ?>
+            <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 12px; padding: 12px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: #856404; font-size: 14px; margin-bottom: 4px;">
+                            <i class="fas fa-tools"></i> #<?php echo $hold_req->bhr_booking_id; ?> - <?php echo htmlspecialchars($hold_req->s_name); ?>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 4px;">
+                            <?php echo htmlspecialchars($hold_req->bhr_reason); ?>
+                        </div>
+                        <div style="font-size: 11px; color: #999;">
+                            <i class="fas fa-user-cog"></i> <?php echo htmlspecialchars($hold_req->t_name); ?>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <button onclick="respondHoldRequest(<?php echo $hold_req->bhr_id; ?>, 'approve')" 
+                           style="background: linear-gradient(135deg, #00c853 0%, #00F260 100%); color: white; padding: 12px 20px; border-radius: 10px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; box-shadow: 0 3px 10px rgba(0, 200, 83, 0.4);">
+                            <i class="fas fa-check-circle"></i> Approve Hold
+                        </button>
+                        <button onclick="respondHoldRequest(<?php echo $hold_req->bhr_id; ?>, 'reject')" 
+                           style="background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%); color: white; padding: 12px 20px; border-radius: 10px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; box-shadow: 0 3px 10px rgba(255, 71, 87, 0.4);">
+                            <i class="fas fa-times-circle"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+    </style>
+    <?php endif; ?>
+
+    <!-- Active Bookings Button -->
+    <?php if($all_bookings_result->num_rows > 0): ?>
+    <div style="margin: 15px; padding: 0;">
+        <button onclick="toggleBookings()" style="width: 100%; background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%); color: white; padding: 15px; border-radius: 15px; border: none; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3); display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fas fa-list-alt"></i> Active Bookings (<?php echo $all_bookings_result->num_rows; ?>)</span>
+            <i class="fas fa-chevron-down" id="bookingsChevron"></i>
+        </button>
+        
+        <div id="bookingsContainer" style="display: none; margin-top: 10px;">
+            <?php 
+            $all_bookings_result->data_seek(0);
+            while($booking = $all_bookings_result->fetch_object()): 
+            ?>
+            <a href="user-track-booking.php?id=<?php echo $booking->sb_id; ?>" style="display: block; background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-decoration: none; border-left: 4px solid <?php 
+                if($booking->sb_is_on_hold == 1) echo '#ffa502';
+                elseif($booking->sb_status == 'Completed') echo '#10b981';
+                elseif($booking->sb_status == 'Pending') echo '#ffd700';
+                else echo '#0ea5e9';
+            ?>;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;">
+                            <span style="font-weight: 700; color: #333; font-size: 14px;">
+                                #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?>
+                            </span>
+                            
+                            <?php if($booking->sb_is_on_hold == 1): ?>
+                            <span style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 700;">
+                                <i class="fas fa-pause-circle"></i> ON HOLD
+                            </span>
+                            <?php elseif($booking->sb_is_high_priority == 1): ?>
+                            <span style="background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%); color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 700;">
+                                <i class="fas fa-fire"></i> PRIORITY
+                            </span>
+                            <?php endif; ?>
+                            
+                            <span style="background: <?php 
+                                if($booking->sb_status == 'Completed') echo '#d4edda';
+                                elseif($booking->sb_status == 'Pending') echo '#fff3cd';
+                                elseif($booking->sb_status == 'In Progress') echo '#cfe2ff';
+                                else echo '#f8f9fa';
+                            ?>; color: <?php 
+                                if($booking->sb_status == 'Completed') echo '#155724';
+                                elseif($booking->sb_status == 'Pending') echo '#856404';
+                                elseif($booking->sb_status == 'In Progress') echo '#084298';
+                                else echo '#666';
+                            ?>; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: 700;">
+                                <?php echo $booking->sb_status; ?>
+                            </span>
+                        </div>
+                        
+                        <div style="color: #333; font-weight: 600; font-size: 13px; margin-bottom: 3px;">
+                            <i class="fas fa-wrench"></i> <?php echo htmlspecialchars($booking->s_name); ?>
+                        </div>
+                        
+                        <div style="color: #666; font-size: 11px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span><i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($booking->sb_booking_date)); ?></span>
+                            <?php if(!empty($booking->t_name)): ?>
+                            <span><i class="fas fa-user-cog"></i> <?php echo htmlspecialchars($booking->t_name); ?></span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <?php if($booking->sb_is_on_hold == 1 && !empty($booking->sb_hold_reason)): ?>
+                        <div style="color: #856404; font-size: 10px; margin-top: 3px; background: #fff3cd; padding: 3px 6px; border-radius: 4px; display: inline-block;">
+                            <i class="fas fa-info-circle"></i> <?php echo htmlspecialchars(substr($booking->sb_hold_reason, 0, 40)); ?><?php echo strlen($booking->sb_hold_reason) > 40 ? '...' : ''; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div>
+                        <i class="fas fa-chevron-right" style="color: #d13abd; font-size: 14px;"></i>
+                    </div>
+                </div>
+            </a>
+            <?php endwhile; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <!-- Quick Actions -->
     <div class="quick-actions">
         <div class="section-title">
@@ -523,6 +759,57 @@ $booking_stats = $booking_result->fetch_object();
     </div>
 
     <script>
+    // Toggle bookings list
+    function toggleBookings() {
+        const container = document.getElementById('bookingsContainer');
+        const chevron = document.getElementById('bookingsChevron');
+        
+        if(container.style.display === 'none') {
+            container.style.display = 'block';
+            chevron.classList.remove('fa-chevron-down');
+            chevron.classList.add('fa-chevron-up');
+        } else {
+            container.style.display = 'none';
+            chevron.classList.remove('fa-chevron-up');
+            chevron.classList.add('fa-chevron-down');
+        }
+    }
+    
+    // Respond to hold request - Single click
+    function respondHoldRequest(requestId, action) {
+        const actionText = action === 'approve' ? 'approve' : 'reject';
+        const message = action === 'approve' 
+            ? 'Approve this hold request?\n\n✓ Booking will be on hold for up to 4 days\n✓ You can resume it anytime\n✓ Technician will be notified'
+            : 'Reject this hold request?\n\n✓ Booking will continue normally\n✓ Technician will be notified';
+        
+        if(confirm(message)) {
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            fetch('api-respond-hold.php?id=' + requestId + '&action=' + action, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Hold request ' + actionText + 'd successfully!');
+                    location.reload();
+                } else {
+                    alert('❌ Error: ' + (data.message || 'Failed to respond'));
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                alert('❌ Error: Could not respond. Please try again.');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            });
+        }
+    }
+    
     // Live dashboard updates
     function updateDashboardStats() {
         fetch('api-dashboard-stats.php')

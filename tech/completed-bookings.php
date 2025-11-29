@@ -9,14 +9,6 @@ $tech_id = $_SESSION['t_id'];
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 
-// Get completed bookings stats
-$total_completed_query = "SELECT COUNT(*) as count FROM tms_service_booking 
-                          WHERE sb_technician_id = ? AND sb_status = 'Completed'";
-$stmt = $mysqli->prepare($total_completed_query);
-$stmt->bind_param('i', $tech_id);
-$stmt->execute();
-$total_completed = $stmt->get_result()->fetch_object()->count;
-
 // Get today's earnings from payment collection
 $today_earnings_query = "SELECT SUM(pc.pc_amount) as total 
                          FROM tms_payment_collection pc
@@ -29,29 +21,27 @@ $stmt->bind_param('i', $tech_id);
 $stmt->execute();
 $today_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
 
-// Get this month's earnings from payment collection
-$month_earnings_query = "SELECT SUM(pc.pc_amount) as total 
-                         FROM tms_payment_collection pc
-                         INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
-                         WHERE sb.sb_technician_id = ? 
-                         AND sb.sb_status = 'Completed'
-                         AND MONTH(pc.pc_collected_at) = MONTH(CURRENT_DATE())
-                         AND YEAR(pc.pc_collected_at) = YEAR(CURRENT_DATE())";
-$stmt = $mysqli->prepare($month_earnings_query);
-$stmt->bind_param('i', $tech_id);
-$stmt->execute();
-$month_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
+// Get today's commission to pay Electrozot (20%)
+$today = date('Y-m-d');
+$commission_rate = 0.20;
 
-// Get total earnings from payment collection
-$total_earnings_query = "SELECT SUM(pc.pc_amount) as total 
-                         FROM tms_payment_collection pc
-                         INNER JOIN tms_service_booking sb ON pc.pc_booking_id = sb.sb_id
-                         WHERE sb.sb_technician_id = ? 
-                         AND sb.sb_status = 'Completed'";
-$stmt = $mysqli->prepare($total_earnings_query);
-$stmt->bind_param('i', $tech_id);
-$stmt->execute();
-$total_earnings = $stmt->get_result()->fetch_object()->total ?? 0;
+$commission_query = "SELECT 
+                     COUNT(*) as today_jobs,
+                     COALESCE(SUM(COALESCE(sb_bill_amount, sb_final_price, sb_tech_decided_price, sb_total_price, 0)), 0) as today_revenue
+                     FROM tms_service_booking
+                     WHERE sb_technician_id = ? 
+                     AND sb_status = 'Completed' 
+                     AND DATE(sb_completed_at) = ?";
+$stmt_comm = $mysqli->prepare($commission_query);
+$stmt_comm->bind_param('is', $tech_id, $today);
+$stmt_comm->execute();
+$comm_result = $stmt_comm->get_result();
+$comm_data = $comm_result->fetch_object();
+$stmt_comm->close();
+
+$today_jobs = $comm_data->today_jobs;
+$today_revenue = $comm_data->today_revenue;
+$today_commission = round($today_revenue * $commission_rate, 2);
 
 // Build dynamic query based on filter and search
 $base_query = "SELECT sb.*, 
@@ -313,6 +303,117 @@ $bookings = $stmt->get_result();
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        
+        /* Commission Widget */
+        .commission-widget {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            border-radius: 12px;
+            padding: 12px 15px;
+            box-shadow: 0 3px 12px rgba(17, 153, 142, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            margin-bottom: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .commission-widget::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+        
+        .commission-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .commission-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        
+        .commission-details {
+            flex: 1;
+        }
+        
+        .commission-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        
+        .commission-amount {
+            font-size: 1.6rem;
+            font-weight: 900;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+        
+        .commission-info {
+            font-size: 0.7rem;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+        
+        @media (max-width: 576px) {
+            .commission-widget {
+                padding: 10px 12px;
+            }
+            
+            .commission-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .commission-amount {
+                font-size: 1.4rem;
+            }
+            
+            .commission-label,
+            .commission-info {
+                font-size: 0.65rem;
+            }
+        }
+        
         .booking-card {
             background: white;
             border-radius: 15px;
@@ -424,7 +525,7 @@ $bookings = $stmt->get_result();
         </div>
 
         <!-- Stats Cards -->
-        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 12px;">
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 20px;">
             <div class="stat-icon">
                 <i class="fas fa-calendar-day"></i>
             </div>
@@ -433,36 +534,22 @@ $bookings = $stmt->get_result();
                 <div class="stat-label">Today's Earnings</div>
             </div>
         </div>
-        
-        <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); margin-bottom: 12px;">
-            <div class="stat-icon">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">₹<?php echo number_format($month_earnings, 2); ?></div>
-                <div class="stat-label">This Month's Earnings</div>
-            </div>
-        </div>
-        
-        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); margin-bottom: 12px;">
-            <div class="stat-icon">
-                <i class="fas fa-wallet"></i>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value">₹<?php echo number_format($total_earnings, 2); ?></div>
-                <div class="stat-label">Total Earnings</div>
+
+        <!-- Today's Commission Widget -->
+        <?php if($today_commission > 0): ?>
+        <div class="commission-widget">
+            <div class="commission-content">
+                <div class="commission-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div class="commission-details">
+                    <div class="commission-label">Today's Electrozot Charge</div>
+                    <div class="commission-amount">₹<?php echo number_format($today_commission, 0); ?></div>
+                    <div class="commission-info"><?php echo $today_jobs; ?> job<?php echo $today_jobs != 1 ? 's' : ''; ?> completed today</div>
+                </div>
             </div>
         </div>
-        
-        <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); margin-bottom: 20px;">
-            <div class="stat-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="stat-content">
-                <div class="stat-value"><?php echo $total_completed; ?></div>
-                <div class="stat-label">Total Completed Bookings</div>
-            </div>
-        </div>
+        <?php endif; ?>
 
         <!-- Bookings List -->
         <div class="bookings-list">

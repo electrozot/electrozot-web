@@ -56,13 +56,14 @@ $technicians_list = [];
 
 if ($is_custom_service) {
     // For custom services, show ALL technicians with capacity
-    $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
-                               (t.t_booking_limit - t.t_current_bookings) as available_slots,
+    $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, 
+                               COALESCE(t.t_booking_limit, 1) as t_booking_limit,
+                               (COALESCE(t.t_booking_limit, 1) - t.t_current_bookings) as available_slots,
                                t.t_skills
                         FROM tms_technician t
                         WHERE t.t_status != 'Inactive'
                         ORDER BY 
-                            CASE WHEN t.t_current_bookings < t.t_booking_limit THEN 0 ELSE 1 END,
+                            CASE WHEN t.t_current_bookings < COALESCE(t.t_booking_limit, 1) THEN 0 ELSE 1 END,
                             t.t_experience DESC,
                             t.t_name ASC";
     $result = $mysqli->query($all_techs_query);
@@ -73,7 +74,16 @@ if ($is_custom_service) {
         $skills = !empty($tech['t_skills']) ? ' | Skills: '.$tech['t_skills'] : '';
         $is_available = ($slots > 0);
         
-        $display_name = $tech['t_name'] . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)'.$skills;
+        // Add technician tier badge based on booking limit
+        $tier_badge = '';
+        if ($tech['t_booking_limit'] >= 5) {
+            $tier_badge = '⭐ '; // Star technician (5 bookings)
+        } elseif ($tech['t_booking_limit'] >= 3) {
+            $tier_badge = '💎 '; // Premium technician (3 bookings)
+        }
+        // Regular technicians (1 booking) get no badge
+        
+        $display_name = $tier_badge . $tech['t_name'] . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free)'.$skills;
         
         $technicians_list[] = [
             't_id' => $tech['t_id'],
@@ -99,7 +109,16 @@ if ($is_custom_service) {
             $slots = $tech['available_slots'];
             $is_available = isset($tech['is_available']) ? $tech['is_available'] : true;
             
-            $display_name = $tech['t_name'] . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free) - '.$tech['slot_message'];
+            // Add technician tier badge based on booking limit
+            $tier_badge = '';
+            if ($tech['t_booking_limit'] >= 5) {
+                $tier_badge = '⭐ '; // Star technician (5 bookings)
+            } elseif ($tech['t_booking_limit'] >= 3) {
+                $tier_badge = '💎 '; // Premium technician (3 bookings)
+            }
+            // Regular technicians (1 booking) get no badge
+            
+            $display_name = $tier_badge . $tech['t_name'] . ' ('.$exp.', '.$slots.' slot'.($slots!=1?'s':'').' free) - '.$tech['slot_message'];
             
             $technicians_list[] = [
                 't_id' => $tech['t_id'],

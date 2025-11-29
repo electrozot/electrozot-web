@@ -36,17 +36,53 @@ if($tech_status && $tech_status->account_locked == 1) {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 10px;
             }
             .lock-container {
                 max-width: 500px;
                 width: 100%;
-                padding: 20px;
+                padding: 10px;
             }
             .lock-card {
                 background: white;
                 border-radius: 15px;
                 box-shadow: 0 10px 40px rgba(0,0,0,0.2);
                 overflow: hidden;
+            }
+            @media (max-width: 576px) {
+                .lock-container {
+                    padding: 5px;
+                    max-width: 100%;
+                }
+                .lock-card {
+                    border-radius: 10px;
+                }
+                .lock-header {
+                    padding: 20px 15px !important;
+                }
+                .lock-icon {
+                    font-size: 50px !important;
+                }
+                .lock-header h3 {
+                    font-size: 1.5rem !important;
+                }
+                .lock-body {
+                    padding: 15px !important;
+                }
+                .amount-box, .contact-box {
+                    padding: 10px !important;
+                    margin: 15px 0 !important;
+                }
+                .alert {
+                    padding: 10px !important;
+                    font-size: 0.9rem;
+                }
+                h5, h6 {
+                    font-size: 1rem !important;
+                }
+                p, li {
+                    font-size: 0.9rem;
+                }
             }
             .lock-header {
                 background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);

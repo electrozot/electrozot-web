@@ -1,4 +1,4 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #dc143c 0%, #a01030 50%, #5a0a0a 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px); padding: 12px 0;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #4a1a1a 0%, #667eea 15%, #764ba2 30%, #8b2942 45%, #f093fb 60%, #6b1f3d 75%, #4facfe 85%, #5c1f2e 100%); background-size: 200% 200%; animation: gradientShift 25s ease infinite; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px); padding: 12px 0;">
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px;">
         <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 3px;">
             <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
@@ -10,10 +10,10 @@
         </a>
         <!-- Mobile Login Button (visible only on mobile) - Direct to Client Login -->
         <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 12px;">
-            <a href="usr/" class="btn mobile-login-btn" style="background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border: 1.5px solid rgba(45, 55, 72, 0.8); color: #ffffff; font-weight: 600; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); text-decoration: none; font-size: 0.7rem; transition: all 0.3s ease; height: 28px; display: flex; align-items: center; justify-content: center;">
+            <a href="usr/" class="btn mobile-login-btn" style="background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.4); color: #ffffff; font-weight: 600; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); text-decoration: none; font-size: 0.7rem; transition: all 0.3s ease; height: 28px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
                 <i class="fas fa-user" style="font-size: 0.65rem; margin-right: 4px;"></i> Login
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: 1.5px solid rgba(45, 55, 72, 0.8); padding: 5px 10px; background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); border-radius: 5px; transition: all 0.3s ease; height: 28px; width: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: 1.5px solid rgba(255, 255, 255, 0.4); padding: 5px 10px; background: rgba(255, 255, 255, 0.25); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; transition: all 0.3s ease; height: 28px; width: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
                 <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; transition: all 0.3s ease;"></span>
                 <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; margin-top: 3px; transition: all 0.3s ease;"></span>
                 <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; margin-top: 3px; transition: all 0.3s ease;"></span>
@@ -22,17 +22,19 @@
         
         <style>
             .mobile-login-btn:hover {
-                background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+                background: rgba(255, 255, 255, 0.4) !important;
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(45, 55, 72, 0.6) !important;
+                box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3) !important;
                 color: #ffffff !important;
+                border-color: rgba(255, 255, 255, 0.6) !important;
             }
             
             /* Hamburger menu button hover effect */
             .navbar-toggler:hover {
-                background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
-                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4) !important;
+                background: rgba(255, 255, 255, 0.4) !important;
+                box-shadow: 0 6px 16px rgba(255, 255, 255, 0.3) !important;
                 transform: scale(1.05);
+                border-color: rgba(255, 255, 255, 0.6) !important;
             }
             
             .navbar-toggler:hover .navbar-toggler-icon {
@@ -140,6 +142,7 @@
                     max-height: calc(100vh - 70px) !important;
                     background: #4a5568 !important;
                     padding: 10px !important;
+                    padding-top: 50px !important;
                     box-shadow: -3px 3px 12px rgba(0,0,0,0.25) !important;
                     transition: right 0.3s ease-in-out !important;
                     z-index: 9999 !important;
@@ -174,6 +177,17 @@
                 .navbar-collapse .nav-link i {
                     color: #a0aec0 !important;
                 }
+                
+                /* Close button hover effect */
+                .mobile-menu-close:hover {
+                    background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%) !important;
+                    transform: rotate(90deg) scale(1.1);
+                    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.6) !important;
+                }
+                
+                .mobile-menu-close:active {
+                    transform: rotate(90deg) scale(0.95);
+                }
             }
         </style>
         
@@ -203,6 +217,10 @@
             });
         </script>
          <div class="collapse navbar-collapse" id="navbarResponsive">
+            <!-- Close Button for Mobile Menu -->
+            <button class="mobile-menu-close d-lg-none" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-label="Close menu" style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: 1.5px solid rgba(236, 72, 153, 0.8); color: #ffffff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4); transition: all 0.3s ease; cursor: pointer; z-index: 10000;">
+                <i class="fas fa-times" style="font-size: 1rem;"></i>
+            </button>
             <ul class="navbar-nav ml-auto" style="align-items: center;">
                 <li class="nav-item">
                     <a class="nav-link" href="index.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Home</a>
