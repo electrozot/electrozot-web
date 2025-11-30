@@ -10,7 +10,7 @@ if(!isset($_SESSION['t_id'])) {
 $tech_id = $_SESSION['t_id'];
 
 // Check if account is locked
-$check_query = "SELECT account_locked, lock_reason, locked_at FROM tms_technician WHERE t_id = ?";
+$check_query = "SELECT t_status, t_blocked_until, t_block_reason FROM tms_technician WHERE t_id = ?";
 $stmt_check = $mysqli->prepare($check_query);
 $stmt_check->bind_param('i', $tech_id);
 $stmt_check->execute();
@@ -18,7 +18,27 @@ $result_check = $stmt_check->get_result();
 $tech_status = $result_check->fetch_object();
 $stmt_check->close();
 
-if($tech_status && $tech_status->account_locked == 1) {
+// Check if account is locked or blocked
+$is_locked = false;
+$lock_reason = '';
+$locked_until = '';
+
+if($tech_status) {
+    if($tech_status->t_status === 'Locked') {
+        $is_locked = true;
+        $lock_reason = $tech_status->t_block_reason ?? 'Your account has been locked by admin';
+        $locked_until = $tech_status->t_blocked_until ? date('M d, Y h:i A', strtotime($tech_status->t_blocked_until)) : '';
+        
+        // Check if block period expired
+        if($tech_status->t_blocked_until && strtotime($tech_status->t_blocked_until) <= time()) {
+            // Auto-unlock
+            $mysqli->query("UPDATE tms_technician SET t_status = 'Available', t_blocked_until = NULL, t_block_reason = NULL WHERE t_id = $tech_id");
+            $is_locked = false;
+        }
+    }
+}
+
+if($is_locked) {
     // Account is locked - show blocked page
     ?>
     <!DOCTYPE html>
@@ -133,30 +153,28 @@ if($tech_status && $tech_status->account_locked == 1) {
                     <h5 class="text-danger mb-3">
                         <i class="fas fa-info-circle"></i> Reason:
                     </h5>
-                    <p><?php echo htmlspecialchars($tech_status->lock_reason); ?></p>
+                    <p><?php echo htmlspecialchars($lock_reason); ?></p>
                     
+                    <?php if($locked_until): ?>
                     <div class="amount-box">
                         <h6 class="text-warning mb-2">
-                            <i class="fas fa-rupee-sign"></i> Payment Required
+                            <i class="fas fa-clock"></i> Lock Duration
                         </h6>
-                        <p class="mb-0">Please complete your charges payment to Electrozot.</p>
+                        <p class="mb-0">Your account will be automatically unlocked on: <strong><?php echo $locked_until; ?></strong></p>
                     </div>
+                    <?php endif; ?>
                     
                     <div class="contact-box">
                         <h6 class="text-info mb-2">
-                            <i class="fas fa-phone"></i> Next Steps:
+                            <i class="fas fa-phone"></i> Need Help?
                         </h6>
-                        <ol class="mb-0 pl-3">
-                            <li>Complete your charges payment</li>
-                            <li>Call EZ Admin to confirm payment</li>
-                            <li>Admin will unlock your account</li>
-                        </ol>
+                        <p class="mb-0">Contact Electrozot Admin for assistance or to resolve this issue.</p>
                     </div>
                     
                     <div class="text-center mt-4">
-                        <p class="text-muted mb-2">
-                            <small>Locked on: <?php echo date('d M Y h:i A', strtotime($tech_status->locked_at)); ?></small>
-                        </p>
+                        <a href="logout.php" class="btn btn-secondary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
                     </div>
                 </div>
             </div>

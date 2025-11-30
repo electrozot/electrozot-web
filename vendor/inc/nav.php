@@ -1,5 +1,7 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark fixed-top" style="background: linear-gradient(135deg, #4a1a1a 0%, #667eea 15%, #764ba2 30%, #8b2942 45%, #f093fb 60%, #6b1f3d 75%, #4facfe 85%, #5c1f2e 100%); background-size: 200% 200%; animation: gradientShift 25s ease infinite; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(10px); padding: 12px 0;">
-    <div class="container-fluid" style="max-width: 1400px; padding: 0 10px;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #155e75 0%, #0891b2 25%, #06b6d4 50%, #0891b2 75%, #155e75 100%); background-size: 400% 400%; animation: gradientShift 20s ease infinite; box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4); backdrop-filter: blur(10px); padding: 12px 0; overflow: visible; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;">
+    <!-- Glossy overlay effect -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%); pointer-events: none; z-index: 1;"></div>
+    <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
         <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 3px;">
             <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
@@ -135,17 +137,17 @@
             @media (max-width: 991px) {
                 .navbar-collapse {
                     position: fixed !important;
-                    top: 56px !important;
+                    top: 94px !important;
                     right: -100% !important;
                     width: 150px !important;
                     height: auto !important;
-                    max-height: calc(100vh - 70px) !important;
+                    max-height: calc(100vh - 100px) !important;
                     background: #4a5568 !important;
                     padding: 10px !important;
                     padding-top: 50px !important;
                     box-shadow: -3px 3px 12px rgba(0,0,0,0.25) !important;
                     transition: right 0.3s ease-in-out !important;
-                    z-index: 9999 !important;
+                    z-index: 99999 !important;
                     overflow-y: auto !important;
                     overflow-x: hidden !important;
                     margin-top: 0 !important;
@@ -154,6 +156,24 @@
                 
                 .navbar-collapse.show {
                     right: 0 !important;
+                }
+                
+                /* Add backdrop overlay when menu is open */
+                .navbar-collapse.show::before {
+                    content: '' !important;
+                    position: fixed !important;
+                    top: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                    bottom: 0 !important;
+                    background: rgba(0, 0, 0, 0.5) !important;
+                    z-index: -1 !important;
+                    animation: fadeIn 0.3s ease !important;
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
                 }
                 
                 .navbar-collapse .navbar-nav {
@@ -178,15 +198,41 @@
                     color: #a0aec0 !important;
                 }
                 
-                /* Close button hover effect */
-                .mobile-menu-close:hover {
-                    background: linear-gradient(135deg, #F472B6 0%, #EC4899 100%) !important;
-                    transform: rotate(90deg) scale(1.1);
-                    box-shadow: 0 4px 12px rgba(236, 72, 153, 0.6) !important;
+                /* Arrow close button styling */
+                .mobile-menu-arrow-close {
+                    display: none !important;
                 }
                 
-                .mobile-menu-close:active {
-                    transform: rotate(90deg) scale(0.95);
+                .navbar-collapse.show .mobile-menu-arrow-close {
+                    display: flex !important;
+                    position: absolute !important;
+                    top: 10px !important;
+                    left: 10px !important;
+                    background: rgba(255, 255, 255, 0.2) !important;
+                    border: 2px solid rgba(255, 255, 255, 0.4) !important;
+                    color: #ffffff !important;
+                    width: 36px !important;
+                    height: 36px !important;
+                    border-radius: 8px !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    font-size: 1.2rem !important;
+                    font-weight: bold !important;
+                    cursor: pointer !important;
+                    transition: all 0.3s ease !important;
+                    z-index: 10001 !important;
+                    backdrop-filter: blur(10px) !important;
+                }
+                
+                .mobile-menu-arrow-close:hover {
+                    background: rgba(255, 255, 255, 0.35) !important;
+                    border-color: rgba(255, 255, 255, 0.6) !important;
+                    transform: translateX(-3px) !important;
+                    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3) !important;
+                }
+                
+                .mobile-menu-arrow-close:active {
+                    transform: translateX(-1px) scale(0.95) !important;
                 }
             }
         </style>
@@ -217,9 +263,9 @@
             });
         </script>
          <div class="collapse navbar-collapse" id="navbarResponsive">
-            <!-- Close Button for Mobile Menu -->
-            <button class="mobile-menu-close d-lg-none" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-label="Close menu" style="position: absolute; top: 10px; right: 10px; background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: 1.5px solid rgba(236, 72, 153, 0.8); color: #ffffff; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4); transition: all 0.3s ease; cursor: pointer; z-index: 10000;">
-                <i class="fas fa-times" style="font-size: 1rem;"></i>
+            <!-- Arrow Close Button -->
+            <button class="mobile-menu-arrow-close d-lg-none" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-label="Close menu">
+                ›
             </button>
             <ul class="navbar-nav ml-auto" style="align-items: center;">
                 <li class="nav-item">

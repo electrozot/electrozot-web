@@ -7,6 +7,17 @@
   check_login();
   $aid=$_SESSION['a_id'];
   
+  // Ensure sb_assigned_at column exists FIRST (before any queries use it)
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_assigned_at TIMESTAMP NULL DEFAULT NULL");
+  
+  // Backfill sb_assigned_at for existing bookings that have a technician but no assigned_at timestamp
+  // Use sb_created_at as fallback for historical data
+  $mysqli->query("UPDATE tms_service_booking 
+                  SET sb_assigned_at = sb_created_at 
+                  WHERE sb_technician_id IS NOT NULL 
+                  AND sb_assigned_at IS NULL 
+                  AND sb_created_at IS NOT NULL");
+  
   //Assign Technician
   if(isset($_POST['assign_technician']))
     {
@@ -544,25 +555,37 @@
                                      } else {
                                          // REGULAR SERVICE: SKILL-BASED MATCHING
                                          // Query gets technicians who have this service in their skills
+                                         // Uses fuzzy matching to handle service name variations (e.g., "Tap/Faucet - Installation" vs "Tap, Faucet, and Shower Installation/Repair")
                                          $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
                                                                       (t.t_booking_limit - t.t_current_bookings) as available_slots,
                                                                       (SELECT COUNT(*) FROM tms_service_booking sb 
                                                                        WHERE sb.sb_technician_id = t.t_id 
                                                                        AND sb.sb_technician_id IS NOT NULL
                                                                        AND DATE(COALESCE(sb.sb_assigned_at, sb.sb_created_at)) = CURDATE()) as today_booking_count,
-                                                                      t.t_phone, t.t_email
+                                                                      t.t_phone, t.t_email,
+                                                                      s_booking.s_name as booking_service_name,
+                                                                      s_tech.s_name as tech_service_name
                                                                FROM tms_technician t
                                                                INNER JOIN tms_technician_skills ts ON t.t_id = ts.ts_technician_id
-                                                               WHERE ts.ts_service_id = ?
+                                                               INNER JOIN tms_service s_tech ON ts.ts_service_id = s_tech.s_id
+                                                               INNER JOIN tms_service s_booking ON s_booking.s_id = ?
+                                                               WHERE (
+                                                                   ts.ts_service_id = ?
+                                                                   OR (
+                                                                       s_tech.s_name LIKE CONCAT('%', SUBSTRING_INDEX(s_booking.s_name, ' ', 1), '%')
+                                                                       AND s_tech.s_name LIKE CONCAT('%', SUBSTRING_INDEX(SUBSTRING_INDEX(s_booking.s_name, ' ', 2), ' ', -1), '%')
+                                                                   )
+                                                               )
                                                                AND t.t_status != 'Inactive'
                                                                AND t.t_current_bookings < t.t_booking_limit
                                                                ORDER BY 
+                                                                   CASE WHEN ts.ts_service_id = ? THEN 0 ELSE 1 END,
                                                                    t.t_current_bookings ASC,
                                                                    t.t_experience DESC,
                                                                    t.t_name ASC";
                                          
                                          $all_techs_stmt = $mysqli->prepare($skill_match_query);
-                                         $all_techs_stmt->bind_param('i', $current_service_id);
+                                         $all_techs_stmt->bind_param('iii', $current_service_id, $current_service_id, $current_service_id);
                                          $all_techs_stmt->execute();
                                          $all_techs_result = $all_techs_stmt->get_result();
                                          $available_techs = [];

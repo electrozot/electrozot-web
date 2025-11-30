@@ -93,8 +93,11 @@
         </div>
 
      </div>
+     <!-- End Page Content -->
 
+     <!-- Footer -->
      <?php include("vendor/inc/footer.php");?>
+     <!-- End Footer -->
 
      <!-- Bootstrap core JavaScript -->
      <script src="vendor/jquery/jquery.min.js"></script>
@@ -205,6 +208,9 @@
             }
         }
     </style>
+
+    <!-- Bottom Navigation Bar -->
+    <?php include("vendor/inc/bottom-nav-home.php"); ?>
 
  </body>
 

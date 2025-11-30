@@ -49,6 +49,20 @@
     exit();
   }
 
+  // Check if account is locked
+  if($row->t_status === 'Locked') {
+    // Check if block period has expired
+    if($row->t_blocked_until && strtotime($row->t_blocked_until) > time()) {
+      $blocked_until = date('M d, Y h:i A', strtotime($row->t_blocked_until));
+      $_SESSION['tech_err'] = '🔒 Your account is temporarily locked until ' . $blocked_until . '. Reason: ' . ($row->t_block_reason ?? 'Admin action') . '. Please contact admin for assistance.';
+      header('Location: index.php');
+      exit();
+    } else {
+      // Block period expired, auto-unlock
+      $mysqli->query("UPDATE tms_technician SET t_status = 'Available', t_blocked_until = NULL, t_block_reason = NULL WHERE t_id = {$row->t_id}");
+    }
+  }
+
   // Prefer technician password if column exists and is set; fallback to ID match
   $usePwd = isset($row->t_pwd);
   if($usePwd){

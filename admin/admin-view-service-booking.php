@@ -70,6 +70,7 @@
                          sb_hold_reason = ?,
                          sb_hold_start_date = ?,
                          sb_hold_end_date = ?,
+                         sb_was_on_hold = 1,
                          sb_status = 'On Hold'
                      WHERE sb_id = ?";
           $stmt_hold = $mysqli->prepare($update);

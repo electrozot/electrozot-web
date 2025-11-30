@@ -596,6 +596,11 @@
                                     <?php $cnt++; } ?>
 
                                     <?php
+                                    // LEGACY BOOKINGS HIDDEN - Using new service booking system only
+                                    // If you need to see old legacy bookings, go to admin-manage-booking.php
+                                    // Uncomment below to show legacy bookings again
+                                    
+                                    /*
                                     // Legacy Bookings - Only Pending (Unapproved) or Rejected
                                     $ret_legacy = "SELECT * FROM tms_user 
                                                   WHERE t_booking_status = 'Pending' 
@@ -662,7 +667,9 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <?php $cnt++; } ?>
+                                    <?php $cnt++; } 
+                                    */
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -1331,6 +1338,9 @@
         }, { once: true });
     </script>
     <?php endif; ?>
+
+    <!-- Rejection Alert Modal -->
+    <?php include("widget-rejection-alert-modal.php"); ?>
 
 </body>
 

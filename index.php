@@ -85,7 +85,7 @@
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); font-size: 4.5rem;">
+                        <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; font-size: 4.5rem;">
                             <span class="electrozot-animated">Electrozot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.5; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700;">
@@ -210,7 +210,7 @@
                                         <!-- Hidden field to store selected subcategory -->
                                         <input type="hidden" name="sb_subcategory" id="guestSubcategoryHidden" value="">
                                         <div class="text-center mt-2">
-                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: linear-gradient(135deg, #A0F0E8 0%, #38B2AC 50%, #2C7A7B 100%); border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: #1e293b; border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
                                                 <i class="fas fa-paper-plane" id="submitIcon"></i> <span id="submitText">Submit Booking</span>
                                             </button>
                                         </div>
@@ -416,8 +416,9 @@
             
             /* Submit button hover effect */
             .booking-submit-btn:hover {
+                background: #0f172a !important;
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(56, 178, 172, 0.6) !important;
+                box-shadow: 0 8px 25px rgba(15, 23, 42, 0.6) !important;
             }
             
             .booking-submit-btn:active {
@@ -427,7 +428,7 @@
             /* Click success animation */
             @keyframes successPulse {
                 0% { transform: scale(1); }
-                50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(56, 178, 172, 0.8); }
+                50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(30, 41, 59, 0.8); }
                 100% { transform: scale(1); }
             }
             
@@ -443,7 +444,7 @@
                 left: -100%;
                 width: 100%;
                 height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
                 transition: left 0.5s;
             }
             

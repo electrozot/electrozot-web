@@ -58,11 +58,13 @@ if(isset($_POST['action'])) {
         
     } elseif($action == 'unhold') {
         // Admin removes hold
+        // IMPORTANT: Set sb_was_on_hold = 1 to prevent technician rejection and customer cancellation
         $update = "UPDATE tms_service_booking 
                    SET sb_is_on_hold = 0,
                        sb_hold_reason = NULL,
                        sb_hold_start_date = NULL,
                        sb_hold_end_date = NULL,
+                       sb_was_on_hold = 1,
                        sb_is_high_priority = 1,
                        sb_priority_reason = 'Admin unholded - high priority',
                        sb_status = 'In Progress'

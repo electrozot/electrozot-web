@@ -13,7 +13,7 @@ $aid = $_SESSION['u_id'];
 $booking_id = isset($_GET['booking_id']) ? $_GET['booking_id'] : 0;
 
 // Verify the booking belongs to the logged-in user and check technician assignment
-$verify_query = "SELECT sb_user_id, sb_technician_id, sb_status FROM tms_service_booking WHERE sb_id = ?";
+$verify_query = "SELECT sb_user_id, sb_technician_id, sb_status, sb_was_on_hold FROM tms_service_booking WHERE sb_id = ?";
 $verify_stmt = $mysqli->prepare($verify_query);
 $verify_stmt->bind_param('i', $booking_id);
 $verify_stmt->execute();
@@ -22,6 +22,13 @@ $booking = $verify_result->fetch_object();
 
 if (!$booking || $booking->sb_user_id != $aid) {
     header("Location: user-manage-booking.php?error=1");
+    exit();
+}
+
+// Check if booking was on hold - if yes, customer cannot cancel it
+if ($booking->sb_was_on_hold == 1) {
+    $_SESSION['cancel_error'] = "This booking cannot be cancelled. It was previously on hold and only admin can cancel it. Please contact support.";
+    header("Location: user-manage-booking.php?error=hold_protected");
     exit();
 }
 

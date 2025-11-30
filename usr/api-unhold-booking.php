@@ -27,11 +27,13 @@ if($result->num_rows == 0) {
 $booking = $result->fetch_object();
 
 // Update booking - remove hold and mark as high priority
+// IMPORTANT: Set sb_was_on_hold = 1 to prevent technician rejection and customer cancellation
 $update_booking = "UPDATE tms_service_booking 
                   SET sb_is_on_hold = 0,
                       sb_hold_reason = NULL,
                       sb_hold_start_date = NULL,
                       sb_hold_end_date = NULL,
+                      sb_was_on_hold = 1,
                       sb_is_high_priority = 1,
                       sb_priority_reason = 'Customer unholded booking - requires immediate attention',
                       sb_status = 'In Progress'

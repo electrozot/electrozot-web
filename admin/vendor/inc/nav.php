@@ -1,20 +1,20 @@
- <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%); padding: 0.3rem 1rem; min-height: 50px;">
+ <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(90deg, #6B7FDB 0%, #8B7FC7 100%); padding: 0.3rem 1rem; min-height: 50px;">
 
      <a class="navbar-brand mr-1 d-flex align-items-center" href="admin-dashboard.php" style="gap: 6px; padding: 4px 10px;">
          <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 45px; width: auto; transition: transform 0.3s ease; object-fit: contain;">
          <div class="d-none d-md-flex flex-column">
-             <span style="font-size: 1.3rem; line-height: 1.1; font-weight: 700; color: #1e293b; text-shadow: 1px 1px 2px rgba(255,255,255,0.3);">Electrozot</span>
-             <small class="navbar-tagline" style="font-size: 0.65rem; font-weight: 600; font-style: italic; line-height: 1; color: #1e293b; letter-spacing: 0.3px; opacity: 0.85;">We Make Perfect</small>
+             <span style="font-size: 1.3rem; line-height: 1.1; font-weight: 700; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">Electrozot</span>
+             <small class="navbar-tagline" style="font-size: 0.65rem; font-weight: 600; font-style: italic; line-height: 1; color: #f0f0f0; letter-spacing: 0.3px; opacity: 0.95;">We Make Perfect</small>
          </div>
      </a>
 
-     <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#" style="padding: 4px 8px;">
+     <button class="btn btn-link btn-sm order-1 order-sm-0" id="sidebarToggle" href="#" style="padding: 4px 8px; color: #ffffff;">
          <i class="fas fa-bars" style="font-size: 16px;"></i>
      </button>
 
      <!-- Quick Booking Button - Larger -->
      <div class="mx-auto d-none d-md-block">
-         <a href="admin-quick-booking.php" class="btn shadow-sm" style="background: linear-gradient(135deg, #059669 0%, #047857 100%); color: white; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+         <a href="admin-quick-booking.php" class="btn shadow-sm" style="background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); color: #6B7FDB; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
              <i class="fas fa-phone-alt" style="font-size: 16px;"></i>
              <span>Quick Booking</span>
          </a>
@@ -50,7 +50,7 @@
              ?>
              <div id="liveRevenueDisplay" style="
                  background: transparent;
-                 color: #1e293b;
+                 color: #ffffff;
                  padding: 6px 10px;
                  border-radius: 15px;
                  display: flex;
@@ -62,13 +62,13 @@
                  min-width: 100px;
                  transition: all 0.3s ease;
              " onclick="updateLiveRevenue()" title="Click to refresh revenue">
-                 <div style="font-size: 8px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: #1e293b; opacity: 0.8;">
+                 <div style="font-size: 8px; font-weight: 600; letter-spacing: 0.3px; text-transform: uppercase; color: #f0f0f0; opacity: 0.9;">
                      Today Revenue
                  </div>
-                 <div style="display: flex; align-items: center; gap: 4px; font-weight: 900; font-size: 16px; color: #1e293b;">
+                 <div style="display: flex; align-items: center; gap: 4px; font-weight: 900; font-size: 16px; color: #ffffff;">
                      <i class="fas fa-rupee-sign" style="font-size: 13px;"></i>
                      <span id="revenueAmount"><?php echo number_format($nav_today_revenue, 0); ?></span>
-                     <i class="fas fa-sync-alt" id="revenueRefreshIcon" style="font-size: 9px; opacity: 0.6;"></i>
+                     <i class="fas fa-sync-alt" id="revenueRefreshIcon" style="font-size: 9px; opacity: 0.7;"></i>
                  </div>
              </div>
          </li>
@@ -77,7 +77,7 @@
          <li class="nav-item no-arrow mx-1">
              <a class="nav-link" href="admin-stats.php" id="statsButton" 
                 style="position: relative; padding: 6px 10px;">
-                 <i class="fas fa-chart-line fa-fw" style="font-size: 16px; color: #1e293b; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></i>
+                 <i class="fas fa-chart-line fa-fw" style="font-size: 16px; color: #ffffff; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15)'" onmouseout="this.style.transform='scale(1)'"></i>
              </a>
          </li>
          
@@ -95,7 +95,7 @@
              }
              ?>
              <a class="nav-link" href="admin-notifications.php" id="notificationBell" style="position: relative; padding: 6px 10px;" title="<?php echo $pending_count; ?> Pending Bookings">
-                 <i class="fas fa-bell fa-fw" style="font-size: 16px; color: #1e293b; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
+                 <i class="fas fa-bell fa-fw" style="font-size: 16px; color: #ffffff; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.15) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'"></i>
                  <?php if($pending_count > 0): ?>
                      <span class="badge badge-danger" id="notificationBadge" style="
                          position: absolute;
@@ -121,12 +121,12 @@
                  <?php if(isset($_SESSION['a_photo']) && !empty($_SESSION['a_photo'])): ?>
                      <img src="../vendor/img/<?php echo htmlspecialchars($_SESSION['a_photo']); ?>" 
                           class="rounded-circle" 
-                          style="width: 28px; height: 28px; object-fit: cover; border: 2px solid #fff;"
+                          style="width: 28px; height: 28px; object-fit: cover; border: 2px solid #ffffff;"
                           alt="Admin Photo">
                  <?php else: ?>
-                     <i class="fas fa-user-circle fa-fw" style="font-size: 20px; color: #1e293b;"></i>
+                     <i class="fas fa-user-circle fa-fw" style="font-size: 20px; color: #ffffff;"></i>
                  <?php endif; ?>
-                 <span class="d-none d-md-inline" style="font-size: 14px; font-weight: 600; margin: 0; color: #1e293b;">
+                 <span class="d-none d-md-inline" style="font-size: 14px; font-weight: 600; margin: 0; color: #ffffff;">
                      <?php 
                      if(isset($_SESSION['a_name'])) {
                          echo htmlspecialchars($_SESSION['a_name']);
@@ -181,10 +181,10 @@
      transform: scale(1.05) rotate(2deg);
  }
  
- /* Slim Navbar Styling */
+ /* Slim Navbar Styling - Eye-Friendly Purple Theme */
  nav.navbar {
-     background: linear-gradient(90deg, #60a5fa 0%, #22d3ee 100%) !important;
-     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+     background: linear-gradient(90deg, #6B7FDB 0%, #8B7FC7 100%) !important;
+     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
      position: sticky;
      top: 0;
      z-index: 1000;
@@ -304,15 +304,15 @@
  
  /* Quick Booking Button Styling - Compact */
  .btn-success {
-     background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
      border: none !important;
-     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4) !important;
+     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
  }
  
  .btn-success:hover {
-     background: linear-gradient(135deg, #047857 0%, #065f46 100%) !important;
+     background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
      transform: translateY(-1px);
-     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.6) !important;
+     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5) !important;
  }
  
  .btn-success:active {
@@ -379,9 +379,9 @@
  }
  
  #notificationBell:hover {
-     background: rgba(30, 41, 59, 0.15);
+     background: rgba(59, 130, 246, 0.1);
      border-radius: 50%;
-     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+     box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
  }
  
  /* Notification Badge Animation */
@@ -407,8 +407,8 @@
  }
  
  #userDropdown:hover {
-     background: rgba(30, 41, 59, 0.15);
-     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+     background: rgba(255, 255, 255, 0.15);
+     box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
  }
  
  /* Stats Button Hover */
@@ -417,9 +417,9 @@
  }
  
  #statsButton:hover {
-     background: rgba(30, 41, 59, 0.15);
+     background: rgba(255, 255, 255, 0.15);
      border-radius: 50%;
-     box-shadow: 0 2px 8px rgba(30, 41, 59, 0.2);
+     box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
  }
  
  /* Smooth transitions for all nav items */
@@ -448,7 +448,7 @@
  
  /* Revenue Display Hover Effect */
  #liveRevenueDisplay:hover {
-     background: rgba(30, 41, 59, 0.1) !important;
+     background: rgba(59, 130, 246, 0.08) !important;
      transform: scale(1.02);
  }
  </style>

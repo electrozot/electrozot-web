@@ -98,6 +98,13 @@ if($payment_collected && $action == 'not-done'){
     exit();
 }
 
+// HOLD PROTECTION: If booking was on hold and then unholded, technician cannot mark as "Not Done"
+if(isset($booking->sb_was_on_hold) && $booking->sb_was_on_hold == 1 && $action == 'not-done'){
+    $_SESSION['error'] = "This booking cannot be marked as 'Not Done'. It was previously on hold and must be completed. Please contact admin if there is an issue.";
+    header('Location: dashboard.php');
+    exit();
+}
+
 $success = '';
 $error = '';
 
