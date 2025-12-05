@@ -227,6 +227,18 @@
          </div>
      </li>
 
+     <!-- Blog Management -->
+     <li class="nav-item dropdown">
+         <a class="nav-link dropdown-toggle" href="#" id="blogDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="fas fa-fw fa-blog"></i>
+             <span>Blog</span>
+         </a>
+         <div class="dropdown-menu" aria-labelledby="blogDropdown">
+             <a class="dropdown-item" href="admin-add-blog.php"><i class="fas fa-plus"></i> Add Post</a>
+             <a class="dropdown-item" href="admin-manage-blog.php"><i class="fas fa-edit"></i> Manage Posts</a>
+         </div>
+     </li>
+
      <!-- Contact Messages -->
      <li class="nav-item">
          <a class="nav-link" href="admin-contact-messages.php">

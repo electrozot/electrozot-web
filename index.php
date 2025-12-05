@@ -1223,6 +1223,80 @@
             </div>
         </section>
 
+        <!-- Recent Blog Posts Section -->
+        <section style="background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%); padding: 60px 0;">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 2.5rem;">Latest from Our Blog</h2>
+                        <p class="text-muted" style="font-size: 1.1rem;">Expert tips and guides from our certified technicians</p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <?php
+                    // Get 3 most recent published blog posts
+                    $blog_query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC LIMIT 3";
+                    $blog_result = $mysqli->query($blog_query);
+                    
+                    if($blog_result && $blog_result->num_rows > 0) {
+                        while($blog = $blog_result->fetch_object()) {
+                    ?>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                            <?php if($blog->blog_image) { ?>
+                                <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 200px; object-fit: cover;">
+                            <?php } else { ?>
+                                <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-blog" style="font-size: 4rem; color: rgba(255,255,255,0.8);"></i>
+                                </div>
+                            <?php } ?>
+                            <div class="card-body d-flex flex-column">
+                                <?php if($blog->blog_category) { ?>
+                                    <span class="badge badge-primary mb-2" style="width: fit-content;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                <?php } ?>
+                                <h5 class="card-title font-weight-bold" style="color: #2d3748;"><?php echo htmlspecialchars($blog->blog_title); ?></h5>
+                                <p class="card-text text-muted" style="flex-grow: 1;">
+                                    <?php 
+                                    $excerpt = $blog->blog_excerpt ?: strip_tags($blog->blog_content);
+                                    echo htmlspecialchars(substr($excerpt, 0, 120)) . '...'; 
+                                    ?>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($blog->blog_published_at)); ?>
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
+                                    </small>
+                                </div>
+                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-block" style="border-radius: 25px;">
+                                    Read More <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php 
+                        }
+                    } else {
+                        // Show placeholder if no blogs yet
+                        echo '<div class="col-12 text-center"><p class="text-muted">No blog posts available yet. Check back soon!</p></div>';
+                    }
+                    ?>
+                </div>
+                
+                <?php if($blog_result && $blog_result->num_rows > 0) { ?>
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <a href="blog.php" class="btn btn-outline-primary btn-lg" style="border-radius: 25px; padding: 12px 40px;">
+                            View All Posts <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+        </section>
+
     </div>
     <!-- /.container -->
 

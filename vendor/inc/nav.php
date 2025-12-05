@@ -353,6 +353,9 @@
                  <li class="nav-item">
                     <a class="nav-link" href="gallery.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Gallery</a>
                  </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="blog.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Blog</a>
+                 </li>
                  <li class="nav-item d-none d-lg-block">
                     <button id="pwa-install-nav-btn" class="btn nav-link" style="color: #fff !important; font-weight: 600; font-size: 0.75rem; padding: 5px 10px !important; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 5px; transition: all 0.3s ease; display: inline-block !important; z-index: 1000; position: relative;">
                          <i class="fas fa-download" style="font-size: 0.7rem;"></i> Download

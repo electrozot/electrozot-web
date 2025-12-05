@@ -1,0 +1,38 @@
+# Robots.txt for Electrozot
+
+User-agent: *
+
+# Block admin panel from search engines
+Disallow: /admin/
+Disallow: /admin
+
+# Block user portal from search engines
+Disallow: /usr/
+Disallow: /usr
+
+# Block technician portal from search engines
+Disallow: /tech/
+Disallow: /tech
+
+# Block database and config files
+Disallow: /DATABASE FILE/
+Disallow: /config.php
+Disallow: /vendor/inc/
+
+# Block uploads folder (optional - remove if you want images indexed)
+# Disallow: /uploads/
+
+# Allow blog
+Allow: /blog
+Allow: /blog.php
+Allow: /blog-post.php
+
+# Allow main pages
+Allow: /index.php
+Allow: /about.php
+Allow: /services.php
+Allow: /contact.php
+Allow: /gallery.php
+
+# Sitemap (create this later)
+Sitemap: https://yoursite.com/sitemap.xml
