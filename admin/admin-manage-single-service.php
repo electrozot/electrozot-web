@@ -42,7 +42,7 @@
             if(!isset($err)) {
                 $query="update tms_service set s_name=?, s_description=?, s_category=?, s_subcategory=?, s_gadget_name=?, s_price=?, s_duration=?, s_status=?, is_popular=? where s_id = ?";
                 $stmt = $mysqli->prepare($query);
-                $rc=$stmt->bind_param('sssssdsiii', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular, $s_id);
+                $rc=$stmt->bind_param('sssssdssii', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular, $s_id);
                 
                 if($stmt->execute()) {
                     $succ = "Service Updated Successfully";

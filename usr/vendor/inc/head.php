@@ -8,6 +8,10 @@
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ElectroZot User">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
 
     <title>Technician Booking System - User Dashboard</title>
 
@@ -23,5 +27,13 @@
     <link href="vendor/css/custom.css" rel="stylesheet">
     <!-- Mobile Responsive Styles -->
     <link href="vendor/css/mobile-responsive.css" rel="stylesheet">
+    
+    <!-- PWA Orientation Lock -->
+    <link href="../css/pwa-orientation-lock.css" rel="stylesheet">
+    
+    <!-- PWA Scripts -->
+    <script defer src="/pwa-install.js"></script>
+    <script defer src="/pwa-update-notification.js"></script>
+    <script defer src="/js/orientation-lock.js"></script>
 
 </head>

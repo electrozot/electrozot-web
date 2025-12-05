@@ -15,5 +15,9 @@
     <!-- Custom styles for this template-->
     <link href="vendor/css/sb-admin.css" rel="stylesheet">
     <link href="vendor/css/custom-admin.css" rel="stylesheet">
+    
+    <!-- PWA Orientation Lock -->
+    <link href="../css/pwa-orientation-lock.css" rel="stylesheet">
+    <script defer src="../js/orientation-lock.js"></script>
 
 </head>

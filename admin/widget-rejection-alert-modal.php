@@ -95,45 +95,108 @@
 </style>
 
 <script>
-// Check for rejection alerts on page load
-$(document).ready(function() {
-    // Wait a bit for page to fully load
-    setTimeout(function() {
-        checkRejectionAlerts();
-    }, 2000);
+// Wait for jQuery to load, then initialize rejection alert system
+(function initRejectionAlerts() {
+    if (typeof jQuery === 'undefined') {
+        // jQuery not loaded yet, wait and try again
+        setTimeout(initRejectionAlerts, 100);
+        return;
+    }
     
-    // Check every 5 minutes
-    setInterval(checkRejectionAlerts, 300000);
-});
+    console.log('✅ Rejection alert system initializing...');
+    
+    $(document).ready(function() {
+        // Initial check after 2 seconds
+        setTimeout(function() {
+            checkRejectionAlerts();
+        }, 2000);
+        
+        // Check every 10 seconds for immediate alerts
+        setInterval(checkRejectionAlerts, 10000);
+    });
+})();
 
 function checkRejectionAlerts() {
+    console.log('🔍 Checking for rejection alerts...');
+    
     $.ajax({
         url: 'api-check-rejection-threshold.php',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
-            console.log('Rejection check response:', response);
+            console.log('✅ Rejection check response:', response);
             if (response.success && response.has_alerts) {
+                console.log('🚨 ALERT: ' + response.technicians.length + ' technician(s) exceeded threshold!');
                 showRejectionAlert(response.technicians, response.threshold);
+            } else {
+                console.log('✓ No rejection alerts at this time');
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error checking rejections:', error);
-            console.log('Response:', xhr.responseText);
+            console.error('❌ Error checking rejections:', error);
+            console.error('Status:', status);
+            console.error('Response:', xhr.responseText);
         }
     });
 }
 
+// Queue to store technicians to show
+let technicianQueue = [];
+let isShowingAlert = false;
+
 function showRejectionAlert(technicians, threshold) {
+    // Check if we've already shown alerts for these technicians
+    const sessionKey = 'rejection_alert_shown';
+    const shownAlerts = JSON.parse(sessionStorage.getItem(sessionKey) || '{}');
+    
+    // Filter out technicians we've already shown
+    const newTechnicians = technicians.filter(tech => {
+        const alertKey = tech.t_id + '_' + threshold;
+        return !shownAlerts[alertKey];
+    });
+    
+    if (newTechnicians.length === 0) {
+        console.log('ℹ️ All alerts already shown in this session');
+        return;
+    }
+    
+    console.log(`🚨 Showing ${newTechnicians.length} separate alert(s)`);
+    
+    // Add to queue
+    technicianQueue = newTechnicians;
+    
+    // Show first alert
+    if (!isShowingAlert) {
+        showNextTechnicianAlert(threshold);
+    }
+}
+
+function showNextTechnicianAlert(threshold) {
+    if (technicianQueue.length === 0) {
+        isShowingAlert = false;
+        return;
+    }
+    
+    isShowingAlert = true;
+    const tech = technicianQueue.shift(); // Get first technician from queue
+    
+    // Mark as shown
+    const sessionKey = 'rejection_alert_shown';
+    const shownAlerts = JSON.parse(sessionStorage.getItem(sessionKey) || '{}');
+    const alertKey = tech.t_id + '_' + threshold;
+    shownAlerts[alertKey] = Date.now();
+    sessionStorage.setItem(sessionKey, JSON.stringify(shownAlerts));
+    
     let content = `
         <div class="alert alert-danger">
-            <strong><i class="fas fa-bell"></i> Alert!</strong> 
-            ${technicians.length} technician(s) have rejected ${threshold}+ bookings in the last 7 days.
-            Please review and take appropriate action.
+            <strong><i class="fas fa-bell"></i> Technician Rejection Alert!</strong><br>
+            This technician has rejected ${tech.rejection_count} bookings in the last 7 days.
+            ${technicianQueue.length > 0 ? `<br><small>(${technicianQueue.length} more alert(s) pending)</small>` : ''}
         </div>
     `;
     
-    technicians.forEach(function(tech) {
+    // Show only this ONE technician
+    {
         content += `
             <div class="rejection-card" data-tech-id="${tech.t_id}">
                 <div class="rejection-header">
@@ -172,32 +235,31 @@ function showRejectionAlert(technicians, threshold) {
             `;
         });
         
-        content += `
-                <div class="mt-3">
-                    <label><strong>Admin Notes:</strong></label>
-                    <textarea class="form-control admin-notes-${tech.t_id}" rows="2" placeholder="Enter reason for action or notes..."></textarea>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="action-btn btn-lock" onclick="takeAction(${tech.t_id}, 'lock_account')">
-                        <i class="fas fa-lock"></i> Lock Account (2 Days)
-                    </button>
-                    <button class="action-btn btn-block" onclick="takeAction(${tech.t_id}, 'block_bookings')">
-                        <i class="fas fa-ban"></i> Block Bookings (2 Days)
-                    </button>
-                    <button class="action-btn btn-no-action" onclick="takeAction(${tech.t_id}, 'no_action')">
-                        <i class="fas fa-check"></i> No Action
-                    </button>
-                </div>
+    content += `
+            <div class="mt-3">
+                <label><strong>Admin Notes:</strong></label>
+                <textarea class="form-control admin-notes-${tech.t_id}" rows="2" placeholder="Enter reason for action or notes..."></textarea>
             </div>
-        `;
-    });
+            
+            <div class="action-buttons">
+                <button class="action-btn btn-lock" onclick="takeAction(${tech.t_id}, 'lock_account', ${threshold})">
+                    <i class="fas fa-lock"></i> Lock Account (2 Days)
+                </button>
+                <button class="action-btn btn-block" onclick="takeAction(${tech.t_id}, 'block_bookings', ${threshold})">
+                    <i class="fas fa-ban"></i> Block Bookings (2 Days)
+                </button>
+                <button class="action-btn btn-no-action" onclick="takeAction(${tech.t_id}, 'no_action', ${threshold})">
+                    <i class="fas fa-check"></i> No Action
+                </button>
+            </div>
+        </div>
+    `;
     
     $('#rejectionAlertContent').html(content);
     $('#rejectionAlertModal').modal('show');
 }
 
-function takeAction(technicianId, action) {
+function takeAction(technicianId, action, threshold) {
     const notes = $(`.admin-notes-${technicianId}`).val();
     
     if (!notes && action !== 'no_action') {
@@ -225,14 +287,14 @@ function takeAction(technicianId, action) {
         success: function(response) {
             if (response.success) {
                 alert(response.message);
-                $(`.rejection-card[data-tech-id="${technicianId}"]`).fadeOut();
                 
-                // Check if all cards are gone
+                // Close current modal
+                $('#rejectionAlertModal').modal('hide');
+                
+                // Wait a moment, then show next alert if any
                 setTimeout(function() {
-                    if ($('.rejection-card:visible').length === 0) {
-                        $('#rejectionAlertModal').modal('hide');
-                    }
-                }, 500);
+                    showNextTechnicianAlert(threshold);
+                }, 1000);
             } else {
                 alert('Error: ' + response.message);
             }

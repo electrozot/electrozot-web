@@ -1,13 +1,15 @@
 {
-  "name": "ElectroZot - Technician Booking System",
-  "short_name": "ElectroZot",
-  "description": "Professional electrical and technical service booking platform",
-  "start_url": "/",
+  "name": "Electrozot - We Make Perfect",
+  "short_name": "Electrozot",
+  "description": "Professional electrical and technical service booking platform. Book certified technicians, track services, and manage bookings easily.",
+  "start_url": "./splash.html",
   "display": "standalone",
-  "background_color": "#667eea",
-  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "scope": "/",
+  "scope": "./",
+  "lang": "en-US",
+  "dir": "ltr",
   "icons": [
     {
       "src": "vendor/img/icons/icon-72x72.png",
@@ -76,11 +78,12 @@
       "name": "Book Service",
       "short_name": "Book",
       "description": "Quick service booking",
-      "url": "/#booking-form",
+      "url": "./#booking-form",
       "icons": [
         {
           "src": "vendor/img/icons/icon-96x96.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     },
@@ -88,11 +91,38 @@
       "name": "My Bookings",
       "short_name": "Bookings",
       "description": "View your bookings",
-      "url": "/usr/user-view-booking.php",
+      "url": "./usr/user-view-booking.php",
       "icons": [
         {
           "src": "vendor/img/icons/icon-96x96.png",
-          "sizes": "96x96"
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "description": "Access admin panel",
+      "url": "./admin/admin-dashboard.php",
+      "icons": [
+        {
+          "src": "vendor/img/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Contact Us",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "./contact.php",
+      "icons": [
+        {
+          "src": "vendor/img/icons/icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }

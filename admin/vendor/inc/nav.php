@@ -1,4 +1,7 @@
- <nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(90deg, #6B7FDB 0%, #8B7FC7 100%); padding: 0.3rem 1rem; min-height: 50px;">
+<?php
+// Ensure no output before this point - nav.php must be included after all header() calls
+?>
+<nav class="navbar navbar-expand navbar-dark static-top" style="background: linear-gradient(90deg, #6B7FDB 0%, #8B7FC7 100%); padding: 0.3rem 1rem; min-height: 50px;">
 
      <a class="navbar-brand mr-1 d-flex align-items-center" href="admin-dashboard.php" style="gap: 6px; padding: 4px 10px;">
          <img src="../vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 45px; width: auto; transition: transform 0.3s ease; object-fit: contain;">
@@ -12,12 +15,54 @@
          <i class="fas fa-bars" style="font-size: 16px;"></i>
      </button>
 
-     <!-- Quick Booking Button - Larger -->
-     <div class="mx-auto d-none d-md-block">
-         <a href="admin-quick-booking.php" class="btn shadow-sm" style="background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); color: #6B7FDB; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+     <!-- Quick Booking Button - Left Side -->
+     <div class="d-none d-md-block" style="margin-left: 80px;">
+         <a href="admin-quick-booking.php" class="btn shadow-sm quick-booking-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #ffffff; border: none; padding: 10px 30px; border-radius: 25px; font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);">
              <i class="fas fa-phone-alt" style="font-size: 16px;"></i>
              <span>Quick Booking</span>
          </a>
+     </div>
+     
+     <!-- Search - Right Side -->
+     <div class="d-none d-md-flex" style="align-items: center; margin-left: auto; margin-right: 20px;">
+         
+         <!-- Global Search Feature -->
+         <div class="search-container" style="position: relative;">
+             <i class="fas fa-search search-icon" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #6B7FDB; font-size: 14px; pointer-events: none; transition: all 0.3s ease; z-index: 1;"></i>
+             <input type="text" 
+                    id="globalSearch" 
+                    class="global-search-input"
+                    placeholder="Search features... (Ctrl+K)" 
+                    style="background: #ffffff; 
+                           border: 2px solid #e2e8f0; 
+                           padding: 11px 40px 11px 40px; 
+                           border-radius: 25px; 
+                           width: 280px; 
+                           font-size: 14px; 
+                           font-weight: 500;
+                           color: #2d3748;
+                           transition: all 0.3s ease;
+                           box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                           outline: none;"
+                    autocomplete="off">
+             <i class="fas fa-keyboard search-kbd" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; pointer-events: none; transition: all 0.3s ease;"></i>
+             
+             <!-- Search Results Dropdown -->
+             <div id="searchResults" style="
+                 position: absolute;
+                 top: 100%;
+                 left: 0;
+                 right: 0;
+                 background: white;
+                 border-radius: 15px;
+                 box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                 margin-top: 10px;
+                 max-height: 400px;
+                 overflow-y: auto;
+                 display: none;
+                 z-index: 9999;
+             "></div>
+         </div>
      </div>
      
      <!-- Navbar -->
@@ -302,7 +347,77 @@
      transform: scale(1.05);
  }
  
- /* Quick Booking Button Styling - Compact */
+ /* Quick Booking Button Styling - Green with Click Effect */
+ .quick-booking-btn {
+     position: relative;
+     overflow: hidden;
+     background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4) !important;
+     transition: all 0.3s ease !important;
+ }
+ 
+ .quick-booking-btn:hover {
+     background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+     transform: translateY(-2px) scale(1.02);
+     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6) !important;
+     color: #ffffff !important;
+ }
+ 
+ .quick-booking-btn:active {
+     transform: translateY(1px) scale(0.98) !important;
+     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+     transition: all 0.1s ease !important;
+ }
+ 
+ /* Ripple effect on click */
+ .quick-booking-btn::before {
+     content: '';
+     position: absolute;
+     top: 50%;
+     left: 50%;
+     width: 0;
+     height: 0;
+     border-radius: 50%;
+     background: rgba(255, 255, 255, 0.5);
+     transform: translate(-50%, -50%);
+     transition: width 0.6s, height 0.6s;
+ }
+ 
+ .quick-booking-btn:active::before {
+     width: 300px;
+     height: 300px;
+     transition: width 0s, height 0s;
+ }
+ 
+ /* Pulse animation for attention */
+ @keyframes quickBookingPulse {
+     0%, 100% {
+         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+     }
+     50% {
+         box-shadow: 0 4px 20px rgba(16, 185, 129, 0.7);
+     }
+ }
+ 
+ .quick-booking-btn {
+     animation: quickBookingPulse 2s ease-in-out infinite;
+ }
+ 
+ .quick-booking-btn:hover {
+     animation: none;
+ }
+ 
+ /* Icon animation on hover */
+ .quick-booking-btn:hover i {
+     animation: phoneRing 0.5s ease-in-out;
+ }
+ 
+ @keyframes phoneRing {
+     0%, 100% { transform: rotate(0deg); }
+     10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+     20%, 40%, 60%, 80% { transform: rotate(10deg); }
+ }
+ 
  .btn-success {
      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
      border: none !important;
@@ -425,6 +540,38 @@
  /* Smooth transitions for all nav items */
  .nav-link {
      transition: all 0.3s ease;
+ }
+ 
+ /* Simple Clean Search Styling */
+ .global-search-input::placeholder {
+     color: #94a3b8;
+     font-weight: 500;
+ }
+ 
+ .global-search-input:hover {
+     border-color: #cbd5e1 !important;
+     box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+ }
+ 
+ .global-search-input:focus {
+     width: 350px !important;
+     background: #ffffff !important;
+     border-color: #667eea !important;
+     box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25), 
+                 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+     color: #2d3748 !important;
+ }
+ 
+ .search-container:hover .search-icon {
+     color: #667eea;
+ }
+ 
+ .global-search-input:focus ~ .search-icon {
+     color: #667eea !important;
+ }
+ 
+ .global-search-input:focus ~ .search-kbd {
+     opacity: 0;
  }
  
  /* Live Revenue Display Animation */
@@ -573,3 +720,286 @@ document.addEventListener('visibilitychange', function() {
 
  <!-- Include Pending Bookings Alert -->
  <?php include('pending-alert.php'); ?>
+ 
+ <!-- Quick Booking Button Click Effect -->
+ <script>
+ // Add click effect to Quick Booking button
+ document.addEventListener('DOMContentLoaded', function() {
+     const quickBookingBtn = document.querySelector('.quick-booking-btn');
+     
+     if (quickBookingBtn) {
+         quickBookingBtn.addEventListener('click', function(e) {
+             // Create ripple effect
+             const ripple = document.createElement('span');
+             const rect = this.getBoundingClientRect();
+             const size = Math.max(rect.width, rect.height);
+             const x = e.clientX - rect.left - size / 2;
+             const y = e.clientY - rect.top - size / 2;
+             
+             ripple.style.width = ripple.style.height = size + 'px';
+             ripple.style.left = x + 'px';
+             ripple.style.top = y + 'px';
+             ripple.style.position = 'absolute';
+             ripple.style.borderRadius = '50%';
+             ripple.style.background = 'rgba(255, 255, 255, 0.6)';
+             ripple.style.transform = 'scale(0)';
+             ripple.style.animation = 'ripple 0.6s ease-out';
+             ripple.style.pointerEvents = 'none';
+             
+             this.appendChild(ripple);
+             
+             setTimeout(() => {
+                 ripple.remove();
+             }, 600);
+         });
+     }
+ });
+ 
+ // Add ripple animation
+ const style = document.createElement('style');
+ style.textContent = `
+     @keyframes ripple {
+         to {
+             transform: scale(4);
+             opacity: 0;
+         }
+     }
+ `;
+ document.head.appendChild(style);
+ </script>
+ 
+ <!-- Global Search Functionality -->
+ <script>
+ // Feature search data - COMPLETE LIST OF ALL ADMIN PAGES
+ const searchFeatures = [
+     // Dashboard
+     { name: 'Dashboard', url: 'admin-dashboard.php', category: 'Dashboard', icon: 'fa-tachometer-alt', keywords: 'dashboard home overview stats main' },
+     
+     // Bookings - All Pages
+     { name: 'Quick Booking', url: 'admin-quick-booking.php', category: 'Bookings', icon: 'fa-phone-alt', keywords: 'quick booking call phone new create fast' },
+     { name: 'All Bookings', url: 'admin-all-bookings.php', category: 'Bookings', icon: 'fa-list', keywords: 'all bookings list view manage complete' },
+     { name: 'Add Booking', url: 'admin-add-booking.php', category: 'Bookings', icon: 'fa-plus-circle', keywords: 'add new booking create' },
+     { name: 'Add Booking for User', url: 'admin-add-booking-usr.php', category: 'Bookings', icon: 'fa-user-plus', keywords: 'add booking user customer' },
+     { name: 'Manage Service Bookings', url: 'admin-manage-service-booking.php', category: 'Bookings', icon: 'fa-calendar-check', keywords: 'manage service bookings assign view' },
+     { name: 'Manage Bookings', url: 'admin-manage-booking.php', category: 'Bookings', icon: 'fa-tasks', keywords: 'manage bookings all list' },
+     { name: 'Assign Technician', url: 'admin-assign-technician.php', category: 'Bookings', icon: 'fa-user-cog', keywords: 'assign technician booking allocate' },
+     { name: 'Approve Booking', url: 'admin-approve-booking.php', category: 'Bookings', icon: 'fa-check', keywords: 'approve booking accept confirm' },
+     { name: 'View Booking', url: 'admin-view-booking.php', category: 'Bookings', icon: 'fa-eye', keywords: 'view booking details see' },
+     { name: 'View Service Booking', url: 'admin-view-service-booking.php', category: 'Bookings', icon: 'fa-eye', keywords: 'view service booking details' },
+     { name: 'Edit Custom Booking', url: 'admin-edit-custom-booking.php', category: 'Bookings', icon: 'fa-edit', keywords: 'edit custom booking modify' },
+     { name: 'Unassigned Bookings', url: 'admin-all-bookings.php?technician=unassigned', category: 'Bookings', icon: 'fa-exclamation-triangle', keywords: 'unassigned pending bookings no technician' },
+     { name: 'Rejected Bookings', url: 'admin-rejected-bookings.php', category: 'Bookings', icon: 'fa-times-circle', keywords: 'rejected not done cancelled bookings declined' },
+     { name: 'Completed Bookings', url: 'admin-completed-bookings.php', category: 'Bookings', icon: 'fa-check-circle', keywords: 'completed finished done bookings success' },
+     { name: 'Hold Bookings', url: 'admin-manage-hold-bookings.php', category: 'Bookings', icon: 'fa-pause-circle', keywords: 'hold bookings on hold waiting paused' },
+     { name: 'Cancel Booking', url: 'admin-cancel-service-booking.php', category: 'Bookings', icon: 'fa-ban', keywords: 'cancel booking delete remove' },
+     { name: 'Delete Booking', url: 'admin-delete-booking.php', category: 'Bookings', icon: 'fa-trash', keywords: 'delete booking remove' },
+     { name: 'Delete Service Booking', url: 'admin-delete-service-booking.php', category: 'Bookings', icon: 'fa-trash-alt', keywords: 'delete service booking remove' },
+     
+     // Technicians - All Pages
+     { name: 'Add Technician', url: 'admin-add-technician.php', category: 'Technicians', icon: 'fa-user-plus', keywords: 'add new technician register create worker' },
+     { name: 'Add Technician with Skills', url: 'admin-add-technician-with-skills.php', category: 'Technicians', icon: 'fa-user-cog', keywords: 'add technician skills create' },
+     { name: 'Manage Technicians', url: 'admin-manage-technician.php', category: 'Technicians', icon: 'fa-users-cog', keywords: 'manage all technicians list view edit workers' },
+     { name: 'Technician List', url: 'admin-technician-list.php', category: 'Technicians', icon: 'fa-list-ul', keywords: 'technician list all view' },
+     { name: 'View Technician', url: 'admin-view-technician.php', category: 'Technicians', icon: 'fa-eye', keywords: 'view technician details profile' },
+     { name: 'Manage Single Technician', url: 'admin-manage-single-technician.php', category: 'Technicians', icon: 'fa-user-edit', keywords: 'manage single technician edit update' },
+     { name: 'Unlock Technicians', url: 'admin-unlock-technician.php', category: 'Technicians', icon: 'fa-unlock', keywords: 'unlock locked technicians commission rejection unblock' },
+     { name: 'Guest Technicians', url: 'admin-guest-technicians.php', category: 'Technicians', icon: 'fa-user-clock', keywords: 'guest pending technicians approve new registration' },
+     { name: 'Technician Passwords', url: 'admin-manage-technician-passwords.php', category: 'Technicians', icon: 'fa-key', keywords: 'technician passwords reset change security' },
+     { name: 'Manage Technician Skills', url: 'admin-manage-technician-skills.php', category: 'Technicians', icon: 'fa-tools', keywords: 'manage technician skills edit update abilities' },
+     { name: 'Edit Technician Skills', url: 'admin-edit-technician-skills.php', category: 'Technicians', icon: 'fa-edit', keywords: 'edit technician skills modify' },
+     { name: 'Generate ID Card', url: 'admin-generate-id-card.php', category: 'Technicians', icon: 'fa-id-card', keywords: 'generate id card technician identity badge' },
+     { name: 'Technician Monthly Details', url: 'admin-technician-monthly-details.php', category: 'Technicians', icon: 'fa-calendar-alt', keywords: 'technician monthly details report performance' },
+     
+     // Services - All Pages
+     { name: 'Add Service', url: 'admin-add-service.php', category: 'Services', icon: 'fa-plus-square', keywords: 'add new service create offering' },
+     { name: 'Manage Services', url: 'admin-manage-service.php', category: 'Services', icon: 'fa-wrench', keywords: 'manage services list edit view all offerings' },
+     { name: 'Manage Single Service', url: 'admin-manage-single-service.php', category: 'Services', icon: 'fa-cog', keywords: 'manage single service edit update' },
+     { name: 'View Service', url: 'admin-view-service.php', category: 'Services', icon: 'fa-eye', keywords: 'view service details see' },
+     { name: 'Service Prices', url: 'admin-service-prices.php', category: 'Services', icon: 'fa-rupee-sign', keywords: 'service prices rates cost pricing money' },
+     
+     // Customers/Users - All Pages
+     { name: 'Add Customer', url: 'admin-add-user.php', category: 'Customers', icon: 'fa-user-plus', keywords: 'add new customer user register client' },
+     { name: 'Manage Customers', url: 'admin-manage-user.php', category: 'Customers', icon: 'fa-users', keywords: 'manage customers users list view clients' },
+     { name: 'Manage Single User', url: 'admin-manage-single-usr.php', category: 'Customers', icon: 'fa-user-edit', keywords: 'manage single user customer edit' },
+     { name: 'View User', url: 'admin-view-user.php', category: 'Customers', icon: 'fa-eye', keywords: 'view user customer details profile' },
+     { name: 'Customer Passwords', url: 'admin-manage-user-passwords.php', category: 'Customers', icon: 'fa-key', keywords: 'customer user passwords reset change' },
+     
+     // Feedbacks - All Pages
+     { name: 'Add Feedback', url: 'admin-add-feedback.php', category: 'Feedbacks', icon: 'fa-comment-medical', keywords: 'add feedback review rating create' },
+     { name: 'Manage Feedbacks', url: 'admin-manage-feedback.php', category: 'Feedbacks', icon: 'fa-comments', keywords: 'manage feedbacks reviews ratings list' },
+     { name: 'View Feedback', url: 'admin-view-feedback.php', category: 'Feedbacks', icon: 'fa-eye', keywords: 'view feedback review details' },
+     { name: 'Edit Feedback', url: 'admin-edit-feedback.php', category: 'Feedbacks', icon: 'fa-edit', keywords: 'edit feedback review modify' },
+     { name: 'Approve Feedback', url: 'admin-approve-feedback.php', category: 'Feedbacks', icon: 'fa-check-circle', keywords: 'approve feedback review accept' },
+     { name: 'Publish Feedback', url: 'admin-publish-feedback.php', category: 'Feedbacks', icon: 'fa-thumbs-up', keywords: 'publish feedback review approve show' },
+     
+     // Messages & Notifications
+     { name: 'Contact Messages', url: 'admin-contact-messages.php', category: 'Messages', icon: 'fa-envelope', keywords: 'contact messages inbox email inquiries' },
+     { name: 'Notifications', url: 'admin-notifications.php', category: 'Notifications', icon: 'fa-bell', keywords: 'notifications alerts updates news' },
+     
+     // Statistics & Reports - All Pages
+     { name: 'Statistics', url: 'admin-stats.php', category: 'Reports', icon: 'fa-chart-line', keywords: 'statistics stats reports analytics data' },
+     { name: 'Service Statistics', url: 'admin-stats-services.php', category: 'Reports', icon: 'fa-chart-bar', keywords: 'service statistics reports data analytics' },
+     { name: 'Technician Statistics', url: 'admin-stats-technicians.php', category: 'Reports', icon: 'fa-chart-pie', keywords: 'technician statistics performance reports data' },
+     { name: 'Pending Commissions', url: 'admin-pending-commissions.php', category: 'Reports', icon: 'fa-money-bill-wave', keywords: 'pending commissions payments dues money unpaid' },
+     { name: 'Record Commission Payment', url: 'admin-record-commission-payment.php', category: 'Reports', icon: 'fa-hand-holding-usd', keywords: 'record commission payment pay' },
+     { name: 'Quick Record Payment', url: 'admin-quick-record-payment.php', category: 'Reports', icon: 'fa-dollar-sign', keywords: 'quick record payment fast commission' },
+     
+     // Settings - All Pages
+     { name: 'Site Settings', url: 'admin-site-settings.php', category: 'Settings', icon: 'fa-cogs', keywords: 'site settings contact info configuration' },
+     { name: 'Payment Settings', url: 'admin-payment-settings.php', category: 'Settings', icon: 'fa-qrcode', keywords: 'payment qr settings upi configuration' },
+     { name: 'Manage Payment QR', url: 'admin-manage-payment-qr.php', category: 'Settings', icon: 'fa-qrcode', keywords: 'manage payment qr code upi' },
+     { name: 'Home Slider', url: 'admin-home-slider.php', category: 'Settings', icon: 'fa-images', keywords: 'home slider banner images carousel' },
+     { name: 'Manage Slider', url: 'admin-manage-slider.php', category: 'Settings', icon: 'fa-sliders-h', keywords: 'manage slider banner images' },
+     { name: 'Edit Slider', url: 'admin-edit-slider.php', category: 'Settings', icon: 'fa-edit', keywords: 'edit slider banner modify' },
+     { name: 'Gallery', url: 'admin-manage-gallery.php', category: 'Settings', icon: 'fa-photo-video', keywords: 'gallery photos images pictures media' },
+     { name: 'System Logs', url: 'admin-view-syslogs.php', category: 'Settings', icon: 'fa-file-alt', keywords: 'system logs history audit trail activity' },
+     { name: 'Recycle Bin', url: 'admin-recycle-bin.php', category: 'Settings', icon: 'fa-trash-restore', keywords: 'recycle bin deleted trash restore recover' },
+     
+     // Admin Management
+     { name: 'Add Admin', url: 'admin-add-admin.php', category: 'Admin', icon: 'fa-user-shield', keywords: 'add admin administrator new user' },
+     
+     // Profile & Account
+     { name: 'My Profile', url: 'admin-profile.php', category: 'Profile', icon: 'fa-user', keywords: 'profile account settings my info' },
+     { name: 'Change Password', url: 'admin-change-password.php', category: 'Profile', icon: 'fa-key', keywords: 'change password security update' },
+     { name: 'Reset Password', url: 'admin-reset-pwd.php', category: 'Profile', icon: 'fa-undo', keywords: 'reset password forgot recovery' },
+     { name: 'Logout', url: 'admin-logout.php', category: 'Profile', icon: 'fa-sign-out-alt', keywords: 'logout signout exit leave' }
+ ];
+ 
+ // Search functionality
+ const searchInput = document.getElementById('globalSearch');
+ const searchResults = document.getElementById('searchResults');
+ const searchKbd = document.querySelector('.search-kbd');
+ 
+ if (searchInput && searchResults) {
+     // Handle focus/blur
+     searchInput.addEventListener('blur', function() {
+         if (this.value === '') {
+             this.style.width = '280px';
+             this.style.background = '#ffffff';
+             this.style.borderColor = '#e2e8f0';
+             this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+         }
+     });
+     
+     searchInput.addEventListener('input', function() {
+         const query = this.value.toLowerCase().trim();
+         
+         if (query.length < 2) {
+             searchResults.style.display = 'none';
+             return;
+         }
+         
+         // Filter features
+         const matches = searchFeatures.filter(feature => {
+             return feature.name.toLowerCase().includes(query) ||
+                    feature.category.toLowerCase().includes(query) ||
+                    feature.keywords.toLowerCase().includes(query);
+         });
+         
+         if (matches.length === 0) {
+             searchResults.innerHTML = `
+                 <div style="padding: 20px; text-align: center; color: #718096;">
+                     <i class="fas fa-search" style="font-size: 2rem; opacity: 0.3;"></i>
+                     <p style="margin-top: 10px;">No results found for "${query}"</p>
+                 </div>
+             `;
+             searchResults.style.display = 'block';
+             return;
+         }
+         
+         // Group by category
+         const grouped = {};
+         matches.forEach(feature => {
+             if (!grouped[feature.category]) {
+                 grouped[feature.category] = [];
+             }
+             grouped[feature.category].push(feature);
+         });
+         
+         // Build HTML
+         let html = '';
+         Object.keys(grouped).forEach(category => {
+             html += `
+                 <div style="padding: 10px 15px; background: #f7fafc; border-bottom: 1px solid #e2e8f0; font-weight: 700; font-size: 12px; color: #667eea; text-transform: uppercase; letter-spacing: 0.5px;">
+                     ${category}
+                 </div>
+             `;
+             
+             grouped[category].forEach(feature => {
+                 html += `
+                     <a href="${feature.url}" style="
+                         display: flex;
+                         align-items: center;
+                         gap: 12px;
+                         padding: 12px 15px;
+                         text-decoration: none;
+                         color: #2d3748;
+                         border-bottom: 1px solid #f0f0f0;
+                         transition: all 0.2s ease;
+                     " onmouseover="this.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; this.style.color='white';" onmouseout="this.style.background='white'; this.style.color='#2d3748';">
+                         <i class="fas ${feature.icon}" style="width: 20px; text-align: center; font-size: 14px;"></i>
+                         <span style="font-weight: 600; font-size: 14px;">${feature.name}</span>
+                         <i class="fas fa-arrow-right" style="margin-left: auto; font-size: 12px; opacity: 0.5;"></i>
+                     </a>
+                 `;
+             });
+         });
+         
+         searchResults.innerHTML = html;
+         searchResults.style.display = 'block';
+     });
+     
+     // Close search results when clicking outside
+     document.addEventListener('click', function(e) {
+         if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+             searchResults.style.display = 'none';
+         }
+     });
+     
+     // Navigate with keyboard
+     searchInput.addEventListener('keydown', function(e) {
+         if (e.key === 'Escape') {
+             searchResults.style.display = 'none';
+             searchInput.blur();
+         }
+         
+         if (e.key === 'Enter') {
+             const firstLink = searchResults.querySelector('a');
+             if (firstLink) {
+                 window.location.href = firstLink.href;
+             }
+         }
+     });
+     
+     // Keyboard shortcut: Ctrl+K or Cmd+K to focus search
+     document.addEventListener('keydown', function(e) {
+         if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+             e.preventDefault();
+             searchInput.focus();
+             searchInput.select();
+         }
+     });
+ }
+ </script>
+
+
+<!-- Booking Alert System - Shows on ALL admin pages -->
+<?php 
+// Include alert system logic
+if(file_exists('../../booking-alert-system.php')) {
+    include('../../booking-alert-system.php');
+} elseif(file_exists('../booking-alert-system.php')) {
+    include('../booking-alert-system.php');
+} elseif(file_exists('booking-alert-system.php')) {
+    include('booking-alert-system.php');
+}
+
+// Include alert modal display
+if(file_exists('../../booking-alert-modal.php')) {
+    include('../../booking-alert-modal.php');
+} elseif(file_exists('../booking-alert-modal.php')) {
+    include('../booking-alert-modal.php');
+} elseif(file_exists('booking-alert-modal.php')) {
+    include('booking-alert-modal.php');
+}
+?>

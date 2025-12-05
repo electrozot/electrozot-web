@@ -25,13 +25,13 @@
     <div class="container" style="margin-top: -30px; position: relative; z-index: 3; padding-bottom: 80px;">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb contact-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
-                <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #0891b2; text-decoration: none; font-weight: 500;">
+            <ol class="breadcrumb contact-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); display: flex; flex-wrap: nowrap; align-items: center;">
+                <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
+                    <a href="index.php" style="color: #0891b2; text-decoration: none; font-weight: 500; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-weight: 500;">Contact</li>
+                <li class="breadcrumb-item active" style="color: #6c757d; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Contact</li>
             </ol>
         </nav>
 
@@ -111,8 +111,8 @@
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #5EBBAA;">Address</h5>
-                                <p class="mb-0" style="color: #6c757d; line-height: 1.8;">
+                                <h5 class="font-weight-bold mb-2" style="color: #0d9488;">Address</h5>
+                                <p class="mb-0" style="color: #1a202c; line-height: 1.8; font-weight: 600;">
                                     Electrozot<br>
                                     Dharamshala
                                 </p>
@@ -124,9 +124,9 @@
                                 <i class="fas fa-phone"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #5EBBAA;">Phone</h5>
-                                <p class="mb-0" style="color: #6c757d;">
-                                    <a href="tel:7559606925" class="contact-link">7559606925</a>
+                                <h5 class="font-weight-bold mb-2" style="color: #0d9488;">Phone</h5>
+                                <p class="mb-0" style="color: #1a202c; font-weight: 600;">
+                                    <a href="tel:7559606925" class="contact-link" style="color: #1a202c; font-weight: 700;">7559606925</a>
                                 </p>
                             </div>
                         </div>
@@ -136,9 +136,9 @@
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #5EBBAA;">Email</h5>
-                                <p class="mb-0" style="color: #6c757d;">
-                                    <a href="mailto:electrozot.in@gmail.com" class="contact-link">electrozot.in@gmail.com</a>
+                                <h5 class="font-weight-bold mb-2" style="color: #0d9488;">Email</h5>
+                                <p class="mb-0" style="color: #1a202c; font-weight: 600;">
+                                    <a href="mailto:electrozot.in@gmail.com" class="contact-link" style="color: #1a202c; font-weight: 700;">electrozot.in@gmail.com</a>
                                 </p>
                             </div>
                         </div>
@@ -148,8 +148,8 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="contact-info-content">
-                                <h5 class="font-weight-bold mb-2" style="color: #5EBBAA;">Business Hours</h5>
-                                <p class="mb-0" style="color: #6c757d; line-height: 1.8;">
+                                <h5 class="font-weight-bold mb-2" style="color: #0d9488;">Business Hours</h5>
+                                <p class="mb-0" style="color: #1a202c; line-height: 1.8; font-weight: 600;">
                                     Monday - Sunday<br>
                                     7:00 AM to 9:00 PM
                                 </p>
@@ -321,10 +321,34 @@
             transform: translateX(3px);
         }
 
+        .contact-breadcrumb {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        
+        .contact-breadcrumb .breadcrumb-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+        
         .contact-breadcrumb a:hover {
             color: #22d3ee !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 576px) {
+            .contact-breadcrumb {
+                padding: 10px 15px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .contact-breadcrumb .breadcrumb-item a,
+            .contact-breadcrumb .breadcrumb-item {
+                font-size: 0.85rem !important;
+            }
         }
 
         @keyframes fadeInUp {

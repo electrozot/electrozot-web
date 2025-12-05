@@ -35,13 +35,13 @@
 
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb gallery-breadcrumb" style="background: rgba(255,255,255,0.8); border-radius: 10px; padding: 10px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px;">
-             <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #ff4757; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+            <ol class="breadcrumb gallery-breadcrumb" style="background: rgba(255,255,255,0.8); border-radius: 10px; padding: 10px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; flex-wrap: nowrap; align-items: center;">
+             <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
+                    <a href="index.php" style="color: #ff4757; text-decoration: none; font-size: 0.9rem; font-weight: 500; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
              </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.9rem;">Gallery</li>
+                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.9rem; display: inline-flex; align-items: center; white-space: nowrap;">Gallery</li>
          </ol>
         </nav>
 
@@ -130,10 +130,34 @@
             position: relative;
         }
 
+        .gallery-breadcrumb {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        
+        .gallery-breadcrumb .breadcrumb-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+        
         .gallery-breadcrumb a:hover {
             color: #ff6b9d !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 576px) {
+            .gallery-breadcrumb {
+                padding: 8px 12px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .gallery-breadcrumb .breadcrumb-item a,
+            .gallery-breadcrumb .breadcrumb-item {
+                font-size: 0.85rem !important;
+            }
         }
 
         .gallery-item-title {

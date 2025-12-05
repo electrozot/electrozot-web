@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Quick Test</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        .success { background: #ecfdf5; color: #059669; border: 2px solid #10b981; }
+        .error { background: #fef2f2; color: #dc2626; border: 2px solid #ef4444; }
+        .pending { background: #fffbeb; color: #d97706; border: 2px solid #f59e0b; }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 5px;
+            width: 100%;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .info {
+            background: #f1f5f9;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚀 PWA Quick Test</h1>
+        
+        <div id="status" class="status pending">⏳ Checking...</div>
+        
+        <div class="info">
+            <strong>Current Path:</strong><br>
+            <code id="currentPath"></code>
+        </div>
+        
+        <button onclick="registerSW()">📝 Register Service Worker</button>
+        <button onclick="testInstall()" id="installBtn" disabled>📥 Install App</button>
+        <button onclick="window.location.href='pwa-diagnostic.html'">🔍 Full Diagnostics</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        
+        // Show current path
+        document.getElementById('currentPath').textContent = window.location.href;
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').disabled = false;
+            updateStatus('✅ Ready to install!', 'success');
+        });
+        
+        function updateStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+        
+        async function registerSW() {
+            if (!('serviceWorker' in navigator)) {
+                updateStatus('❌ Service Workers not supported', 'error');
+                return;
+            }
+            
+            try {
+                updateStatus('⏳ Registering Service Worker...', 'pending');
+                
+                // Register with relative path
+                const registration = await navigator.serviceWorker.register('./sw.js');
+                
+                console.log('✅ Service Worker registered:', registration);
+                updateStatus('✅ Service Worker registered!', 'success');
+                
+                resultDiv.innerHTML = `
+                    <div class="status success" style="margin-top: 15px;">
+                        <strong>✅ Success!</strong><br>
+                        Scope: ${registration.scope}<br>
+                        <small>Now reload the page to test installation</small>
+                    </div>
+                `;
+                
+                // Wait a moment then reload
+                setTimeout(() => {
+                    if (confirm('Service Worker registered! Reload page to enable installation?')) {
+                        window.location.reload();
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('❌ Registration failed:', error);
+                updateStatus('❌ Registration failed', 'error');
+                resultDiv.innerHTML = `
+                    <div class="status error" style="margin-top: 15px;">
+                        <strong>Error:</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        async function testInstall() {
+            if (!deferredPrompt) {
+                alert('Install prompt not available yet. Try:\n1. Register Service Worker\n2. Reload page\n3. Try install again');
+                return;
+            }
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                updateStatus('✅ App installed!', 'success');
+                resultDiv.innerHTML = `
+                    <div class="status success" style="margin-top: 15px;">
+                        <strong>🎉 Installation Successful!</strong><br>
+                        You can now use ElectroZot as a standalone app.
+                    </div>
+                `;
+            } else {
+                updateStatus('❌ Installation cancelled', 'error');
+            }
+            
+            deferredPrompt = null;
+            document.getElementById('installBtn').disabled = true;
+        }
+        
+        // Auto-check on load
+        window.addEventListener('load', async () => {
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    updateStatus('✅ Service Worker already registered', 'success');
+                    resultDiv.innerHTML = `
+                        <div class="status success" style="margin-top: 15px;">
+                            Service Worker is active!<br>
+                            <small>Scope: ${registration.scope}</small>
+                        </div>
+                    `;
+                } else {
+                    updateStatus('⚠️ Service Worker not registered', 'pending');
+                    resultDiv.innerHTML = `
+                        <div class="status pending" style="margin-top: 15px;">
+                            Click "Register Service Worker" to enable PWA installation
+                        </div>
+                    `;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

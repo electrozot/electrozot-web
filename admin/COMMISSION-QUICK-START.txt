@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════
+  COMMISSION LOCK SYSTEM - QUICK START GUIDE
+═══════════════════════════════════════════════════════════════
+
+🚀 STEP 1: SETUP (Do This First - Only Once)
+───────────────────────────────────────────────────────────────
+Open in browser: admin/setup-commission-system.php
+This will create all required database tables automatically.
+
+
+🕐 STEP 2: SETUP DAILY AUTO-LOCK (Windows Task Scheduler)
+───────────────────────────────────────────────────────────────
+1. Press Win+R, type: taskschd.msc
+2. Create Basic Task
+3. Name: "Lock Unpaid Technicians"
+4. Trigger: Daily at 7:00 AM
+5. Action: Start a program
+   - Program: C:\xampp\php\php.exe (your PHP path)
+   - Arguments: Full path to cron-lock-unpaid-technicians.php
+6. Save and test by right-clicking → Run
+
+
+🧪 STEP 3: TEST THE SYSTEM
+───────────────────────────────────────────────────────────────
+Open: admin/run-commission-lock-manually.php
+This lets you test without waiting for 7 AM!
+
+
+📋 DAILY WORKFLOW
+───────────────────────────────────────────────────────────────
+
+MORNING (After 7 AM):
+1. System automatically locks technicians who didn't pay yesterday
+2. Check: admin/admin-unlock-technician.php (see who's locked)
+
+WHEN TECHNICIAN CALLS:
+Technician: "I paid ₹500 commission"
+Admin: 
+  1. Go to: admin/admin-record-commission-payment.php
+  2. Select technician
+  3. Enter amount: 500
+  4. Enter date: today
+  5. Submit
+  6. ✅ Account unlocked automatically!
+
+END OF DAY:
+Check: admin/admin-pending-commissions.php
+See who still needs to pay today.
+
+
+🔗 IMPORTANT PAGES
+───────────────────────────────────────────────────────────────
+Setup System:           admin/setup-commission-system.php
+Manual Test:            admin/run-commission-lock-manually.php
+Record Payment:         admin/admin-record-commission-payment.php
+View Locked:            admin/admin-unlock-technician.php
+Pending Commissions:    admin/admin-pending-commissions.php
+Test System:            admin/test-commission-lock-system.php
+
+
+💡 HOW IT WORKS
+───────────────────────────────────────────────────────────────
+1. Technician completes job on Monday
+2. System calculates 20% commission
+3. Tuesday 7 AM: System checks if paid
+4. If NOT paid → Account LOCKED
+5. Technician can't receive new bookings
+6. Technician pays → Admin records → Auto UNLOCKED
+7. Technician can work again!
+
+
+🐛 TROUBLESHOOTING
+───────────────────────────────────────────────────────────────
+Problem: Not locking automatically
+Solution: Run admin/run-commission-lock-manually.php to test
+
+Problem: Payment recorded but still locked
+Solution: Go to admin/admin-unlock-technician.php and unlock manually
+
+Problem: Can't find PHP path
+Solution: Open CMD, type: where php
+
+
+📞 NEED HELP?
+───────────────────────────────────────────────────────────────
+1. Check: admin/cron-last-run.log (see when it last ran)
+2. Check: admin/cron-errors.log (see any errors)
+3. Run: admin/test-commission-lock-system.php (full system test)
+
+
+✅ QUICK CHECKLIST
+───────────────────────────────────────────────────────────────
+□ Ran setup-commission-system.php
+□ Task Scheduler configured for 7 AM
+□ Tested with run-commission-lock-manually.php
+□ Can record payment and unlock works
+□ Locked technicians can't get bookings
+
+═══════════════════════════════════════════════════════════════
+System is now READY TO USE! 🎉
+═══════════════════════════════════════════════════════════════

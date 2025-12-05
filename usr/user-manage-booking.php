@@ -601,14 +601,26 @@ if($cancel_error) {
                 <?php endif; ?>
             </div>
             
-            <div class="action-buttons" style="grid-template-columns: <?php echo ($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)) ? '1fr 1fr 1fr' : '1fr 1fr'; ?>;">
+            <div class="action-buttons" style="grid-template-columns: <?php 
+                if($status == 'Completed') {
+                    echo '1fr 1fr 1fr'; // View, Track, Bill
+                } elseif($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)) {
+                    echo '1fr 1fr 1fr'; // View, Track, Cancel
+                } else {
+                    echo '1fr 1fr'; // View, Track
+                }
+            ?>;">
                 <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-eye"></i> View
                 </a>
                 <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                     <i class="fas fa-map-marker-alt"></i> Track
                 </a>
-                <?php if ($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)): ?>
+                <?php if ($status == 'Completed'): ?>
+                <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-file-invoice"></i> Bill
+                </a>
+                <?php elseif ($status != 'Cancelled' && empty($booking->sb_technician_id)): ?>
                 <a href="user-delete-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-cancel" onclick="return confirm('Cancel this booking?');">
                     <i class="fas fa-times"></i> Cancel
                 </a>

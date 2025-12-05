@@ -43,8 +43,10 @@ if ($service_id > 0) {
                 t_skills,
                 (t_booking_limit - t_current_bookings) as available_slots
               FROM tms_technician 
-              WHERE t_status != 'Inactive'
+              WHERE t_status NOT IN ('Inactive', 'Locked')
               AND t_current_bookings < t_booking_limit
+              AND (account_locked IS NULL OR account_locked = 0)
+              AND (t_blocked_until IS NULL OR t_blocked_until < NOW())
               ORDER BY available_slots DESC, t_category, t_name";
     
     $result = $mysqli->query($query);

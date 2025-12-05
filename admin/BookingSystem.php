@@ -16,7 +16,7 @@ class BookingSystem {
      */
     public function canAssignToTechnician($technician_id) {
         $stmt = $this->conn->prepare("
-            SELECT t_current_bookings, t_booking_limit, t_name 
+            SELECT t_current_bookings, t_booking_limit, t_name, account_locked, lock_reason 
             FROM tms_technician 
             WHERE t_id = ?
         ");
@@ -25,6 +25,18 @@ class BookingSystem {
         
         if (!$tech) {
             return ['success' => false, 'message' => 'Technician not found'];
+        }
+        
+        // Check if technician account is locked
+        if (isset($tech['account_locked']) && $tech['account_locked'] == 1) {
+            return [
+                'success' => false,
+                'is_locked' => true,
+                'technician_id' => $technician_id,
+                'technician_name' => $tech['t_name'],
+                'message' => "Cannot assign booking to {$tech['t_name']}. This technician's account is locked.",
+                'lock_reason' => $tech['lock_reason'] ?? 'Account locked by system'
+            ];
         }
         
         if ($tech['t_current_bookings'] >= $tech['t_booking_limit']) {
@@ -367,6 +379,7 @@ class BookingSystem {
             FROM tms_technician 
             WHERE t_status = 'Available'
               AND t_current_bookings < t_booking_limit
+              AND (account_locked IS NULL OR account_locked = 0)
         ";
         
         $params = [];

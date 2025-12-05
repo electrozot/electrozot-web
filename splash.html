@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="screen-orientation" content="portrait">
+    <meta name="x5-orientation" content="portrait">
+    <title>Electrozot - We Make Perfect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+        
+        
+        .splash-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+            animation: fadeInUp 1s ease-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, calc(-50% + 30px));
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+        
+        .logo-wrapper {
+            margin-bottom: 15px;
+            animation: pulse 2s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-circle {
+            width: 350px;
+            height: 350px;
+            background: #ffffff;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            position: relative;
+        }
+        
+        .logo-circle img {
+            width: 310px;
+            height: 310px;
+            object-fit: contain;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .brand-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            margin-top: 0;
+            letter-spacing: -1px;
+            animation: slideIn 1s ease-out 0.3s both;
+            line-height: 1.2;
+        }
+        
+        .brand-name .electro {
+            color: #333333;
+            text-shadow: none;
+        }
+        
+        .brand-name .zot {
+            color: #333333;
+            text-shadow: none;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .tagline {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #666666;
+            margin-top: 0;
+            margin-bottom: 0;
+            text-shadow: none;
+            animation: slideIn 1s ease-out 0.6s both;
+            line-height: 1.4;
+        }
+        
+        .loading-dots {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+        
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                /* Ensure full viewport on mobile */
+                min-height: 100dvh;
+                height: 100dvh;
+            }
+            
+            .splash-container {
+                width: 85%;
+                padding: 0 15px;
+            }
+            
+            .logo-wrapper {
+                margin-bottom: 12px;
+            }
+            
+            .logo-circle {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .logo-circle img {
+                width: 210px;
+                height: 210px;
+            }
+            
+            .brand-name {
+                font-size: 2.5rem;
+                margin-bottom: 6px;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .loading-dots {
+                margin-top: 25px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                /* Use dynamic viewport height for mobile browsers */
+                min-height: 100dvh;
+                height: 100dvh;
+            }
+            
+            .splash-container {
+                width: 90%;
+                padding: 0 10px;
+            }
+            
+            .logo-wrapper {
+                margin-bottom: 10px;
+            }
+            
+            .logo-circle {
+                width: 180px;
+                height: 180px;
+            }
+            
+            .logo-circle img {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .brand-name {
+                font-size: 1.6rem;
+                margin-bottom: 5px;
+                letter-spacing: -0.5px;
+            }
+            
+            .tagline {
+                font-size: 0.85rem;
+            }
+            
+            .loading-dots {
+                margin-top: 20px;
+                gap: 7px;
+            }
+            
+            .dot {
+                width: 9px;
+                height: 9px;
+            }
+        }
+        
+        /* Extra small screens (iPhone SE, small Android) */
+        @media (max-width: 375px) {
+            .splash-container {
+                width: 92%;
+                padding: 0 8px;
+            }
+            
+            .logo-wrapper {
+                margin-bottom: 8px;
+            }
+            
+            .logo-circle {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .logo-circle img {
+                width: 135px;
+                height: 135px;
+            }
+            
+            .brand-name {
+                font-size: 1.4rem;
+                margin-bottom: 4px;
+            }
+            
+            .tagline {
+                font-size: 0.75rem;
+            }
+            
+            .loading-dots {
+                margin-top: 18px;
+                gap: 6px;
+            }
+            
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+        }
+        
+        /* Very small screens */
+        @media (max-width: 320px) {
+            .splash-container {
+                width: 95%;
+                padding: 0 5px;
+            }
+            
+            .logo-wrapper {
+                margin-bottom: 6px;
+            }
+            
+            .logo-circle {
+                width: 130px;
+                height: 130px;
+            }
+            
+            .logo-circle img {
+                width: 110px;
+                height: 110px;
+            }
+            
+            .brand-name {
+                font-size: 1.2rem;
+                margin-bottom: 3px;
+            }
+            
+            .tagline {
+                font-size: 0.65rem;
+            }
+            
+            .loading-dots {
+                margin-top: 15px;
+                gap: 5px;
+            }
+            
+            .dot {
+                width: 7px;
+                height: 7px;
+            }
+        }
+        
+        /* Fix for mobile address bar */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                /* iOS Safari */
+                min-height: -webkit-fill-available;
+                height: -webkit-fill-available;
+            }
+        }
+        
+        /* Landscape mode on small screens */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .splash-container {
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            
+            .logo-wrapper {
+                margin-bottom: 5px;
+            }
+            
+            .loading-dots {
+                margin-top: 20px;
+            }
+        }
+        
+        /* Very short screens */
+        @media (max-height: 600px) {
+            .logo-wrapper {
+                margin-bottom: 10px;
+            }
+            
+            .brand-name {
+                margin-bottom: 5px;
+            }
+            
+            .loading-dots {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <div class="logo-wrapper">
+            <div class="logo-circle">
+                <img src="vendor/img/icons/00.jpg" alt="Electrozot Logo">
+            </div>
+        </div>
+        
+        <h1 class="brand-name"><span class="electro">Electro</span><span class="zot">zot</span></h1>
+        <p class="tagline">We Make Perfect</p>
+        
+        <div class="loading-dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-redirect to main page after 2 seconds
+        setTimeout(function() {
+            window.location.href = './index.php';
+        }, 2000);
+    </script>
+</body>
+</html>

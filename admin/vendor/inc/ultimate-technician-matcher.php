@@ -86,7 +86,9 @@ function getSmartAvailableTechnicians($mysqli, $service_id, $booking_date, $book
                             OR t.t_skills LIKE CONCAT('%', ?, '%')
                             OR t.t_category = ?
                          )
-                         AND t.t_status != 'Inactive'
+                         AND t.t_status NOT IN ('Inactive', 'Locked')
+                         AND (t.account_locked IS NULL OR t.account_locked = 0)
+                         AND (t.t_blocked_until IS NULL OR t.t_blocked_until < NOW())
                          ORDER BY 
                             CASE
                                 WHEN FIND_IN_SET(?, t.t_skills) > 0 THEN 1

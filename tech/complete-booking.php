@@ -271,6 +271,14 @@ if(isset($_POST['mark_not_done'])){
                 INDEX idx_booking (an_booking_id)
             )");
             
+            // Track rejection in rejection tracking table
+            $track_stmt = $mysqli->prepare("INSERT INTO tms_technician_rejections (tr_technician_id, tr_booking_id, tr_reason) VALUES (?, ?, ?)");
+            $track_stmt->bind_param('iis', $t_id, $sb_id, $reason);
+            $track_stmt->execute();
+            
+            // Increment rejection counter
+            $mysqli->query("UPDATE tms_technician SET t_rejection_count = t_rejection_count + 1 WHERE t_id = $t_id");
+            
             // Create admin notification
             $notif_title = "Service Not Done - Needs Reassignment";
             $notif_message = "$tech_name marked Booking #$sb_id as Not Done. Reason: $reason. Please reassign to another technician.";

@@ -1,24 +1,70 @@
 <?php
 /**
  * AUTOMATED TECHNICIAN ACCOUNT LOCKING FOR UNPAID COMMISSION
- * Run this script daily at 7:15 AM via cron job
- * 
- * Setup Cron Job (Linux/Mac):
- * 15 7 * * * php /path/to/admin/cron-lock-unpaid-technicians.php
+ * Run this script daily at 7:00 AM via cron job/task scheduler
  * 
  * Setup Task Scheduler (Windows):
- * Run daily at 7:15 AM
+ * 1. Open Task Scheduler
+ * 2. Create Basic Task: "Lock Unpaid Technicians"
+ * 3. Trigger: Daily at 7:00 AM
+ * 4. Action: Start a program
+ * 5. Program: C:\xampp\php\php.exe (adjust your PHP path)
+ * 6. Arguments: Full path to this file
  */
+
+// Error logging
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/cron-errors.log');
+
+// Log start time
+file_put_contents(__DIR__ . '/cron-last-run.log', date('Y-m-d H:i:s') . " - Cron job started\n", FILE_APPEND);
 
 include('vendor/inc/config.php');
 
-$yesterday = date('Y-m-d', strtotime('-1 day')); // Check yesterday's commission at 7:15 AM
+// Check if database connection is successful
+if(!$mysqli || $mysqli->connect_error) {
+    $error = "Database connection failed: " . ($mysqli ? $mysqli->connect_error : 'mysqli not initialized');
+    file_put_contents(__DIR__ . '/cron-errors.log', date('Y-m-d H:i:s') . " - " . $error . "\n", FILE_APPEND);
+    die($error);
+}
+
+$yesterday = date('Y-m-d', strtotime('-1 day')); // Check yesterday's commission at 7:00 AM
 $commission_rate = 0.20;
 
-// Add account_locked column if not exists
+// Ensure required columns exist
 $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS account_locked TINYINT(1) DEFAULT 0");
 $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS lock_reason TEXT");
 $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS locked_at TIMESTAMP NULL");
+
+// Ensure commission_payments table exists
+$create_table = "CREATE TABLE IF NOT EXISTS tms_commission_payments (
+    cp_id INT AUTO_INCREMENT PRIMARY KEY,
+    cp_technician_id INT NOT NULL,
+    cp_amount DECIMAL(10,2) NOT NULL,
+    cp_date DATE NOT NULL,
+    cp_payment_method VARCHAR(50) DEFAULT 'Cash',
+    cp_notes TEXT,
+    cp_recorded_by INT,
+    cp_recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_tech_date (cp_technician_id, cp_date),
+    FOREIGN KEY (cp_technician_id) REFERENCES tms_technician(t_id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+$mysqli->query($create_table);
+
+// Ensure system_logs table exists
+$create_logs = "CREATE TABLE IF NOT EXISTS tms_system_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    log_type VARCHAR(50) NOT NULL,
+    log_message TEXT NOT NULL,
+    log_data TEXT,
+    log_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_type (log_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+$mysqli->query($create_logs);
+
+file_put_contents(__DIR__ . '/cron-last-run.log', date('Y-m-d H:i:s') . " - Tables checked/created\n", FILE_APPEND);
 
 // Get all technicians who worked yesterday
 $query = "SELECT 
@@ -61,7 +107,8 @@ while($tech = $result->fetch_object()) {
         
         // If payment not done, lock the account
         if($pending > 0) {
-            $lock_reason = "Unpaid charges for " . date('d M Y', strtotime($yesterday)) . ". Amount: ₹" . number_format($commission, 0) . ". Please complete payment and contact EZ Admin.";
+            // ONLY show commission amount to technician, NOT revenue
+            $lock_reason = "Unpaid Electrozot charges for " . date('d M Y', strtotime($yesterday)) . ". Amount Due: ₹" . number_format($commission, 0) . ". Please complete payment and contact Electrozot Admin to unlock your account.";
             
             $lock_query = "UPDATE tms_technician 
                           SET account_locked = 1, 
@@ -81,12 +128,13 @@ while($tech = $result->fetch_object()) {
                 'pending' => $pending
             ];
             
-            echo "✓ Locked: {$tech->t_name} - Pending: ₹{$pending}\n";
+            echo "✓ Locked: {$tech->t_name} - Commission Due: ₹{$pending}\n";
         }
     }
 }
 
 // Log the action
+$log_message = "";
 if($locked_count > 0) {
     $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data, log_date) 
                   VALUES ('account_lock', ?, ?, NOW())";
@@ -98,9 +146,16 @@ if($locked_count > 0) {
     $stmt_log->close();
     
     echo "\n✓ Total locked: {$locked_count} technicians\n";
+    $log_message = "SUCCESS: Locked {$locked_count} technicians for date {$yesterday}";
 } else {
     echo "✓ All technicians paid their commission. No accounts locked.\n";
+    $log_message = "SUCCESS: All technicians paid commission for date {$yesterday}";
 }
 
+// Write to log file
+file_put_contents(__DIR__ . '/cron-last-run.log', date('Y-m-d H:i:s') . " - " . $log_message . "\n", FILE_APPEND);
+
 $mysqli->close();
+
+echo "\n✓ Cron job completed successfully at " . date('Y-m-d H:i:s') . "\n";
 ?>

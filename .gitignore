@@ -36,3 +36,7 @@ node_modules/
 # Environment
 .env
 config.local.php
+
+# Large zip files
+electrozot.zip
+*.zip

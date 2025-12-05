@@ -1,39 +1,64 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v2.0.0'; // UPDATED VERSION - FORCES CACHE REFRESH
-const OFFLINE_URL = '/offline.html';
+const CACHE_NAME = 'electrozot-v3.4.1'; // UPDATED VERSION - FORCES CACHE REFRESH
+const OFFLINE_URL = './offline.html';
+const APP_VERSION = '3.4.1';
 
-// Files to cache for offline functionality (REMOVED index.php to always fetch fresh)
+// DEVELOPMENT MODE - Set to true during development to disable caching
+const DEV_MODE = true; // Change to false for production
+
+// Files to cache for offline functionality (using relative paths)
 const CACHE_URLS = [
-  '/offline.html',
-  '/manifest.json',
-  '/vendor/bootstrap/css/bootstrap.min.css',
-  '/vendor/jquery/jquery.min.js',
-  '/vendor/bootstrap/js/bootstrap.bundle.min.js',
-  '/css/modern-business.css',
-  '/vendor/css/custom.css',
-  '/usr/vendor/fontawesome-free/css/all.min.css'
+  './offline.html',
+  './splash.html',
+  './splash-icon.png',
+  './manifest.json',
+  './vendor/bootstrap/css/bootstrap.min.css',
+  './vendor/jquery/jquery.min.js',
+  './vendor/bootstrap/js/bootstrap.bundle.min.js',
+  './css/modern-business.css',
+  './vendor/css/custom.css',
+  './usr/vendor/fontawesome-free/css/all.min.css'
 ];
 
 // URLs that should NEVER be cached (always fetch fresh from network)
 const NEVER_CACHE = [
-  '/index.php',
-  '/',
-  '/admin/',
-  '/debug-popular.php',
-  '/check-popular-services.php'
+  'index.php',
+  'admin/',
+  'debug-popular.php',
+  'check-popular-services.php',
+  'about.php',
+  'contact.php',
+  'services.php',
+  'gallery.php',
+  'process-guest-booking.php',
+  'test-',
+  'fix-',
+  'check-',
+  '.php' // All PHP files in dev mode
 ];
 
 // Install event - cache essential files
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing...');
+  console.log(`[Service Worker] Installing v${APP_VERSION}...`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('[Service Worker] Caching essential files');
         return cache.addAll(CACHE_URLS);
       })
-      .then(() => self.skipWaiting())
+      .then(() => {
+        console.log('[Service Worker] Installation complete');
+        return self.skipWaiting();
+      })
   );
+});
+
+// Listen for skip waiting message
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[Service Worker] Skipping waiting...');
+    self.skipWaiting();
+  }
 });
 
 // Activate event - clean up old caches
@@ -67,6 +92,23 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(
     (async () => {
+      // IN DEVELOPMENT MODE: Always fetch fresh from network
+      if (DEV_MODE) {
+        console.log('[Service Worker] DEV MODE: Fetching fresh from network:', event.request.url);
+        try {
+          const response = await fetch(event.request);
+          return response;
+        } catch (error) {
+          // Only use cache as fallback in dev mode
+          const cachedResponse = await caches.match(event.request);
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          return caches.match(OFFLINE_URL);
+        }
+      }
+
+      // PRODUCTION MODE: Normal caching strategy
       // Check if this URL should never be cached
       const url = new URL(event.request.url);
       const shouldNeverCache = NEVER_CACHE.some(path => url.pathname.includes(path));

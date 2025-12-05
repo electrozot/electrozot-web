@@ -97,7 +97,7 @@ if(isset($_POST['action'])) {
     exit;
 }
 
-// Get all bookings with hold status
+// Get ONLY bookings that are currently on hold (most recent first)
 $query = "SELECT sb.sb_id, sb.sb_status, sb.sb_is_on_hold, sb.sb_hold_reason, 
           sb.sb_hold_start_date, sb.sb_hold_end_date, sb.sb_is_high_priority,
           sb.sb_service_id, sb.sb_user_id, sb.sb_technician_id,
@@ -106,7 +106,8 @@ $query = "SELECT sb.sb_id, sb.sb_status, sb.sb_is_on_hold, sb.sb_hold_reason,
           LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
           LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
           LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
-          ORDER BY sb.sb_is_on_hold DESC, sb.sb_created_at DESC
+          WHERE sb.sb_is_on_hold = 1
+          ORDER BY sb.sb_hold_start_date DESC, sb.sb_created_at DESC
           LIMIT 100";
 $result = $mysqli->query($query);
 
@@ -237,10 +238,10 @@ $hold_requests_result = $mysqli->query($hold_requests_query);
                 </div>
                 <?php endif; ?>
                 
-                <!-- All Bookings -->
+                <!-- Hold Bookings Only -->
                 <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-list"></i> All Bookings (On Hold First)</h5>
+                    <div class="card-header bg-warning">
+                        <h5><i class="fas fa-pause-circle"></i> Bookings Currently On Hold (<?php echo $result->num_rows; ?>) - Most Recent First</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -260,7 +261,7 @@ $hold_requests_result = $mysqli->query($hold_requests_query);
                                     <?php if($result->num_rows == 0): ?>
                                     <tr>
                                         <td colspan="7" class="text-center">
-                                            <p class="text-muted">No bookings found</p>
+                                            <p class="text-muted"><i class="fas fa-check-circle"></i> No bookings are currently on hold</p>
                                         </td>
                                     </tr>
                                     <?php endif; ?>

@@ -35,7 +35,7 @@ function updateTechnicianAvailabilityStatus($mysqli, $technician_id) {
  * Check if technician can accept new booking
  */
 function canAssignToTechnician($mysqli, $technician_id) {
-    $stmt = $mysqli->prepare("SELECT t_name, t_current_bookings, t_booking_limit FROM tms_technician WHERE t_id = ?");
+    $stmt = $mysqli->prepare("SELECT t_name, t_current_bookings, t_booking_limit, t_status, account_locked, lock_reason, t_block_reason, t_blocked_until FROM tms_technician WHERE t_id = ?");
     $stmt->bind_param('i', $technician_id);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -43,6 +43,45 @@ function canAssignToTechnician($mysqli, $technician_id) {
     
     if (!$tech) {
         return ['success' => false, 'message' => 'Technician not found'];
+    }
+    
+    // Check if technician account is locked (commission lock)
+    if (isset($tech->account_locked) && $tech->account_locked == 1) {
+        return [
+            'success' => false,
+            'is_locked' => true,
+            'lock_type' => 'commission',
+            'technician_id' => $technician_id,
+            'technician_name' => $tech->t_name,
+            'message' => "Cannot assign booking to {$tech->t_name}. Account locked due to unpaid commission.",
+            'lock_reason' => $tech->lock_reason ?? 'Unpaid commission'
+        ];
+    }
+    
+    // Check if technician is locked due to rejections
+    if (isset($tech->t_status) && $tech->t_status == 'Locked') {
+        return [
+            'success' => false,
+            'is_locked' => true,
+            'lock_type' => 'rejection',
+            'technician_id' => $technician_id,
+            'technician_name' => $tech->t_name,
+            'message' => "Cannot assign booking to {$tech->t_name}. Account locked due to excessive booking rejections.",
+            'lock_reason' => $tech->t_block_reason ?? 'Excessive booking rejections'
+        ];
+    }
+    
+    // Check if technician is blocked (temporary block)
+    if (!empty($tech->t_blocked_until) && strtotime($tech->t_blocked_until) > time()) {
+        $blocked_until = date('M d, Y h:i A', strtotime($tech->t_blocked_until));
+        return [
+            'success' => false,
+            'is_blocked' => true,
+            'technician_id' => $technician_id,
+            'technician_name' => $tech->t_name,
+            'message' => "Cannot assign booking to {$tech->t_name}. Temporarily blocked until {$blocked_until}.",
+            'lock_reason' => $tech->t_block_reason ?? 'Temporarily blocked'
+        ];
     }
     
     $current = isset($tech->t_current_bookings) ? $tech->t_current_bookings : 0;
@@ -100,10 +139,12 @@ function decrementTechnicianBookings($mysqli, $technician_id) {
  */
 function getAvailableTechniciansWithCapacity($mysqli, $service_category = null) {
     $sql = "SELECT t_id, t_name, t_category, t_specialization, t_current_bookings, t_booking_limit,
-            (t_booking_limit - t_current_bookings) as available_slots, t_skills
+            (t_booking_limit - t_current_bookings) as available_slots, t_skills, account_locked, lock_reason
             FROM tms_technician 
             WHERE t_status = 'Available'
-            AND t_current_bookings < t_booking_limit";
+            AND t_current_bookings < t_booking_limit
+            AND (account_locked IS NULL OR account_locked = 0)
+            AND (t_blocked_until IS NULL OR t_blocked_until < NOW())";
     
     if ($service_category) {
         $sql .= " AND t_category = ?";
@@ -148,10 +189,13 @@ function getAvailableTechniciansForService($mysqli, $service_id) {
     // Get technicians who have this service in their skills and have available slots
     $sql = "SELECT t_id, t_name, t_category, t_specialization, t_skills,
             t_current_bookings, t_booking_limit,
-            (t_booking_limit - t_current_bookings) as available_slots
+            (t_booking_limit - t_current_bookings) as available_slots,
+            account_locked, lock_reason
             FROM tms_technician 
             WHERE t_status = 'Available'
             AND t_current_bookings < t_booking_limit
+            AND (account_locked IS NULL OR account_locked = 0)
+            AND (t_blocked_until IS NULL OR t_blocked_until < NOW())
             AND (
                 FIND_IN_SET(?, t_skills) > 0
                 OR t_skills LIKE CONCAT('%', ?, '%')

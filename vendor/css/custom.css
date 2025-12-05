@@ -139,23 +139,23 @@
     }
 }
 
-/* Electrozot Animated Text with Lightning Effect */
+/* Electrozot Animated Text with Lightning Effect - Optimized */
 .electrozot-animated {
     font-weight: 900;
     display: inline-block;
     background: linear-gradient(
         90deg,
-        #ffffff 0%,
-        #00bfff 10%,
-        #ffd700 20%,
-        #ff6b9d 30%,
-        #a78bfa 40%,
-        #00ff88 50%,
-        #ffffff 60%,
-        #00bfff 70%,
-        #ffd700 80%,
-        #ff6b9d 90%,
-        #ffffff 100%
+        #FF6B35 0%,
+        #0066CC 10%,
+        #FF8C00 20%,
+        #E91E63 30%,
+        #7B2CBF 40%,
+        #00A86B 50%,
+        #FF6B35 60%,
+        #0066CC 70%,
+        #FF8C00 80%,
+        #E91E63 90%,
+        #FF6B35 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -164,83 +164,42 @@
     animation: lightningMove 3s linear infinite;
     text-shadow: none;
     position: relative;
-    /* Remove any text stroke to prevent overlapping */
     -webkit-text-stroke: 0;
     text-stroke: 0;
-    /* Improve rendering on mobile */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 107, 53, 0.4));
+    /* Use GPU acceleration for smoother animation */
+    will-change: background-position, transform;
+    transform: scale(1) translateZ(0);
+    transition: transform 0.3s ease-out;
 }
 
-/* Add glowing effect behind the text */
-.electrozot-animated::before {
-    content: 'Electrozot';
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: -1;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.5) 0%,
-        rgba(0, 191, 255, 0.5) 10%,
-        rgba(255, 215, 0, 0.5) 20%,
-        rgba(255, 107, 157, 0.5) 30%,
-        rgba(167, 139, 250, 0.5) 40%,
-        rgba(0, 255, 136, 0.5) 50%,
-        rgba(255, 255, 255, 0.5) 60%,
-        rgba(0, 191, 255, 0.5) 70%,
-        rgba(255, 215, 0, 0.5) 80%,
-        rgba(255, 107, 157, 0.5) 90%,
-        rgba(255, 255, 255, 0.5) 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: blur(10px);
-    animation: lightningMove 3s linear infinite;
-    /* Remove any text stroke from glow layer */
-    -webkit-text-stroke: 0;
-    text-stroke: 0;
-    /* Improve rendering */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* Lightning movement animation - moves from left to right in 3 seconds */
+/* Lightning movement animation - simplified without heavy filters */
 @keyframes lightningMove {
     0% {
         background-position: -200% center;
-        filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
-    }
-    25% {
-        filter: brightness(1.3) drop-shadow(0 0 15px rgba(0, 191, 255, 0.8));
     }
     50% {
         background-position: 0% center;
-        filter: brightness(1.5) drop-shadow(0 0 20px rgba(255, 215, 0, 1));
-    }
-    75% {
-        filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 107, 157, 0.8));
     }
     100% {
         background-position: 200% center;
-        filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
     }
 }
 
-/* Pulse effect on hover */
+/* Pulse effect on hover - simplified with proper transform reset */
 .hero-title:hover .electrozot-animated {
     animation: lightningMove 1.5s linear infinite, pulse 0.5s ease-in-out infinite;
 }
 
 @keyframes pulse {
     0%, 100% {
-        transform: scale(1);
+        transform: scale(1) translateZ(0);
     }
     50% {
-        transform: scale(1.05);
+        transform: scale(1.05) translateZ(0);
     }
 }
 
@@ -398,18 +357,71 @@
     
     .hero-title {
         font-size: 2.5rem !important;
+        text-align: center;
+    }
+    
+    .hero-description {
+        text-align: center;
     }
 }
 
 @media (max-width: 768px) {
     .hero-title {
         font-size: 2rem !important;
+        text-align: center;
+    }
+    
+    .hero-section-enhanced {
+        padding: 70px 0 40px 0 !important;
+    }
+    
+    .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
     }
 }
 
 @media (max-width: 576px) {
     .hero-title {
         font-size: 1.75rem !important;
+        text-align: center;
+        margin-bottom: 15px !important;
+    }
+    
+    .hero-description {
+        font-size: 0.85rem !important;
+        margin-bottom: 15px !important;
+        text-align: center;
+    }
+    
+    .hero-section-enhanced {
+        padding: 60px 0 30px 0 !important;
+    }
+    
+    /* Ensure proper spacing on mobile */
+    body {
+        overflow-x: hidden !important;
+    }
+    
+    .container-fluid {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        overflow-x: hidden !important;
+    }
+    
+    .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Fix any horizontal scroll issues */
+    * {
+        max-width: 100% !important;
+    }
+    
+    img {
+        max-width: 100% !important;
+        height: auto !important;
     }
 }
 
@@ -734,4 +746,240 @@ select.service-dropdown,
         padding: 7px 5px !important;
         font-size: 12px !important;
     }
+}
+
+
+/* ========================================
+   MOBILE RESPONSIVE FIXES - PREVENT HORIZONTAL SCROLL
+   ======================================== */
+
+@media (max-width: 576px) {
+    /* Prevent horizontal scroll on mobile */
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+    
+    /* Fix container widths */
+    .container,
+    .container-fluid {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix row margins */
+    .row {
+        margin-left: -10px !important;
+        margin-right: -10px !important;
+    }
+    
+    .col, [class*="col-"] {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    
+    /* Ensure cards don't overflow */
+    .card {
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Fix hero section on mobile */
+    .hero-section-enhanced {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix booking form on mobile */
+    .booking-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 5px !important;
+    }
+    
+    .booking-form-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    /* Fix feature and service sections */
+    .features-section,
+    .services-section {
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+    
+    /* Fix buttons on mobile */
+    .hero-buttons-wrapper {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+    
+    .hero-btn {
+        max-width: calc(50% - 5px) !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+    
+    /* Fix images */
+    img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    
+    /* Fix carousel on mobile */
+    .carousel,
+    .carousel-inner,
+    .carousel-item {
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* Ensure text doesn't overflow */
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 375px) {
+    .hero-title {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-description {
+        font-size: 0.8rem !important;
+    }
+    
+    .hero-btn {
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+    }
+    
+    .section-title {
+        font-size: 1.2rem !important;
+    }
+    
+    .card-title {
+        font-size: 0.9rem !important;
+    }
+    
+    .card-text {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* Landscape mode on mobile - keep portrait */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-section-enhanced {
+        padding: 40px 0 30px 0 !important;
+    }
+    
+    .hero-title {
+        font-size: 1.5rem !important;
+    }
+    
+    .hero-description {
+        font-size: 0.8rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .booking-card {
+        margin-top: 15px !important;
+    }
+}
+
+
+/* ========================================
+   DISABLE TEXT SELECTION AND COPYING
+   ======================================== */
+
+/* Disable text selection on entire website */
+* {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Disable text selection on body */
+body {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Disable selection on all text elements */
+p, h1, h2, h3, h4, h5, h6, span, div, a, li, td, th, label {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+/* Allow selection only in input fields (for user convenience) */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+textarea,
+select {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Disable right-click context menu */
+body {
+    -webkit-touch-callout: none !important;
+}
+
+/* Disable drag on images */
+img {
+    -webkit-user-drag: none !important;
+    -khtml-user-drag: none !important;
+    -moz-user-drag: none !important;
+    -o-user-drag: none !important;
+    user-drag: none !important;
+    pointer-events: none !important;
+}
+
+/* Re-enable pointer events for clickable images */
+a img,
+button img {
+    pointer-events: auto !important;
+}
+
+/* Disable selection on links but keep them clickable */
+a {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+}
+
+/* Disable text selection cursor */
+* {
+    cursor: default !important;
+}
+
+/* Keep pointer cursor for clickable elements */
+a, button, input[type="submit"], input[type="button"], .btn, [role="button"] {
+    cursor: pointer !important;
+}
+
+/* Keep text cursor for input fields */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+textarea {
+    cursor: text !important;
 }

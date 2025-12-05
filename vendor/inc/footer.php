@@ -70,27 +70,35 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
                 </div>
             </div>
             
-            <!-- Brand -->
-            <div class="col-6 col-md-3 mb-3">
-                <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Electrozot</h5>
-                <?php
-                // Check if technician is logged in (session already started in main file)
-                $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
-                $tech_link = $tech_logged_in ? 'tech/dashboard.php' : 'tech/index.php';
-                $tech_text = $tech_logged_in ? 'Dashboard' : 'Technician';
-                ?>
-                <a href="<?php echo $tech_link; ?>" style="background: #4a5568; color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 24px; border-radius: 8px; transition: all 0.3s; font-weight: 600; font-size: 0.95rem; border: 2px solid #63b3ed;" onmouseover="this.style.background='#63b3ed'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(99, 179, 237, 0.3)'" onmouseout="this.style.background='#4a5568'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                    <?php if($tech_logged_in): ?>
-                        <i class="fas fa-chart-line" style="font-size: 1rem;"></i>
-                    <?php else: ?>
-                        <i class="fas fa-tools" style="font-size: 1rem;"></i>
-                    <?php endif; ?>
-                    <span><?php echo $tech_text; ?></span>
-                </a>
-            </div>
-            
-            <!-- Empty space for balance -->
-            <div class="col-6 col-md-3 mb-3">
+            <!-- Brand & Download App - Side by Side on Mobile -->
+            <div class="col-12 col-md-6 mb-3">
+                <div class="row">
+                    <div class="col-6 col-md-6">
+                        <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Electrozot</h5>
+                        <?php
+                        // Check if technician is logged in (session already started in main file)
+                        $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
+                        $tech_link = $tech_logged_in ? 'tech/dashboard.php' : 'tech/index.php';
+                        $tech_text = $tech_logged_in ? 'Dashboard' : 'Technician';
+                        ?>
+                        <a href="<?php echo $tech_link; ?>" style="background: #4a5568; color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 8px; transition: all 0.3s; font-weight: 600; font-size: 0.85rem; border: 2px solid #63b3ed;" onmouseover="this.style.background='#63b3ed'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(99, 179, 237, 0.3)'" onmouseout="this.style.background='#4a5568'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <?php if($tech_logged_in): ?>
+                                <i class="fas fa-chart-line" style="font-size: 0.9rem;"></i>
+                            <?php else: ?>
+                                <i class="fas fa-tools" style="font-size: 0.9rem;"></i>
+                            <?php endif; ?>
+                            <span><?php echo $tech_text; ?></span>
+                        </a>
+                    </div>
+                    
+                    <div class="col-6 col-md-6">
+                        <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Get App</h5>
+                        <button id="pwa-install-footer-btn" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 8px; transition: all 0.3s; font-weight: 600; font-size: 0.85rem; border: 2px solid rgba(255,255,255,0.3); cursor: pointer;" onmouseover="this.style.background='linear-gradient(135deg, #764ba2 0%, #667eea 100%)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(102, 126, 234, 0.4)'" onmouseout="this.style.background='linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <i class="fas fa-download" style="font-size: 0.9rem;"></i>
+                            <span>Download</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -138,6 +146,40 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
         var nameInput = document.querySelector('#booking-form input[name="customer_name"]');
         setTimeout(function() { if (nameInput) { nameInput.focus(); } }, 400);
       });
+    }
+    
+    // Footer PWA Install Button Handler
+    var footerInstallBtn = document.getElementById('pwa-install-footer-btn');
+    if (footerInstallBtn) {
+      // Check if deferredPrompt exists (set in index.php)
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        window.deferredPrompt = e;
+        footerInstallBtn.style.display = 'inline-flex';
+      });
+      
+      footerInstallBtn.addEventListener('click', async () => {
+        if (!window.deferredPrompt) {
+          alert('📱 Install ElectroZot App\n\n' +
+                'Browse the site for 30 seconds, then the install option will appear!\n\n' +
+                'Or check your browser menu for "Install ElectroZot"');
+          return;
+        }
+        window.deferredPrompt.prompt();
+        const { outcome } = await window.deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
+          footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        }
+        window.deferredPrompt = null;
+      });
+      
+      // Check if already installed
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
+        footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+      }
     }
   });
 </script>

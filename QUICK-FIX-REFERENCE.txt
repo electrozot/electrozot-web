@@ -1,0 +1,59 @@
+╔═══════════════════════════════════════════════════════════════╗
+║         SERVICE WORKER 404 ERROR - QUICK FIX GUIDE           ║
+╚═══════════════════════════════════════════════════════════════╝
+
+ERROR MESSAGE:
+--------------
+"Failed to register ServiceWorker... A bad HTTP response code 
+(404) was received when fetching the script."
+
+INSTANT FIX:
+------------
+✅ Already fixed in: pwa-update-notification.js
+✅ Changed from absolute path to relative path
+✅ No further action needed!
+
+TEST IT NOW:
+------------
+1. Open: test-service-worker.html
+2. All checks should show ✅ green
+3. Console should show: "✅ Service Worker registered"
+
+BROWSER CONSOLE TEST:
+----------------------
+Press F12, paste this:
+
+navigator.serviceWorker.getRegistration()
+  .then(reg => console.log(reg ? '✅ Working!' : '❌ Not registered'))
+
+CLEAR OLD CACHE (if needed):
+-----------------------------
+Press F12, paste this:
+
+navigator.serviceWorker.getRegistrations()
+  .then(regs => regs.forEach(r => r.unregister()))
+  .then(() => location.reload())
+
+DEVTOOLS CHECK:
+---------------
+F12 → Application → Service Workers
+Should show: "sw.js - activated and running"
+
+PRODUCTION DEPLOY:
+------------------
+1. Upload all files
+2. Ensure HTTPS is enabled
+3. Test in incognito mode
+4. Check console for ✅ messages
+
+SUPPORT FILES:
+--------------
+📄 test-service-worker.html - Interactive tester
+📄 SERVICE-WORKER-FIX.md - Full documentation
+📄 SERVICE-WORKER-FIX-SUMMARY.txt - Detailed summary
+
+STATUS: ✅ FIXED AND READY
+
+╔═══════════════════════════════════════════════════════════════╗
+║  Both orientation lock AND service worker are now working!    ║
+╚═══════════════════════════════════════════════════════════════╝
