@@ -13,94 +13,45 @@ if (empty($category) || empty($subcategory)) {
     exit();
 }
 
-// Define services manually (works without SQL file)
-$services_data = [
-    'Basic Electrical Work' => [
-        'Wiring & Fixtures' => [
-            ['name' => 'Home Wiring - New Installation', 'desc' => 'Complete new home wiring installation', 'price' => 2500, 'duration' => '1-2 days'],
-            ['name' => 'Home Wiring - Repair', 'desc' => 'Repair existing home wiring', 'price' => 800, 'duration' => '2-4 hours'],
-            ['name' => 'Switch/Socket - Installation', 'desc' => 'Install new switches and sockets', 'price' => 150, 'duration' => '30 mins'],
-            ['name' => 'Switch/Socket - Replacement', 'desc' => 'Replace old switches and sockets', 'price' => 120, 'duration' => '30 mins'],
-            ['name' => 'Light Fixture - Installation', 'desc' => 'Install tube lights, LED panels, chandeliers', 'price' => 300, 'duration' => '1 hour'],
-            ['name' => 'Festive Lighting - Setup', 'desc' => 'Decorative lighting installation', 'price' => 600, 'duration' => '2-4 hours']
-        ],
-        'Safety & Power' => [
-            ['name' => 'Circuit Breaker - Repair', 'desc' => 'Fix circuit breaker issues', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Inverter - Installation', 'desc' => 'Complete inverter installation', 'price' => 800, 'duration' => '3-4 hours'],
-            ['name' => 'UPS - Installation', 'desc' => 'UPS system installation', 'price' => 600, 'duration' => '2-3 hours'],
-            ['name' => 'Voltage Stabilizer - Installation', 'desc' => 'Install voltage stabilizer', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Grounding System - Installation', 'desc' => 'Earthing system setup', 'price' => 1000, 'duration' => '4-6 hours'],
-            ['name' => 'Electrical Fault - Repair', 'desc' => 'Find and fix electrical faults', 'price' => 500, 'duration' => '1-2 hours']
-        ]
-    ],
-    'Electronic Repair' => [
-        'Major Appliances' => [
-            ['name' => 'AC (Split) - Repair', 'desc' => 'Split AC repair service', 'price' => 800, 'duration' => '2-3 hours'],
-            ['name' => 'AC (Window) - Repair', 'desc' => 'Window AC repair', 'price' => 600, 'duration' => '2-3 hours'],
-            ['name' => 'Refrigerator - Repair', 'desc' => 'Fridge repair and troubleshooting', 'price' => 700, 'duration' => '2-3 hours'],
-            ['name' => 'Refrigerator - Gas Charging', 'desc' => 'Gas refill service', 'price' => 1200, 'duration' => '2-3 hours'],
-            ['name' => 'Washing Machine - Repair', 'desc' => 'All types washing machine repair', 'price' => 700, 'duration' => '2-3 hours'],
-            ['name' => 'Microwave Oven - Repair', 'desc' => 'Microwave repair service', 'price' => 600, 'duration' => '1-2 hours'],
-            ['name' => 'Geyser/Water Heater - Repair', 'desc' => 'Geyser repair service', 'price' => 500, 'duration' => '1-2 hours']
-        ],
-        'Other Gadgets' => [
-            ['name' => 'Ceiling Fan - Repair', 'desc' => 'Ceiling fan repair', 'price' => 300, 'duration' => '1 hour'],
-            ['name' => 'Table Fan - Repair', 'desc' => 'Table fan repair', 'price' => 200, 'duration' => '1 hour'],
-            ['name' => 'LED TV - Repair', 'desc' => 'LED TV repair service', 'price' => 800, 'duration' => '2-3 hours'],
-            ['name' => 'Smart TV - Repair', 'desc' => 'Smart TV repair', 'price' => 1000, 'duration' => '2-4 hours'],
-            ['name' => 'Electric Iron - Repair', 'desc' => 'Iron repair service', 'price' => 200, 'duration' => '1 hour'],
-            ['name' => 'Induction Cooktop - Repair', 'desc' => 'Induction repair', 'price' => 500, 'duration' => '1-2 hours'],
-            ['name' => 'Air Cooler - Repair', 'desc' => 'Air cooler repair', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Water Filter/Purifier - Repair', 'desc' => 'Filter repair service', 'price' => 500, 'duration' => '1-2 hours']
-        ]
-    ],
-    'Installation & Setup' => [
-        'Appliance Setup' => [
-            ['name' => 'TV/DTH - Installation', 'desc' => 'TV and DTH dish installation', 'price' => 600, 'duration' => '2-3 hours'],
-            ['name' => 'Electric Chimney - Installation', 'desc' => 'Kitchen chimney installation', 'price' => 800, 'duration' => '2-3 hours'],
-            ['name' => 'Ceiling Fan - Installation', 'desc' => 'New ceiling fan installation', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Washing Machine - Installation', 'desc' => 'Washing machine setup', 'price' => 500, 'duration' => '1-2 hours'],
-            ['name' => 'Air Cooler - Installation', 'desc' => 'Air cooler installation', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Water Filter/Purifier - Installation', 'desc' => 'Filter installation', 'price' => 700, 'duration' => '2-3 hours'],
-            ['name' => 'Geyser/Water Heater - Installation', 'desc' => 'Geyser installation', 'price' => 700, 'duration' => '2-3 hours']
-        ],
-        'Tech & Security' => [
-            ['name' => 'CCTV Camera - Installation (Single)', 'desc' => 'Single camera installation', 'price' => 1200, 'duration' => '2-3 hours'],
-            ['name' => 'CCTV Camera - Installation (4 Cameras)', 'desc' => 'Complete 4 camera system', 'price' => 4000, 'duration' => '1 day'],
-            ['name' => 'Wi-Fi Router - Setup', 'desc' => 'Router installation and configuration', 'price' => 300, 'duration' => '1 hour'],
-            ['name' => 'Smart Switch - Installation', 'desc' => 'Smart home switch installation', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Smart Light - Installation', 'desc' => 'Smart lighting system', 'price' => 500, 'duration' => '1-2 hours']
-        ]
-    ],
-    'Servicing & Maintenance' => [
-        'Routine Care' => [
-            ['name' => 'AC - Wet Servicing', 'desc' => 'Complete AC wet servicing with deep cleaning', 'price' => 800, 'duration' => '2-3 hours'],
-            ['name' => 'AC - Dry Servicing', 'desc' => 'AC dry servicing and filter cleaning', 'price' => 500, 'duration' => '1-2 hours'],
-            ['name' => 'Washing Machine - Cleaning', 'desc' => 'Deep cleaning of washing machine', 'price' => 400, 'duration' => '1-2 hours'],
-            ['name' => 'Geyser - Descaling', 'desc' => 'Geyser descaling and cleaning', 'price' => 600, 'duration' => '2-3 hours'],
-            ['name' => 'Water Filter - Cartridge Replacement', 'desc' => 'Replace filter cartridge', 'price' => 400, 'duration' => '1 hour'],
-            ['name' => 'Water Tank - Cleaning (Manual)', 'desc' => 'Manual tank cleaning', 'price' => 800, 'duration' => '3-4 hours'],
-            ['name' => 'Water Tank - Cleaning (Motorized)', 'desc' => 'Motorized tank cleaning', 'price' => 1200, 'duration' => '2-3 hours']
-        ]
-    ],
-    'Plumbing Work' => [
-        'Fixtures & Taps' => [
-            ['name' => 'Tap/Faucet - Installation', 'desc' => 'New tap installation', 'price' => 300, 'duration' => '1 hour'],
-            ['name' => 'Tap/Faucet - Repair', 'desc' => 'Tap repair service', 'price' => 200, 'duration' => '1 hour'],
-            ['name' => 'Shower - Installation', 'desc' => 'Shower installation', 'price' => 500, 'duration' => '1-2 hours'],
-            ['name' => 'Shower - Repair', 'desc' => 'Shower repair', 'price' => 300, 'duration' => '1 hour'],
-            ['name' => 'Washbasin - Installation', 'desc' => 'Washbasin installation', 'price' => 800, 'duration' => '2-3 hours'],
-            ['name' => 'Kitchen Sink - Installation', 'desc' => 'Kitchen sink installation', 'price' => 700, 'duration' => '2-3 hours'],
-            ['name' => 'Toilet/Commode - Installation', 'desc' => 'Complete toilet installation', 'price' => 1200, 'duration' => '3-4 hours'],
-            ['name' => 'Flush Tank - Installation', 'desc' => 'Flush tank installation', 'price' => 600, 'duration' => '1-2 hours']
-        ]
-    ]
-];
+// Load services from database based on subcategory
+// Check if s_subcategory column exists, if not use s_category
+$check_column = $mysqli->query("SHOW COLUMNS FROM tms_service LIKE 's_subcategory'");
+$has_subcategory_column = ($check_column->num_rows > 0);
 
 $services = [];
-if (isset($services_data[$category][$subcategory])) {
-    $services = $services_data[$category][$subcategory];
+
+if ($has_subcategory_column) {
+    // Use subcategory column if it exists
+    $query = "SELECT s_id, s_name, s_description, s_price, s_duration, s_category 
+              FROM tms_service 
+              WHERE s_subcategory = ? AND s_status = 'Active' 
+              ORDER BY s_name ASC";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $subcategory);
+} else {
+    // Fallback: Load all services from the main category
+    $query = "SELECT s_id, s_name, s_description, s_price, s_duration, s_category 
+              FROM tms_service 
+              WHERE s_category = ? AND s_status = 'Active' 
+              ORDER BY s_name ASC";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param('s', $category);
 }
+
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $services[] = [
+        'id' => $row['s_id'],
+        'name' => $row['s_name'],
+        'desc' => $row['s_description'],
+        'price' => $row['s_price'],
+        'duration' => $row['s_duration']
+    ];
+}
+
+$stmt->close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,28 +65,36 @@ if (isset($services_data[$category][$subcategory])) {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
-            padding-bottom: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding-top: 75px;
+            padding-bottom: 80px;
             min-height: 100vh;
         }
         
         .header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+            z-index: 1000;
         }
         
         .header-content {
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
         }
         
         .logo {
@@ -215,7 +174,7 @@ if (isset($services_data[$category][$subcategory])) {
         }
         
         .step.active .step-circle {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
         }
         
@@ -231,6 +190,7 @@ if (isset($services_data[$category][$subcategory])) {
         
         .content {
             padding: 15px;
+            padding-bottom: 25px;
         }
         
         .breadcrumb {
@@ -244,7 +204,7 @@ if (isset($services_data[$category][$subcategory])) {
         }
         
         .breadcrumb strong {
-            color: #667eea;
+            color: #d13abd;
         }
         
         .section-title {
@@ -259,10 +219,22 @@ if (isset($services_data[$category][$subcategory])) {
             border-radius: 15px;
             padding: 15px;
             margin-bottom: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 10px rgba(209, 58, 189, 0.08);
             text-decoration: none;
             display: block;
             transition: all 0.3s;
+            border: 1px solid rgba(236, 110, 173, 0.1);
+            position: relative;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.2);
+            border-color: rgba(236, 110, 173, 0.3);
+        }
+        
+        .service-card:last-child {
+            margin-bottom: 20px;
         }
         
         .service-card:active {
@@ -287,6 +259,7 @@ if (isset($services_data[$category][$subcategory])) {
             display: flex;
             justify-content: flex-start;
             align-items: center;
+            margin-bottom: 45px;
         }
         
         .duration-badge {
@@ -298,25 +271,40 @@ if (isset($services_data[$category][$subcategory])) {
         }
         
         .book-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
-            padding: 10px;
-            border-radius: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
             text-align: center;
-            margin-top: 10px;
             font-weight: 600;
+            font-size: 14px;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            white-space: nowrap;
+            z-index: 10;
+            pointer-events: auto;
+            box-shadow: 0 2px 8px rgba(209, 58, 189, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(209, 58, 189, 0.4);
         }
         
         .bottom-nav {
             position: fixed;
             bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 16px);
+            max-width: 450px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
-            padding: 6px 0;
+            padding: 4px 6px;
             z-index: 1000;
             border-radius: 20px;
         }
@@ -325,12 +313,66 @@ if (isset($services_data[$category][$subcategory])) {
             flex: 1;
             text-align: center;
             text-decoration: none;
-            color: #999;
-            transition: all 0.3s;
-            padding: 4px;
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 2px;
+            position: relative;
+            border-radius: 12px;
         }
         
-        .nav-item.active { color: #667eea; }
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active { 
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-item i {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 1px;
+        }
+        
+        .nav-item.active i {
+            animation: bounce 0.4s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        .nav-item span {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-nav {
+                max-width: 400px;
+                bottom: 10px;
+                padding: 5px 8px;
+            }
+            
+            .nav-item {
+                padding: 5px 4px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+            
+            .nav-item span {
+                font-size: 9px;
+            }
+        }
         
         .nav-item i {
             font-size: 20px;
@@ -437,13 +479,13 @@ if (isset($services_data[$category][$subcategory])) {
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="brand-section">
+            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
                 </div>
-            </div>
+            </a>
             <div class="user-section">
                 <div class="header-icons">
                     <a href="user-view-profile.php" class="header-icon">
@@ -483,7 +525,7 @@ if (isset($services_data[$category][$subcategory])) {
         <?php if (!empty($services)): ?>
             <div class="services-grid">
             <?php foreach ($services as $service): ?>
-            <a href="confirm-booking.php?service_name=<?php echo urlencode($service['name']); ?>&duration=<?php echo urlencode($service['duration']); ?>&category=<?php echo urlencode($category); ?>&subcategory=<?php echo urlencode($subcategory); ?>" class="service-card">
+            <a href="confirm-booking.php?service_id=<?php echo $service['id']; ?>&service_name=<?php echo urlencode($service['name']); ?>&duration=<?php echo urlencode($service['duration']); ?>&category=<?php echo urlencode($category); ?>&subcategory=<?php echo urlencode($subcategory); ?>" class="service-card">
                 <div class="service-name">
                     <i class="fas fa-check-circle" style="color: #43e97b;"></i>
                     <?php echo htmlspecialchars($service['name']); ?>
@@ -504,13 +546,22 @@ if (isset($services_data[$category][$subcategory])) {
             </div>
         <?php else: ?>
             <div style="text-align: center; padding: 40px 20px; color: #999;">
-                <i class="fas fa-exclamation-circle" style="font-size: 50px; margin-bottom: 15px;"></i>
-                <p>No services found in this category.</p>
-                <p style="font-size: 12px; margin-top: 10px;">Please run the SQL file to add services.</p>
-                <a href="book-service-step2.php?category=<?php echo urlencode($category); ?>" 
-                   style="color: #667eea; text-decoration: none; margin-top: 15px; display: inline-block;">
-                   <i class="fas fa-arrow-left"></i> Go Back
-                </a>
+                <i class="fas fa-exclamation-circle" style="font-size: 50px; margin-bottom: 15px; color: #f59e0b;"></i>
+                <p style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 10px;">No Services Available</p>
+                <p style="font-size: 14px; margin-bottom: 20px;">No services have been added to this category yet.</p>
+                <p style="font-size: 13px; color: #666; margin-bottom: 25px;">
+                    <i class="fas fa-info-circle"></i> Admin needs to add services for <strong><?php echo htmlspecialchars($subcategory); ?></strong>
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="book-service-step2.php?category=<?php echo urlencode($category); ?>" 
+                       style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 12px 25px; border-radius: 25px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                       <i class="fas fa-arrow-left"></i> Choose Different Type
+                    </a>
+                    <a href="book-custom-service.php" 
+                       style="background: white; color: #6366f1; border: 2px solid #6366f1; padding: 12px 25px; border-radius: 25px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">
+                       <i class="fas fa-plus-circle"></i> Request Custom Service
+                    </a>
+                </div>
             </div>
         <?php endif; ?>
     </div>
@@ -531,6 +582,10 @@ if (isset($services_data[$category][$subcategory])) {
         <a href="user-view-profile.php" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
+        </a>
+        <a href="../index.php" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Main</span>
         </a>
     </div>
 </body>

@@ -100,7 +100,7 @@ function decrementTechnicianBookings($mysqli, $technician_id) {
  */
 function getAvailableTechniciansWithCapacity($mysqli, $service_category = null) {
     $sql = "SELECT t_id, t_name, t_category, t_specialization, t_current_bookings, t_booking_limit,
-            (t_booking_limit - t_current_bookings) as available_slots
+            (t_booking_limit - t_current_bookings) as available_slots, t_skills
             FROM tms_technician 
             WHERE t_status = 'Available'
             AND t_current_bookings < t_booking_limit";
@@ -120,6 +120,70 @@ function getAvailableTechniciansWithCapacity($mysqli, $service_category = null) 
     
     $technicians = [];
     while ($row = $result->fetch_object()) {
+        $technicians[] = $row;
+    }
+    
+    return $technicians;
+}
+
+/**
+ * Get available technicians who can perform a specific service
+ * Matches based on service name in technician's skills
+ */
+function getAvailableTechniciansForService($mysqli, $service_id) {
+    // First get the service name
+    $service_stmt = $mysqli->prepare("SELECT s_name, s_category FROM tms_service WHERE s_id = ?");
+    $service_stmt->bind_param('i', $service_id);
+    $service_stmt->execute();
+    $service_result = $service_stmt->get_result();
+    $service = $service_result->fetch_object();
+    
+    if (!$service) {
+        return [];
+    }
+    
+    $service_name = $service->s_name;
+    $service_category = $service->s_category;
+    
+    // Get technicians who have this service in their skills and have available slots
+    $sql = "SELECT t_id, t_name, t_category, t_specialization, t_skills,
+            t_current_bookings, t_booking_limit,
+            (t_booking_limit - t_current_bookings) as available_slots
+            FROM tms_technician 
+            WHERE t_status = 'Available'
+            AND t_current_bookings < t_booking_limit
+            AND (
+                FIND_IN_SET(?, t_skills) > 0
+                OR t_skills LIKE CONCAT('%', ?, '%')
+                OR t_category = ?
+            )
+            ORDER BY 
+                CASE 
+                    WHEN FIND_IN_SET(?, t_skills) > 0 THEN 1
+                    WHEN t_skills LIKE CONCAT('%', ?, '%') THEN 2
+                    ELSE 3
+                END,
+                available_slots DESC, 
+                t_current_bookings ASC";
+    
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param('sssss', $service_name, $service_name, $service_category, $service_name, $service_name);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    $technicians = [];
+    while ($row = $result->fetch_object()) {
+        // Add skill match indicator
+        $row->skill_match = false;
+        if ($row->t_skills) {
+            $skills_array = array_map('trim', explode(',', $row->t_skills));
+            if (in_array($service_name, $skills_array) || 
+                array_filter($skills_array, function($skill) use ($service_name) {
+                    return stripos($skill, $service_name) !== false;
+                })) {
+                $row->skill_match = true;
+            }
+        }
         $technicians[] = $row;
     }
     

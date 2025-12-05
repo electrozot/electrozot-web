@@ -71,13 +71,21 @@ if(isset($_GET['sb_id'])) {
         $cancel_record_stmt->execute();
     }
     
-    // Update booking status to Cancelled (NOT deleting it)
-    $cancel_query = "UPDATE tms_service_booking SET sb_status = 'Cancelled' WHERE sb_id = ?";
+    // Update booking status to Cancelled and set cancelled_by to 'admin' (NOT deleting it)
+    $cancel_query = "UPDATE tms_service_booking 
+                     SET sb_status = 'Cancelled', 
+                         sb_cancelled_by = 'admin',
+                         sb_cancelled_at = NOW() 
+                     WHERE sb_id = ?";
     $cancel_stmt = $mysqli->prepare($cancel_query);
     $cancel_stmt->bind_param('i', $sb_id);
     
     if($cancel_stmt->execute()) {
-        $_SESSION['success'] = "Booking #$sb_id has been cancelled successfully!";
+        // Redirect with success modal
+        $success_message = "Booking #$sb_id has been cancelled successfully!";
+        $redirect_url = "admin-manage-service-booking.php";
+        header("Location: admin-cancel-service-booking.php?success=1&message=" . urlencode($success_message) . "&redirect=" . urlencode($redirect_url));
+        exit();
     } else {
         $_SESSION['error'] = "Failed to cancel booking. Please try again.";
     }

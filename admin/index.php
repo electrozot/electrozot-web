@@ -5,6 +5,30 @@
     session_start();
     include('vendor/inc/config.php');//get configuration file
     
+    // Check if admin is already logged in - redirect to last page or dashboard
+    if(isset($_SESSION['a_id']) && strlen($_SESSION['a_id']) > 0) {
+        // Admin is already logged in, redirect to last visited page or dashboard
+        $redirect_page = 'admin-dashboard.php'; // Default to dashboard
+        
+        // Check if last_page is set and is a valid admin page
+        if(isset($_SESSION['last_page']) && !empty($_SESSION['last_page'])) {
+            $last_page = $_SESSION['last_page'];
+            // Remove query string for file check
+            $page_file = strpos($last_page, '?') !== false ? substr($last_page, 0, strpos($last_page, '?')) : $last_page;
+            
+            // Only use last_page if it's a valid admin page file
+            if(file_exists($page_file) && strpos($page_file, 'admin-') === 0) {
+                $redirect_page = $last_page;
+            } else {
+                // Clear invalid last_page
+                unset($_SESSION['last_page']);
+            }
+        }
+        
+        header("location: $redirect_page");
+        exit;
+    }
+    
     // Add phone column if it doesn't exist (run once, outside login check)
     $alter_result = $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_phone VARCHAR(15) DEFAULT NULL");
     if($alter_result) {
@@ -31,6 +55,7 @@
       $a_login=$_POST['a_login']; // Can be email or phone
       $a_pwd=($_POST['a_pwd']);//
       $a_pwd= md5($a_pwd);//
+      $remember_me = isset($_POST['remember_me']) ? true : false;
       
       // Check if login is email or phone (phone is all digits)
       if(preg_match('/^[0-9]{10}$/', $a_login)) {
@@ -47,29 +72,64 @@
       $rs=$stmt->fetch();
       $stmt->close(); // Close the statement to free the connection
       
-      $_SESSION['a_id']=$a_id;//assaign session to admin id
-      $_SESSION['a_name']=$a_name;//assign session to admin name
-      $_SESSION['a_photo']=$a_photo;//assign session to admin photo
       if($rs)
       {//if its sucessfull
+        // Set session variables AFTER successful fetch
+        $_SESSION['a_id']=$a_id;//assaign session to admin id
+        $_SESSION['a_name']=$a_name;//assign session to admin name
+        $_SESSION['a_photo']=$a_photo;//assign session to admin photo
+        
         // Regenerate session ID for security
         session_regenerate_id(true);
         
-        // Log the admin login
-        $user_ip = $_SERVER['REMOTE_ADDR'];
-        $user_city = 'N/A'; // Can be enhanced with IP geolocation API
-        $user_country = 'N/A';
+        // Set remember me cookie if checked (15 hours for admin security)
+        if($remember_me) {
+            // Cookie will last 15 hours (54000 seconds)
+            setcookie(session_name(), session_id(), time() + 54000, '/');
+        }
         
-        // Insert log entry
-        $log_stmt = $mysqli->prepare("INSERT INTO tms_syslogs (u_email, u_ip, u_city, u_country, user_type) VALUES (?, ?, ?, ?, 'admin')");
-        $log_stmt->bind_param('ssss', $a_email, $user_ip, $user_city, $user_country);
-        $log_stmt->execute();
-        $log_stmt->close();
+        // Log the admin login (wrapped in try-catch to prevent errors)
+        try {
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+            $user_city = 'N/A';
+            $user_country = 'N/A';
+            
+            // Insert log entry
+            $log_stmt = $mysqli->prepare("INSERT INTO tms_syslogs (u_email, u_ip, u_city, u_country, user_type) VALUES (?, ?, ?, ?, 'admin')");
+            if($log_stmt) {
+                $log_stmt->bind_param('ssss', $a_email, $user_ip, $user_city, $user_country);
+                $log_stmt->execute();
+                $log_stmt->close();
+            }
+            
+            // Auto-cleanup: Keep only 100 most recent system logs
+            if(file_exists('vendor/inc/cleanup-syslogs.php')) {
+                @include('vendor/inc/cleanup-syslogs.php');
+            }
+        } catch(Exception $e) {
+            // Silently handle logging errors
+        }
         
-        // Auto-cleanup: Keep only 100 most recent system logs
-        include('vendor/inc/cleanup-syslogs.php');
+        // Redirect to last visited page or dashboard
+        $redirect_page = 'admin-dashboard.php'; // Default to dashboard
         
-        header("location:admin-dashboard.php");
+        // Check if last_page is set and is a valid admin page
+        if(isset($_SESSION['last_page']) && !empty($_SESSION['last_page'])) {
+            $last_page = $_SESSION['last_page'];
+            // Remove query string for file check
+            $page_file = strpos($last_page, '?') !== false ? substr($last_page, 0, strpos($last_page, '?')) : $last_page;
+            
+            // Only use last_page if it's a valid admin page file
+            if(file_exists($page_file) && strpos($page_file, 'admin-') === 0) {
+                $redirect_page = $last_page;
+            } else {
+                // Clear invalid last_page
+                unset($_SESSION['last_page']);
+            }
+        }
+        
+        header("Location: $redirect_page");
+        exit(); // IMPORTANT: Stop script execution after redirect
       }
       else
       {
@@ -502,7 +562,7 @@
                     </div>
                     
                     <div class="checkbox-wrapper">
-                        <input type="checkbox" id="remember" value="remember-me">
+                        <input type="checkbox" name="remember_me" id="remember" checked>
                         <label for="remember">Remember me</label>
                     </div>
                     

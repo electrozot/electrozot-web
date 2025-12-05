@@ -1,4 +1,22 @@
  <style>
+ /* Pulse animation for notification badge */
+ @keyframes pulse {
+     0%, 100% {
+         transform: scale(1);
+         box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+     }
+     50% {
+         transform: scale(1.05);
+         box-shadow: 0 0 0 5px rgba(220, 53, 69, 0);
+     }
+ }
+ 
+ /* Reduce Sidebar Width Only */
+ .sidebar {
+     width: 200px !important;
+     overflow-x: hidden !important;
+ }
+ 
  /* Dropdown menu styling for better visibility */
  .navbar-nav .dropdown-menu {
      background-color: #4a5568 !important;
@@ -10,11 +28,17 @@
  
  .navbar-nav .dropdown-item {
      color: #ffffff !important;
-     padding: 0.85rem 1.5rem !important;
-     font-size: 0.95rem !important;
+     padding: 0.65rem 0.5rem !important;
+     font-size: 0.9rem !important;
      font-weight: 500 !important;
      border-radius: 4px !important;
-     margin: 2px 8px !important;
+     margin-left: 8px !important;
+     margin-right: 8px !important;
+     margin-top: 2px !important;
+     margin-bottom: 2px !important;
+     display: flex !important;
+     align-items: center !important;
+     max-width: calc(100% - 16px) !important;
  }
  
  .navbar-nav .dropdown-item:hover {
@@ -25,10 +49,17 @@
  }
  
  .navbar-nav .dropdown-item i {
-     margin-right: 8px;
-     width: 20px;
-     text-align: center;
+     margin-right: 6px !important;
+     width: 16px !important;
+     text-align: center !important;
      color: #a0aec0;
+     flex-shrink: 0 !important;
+ }
+ 
+ .navbar-nav .dropdown-item span {
+     white-space: nowrap !important;
+     overflow: hidden !important;
+     text-overflow: ellipsis !important;
  }
  
  .navbar-nav .dropdown-item:hover i {
@@ -50,16 +81,36 @@
      margin: 0.5rem 0.5rem !important;
  }
  
- /* Main sidebar items styling for contrast */
+ /* Main sidebar items styling - Equal spacing on both sides */
  .navbar-nav .nav-link {
      background-color: rgba(255,255,255,0.1);
-     margin: 3px 10px;
+     margin-left: 10px !important;
+     margin-right: 10px !important;
+     margin-top: 3px !important;
+     margin-bottom: 3px !important;
+     padding: 0.75rem 0.6rem 0.75rem 0.6rem !important;
      border-radius: 8px;
      transition: all 0.3s ease;
+     display: flex !important;
+     align-items: center !important;
+     max-width: calc(100% - 20px) !important;
  }
  
  .navbar-nav .nav-link:hover {
      background-color: rgba(255,255,255,0.2);
+ }
+ 
+ .navbar-nav .nav-link i {
+     width: 18px !important;
+     margin-right: 6px !important;
+     text-align: center !important;
+     flex-shrink: 0 !important;
+ }
+ 
+ .navbar-nav .nav-link span {
+     white-space: nowrap !important;
+     overflow: hidden !important;
+     text-overflow: ellipsis !important;
  }
  </style>
  
@@ -93,19 +144,28 @@
          <a class="nav-link dropdown-toggle" href="#" id="techniciansDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="fas fa-fw fa-user-cog"></i>
              <span>Technicians</span>
+             <?php
+             $guest_count_main_query = "SELECT COUNT(*) as count FROM tms_technician WHERE t_is_guest = 1 AND t_status = 'Pending'";
+             $guest_count_main_result = $mysqli->query($guest_count_main_query);
+             $guest_count_main = $guest_count_main_result->fetch_object()->count;
+             if($guest_count_main > 0):
+             ?>
+                 <span class="badge badge-danger badge-counter ml-auto" style="animation: pulse 2s infinite;"><?php echo $guest_count_main; ?></span>
+             <?php endif; ?>
          </a>
          <div class="dropdown-menu" aria-labelledby="techniciansDropdown">
              <a class="dropdown-item" href="admin-add-technician.php"><i class="fas fa-user-plus"></i> Add Technician</a>
              <a class="dropdown-item" href="admin-manage-technician.php"><i class="fas fa-users-cog"></i> Manage All</a>
              <a class="dropdown-item" href="admin-guest-technicians.php" style="background: linear-gradient(135deg, rgba(5, 117, 230, 0.1) 0%, rgba(0, 242, 96, 0.1) 100%); font-weight: 700;">
-                 <i class="fas fa-user-clock"></i> Guest Technicians
+                 <i class="fas fa-user-clock"></i> 
+                 <span>Guest Technicians</span>
                  <?php
                  $guest_count_query = "SELECT COUNT(*) as count FROM tms_technician WHERE t_is_guest = 1 AND t_status = 'Pending'";
                  $guest_count_result = $mysqli->query($guest_count_query);
                  $guest_count = $guest_count_result->fetch_object()->count;
                  if($guest_count > 0):
                  ?>
-                     <span class="badge badge-warning ml-1"><?php echo $guest_count; ?></span>
+                     <span class="badge badge-danger ml-auto" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; animation: pulse 2s infinite;"><?php echo $guest_count; ?> NEW</span>
                  <?php endif; ?>
              </a>
              <div class="dropdown-divider"></div>
@@ -152,6 +212,24 @@
          </div>
      </li>
 
+     <!-- Contact Messages -->
+     <li class="nav-item">
+         <a class="nav-link" href="admin-contact-messages.php">
+             <i class="fas fa-fw fa-envelope"></i>
+             <span>Messages</span>
+             <?php
+             // Get unread message count
+             $unread_query = $mysqli->query("SELECT COUNT(*) as count FROM tms_contact_messages WHERE cm_status='Unread'");
+             if($unread_query) {
+                 $unread_count = $unread_query->fetch_object()->count;
+                 if($unread_count > 0) {
+                     echo '<span class="badge badge-danger badge-counter ml-2">' . $unread_count . '</span>';
+                 }
+             }
+             ?>
+         </a>
+     </li>
+
      <!-- Notifications -->
      <li class="nav-item">
          <a class="nav-link" href="admin-notifications.php">
@@ -176,6 +254,8 @@
          </a>
          <div class="dropdown-menu" aria-labelledby="settingsDropdown">
              <a class="dropdown-item" href="admin-site-settings.php"><i class="fas fa-address-book"></i> Site Contact Info</a>
+             <div class="dropdown-divider"></div>
+             <a class="dropdown-item" href="admin-payment-settings.php"><i class="fas fa-qrcode"></i> Payment QR</a>
              <div class="dropdown-divider"></div>
              <a class="dropdown-item" href="admin-generate-id-card.php"><i class="fas fa-id-card"></i> Generate ID Card</a>
              <div class="dropdown-divider"></div>

@@ -15,14 +15,18 @@ try {
     // Columns might already exist
 }
 
-// Get completed bookings with images
-$completed_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name, s.s_price, t.t_name
+// Get completed bookings with images - only show when ALL details are present
+$completed_query = "SELECT DISTINCT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name, s.s_price, t.t_name
                     FROM tms_service_booking sb
                     LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                     LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                     LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
                     WHERE sb.sb_status = 'Completed'
-                    ORDER BY sb.sb_booking_date DESC";
+                    AND sb.sb_completion_image IS NOT NULL
+                    AND sb.sb_bill_attachment IS NOT NULL
+                    AND sb.sb_bill_amount IS NOT NULL
+                    AND sb.sb_bill_amount > 0
+                    ORDER BY sb.sb_completed_at DESC, sb.sb_booking_date DESC";
 $completed_result = $mysqli->query($completed_query);
 ?>
 <!DOCTYPE html>

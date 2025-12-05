@@ -15,13 +15,12 @@
         html { overflow-x: hidden; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, #FFE4F0 0%, #FFC9E0 50%, #FFB3D9 100%);
+            background-attachment: fixed;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             position: relative;
             overflow-x: hidden;
+            overflow-y: auto;
             padding: 20px 10px;
         }
         body::before {
@@ -73,17 +72,18 @@
         .logo-section .brand-name {
             font-size: 1.6rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         .forgot-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             width: 100%;
             max-width: 480px;
             padding: 0 15px;
+            margin: 100px auto 40px;
         }
         .forgot-card {
             background: rgba(255, 255, 255, 0.95);
@@ -98,7 +98,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .forgot-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             padding: 40px 30px;
             text-align: center;
             position: relative;
@@ -136,7 +136,7 @@
         }
         .logo-circle i {
             font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -156,10 +156,13 @@
             position: relative;
             z-index: 1;
         }
-        .forgot-body { padding: 40px 35px; }
+        .forgot-body { 
+            padding: 40px 35px;
+            background: linear-gradient(180deg, #FFFEF0 0%, #FFF9E0 100%);
+        }
         .info-box {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, rgba(236, 110, 173, 0.1) 0%, rgba(209, 58, 189, 0.1) 100%);
+            border-left: 4px solid #ec6ead;
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 25px;
@@ -171,7 +174,7 @@
             line-height: 1.6;
         }
         .info-box i {
-            color: #667eea;
+            color: #ec6ead;
             margin-right: 8px;
         }
         .form-group { margin-bottom: 25px; }
@@ -183,7 +186,7 @@
             font-size: 0.95rem;
         }
         .form-group label i {
-            color: #667eea;
+            color: #ec6ead;
             margin-right: 8px;
         }
         .form-control {
@@ -197,14 +200,14 @@
         }
         .form-control:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #ec6ead;
             background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(236, 110, 173, 0.1);
         }
         .btn-reset {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             border: none;
             border-radius: 12px;
             color: white;
@@ -248,7 +251,7 @@
         }
         .links-section a {
             display: inline-block;
-            color: #667eea;
+            color: #ec6ead;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -261,11 +264,11 @@
             left: 0;
             width: 0;
             height: 2px;
-            background: #667eea;
+            background: #ec6ead;
             transition: width 0.3s ease;
         }
         .links-section a:hover {
-            color: #764ba2;
+            color: #d13abd;
         }
         .links-section a:hover::after {
             width: 100%;

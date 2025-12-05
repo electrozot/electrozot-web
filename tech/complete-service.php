@@ -34,12 +34,28 @@ $booking = $result->fetch_object();
 // Determine the price to use
 // Admin price is set ONLY if s_price exists AND is greater than 0
 $admin_price_set = (!empty($booking->s_price) && $booking->s_price > 0);
-$display_price = $admin_price_set ? $booking->s_price : ($booking->sb_total_price > 0 ? $booking->sb_total_price : 0);
+
+// For custom bookings, use sb_total_price (which technician will set)
+// For regular bookings, use s_price if available, otherwise sb_total_price
+if(empty($booking->sb_service_id)) {
+    // Custom booking - use sb_total_price or 0 if not set
+    $display_price = $booking->sb_total_price > 0 ? $booking->sb_total_price : 0;
+} else {
+    // Regular booking - use admin price or booking price
+    $display_price = $admin_price_set ? $booking->s_price : ($booking->sb_total_price > 0 ? $booking->sb_total_price : 0);
+}
 
 // Handle form submission
 if(isset($_POST['complete_service'])){
-    $final_price = $_POST['final_price'];
+    $final_price = floatval($_POST['final_price']);
     $completion_notes = $_POST['completion_notes'];
+    
+    // Validate price for custom bookings or when admin hasn't set price
+    if(!$admin_price_set && $final_price <= 0) {
+        $_SESSION['error_msg'] = "Please enter a valid service price!";
+        header("Location: complete-service.php?id=" . $sb_id);
+        exit();
+    }
     
     // Handle service image upload
     $service_img = '';

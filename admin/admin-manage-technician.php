@@ -11,6 +11,16 @@
   // Include soft delete helper
   include('vendor/inc/soft-delete.php');
 
+  // Get messages from session
+  if(isset($_SESSION['success'])) {
+      $succ = $_SESSION['success'];
+      unset($_SESSION['success']);
+  }
+  if(isset($_SESSION['error'])) {
+      $err = $_SESSION['error'];
+      unset($_SESSION['error']);
+  }
+
   if(isset($_GET['del']))
   {
       $id=intval($_GET['del']);
@@ -300,6 +310,7 @@
                                              </span>
                                          </td>
                                          <td class="text-center" style="white-space: nowrap; padding: 0.75rem;">
+                                             <a href="admin-edit-technician-skills.php?t_id=<?php echo $row->t_id;?>" class="badge badge-success px-3 py-2 mr-2" title="Edit Skills" style="font-size: 0.9rem;"><i class="fas fa-tools"></i></a>
                                              <a href="admin-manage-single-technician.php?t_id=<?php echo $row->t_id;?>" class="badge badge-primary px-3 py-2 mr-2" title="Edit" style="font-size: 0.9rem;"><i class="fas fa-edit"></i></a>
                                              <a href="admin-view-technician.php?t_id=<?php echo $row->t_id;?>" class="badge badge-info px-3 py-2 mr-2" title="View" style="font-size: 0.9rem;"><i class="fas fa-eye"></i></a>
                                              <a href="admin-manage-technician.php?del=<?php echo $row->t_id;?>" class="badge badge-danger px-3 py-2" onclick="return confirm('Delete this technician?');" title="Delete" style="font-size: 0.9rem;"><i class="fas fa-trash"></i></a>
@@ -488,10 +499,9 @@
          50% { transform: scale(1.05); opacity: 0.9; }
      }
      </style>
- </body>
-
- </html>
-
+     
+     <!-- Success Modal -->
+     <?php include("vendor/inc/success-modal.php");?>
  </body>
 
  </html>

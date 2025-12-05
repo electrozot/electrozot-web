@@ -99,7 +99,12 @@ if(isset($_POST['create_booking'])) {
         $user_id = $user->u_id;
     } else {
         // Create new user with area and pincode
-        $password = password_hash('electrozot123', PASSWORD_DEFAULT);
+        // Generate password: first 3 letters of name (lowercase) + last 3 digits of phone
+        $name_for_pwd = strtolower(substr($customer_name, 0, 3));
+        $phone_for_pwd = substr($customer_phone, -3);
+        $auto_password = $name_for_pwd . $phone_for_pwd;
+        $password = password_hash($auto_password, PASSWORD_DEFAULT);
+        
         $insert_user = "INSERT INTO tms_user (u_fname, u_phone, u_email, u_addr, u_area, u_pincode, u_pwd, u_category, registration_type) 
                        VALUES (?, ?, ?, ?, ?, ?, ?, 'User', 'admin')";
         $stmt_user = $mysqli->prepare($insert_user);
@@ -275,14 +280,24 @@ if(isset($_SESSION['error'])) {
                                         <label>Service Type <span class="text-danger">*</span></label>
                                         <select name="service_subcategory" id="quickBookSubcategory" class="form-control" required>
                                             <option value="">-- Select Service Type --</option>
-                                            <option value="Wiring & Fixtures">Wiring & Fixtures</option>
-                                            <option value="Safety & Power">Safety & Power</option>
-                                            <option value="Major Appliances">Major Appliances</option>
-                                            <option value="Small Gadgets">Small Gadgets</option>
-                                            <option value="Appliance Setup">Appliance Setup</option>
-                                            <option value="Tech & Security">Tech & Security</option>
-                                            <option value="Routine Care">Routine Care</option>
-                                            <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                            <optgroup label="⚡ ELECTRICAL">
+                                                <option value="Wiring & Fixtures">Wiring & Fixtures</option>
+                                                <option value="Safety & Power">Safety & Power</option>
+                                            </optgroup>
+                                            <optgroup label="🔧 REPAIR">
+                                                <option value="Major Appliances">Major Appliances</option>
+                                                <option value="Other Gadgets">Other Gadgets</option>
+                                            </optgroup>
+                                            <optgroup label="🔌 INSTALL">
+                                                <option value="Appliance Setup">Appliance Setup</option>
+                                                <option value="Tech & Security">Tech & Security</option>
+                                            </optgroup>
+                                            <optgroup label="🛠️ MAINTAIN">
+                                                <option value="Routine Care">Routine Care</option>
+                                            </optgroup>
+                                            <optgroup label="💧 PLUMBING">
+                                                <option value="Fixtures & Taps">Fixtures & Taps</option>
+                                            </optgroup>
                                         </select>
                                     </div>
                                     

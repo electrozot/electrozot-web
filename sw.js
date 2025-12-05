@@ -1,11 +1,9 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v1.0.0';
+const CACHE_NAME = 'electrozot-v2.0.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = '/offline.html';
 
-// Files to cache for offline functionality
+// Files to cache for offline functionality (REMOVED index.php to always fetch fresh)
 const CACHE_URLS = [
-  '/',
-  '/index.php',
   '/offline.html',
   '/manifest.json',
   '/vendor/bootstrap/css/bootstrap.min.css',
@@ -14,6 +12,15 @@ const CACHE_URLS = [
   '/css/modern-business.css',
   '/vendor/css/custom.css',
   '/usr/vendor/fontawesome-free/css/all.min.css'
+];
+
+// URLs that should NEVER be cached (always fetch fresh from network)
+const NEVER_CACHE = [
+  '/index.php',
+  '/',
+  '/admin/',
+  '/debug-popular.php',
+  '/check-popular-services.php'
 ];
 
 // Install event - cache essential files
@@ -59,15 +66,28 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then((cachedResponse) => {
-        // Return cached response if found
-        if (cachedResponse) {
-          return cachedResponse;
+    (async () => {
+      // Check if this URL should never be cached
+      const url = new URL(event.request.url);
+      const shouldNeverCache = NEVER_CACHE.some(path => url.pathname.includes(path));
+      
+      if (shouldNeverCache) {
+        // Always fetch fresh from network for these URLs
+        try {
+          return await fetch(event.request);
+        } catch (error) {
+          return caches.match(OFFLINE_URL);
         }
+      }
+      
+      // For other URLs, try cache first
+      const cachedResponse = await caches.match(event.request);
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-        // Otherwise fetch from network
-        return fetch(event.request)
+      // Otherwise fetch from network
+      return fetch(event.request)
           .then((response) => {
             // Don't cache if not a valid response
             if (!response || response.status !== 200 || response.type !== 'basic') {
@@ -89,7 +109,7 @@ self.addEventListener('fetch', (event) => {
             // If both cache and network fail, show offline page
             return caches.match(OFFLINE_URL);
           });
-      })
+    })()
   );
 });
 

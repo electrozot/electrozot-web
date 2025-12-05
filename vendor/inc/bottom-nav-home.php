@@ -1,5 +1,5 @@
 <!-- Bottom Navigation Bar for Home Pages -->
-<div class="bottom-nav-home">
+<div class="bottom-nav-home" style="display: flex !important; position: fixed !important; bottom: 0 !important; z-index: 99999 !important;">
     <a href="index.php" class="bottom-nav-item <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">
         <i class="fas fa-home"></i>
         <span>Home</span>
@@ -29,15 +29,15 @@
         bottom: 0;
         left: 4px;
         right: 4px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #A78BFA 0%, #F9A8D4 60%, #FDE68A 100%);
         display: flex;
         justify-content: space-around;
         align-items: center;
         padding: 3px 0 5px 0;
-        box-shadow: 0 -4px 20px rgba(102, 126, 234, 0.4), 0 -2px 8px rgba(0,0,0,0.15);
+        box-shadow: 0 -4px 25px rgba(167, 139, 250, 0.4), 0 -2px 10px rgba(249, 168, 212, 0.3);
         z-index: 9999;
         backdrop-filter: blur(15px);
-        border: 2px solid rgba(255,255,255,0.2);
+        border: 2px solid rgba(255,255,255,0.4);
         border-bottom: none;
         border-radius: 20px 20px 15px 15px;
         position: relative;
@@ -60,7 +60,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: rgba(255,255,255,0.75);
+        color: #374151;
         text-decoration: none;
         padding: 4px 8px;
         border-radius: 10px;
@@ -99,10 +99,10 @@
     }
 
     .bottom-nav-item.active {
-        color: white;
-        background: rgba(255,255,255,0.25);
-        box-shadow: 0 4px 15px rgba(255,255,255,0.3), inset 0 1px 3px rgba(255,255,255,0.2);
-        border: 1px solid rgba(255,255,255,0.3);
+        color: #000000;
+        background: rgba(255,255,255,0.5);
+        box-shadow: 0 4px 15px rgba(255,255,255,0.5), inset 0 1px 3px rgba(255,255,255,0.4);
+        border: 1px solid rgba(255,255,255,0.5);
     }
 
     .bottom-nav-item.active::before {
@@ -168,11 +168,22 @@
     /* Ensure bottom nav stays at bottom */
     @media (max-width: 991px) {
         .bottom-nav-home {
+            display: flex !important;
             position: fixed !important;
             bottom: 0 !important;
             left: 4px !important;
             right: 4px !important;
             margin: 0 !important;
+            z-index: 99999 !important;
+        }
+    }
+    
+    /* Force visibility on mobile */
+    @media (max-width: 767px) {
+        .bottom-nav-home {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
     }
 </style>

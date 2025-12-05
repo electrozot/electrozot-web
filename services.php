@@ -1,3 +1,7 @@
+<?php
+// Include database configuration
+include('admin/vendor/inc/config.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -8,35 +12,42 @@
     <?php include("vendor/inc/head.php");?>
 </head>
 
-<body style="background: linear-gradient(180deg, #f8f9fa 0%, #fff5f7 100%); min-height: 100vh;">
+<body style="background: linear-gradient(180deg, #f8f9fa 0%, #fff5f7 100%); min-height: 100vh; padding-bottom: 70px;">
 
     <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="services-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 116px 0 40px 0; margin-top: -56px;">
-    <div class="container">
+    <section class="services-hero" style="background: linear-gradient(135deg, #E0F2FE 0%, #FECDD3 25%, #D1FAE5 50%, #FBCFE8 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px;">
+        <style>
+            @keyframes gradientShift {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+        </style>
+        <div class="container">
             <div class="text-center">
-                <h1 class="services-title" style="font-size: 2rem; font-weight: 700; color: #2d3748; margin-bottom: 10px;">
-                    <i class="fas fa-tools" style="color: #ff4757;"></i> Our Services
+                <h1 class="services-title" style="font-size: 2.5rem; font-weight: 800; color: #2d3748; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
+                    <i class="fas fa-tools" style="color: #EC4899;"></i> Our Services
                 </h1>
-                <p class="services-subtitle" style="font-size: 0.95rem; color: #6c757d; max-width: 600px; margin: 0 auto;">
+                <p class="services-subtitle" style="font-size: 1.1rem; color: #6B7280; max-width: 650px; margin: 0 auto; font-weight: 500;">
                     Expert installation, maintenance, and repair services for your home and office appliances
                 </p>
             </div>
         </div>
     </section>
 
-    <div class="container" style="padding-top: 30px; padding-bottom: 40px;">
+    <div class="container" style="padding-top: 40px; padding-bottom: 80px;">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.8); border-radius: 10px; padding: 10px 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
-            <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #ff4757; text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px;">
+                <li class="breadcrumb-item">
+                    <a href="index.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600;">
                         <i class="fas fa-home"></i> Home
                     </a>
-            </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.9rem;">Services</li>
-        </ol>
+                </li>
+                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500;">Services</li>
+            </ol>
         </nav>
 
         <!-- Service Images -->
@@ -99,10 +110,10 @@
         <div class="row">
             <div class="col-lg-4 col-md-6 mb-3">
                 <a href="index.php#booking-form" class="service-card-link" style="text-decoration: none; color: inherit;">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #ffe5e8 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #ffcccc 0%, #ffb3b3 100%); padding: 12px 15px; border: none;">
+                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
+                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%); padding: 12px 15px; border: none;">
                         <h5 class="mb-0" style="font-size: 0.95rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-cog" style="color: #ff4757; margin-right: 8px;"></i>Installation Services
+                            <i class="fas fa-cog" style="color: #EC4899; margin-right: 8px;"></i>Installation Services
                         </h5>
                     </div>
                     <div class="card-body" style="padding: 15px;">
@@ -145,10 +156,10 @@
 
             <div class="col-lg-4 col-md-6 mb-3">
                 <a href="index.php#booking-form" class="service-card-link" style="text-decoration: none; color: inherit;">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #fff0f5 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #ffe0e6 0%, #ffccd5 100%); padding: 12px 15px; border: none;">
+                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
+                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 12px 15px; border: none;">
                         <h5 class="mb-0" style="font-size: 0.95rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-wrench" style="color: #ff4757; margin-right: 8px;"></i>Electronic & Appliance Repair
+                            <i class="fas fa-wrench" style="color: #EC4899; margin-right: 8px;"></i>Electronic & Appliance Repair
                         </h5>
                     </div>
                     <div class="card-body" style="padding: 15px;">
@@ -191,10 +202,10 @@
 
             <div class="col-lg-4 col-md-6 mb-3">
                 <a href="index.php#booking-form" class="service-card-link" style="text-decoration: none; color: inherit;">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #f0f8ff 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #e6f3ff 0%, #cce6ff 100%); padding: 12px 15px; border: none;">
+                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
+                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%); padding: 12px 15px; border: none;">
                         <h5 class="mb-0" style="font-size: 0.95rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-tint" style="color: #ff4757; margin-right: 8px;"></i>Plumbing Solutions & Servicing
+                            <i class="fas fa-tint" style="color: #10B981; margin-right: 8px;"></i>Plumbing Solutions & Servicing
                         </h5>
                     </div>
                     <div class="card-body" style="padding: 15px;">
@@ -221,10 +232,10 @@
         <!-- Feature Cards -->
         <div class="row mt-4">
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #fff5f0 100%); border-radius: 12px; overflow: hidden;">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FDF5FF 100%); border-radius: 12px; overflow: hidden;">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-bolt" style="font-size: 2rem; color: #ff4757;"></i>
+                            <i class="fas fa-bolt" style="font-size: 2rem; color: #A855F7;"></i>
                         </div>
                         <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
                             Faster And Safe Service
@@ -237,10 +248,10 @@
             </div>
 
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm warranty-card" style="background: linear-gradient(180deg, #fff 0%, #fff0f5 100%); border-radius: 12px; overflow: hidden; cursor: pointer;" role="button" data-toggle="modal" data-target="#warrantyModal" aria-label="View warranty terms">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm warranty-card" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 12px; overflow: hidden; cursor: pointer;" role="button" data-toggle="modal" data-target="#warrantyModal" aria-label="View warranty terms">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #ff4757;"></i>
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #EC4899;"></i>
                         </div>
                         <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
                             1‑Month Warranty on Repair Services
@@ -253,10 +264,10 @@
             </div>
 
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #f0fff4 100%); border-radius: 12px; overflow: hidden;">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 12px; overflow: hidden;">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-star" style="font-size: 2rem; color: #ff4757;"></i>
+                            <i class="fas fa-star" style="font-size: 2rem; color: #10B981;"></i>
                         </div>
                         <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
                             Our Commitment
@@ -331,7 +342,7 @@
         }
 
         .service-card-compact:hover .service-card-header {
-            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%) !important;
+            background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%) !important;
             color: white !important;
         }
 
@@ -348,7 +359,7 @@
         }
 
         .service-list li:hover {
-            color: #ff4757 !important;
+            color: #EC4899 !important;
             padding-left: 5px;
         }
 
@@ -365,7 +376,7 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #ffe5e8 0%, #ffcccc 100%);
+            background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -375,7 +386,7 @@
 
         .feature-card-compact:hover .feature-icon-wrapper {
             transform: scale(1.15) rotate(5deg);
-            background: linear-gradient(135deg, #ff4757 0%, #ff6b9d 100%);
+            background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
         }
 
         .feature-card-compact:hover .feature-icon-wrapper i {
@@ -383,9 +394,15 @@
         }
 
         .services-breadcrumb a:hover {
-            color: #ff6b9d !important;
+            color: #F472B6 !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .services-hero {
+                padding: 100px 0 40px 0 !important;
+            }
         }
 
         @media (max-width: 768px) {

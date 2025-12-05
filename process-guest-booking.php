@@ -22,6 +22,9 @@ if(isset($_POST['book_service_guest'])) {
     }
     $customer_area = isset($_POST['customer_area']) ? trim($_POST['customer_area']) : '';
     
+    // Get subcategory from form (from the dropdown)
+    $sb_subcategory = isset($_POST['sb_subcategory']) ? trim($_POST['sb_subcategory']) : '';
+    
     // Validate service selection
     $sb_service_id_raw = isset($_POST['sb_service_id']) ? $_POST['sb_service_id'] : '';
     $is_other_service = ($sb_service_id_raw === 'other');
@@ -131,9 +134,15 @@ if(isset($_POST['book_service_guest'])) {
         $stmt_check->close();
     } else {
         // New customer - insert into tms_user table as guest user with area and pincode
-        $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', '', 'guest')";
+        // Generate password: first 3 letters of name (lowercase) + last 3 digits of phone
+        $name_for_pwd = strtolower(substr($u_fname, 0, 3));
+        $phone_for_pwd = substr($customer_phone, -3);
+        $auto_password = $name_for_pwd . $phone_for_pwd;
+        $hashed_password = password_hash($auto_password, PASSWORD_DEFAULT);
+        
+        $query_user = "INSERT INTO tms_user (u_fname, u_lname, u_email, u_phone, u_addr, u_area, u_pincode, u_category, u_pwd, registration_type) VALUES (?, ?, ?, ?, ?, ?, ?, 'Guest', ?, 'guest')";
         $stmt_user = $mysqli->prepare($query_user);
-        $stmt_user->bind_param('sssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode);
+        $stmt_user->bind_param('ssssssss', $u_fname, $u_lname, $customer_email, $customer_phone, $sb_address, $customer_area, $customer_pincode, $hashed_password);
         
         if(!$stmt_user->execute()) {
             $_SESSION['booking_error'] = "Failed to create customer profile. Please try again.";
@@ -169,25 +178,26 @@ if(isset($_POST['book_service_guest'])) {
             exit();
         }
         
-        // Ensure sb_pincode and sb_custom_service columns exist, and sb_service_id allows NULL
+        // Ensure sb_pincode, sb_custom_service, and sb_subcategory columns exist, and sb_service_id allows NULL
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_custom_service VARCHAR(255) DEFAULT NULL");
+        $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_subcategory VARCHAR(100) DEFAULT NULL");
         $mysqli->query("ALTER TABLE tms_service_booking MODIFY COLUMN sb_service_id INT NULL");
         
-        // Insert booking into tms_service_booking table with pincode and custom service
+        // Insert booking into tms_service_booking table with pincode, custom service, and subcategory
         if($is_other_service) {
-            // For custom service, use NULL for service_id
-            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // For custom service, use NULL for service_id and save subcategory
+            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service, sb_subcategory) VALUES (?, NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt_booking = $mysqli->prepare($query_booking);
-            // Parameters: user_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d), custom_service(s)
-            // Type string: i s s s s s s s d s = 10 parameters
-            $stmt_booking->bind_param('isssssssds', $customer_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price, $other_service_name);
+            // Parameters: user_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d), custom_service(s), subcategory(s)
+            // Type string: i s s s s s s s d s s = 11 parameters
+            $stmt_booking->bind_param('isssssssdss', $customer_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price, $other_service_name, $sb_subcategory);
         } else {
-            // For regular service
-            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)";
+            // For regular service, save subcategory as well
+            $query_booking = "INSERT INTO tms_service_booking (sb_user_id, sb_service_id, sb_booking_date, sb_booking_time, sb_address, sb_pincode, sb_phone, sb_description, sb_status, sb_total_price, sb_custom_service, sb_subcategory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?)";
             $stmt_booking = $mysqli->prepare($query_booking);
-            // user_id(i), service_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d)
-            $stmt_booking->bind_param('iisssssssd', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price);
+            // user_id(i), service_id(i), date(s), time(s), address(s), pincode(s), phone(s), description(s), status(s), price(d), subcategory(s)
+            $stmt_booking->bind_param('iisssssssds', $customer_id, $sb_service_id, $sb_booking_date, $sb_booking_time, $sb_address, $customer_pincode, $customer_phone, $sb_description, $sb_status, $sb_total_price, $sb_subcategory);
         }
         
         if($stmt_booking->execute()) {

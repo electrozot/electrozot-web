@@ -151,17 +151,17 @@ if(isset($_POST['confirm_delete_user'])) {
                 $insert_stmt->bind_param('sisi', $item_type, $u_id, $item_data, $aid);
                 
                 if($insert_stmt->execute()) {
-                    // Delete from main table
+                    // Now delete from main table (admin has verified password)
                     $delete_query = "DELETE FROM tms_user WHERE u_id=?";
                     $delete_stmt = $mysqli->prepare($delete_query);
                     $delete_stmt->bind_param('i', $u_id);
                     
                     if($delete_stmt->execute()) {
-                        $_SESSION['succ'] = "User deleted successfully after password verification";
+                        $_SESSION['succ'] = "User permanently deleted successfully after admin password verification";
                         
                         // Log successful deletion
                         $log_query = "INSERT INTO tms_system_logs (log_type, log_message, log_data) 
-                                      VALUES ('USER_DELETED_WITH_PASSWORD', 'Admin deleted user after password confirmation', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
+                                      VALUES ('USER_DELETED_BY_ADMIN', 'Admin permanently deleted user after password confirmation', CONCAT('User ID: ', ?, ', Admin ID: ', ?))";
                         $log_stmt = $mysqli->prepare($log_query);
                         $log_stmt->bind_param('ii', $u_id, $aid);
                         $log_stmt->execute();
@@ -169,10 +169,10 @@ if(isset($_POST['confirm_delete_user'])) {
                         header("Location: admin-manage-user-passwords.php");
                         exit();
                     } else {
-                        $err = "Failed to delete user from main table";
+                        $err = "Failed to delete user: " . $mysqli->error;
                     }
                 } else {
-                    $err = "Failed to move user to recycle bin";
+                    $err = "Failed to archive user data before deletion";
                 }
             } else {
                 $err = "User not found";

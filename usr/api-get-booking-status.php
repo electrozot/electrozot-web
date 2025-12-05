@@ -68,7 +68,7 @@ $response = [
         'address' => $booking['sb_address'],
         'technician' => null,
         'timeline' => getBookingTimeline($booking),
-        'can_cancel' => in_array($booking['sb_status'], ['Pending', 'Approved']),
+        'can_cancel' => in_array($booking['sb_status'], ['Pending', 'Approved']) && $booking['sb_was_on_hold'] != 1,
         'updated_at' => $booking['sb_updated_at'] ? date('M d, Y h:i A', strtotime($booking['sb_updated_at'])) : null
     ]
 ];

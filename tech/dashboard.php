@@ -2,6 +2,7 @@
 session_start();
 include('../admin/vendor/inc/config.php');
 include('includes/checklogin.php');
+include('check-account-status.php'); // Check if account is locked
 
 $t_id = $_SESSION['t_id'];
 $t_name = $_SESSION['t_name'];
@@ -15,6 +16,14 @@ try {
     $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_addr TEXT DEFAULT ''");
     $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_pincode VARCHAR(10) DEFAULT NULL");
     
+    // Add booking hold system columns
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_reason TEXT NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_start_date TIMESTAMP NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_end_date TIMESTAMP NULL");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+    $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_priority_reason VARCHAR(255) NULL");
+    
     // Create cancelled bookings table if not exists
     $create_cancelled_table = "CREATE TABLE IF NOT EXISTS tms_cancelled_bookings (
         cb_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,6 +36,57 @@ try {
         INDEX(cb_technician_id)
     )";
     $mysqli->query($create_cancelled_table);
+    
+    // Create booking hold requests table
+    $create_hold_table = "CREATE TABLE IF NOT EXISTS tms_booking_hold_requests (
+        bhr_id INT AUTO_INCREMENT PRIMARY KEY,
+        bhr_booking_id INT NOT NULL,
+        bhr_technician_id INT NOT NULL,
+        bhr_reason TEXT NOT NULL,
+        bhr_status ENUM('Pending', 'Approved', 'Rejected') DEFAULT 'Pending',
+        bhr_requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        bhr_responded_at TIMESTAMP NULL,
+        bhr_customer_response TEXT NULL,
+        INDEX(bhr_booking_id),
+        INDEX(bhr_technician_id),
+        INDEX(bhr_status)
+    )";
+    $mysqli->query($create_hold_table);
+    
+    // Create customer notifications table
+    $create_customer_notif = "CREATE TABLE IF NOT EXISTS tms_customer_notifications (
+        cn_id INT AUTO_INCREMENT PRIMARY KEY,
+        cn_user_id INT NOT NULL,
+        cn_booking_id INT NOT NULL,
+        cn_type VARCHAR(50) NOT NULL,
+        cn_title VARCHAR(255) NOT NULL,
+        cn_message TEXT NOT NULL,
+        cn_is_read TINYINT(1) DEFAULT 0,
+        cn_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        cn_action_required TINYINT(1) DEFAULT 0,
+        cn_action_url VARCHAR(255) NULL,
+        INDEX(cn_user_id),
+        INDEX(cn_booking_id),
+        INDEX(cn_is_read)
+    )";
+    $mysqli->query($create_customer_notif);
+    
+    // Create technician notifications table
+    $create_tech_notif = "CREATE TABLE IF NOT EXISTS tms_technician_notifications (
+        tn_id INT AUTO_INCREMENT PRIMARY KEY,
+        tn_technician_id INT NOT NULL,
+        tn_booking_id INT NOT NULL,
+        tn_type VARCHAR(50) NOT NULL,
+        tn_title VARCHAR(255) NOT NULL,
+        tn_message TEXT NOT NULL,
+        tn_is_read TINYINT(1) DEFAULT 0,
+        tn_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX(tn_technician_id),
+        INDEX(tn_booking_id),
+        INDEX(tn_is_read)
+    )";
+    $mysqli->query($create_tech_notif);
+    
 } catch(Exception $e) {}
 
 // Get technician details
@@ -62,61 +122,80 @@ $where_clause = "WHERE sb.sb_technician_id = ?";
 $params = [$t_id];
 $types = 'i';
 
-if($filter == 'new') {
-    $where_clause .= " AND sb.sb_status = 'Pending'";
-} elseif($filter == 'pending') {
+if($filter == 'pending') {
     $where_clause .= " AND sb.sb_status = 'In Progress'";
 } elseif($filter == 'completed') {
     $where_clause .= " AND sb.sb_status = 'Completed'";
 }
+// Note: "All" filter shows everything with Pending bookings automatically at top due to status_priority sorting
 
 if(!empty($search)) {
-    $where_clause .= " AND u.u_phone LIKE ?";
-    $params[] = "%{$search}%";
-    $types .= 's';
+    $where_clause .= " AND (u.u_phone LIKE ? OR u.u_fname LIKE ? OR u.u_lname LIKE ? OR CONCAT(u.u_fname, ' ', u.u_lname) LIKE ? OR sb.sb_id LIKE ?)";
+    $search_param = "%{$search}%";
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $params[] = $search_param;
+    $types .= 'sssss';
 }
 
 // Query to get only active bookings (exclude cancelled ones)
-// Sort: New bookings at top, Completed at bottom
+// Sort: High Priority first, then New bookings, then others, Completed at bottom
 $bookings_query = "SELECT sb.*, u.u_fname, u.u_lname, u.u_phone, u.u_addr, s.s_name,
                    CASE 
                        WHEN sb.sb_status = 'Pending' THEN 1
                        WHEN sb.sb_status = 'Approved' THEN 2
                        WHEN sb.sb_status = 'In Progress' THEN 3
-                       WHEN sb.sb_status = 'Not Done' THEN 4
-                       WHEN sb.sb_status = 'Not Completed' THEN 5
-                       WHEN sb.sb_status = 'Completed' THEN 6
-                       ELSE 7
-                   END as status_priority
+                       WHEN sb.sb_status = 'On Hold' THEN 4
+                       WHEN sb.sb_status = 'Not Done' THEN 5
+                       WHEN sb.sb_status = 'Not Completed' THEN 6
+                       WHEN sb.sb_status = 'Completed' THEN 7
+                       ELSE 8
+                   END as status_priority,
+                   CASE 
+                       WHEN sb.sb_is_high_priority = 1 AND sb.sb_status != 'Completed' THEN 0
+                       ELSE 1
+                   END as priority_order
                    FROM tms_service_booking sb
                    LEFT JOIN tms_user u ON sb.sb_user_id = u.u_id
                    LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                    LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
                    {$where_clause}
                    AND cb.cb_id IS NULL
-                   ORDER BY status_priority ASC, sb.sb_created_at DESC";
+                   ORDER BY priority_order ASC, status_priority ASC, sb.sb_created_at DESC";
 
 $stmt_bookings = $mysqli->prepare($bookings_query);
-if(count($params) == 1) {
-    $stmt_bookings->bind_param('ii', $t_id, $params[0]);
-} else {
-    $stmt_bookings->bind_param('iii', $t_id, $params[0], $params[1]);
+
+// Bind parameters: first for cancelled bookings join, then the WHERE clause params
+$bind_params = array_merge([$t_id], $params);
+$bind_types = 'i' . $types;
+
+// Create references for bind_param
+$bind_refs = [];
+$bind_refs[] = &$bind_types;
+foreach($bind_params as $key => $value) {
+    $bind_refs[] = &$bind_params[$key];
 }
+call_user_func_array(array($stmt_bookings, 'bind_param'), $bind_refs);
+
 $stmt_bookings->execute();
 $bookings_result = $stmt_bookings->get_result();
 
-// Get counts
+// Get counts (excluding cancelled bookings)
 $new_count = 0;
 $pending_count = 0;
 $completed_count = 0;
 
 $count_query = "SELECT 
-                COUNT(CASE WHEN sb_status = 'Pending' THEN 1 END) as new_count,
-                COUNT(CASE WHEN sb_status = 'In Progress' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN sb_status = 'Completed' THEN 1 END) as completed_count
-                FROM tms_service_booking WHERE sb_technician_id = ?";
+                COUNT(CASE WHEN sb.sb_status = 'Pending' THEN 1 END) as new_count,
+                COUNT(CASE WHEN sb.sb_status = 'In Progress' THEN 1 END) as pending_count,
+                COUNT(CASE WHEN sb.sb_status = 'Completed' THEN 1 END) as completed_count
+                FROM tms_service_booking sb
+                LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
+                WHERE sb.sb_technician_id = ? AND cb.cb_id IS NULL";
 $stmt_count = $mysqli->prepare($count_query);
-$stmt_count->bind_param('i', $t_id);
+$stmt_count->bind_param('ii', $t_id, $t_id);
 $stmt_count->execute();
 $count_result = $stmt_count->get_result();
 $counts = $count_result->fetch_object();
@@ -174,9 +253,9 @@ $completed_count = $counts->completed_count;
         
         /* Header */
         .header {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 50%, #0575E6 100%);
-            padding: 8px 20px;
-            box-shadow: 0 4px 20px rgba(5, 117, 230, 0.4);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            padding: 10px 20px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -187,7 +266,7 @@ $completed_count = $counts->completed_count;
             right: 0;
             width: 100%;
             z-index: 1000;
-            border-bottom: 2px solid rgba(0, 242, 96, 0.3);
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
             -webkit-backface-visibility: hidden;
@@ -195,16 +274,17 @@ $completed_count = $counts->completed_count;
             height: 70px;
         }
         
-        /* Search and Menu Bar */
+        /* Search Bar */
         .search-menu-bar {
-            background: linear-gradient(135deg, rgba(5, 117, 230, 0.95) 0%, rgba(0, 242, 96, 0.95) 100%);
-            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(20, 184, 166, 0.95) 35%, rgba(6, 182, 212, 0.95) 70%, rgba(14, 165, 233, 0.95) 100%);
+            padding: 10px 20px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             display: flex !important;
             align-items: center;
+            justify-content: space-between;
             gap: 15px;
             position: fixed;
-            top: 80px;
+            top: 70px;
             left: 0;
             right: 0;
             width: 100%;
@@ -217,17 +297,20 @@ $completed_count = $counts->completed_count;
         
         .search-menu-bar .menu-toggle-btn {
             flex-shrink: 0;
+            margin-right: auto;
         }
         
         .search-menu-bar .header-search {
+            max-width: 280px;
+            width: 100%;
             flex: 1;
-            max-width: 600px;
         }
         
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            flex-shrink: 0;
         }
         
         .logo-image {
@@ -258,6 +341,7 @@ $completed_count = $counts->completed_count;
             flex-direction: column;
             line-height: 1.2;
             justify-content: center;
+            align-items: flex-start;
         }
 
         .brand-title {
@@ -280,8 +364,8 @@ $completed_count = $counts->completed_count;
         }
         
         .header-search {
-            flex: 1;
-            min-width: 0;
+            flex: 0 0 auto;
+            max-width: 220px;
         }
         
         .header-search form {
@@ -290,15 +374,16 @@ $completed_count = $counts->completed_count;
         
         .header-search input {
             width: 100%;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 30px;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-weight: 600;
             background: rgba(255, 255, 255, 0.2);
             box-sizing: border-box;
             color: white;
             backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
         
         .header-search input:focus {
@@ -312,71 +397,27 @@ $completed_count = $counts->completed_count;
             color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
         }
-
-        .search-submit-btn {
-            background: white;
-            color: #0575E6;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
-            flex-shrink: 0;
-        }
-
-        .search-submit-btn:hover {
-            background: #00F260;
-            color: white;
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(0, 242, 96, 0.5);
-        }
-
-        .search-submit-btn i {
-            font-size: 1rem;
-        }
         
         .header-actions {
             display: flex;
             gap: 15px;
             align-items: center;
         }
-
-        .tech-name-display {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            color: white;
-            font-weight: 800;
-            font-size: 0.95rem;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        
+        .header-tier-badge {
+            animation: tierBadgeGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes tierBadgeGlow {
+            0%, 100% {
+                box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            }
+            50% {
+                box-shadow: 0 5px 20px rgba(0,0,0,0.4), 0 0 30px rgba(255,255,255,0.3);
+            }
         }
 
-        .tech-name-display:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-        }
 
-        .tech-name-display i {
-            font-size: 1.1rem;
-            color: white;
-            text-shadow: 0 2px 8px rgba(255, 255, 255, 0.5);
-        }
-
-        .tech-name-display span {
-            color: white;
-        }
         
         .header-btn {
             padding: 6px 12px;
@@ -513,7 +554,7 @@ $completed_count = $counts->completed_count;
         }
         
         .sidebar-header {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             padding: 20px;
             color: white;
         }
@@ -575,7 +616,7 @@ $completed_count = $counts->completed_count;
         
         .sidebar-pin {
             background: white;
-            color: #0575E6;
+            color: #10b981;
             padding: 5px 15px;
             border-radius: 50px;
             font-size: 0.85rem;
@@ -602,9 +643,9 @@ $completed_count = $counts->completed_count;
         
         .sidebar-menu-item:hover {
             background: #f8f9fa;
-            border-left-color: #0575E6;
+            border-left-color: #10b981;
             text-decoration: none;
-            color: #0575E6;
+            color: #10b981;
         }
         
         .sidebar-menu-item i {
@@ -669,16 +710,18 @@ $completed_count = $counts->completed_count;
         
         /* Mobile Notification Alert */
         .mobile-notification-alert {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             color: white;
-            padding: 15px 20px;
-            margin: 140px 15px 15px 15px;
-            border-radius: 15px;
+            padding: 12px 15px;
+            margin: 125px 15px 10px 15px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.4);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
             animation: slideDown 0.5s ease-out;
+            position: relative;
+            z-index: 1;
         }
         
         @keyframes slideDown {
@@ -718,7 +761,7 @@ $completed_count = $counts->completed_count;
         
         .mobile-alert-btn {
             background: white;
-            color: #0575E6;
+            color: #10b981;
             padding: 10px 25px;
             border-radius: 50px;
             text-decoration: none;
@@ -729,7 +772,7 @@ $completed_count = $counts->completed_count;
         
         .mobile-alert-btn:hover {
             background: #ffd700;
-            color: #667eea;
+            color: #10b981;
             text-decoration: none;
         }
         
@@ -784,13 +827,13 @@ $completed_count = $counts->completed_count;
         /* Control Bar - Compact */
         .control-bar {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 15px 20px;
+            padding: 12px 20px;
             margin: 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             border-bottom: 3px solid transparent;
-            border-image: linear-gradient(90deg, #0575E6 0%, #00F260 100%) 1;
+            border-image: linear-gradient(90deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%) 1;
             position: fixed;
-            top: 130px;
+            top: 120px;
             left: 0;
             right: 0;
             width: 100%;
@@ -799,9 +842,10 @@ $completed_count = $counts->completed_count;
         
         .filter-buttons-row {
             display: flex;
-            gap: 6px;
+            gap: 8px;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            align-items: center;
         }
         
         .filter-buttons-row::-webkit-scrollbar {
@@ -809,19 +853,19 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn {
-            padding: 10px 20px;
+            padding: 6px 12px;
             border: 2px solid transparent;
             background: white;
-            border-radius: 25px;
-            font-weight: 800;
+            border-radius: 20px;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             color: #1e293b;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.9rem;
+            gap: 4px;
+            font-size: 0.8rem;
             white-space: nowrap;
             flex-shrink: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -835,37 +879,37 @@ $completed_count = $counts->completed_count;
         }
         
         .filter-btn.active {
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(5, 117, 230, 0.3);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
         }
         
         .filter-btn .badge {
-            background: linear-gradient(135deg, #00F260 0%, #0575E6 100%);
+            background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
-            padding: 2px 6px;
+            padding: 2px 5px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 900;
-            min-width: 18px;
+            min-width: 16px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 242, 96, 0.3);
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
         }
         
         .filter-btn.active .badge {
             background: white;
-            color: #0575E6;
+            color: #ec4899;
         }
         
         .filter-btn i {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         
         /* Main Content */
         .main-container-full {
             padding: 0 20px 20px 20px;
-            padding-top: 200px;
+            padding-top: 175px;
             max-width: 100%;
             width: 100%;
             margin: 0 auto;
@@ -875,16 +919,53 @@ $completed_count = $counts->completed_count;
             position: relative;
         }
         
+        /* Alert Messages */
+        .alert-message {
+            position: relative;
+            z-index: 997;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            animation: slideInDown 0.5s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .alert-success {
+            background: #d4edda !important;
+            border: 2px solid #28a745 !important;
+            color: #155724 !important;
+        }
+        
+        .alert-warning {
+            background: #fff3cd !important;
+            border: 2px solid #ffc107 !important;
+            color: #856404 !important;
+        }
+        
+        .alert-error {
+            background: #f8d7da !important;
+            border: 2px solid #dc3545 !important;
+            color: #721c24 !important;
+        }
+        
         .bookings-section-full {
             background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
-            overflow-x: auto;
+            overflow-x: visible;
             overflow-y: visible;
             -webkit-overflow-scrolling: touch;
             position: relative;
             padding: 20px;
             padding-bottom: 40px;
             border-radius: 20px;
-            max-height: calc(100vh - 220px);
         }
         
         /* Custom Scrollbar - Horizontal */
@@ -1102,12 +1183,12 @@ $completed_count = $counts->completed_count;
             
             .control-bar {
                 padding: 15px 20px;
-                top: 130px;
+                top: 120px;
             }
             
             .main-container-full {
                 padding: 0 20px 20px 20px;
-                padding-top: 200px;
+                padding-top: 180px;
                 overflow-x: hidden;
             }
 
@@ -1137,8 +1218,8 @@ $completed_count = $counts->completed_count;
             }
 
             .logo-image {
-                width: 75px;
-                height: 75px;
+                width: 55px;
+                height: 55px;
             }
 
             .brand-title {
@@ -1149,14 +1230,7 @@ $completed_count = $counts->completed_count;
                 font-size: 0.75rem;
             }
 
-            .tech-name-display {
-                padding: 10px 16px;
-                font-size: 0.95rem;
-            }
 
-            .tech-name-display i {
-                font-size: 1.2rem;
-            }
             
             .dashboard-title {
                 font-size: 0.95rem;
@@ -1209,7 +1283,7 @@ $completed_count = $counts->completed_count;
             border: 2px solid transparent;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .booking-card::before {
@@ -1219,13 +1293,13 @@ $completed_count = $counts->completed_count;
             left: 0;
             width: 5px;
             height: 100%;
-            background: linear-gradient(135deg, #0575E6 0%, #00F260 100%);
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
         }
 
         .booking-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(5, 117, 230, 0.15);
-            border-color: rgba(5, 117, 230, 0.3);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.15);
+            border-color: rgba(6, 182, 212, 0.3);
         }
         
         .booking-card-body {
@@ -1234,6 +1308,8 @@ $completed_count = $counts->completed_count;
         
         .order-field-mobile {
             margin-bottom: 8px;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .order-field-mobile label {
@@ -1243,7 +1319,8 @@ $completed_count = $counts->completed_count;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 2px;
-            display: block;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .order-field-mobile p {
@@ -1252,6 +1329,8 @@ $completed_count = $counts->completed_count;
             margin: 0;
             font-weight: 600;
             line-height: 1.3;
+            display: block !important;
+            visibility: visible !important;
         }
         
         .order-id-mobile {
@@ -1261,28 +1340,30 @@ $completed_count = $counts->completed_count;
         }
         
         .action-buttons-side {
-            display: flex;
+            display: flex !important;
             flex-direction: column;
-            gap: 10px;
-            margin-left: 10px;
+            gap: 8px;
+            margin-left: 12px;
             justify-content: flex-start;
+            align-items: stretch;
             padding-top: 0;
+            visibility: visible !important;
         }
         
         .action-btn-mobile {
-            padding: 8px 14px;
+            padding: 10px 16px;
             border: none;
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 5px;
+            gap: 6px;
             text-decoration: none;
             transition: all 0.3s ease;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 700;
             white-space: nowrap;
-            min-width: 75px;
+            min-width: 80px;
             color: white;
         }
         
@@ -1317,16 +1398,20 @@ $completed_count = $counts->completed_count;
         }
         
         .booking-card-actions {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid #f3f4f6;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #f3f4f6;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
         
         .mobile-done-btn {
             flex: 1;
+            min-width: 0;
             background: #10b981;
             color: white;
-            padding: 12px;
+            padding: 12px 8px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 700;
@@ -1335,7 +1420,7 @@ $completed_count = $counts->completed_count;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border: none;
             cursor: pointer;
         }
@@ -1355,9 +1440,10 @@ $completed_count = $counts->completed_count;
         
         .mobile-notdone-btn {
             flex: 1;
+            min-width: 0;
             background: #ef4444;
             color: white;
-            padding: 12px;
+            padding: 12px 8px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 700;
@@ -1366,7 +1452,7 @@ $completed_count = $counts->completed_count;
             align-items: center;
             justify-content: center;
             gap: 6px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border: none;
             cursor: pointer;
         }
@@ -1378,14 +1464,121 @@ $completed_count = $counts->completed_count;
         }
         
         .mobile-done-btn i,
-        .mobile-notdone-btn i {
-            font-size: 0.95rem;
+        .mobile-notdone-btn i,
+        .mobile-hold-btn i {
+            font-size: 0.9rem;
         }
         
-        .booking-card-actions {
+        .mobile-hold-btn {
+            flex: 1;
+            min-width: 0;
+            background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);
+            color: white;
+            padding: 12px 8px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            text-align: center;
             display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 6px;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
         }
+        
+        .mobile-hold-btn:hover {
+            background: linear-gradient(135deg, #ff6348 0%, #ffa502 100%);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .priority-badge {
+            background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(255, 71, 87, 0.4);
+            animation: priorityPulse 2s infinite;
+        }
+        
+        @keyframes priorityPulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 3px 10px rgba(255, 71, 87, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 5px 20px rgba(255, 71, 87, 0.6);
+            }
+        }
+        
+        .priority-badge i {
+            animation: fire 1s infinite;
+        }
+        
+        @keyframes fire {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .on-hold-badge {
+            background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(255, 165, 2, 0.4);
+        }
+        
+        .on-hold-info {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .hold-pending-info {
+            background: #e8f4f8;
+            border: 2px solid #0575E6;
+            color: #0575E6;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            margin-top: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hold-pending-info i {
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+
         
         /* Mobile Landscape & Small Tablets (768px and below) */
         @media (max-width: 768px) {
@@ -1417,18 +1610,13 @@ $completed_count = $counts->completed_count;
                 padding: 8px 15px;
             }
 
+            .header-search {
+                max-width: 200px;
+            }
+
             .header-search input {
-                padding: 8px 15px;
-                font-size: 0.85rem;
-            }
-
-            .search-submit-btn {
-                width: 36px;
-                height: 36px;
-            }
-
-            .search-submit-btn i {
-                font-size: 0.9rem;
+                padding: 7px 12px;
+                font-size: 0.75rem;
             }
             
             .logo-section {
@@ -1439,8 +1627,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 55px;
-                height: 55px;
+                width: 50px;
+                height: 50px;
             }
             
             .menu-toggle-btn {
@@ -1504,13 +1692,13 @@ $completed_count = $counts->completed_count;
             
             .control-bar {
                 flex-direction: column;
-                padding: 15px;
+                padding: 12px 15px;
                 top: 115px;
-                gap: 12px;
+                gap: 10px;
             }
 
             .main-container-full {
-                padding-top: 220px;
+                padding-top: 185px;
             }
             
             .search-box {
@@ -1560,10 +1748,16 @@ $completed_count = $counts->completed_count;
             
             .main-container-full {
                 padding: 0 10px 60px 10px;
-                padding-top: 220px;
+                padding-top: 195px;
                 width: 100%;
                 max-width: 100vw;
                 overflow-x: hidden;
+            }
+            
+            .alert-message {
+                padding: 12px !important;
+                font-size: 0.9rem;
+                margin-bottom: 15px !important;
             }
 
             .bookings-section-full {
@@ -1655,8 +1849,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 50px;
-                height: 50px;
+                width: 55px;
+                height: 55px;
             }
             
             .menu-toggle-btn {
@@ -1687,7 +1881,12 @@ $completed_count = $counts->completed_count;
             }
 
             .main-container-full {
-                padding-top: 200px;
+                padding-top: 175px;
+            }
+            
+            .mobile-notification-alert {
+                margin: 115px 10px 15px 10px;
+                z-index: 1;
             }
             
             .search-box input {
@@ -1707,9 +1906,15 @@ $completed_count = $counts->completed_count;
             
             .main-container-full {
                 padding: 0 8px 60px 8px;
-                padding-top: 200px;
+                padding-top: 175px;
                 width: 100%;
                 max-width: 100vw;
+            }
+            
+            .alert-message {
+                padding: 10px !important;
+                font-size: 0.85rem;
+                margin-bottom: 12px !important;
             }
             
             /* Make table scrollable both directions on very small screens */
@@ -1741,9 +1946,11 @@ $completed_count = $counts->completed_count;
             }
 
             .mobile-done-btn,
-            .mobile-notdone-btn {
-                padding: 10px;
-                font-size: 0.85rem;
+            .mobile-notdone-btn,
+            .mobile-hold-btn {
+                padding: 10px 6px;
+                font-size: 0.8rem;
+                gap: 4px;
             }
             
             .bookings-table {
@@ -1781,8 +1988,8 @@ $completed_count = $counts->completed_count;
             }
             
             .logo-image {
-                width: 45px;
-                height: 45px;
+                width: 48px;
+                height: 48px;
             }
             
             .menu-toggle-btn {
@@ -1850,7 +2057,7 @@ $completed_count = $counts->completed_count;
             }
 
             .main-container-full {
-                padding-top: 190px;
+                padding-top: 165px;
             }
         }
     </style>
@@ -1870,6 +2077,38 @@ $completed_count = $counts->completed_count;
                     <i class="fas fa-user"></i>
                 </div>
                 <div class="sidebar-name"><?php echo htmlspecialchars($t_name); ?></div>
+                
+                <?php 
+                // Display technician tier badge
+                $tier_badge = '';
+                $tier_name = '';
+                $tier_color = '';
+                
+                if(isset($tech_data->t_booking_limit)) {
+                    if($tech_data->t_booking_limit >= 5) {
+                        $tier_badge = '⭐';
+                        $tier_name = 'Star Technician';
+                        $tier_color = '#00c853';
+                    } elseif($tech_data->t_booking_limit >= 3) {
+                        $tier_badge = '💎';
+                        $tier_name = 'Premium Technician';
+                        $tier_color = '#667eea';
+                    } else {
+                        $tier_name = 'Regular Technician';
+                        $tier_color = '#6c757d';
+                    }
+                }
+                
+                if(!empty($tier_badge)): ?>
+                    <div class="sidebar-tier-badge" style="background: <?php echo $tier_color; ?>; color: white; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: inline-block; margin: 10px 0; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                        <span style="font-size: 1.2rem;"><?php echo $tier_badge; ?></span> <?php echo $tier_name; ?>
+                    </div>
+                <?php elseif(!empty($tier_name)): ?>
+                    <div class="sidebar-tier-badge" style="background: <?php echo $tier_color; ?>; color: white; padding: 8px 20px; border-radius: 50px; font-size: 0.9rem; font-weight: 700; display: inline-block; margin: 10px 0; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                        <?php echo $tier_name; ?>
+                    </div>
+                <?php endif; ?>
+                
                 <div class="sidebar-id">ID: <?php echo htmlspecialchars($t_id_no); ?></div>
                 <?php if(!empty($t_phone)): ?>
                     <div class="sidebar-phone"><i class="fas fa-phone"></i> <?php echo htmlspecialchars($t_phone); ?></div>
@@ -1911,19 +2150,45 @@ $completed_count = $counts->completed_count;
             </div>
         </div>
         
-        <div class="header-actions">
-            <div class="tech-name-display">
-                <i class="fas fa-user-circle"></i>
-                <span><?php echo htmlspecialchars($t_name); ?></span>
+        <?php 
+        // Display technician tier badge in header
+        $tier_badge_header = '';
+        $tier_name_header = '';
+        $tier_color_header = '';
+        
+        if(isset($tech_data->t_booking_limit)) {
+            if($tech_data->t_booking_limit >= 5) {
+                $tier_badge_header = '⭐';
+                $tier_name_header = 'Star';
+                $tier_color_header = 'linear-gradient(135deg, #00c853 0%, #00F260 100%)';
+            } elseif($tech_data->t_booking_limit >= 3) {
+                $tier_badge_header = '💎';
+                $tier_name_header = 'Premium';
+                $tier_color_header = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+        }
+        
+        if(!empty($tier_badge_header)): ?>
+            <div class="header-tier-badge" style="background: <?php echo $tier_color_header; ?>; color: white; padding: 6px 15px; border-radius: 50px; font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 5px; box-shadow: 0 3px 10px rgba(0,0,0,0.2); margin-left: auto; margin-right: 10px;">
+                <span style="font-size: 1.1rem;"><?php echo $tier_badge_header; ?></span>
+                <span><?php echo $tier_name_header; ?></span>
             </div>
+        <?php endif; ?>
+        
+        <div class="header-actions">
             <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
                 <i class="fas fa-bell"></i>
+                <?php if($new_count > 0): ?>
+                    <span class="notification-count" id="notificationCount"><?php echo $new_count; ?></span>
+                <?php else: ?>
+                    <span class="notification-count" id="notificationCount" style="display: none;">0</span>
+                <?php endif; ?>
                 <span class="notif-dot" id="headerNotifDot" style="display: none;"></span>
             </button>
         </div>
     </div>
     
-    <!-- Search and Menu Bar -->
+    <!-- Search Bar -->
     <div class="search-menu-bar">
         <button class="menu-toggle-btn" onclick="toggleSidebar()">
             <span></span>
@@ -1932,14 +2197,11 @@ $completed_count = $counts->completed_count;
         </button>
         
         <div class="header-search">
-            <form action="" method="GET" style="display: flex; align-items: center; gap: 8px; width: 100%;">
-                <input type="search" name="search" placeholder="Search by phone number..." value="<?php echo htmlspecialchars($search); ?>" style="flex: 1;">
+            <form action="" method="GET" id="searchForm">
+                <input type="search" name="search" id="searchInput" placeholder="Search by phone, name, or ID..." value="<?php echo htmlspecialchars($search); ?>" autocomplete="off">
                 <?php if($filter != 'all'): ?>
                     <input type="hidden" name="filter" value="<?php echo $filter; ?>">
                 <?php endif; ?>
-                <button type="submit" class="search-submit-btn">
-                    <i class="fas fa-search"></i>
-                </button>
             </form>
         </div>
     </div>
@@ -1956,28 +2218,21 @@ $completed_count = $counts->completed_count;
     <!-- Control Bar -->
     <div class="control-bar">
         <div class="filter-buttons-row">
-            <a href="?" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
-                <i class="fas fa-list"></i> All
-                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
-                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <a href="?filter=new" class="filter-btn <?php echo $filter == 'new' ? 'active' : ''; ?>">
-                <i class="fas fa-plus-circle"></i> New
-                <?php if($new_count > 0): ?>
-                    <span class="badge"><?php echo $new_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <a href="?filter=pending" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
+            <a href="?filter=pending<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
                 <i class="fas fa-clock"></i> Pending
                 <?php if($pending_count > 0): ?>
                     <span class="badge"><?php echo $pending_count; ?></span>
                 <?php endif; ?>
             </a>
             
-            <a href="?filter=completed" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
+            <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
+                <i class="fas fa-list"></i> All
+                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
+                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
+                <?php endif; ?>
+            </a>
+            
+            <a href="?filter=completed<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
                 <i class="fas fa-check-circle"></i> Completed
                 <?php if($completed_count > 0): ?>
                     <span class="badge"><?php echo $completed_count; ?></span>
@@ -1985,7 +2240,7 @@ $completed_count = $counts->completed_count;
             </a>
             
             <?php if(!empty($search)): ?>
-                <a href="?" class="filter-btn">
+                <a href="?<?php echo $filter != 'all' ? 'filter=' . $filter : ''; ?>" class="filter-btn">
                     <i class="fas fa-times"></i> Clear Search
                 </a>
             <?php endif; ?>
@@ -2150,6 +2405,18 @@ $completed_count = $counts->completed_count;
                 ?>
                 <div class="booking-card">
                     <div class="booking-card-body">
+                        <?php if(isset($booking->sb_is_high_priority) && $booking->sb_is_high_priority == 1 && $booking->sb_status != 'Completed'): ?>
+                            <div class="priority-badge">
+                                <i class="fas fa-fire"></i> HIGH PRIORITY
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if(isset($booking->sb_is_on_hold) && $booking->sb_is_on_hold == 1): ?>
+                            <div class="on-hold-badge">
+                                <i class="fas fa-pause-circle"></i> ON HOLD
+                            </div>
+                        <?php endif; ?>
+                        
                         <div style="display: flex;">
                             <!-- Left Side - Vertical List of Order Details -->
                             <div style="flex: 1;">
@@ -2192,7 +2459,12 @@ $completed_count = $counts->completed_count;
                         
                         <!-- Done / Not Done Buttons -->
                         <div class="booking-card-actions">
-                            <?php if($booking->sb_status == 'Completed'): ?>
+                            <?php if(isset($booking->sb_is_on_hold) && $booking->sb_is_on_hold == 1): ?>
+                                <!-- Booking is on hold -->
+                                <div class="on-hold-info">
+                                    <i class="fas fa-info-circle"></i> This booking is on hold until <?php echo date('M d, Y', strtotime($booking->sb_hold_end_date)); ?>. Waiting for customer to resume.
+                                </div>
+                            <?php elseif($booking->sb_status == 'Completed'): ?>
                                 <button class="mobile-done-btn done" disabled style="opacity: 0.6; cursor: not-allowed;">
                                     <i class="fas fa-check-circle"></i> Completed
                                 </button>
@@ -2201,12 +2473,78 @@ $completed_count = $counts->completed_count;
                                     <i class="fas fa-times-circle"></i> Not Done
                                 </button>
                             <?php else: ?>
-                                <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=done" class="mobile-done-btn">
-                                    <i class="fas fa-check"></i> Done
-                                </a>
-                                <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=not-done" class="mobile-notdone-btn">
-                                    <i class="fas fa-times"></i> Not Done
-                                </a>
+                                <?php
+                                // Ensure payment collection table exists
+                                $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+                                    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+                                    pc_booking_id INT NOT NULL,
+                                    pc_amount DECIMAL(10,2) NOT NULL,
+                                    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+                                    pc_collected_by INT NOT NULL,
+                                    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+                                    INDEX(pc_booking_id),
+                                    INDEX(pc_collected_by)
+                                )");
+                                
+                                // Check if payment has been collected for this booking
+                                $payment_check_query = "SELECT COUNT(*) as count FROM tms_payment_collection WHERE pc_booking_id = ?";
+                                $payment_check_stmt = $mysqli->prepare($payment_check_query);
+                                $payment_check_stmt->bind_param('i', $booking->sb_id);
+                                $payment_check_stmt->execute();
+                                $payment_check_result = $payment_check_stmt->get_result();
+                                $payment_check_data = $payment_check_result->fetch_object();
+                                $payment_already_collected = $payment_check_data->count > 0;
+                                
+                                // Check if there's a pending hold request for this booking
+                                $check_pending_hold_req = "SELECT COUNT(*) as count FROM tms_booking_hold_requests 
+                                                          WHERE bhr_booking_id = ? AND bhr_status = 'Pending'";
+                                $stmt_pending_req = $mysqli->prepare($check_pending_hold_req);
+                                $stmt_pending_req->bind_param('i', $booking->sb_id);
+                                $stmt_pending_req->execute();
+                                $pending_hold_req_result = $stmt_pending_req->get_result();
+                                $pending_hold_req_data = $pending_hold_req_result->fetch_object();
+                                $has_pending_hold_request = $pending_hold_req_data->count > 0;
+                                ?>
+                                
+                                <?php if($has_pending_hold_request): ?>
+                                    <!-- Hold request pending - disable all action buttons -->
+                                    <div class="hold-pending-info">
+                                        <i class="fas fa-hourglass-half"></i>
+                                        <span>Hold request sent. Waiting for customer approval. All actions are disabled until customer responds.</span>
+                                    </div>
+                                    <button class="mobile-done-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Hold request pending - waiting for customer response">
+                                        <i class="fas fa-lock"></i> Locked - Hold Pending
+                                    </button>
+                                    <button class="mobile-notdone-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Hold request pending - waiting for customer response">
+                                        <i class="fas fa-lock"></i> Locked - Hold Pending
+                                    </button>
+                                <?php elseif($payment_already_collected): ?>
+                                    <!-- Payment already collected, show Complete Service button -->
+                                    <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=done" class="mobile-done-btn">
+                                        <i class="fas fa-check-circle"></i> Complete Service
+                                    </a>
+                                    <button class="mobile-notdone-btn" disabled style="opacity: 0.5; cursor: not-allowed;" title="Cannot mark as Not Done after payment collected">
+                                        <i class="fas fa-lock"></i> Payment Collected
+                                    </button>
+                                <?php else: ?>
+                                    <!-- Payment not collected yet, show Collect Payment button -->
+                                    <a href="collect-payment.php?id=<?php echo $booking->sb_id; ?>" class="mobile-done-btn">
+                                        <i class="fas fa-rupee-sign"></i> Collect Payment
+                                    </a>
+                                    <a href="complete-booking.php?id=<?php echo $booking->sb_id; ?>&action=not-done" class="mobile-notdone-btn">
+                                        <i class="fas fa-times"></i> Not Done
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <!-- Hold Button - Only show if not completed, not on hold, and no pending request -->
+                                <?php if($booking->sb_status != 'Completed' && $booking->sb_status != 'Not Done' && (!isset($booking->sb_is_on_hold) || $booking->sb_is_on_hold != 1)): ?>
+                                    <?php if(!$has_pending_hold_request): ?>
+                                        <a href="request-booking-hold.php?id=<?php echo $booking->sb_id; ?>" class="mobile-hold-btn">
+                                            <i class="fas fa-pause-circle"></i> Request Hold
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -2235,8 +2573,24 @@ $completed_count = $counts->completed_count;
             overlay.classList.toggle('active');
         }
         
-        // Auto-hide alert messages after 5 seconds
+        // Auto-search functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchForm = document.getElementById('searchForm');
+            let searchTimeout;
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    
+                    // Auto-submit after 500ms of no typing
+                    searchTimeout = setTimeout(function() {
+                        searchForm.submit();
+                    }, 500);
+                });
+            }
+            
+            // Auto-hide alert messages after 5 seconds
             const alertMessages = document.querySelectorAll('.alert-message');
             
             alertMessages.forEach(function(alert) {
@@ -2268,5 +2622,100 @@ $completed_count = $counts->completed_count;
     
     <!-- Bottom Navigation Bar -->
     <?php include('includes/bottom-nav.php'); ?>
+    
+    <script>
+    // Live dashboard updates for technician
+    function updateTechDashboardStats() {
+        fetch('api-tech-dashboard-stats.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update stats if elements exist
+                    const pendingEl = document.querySelector('[data-stat="pending"]');
+                    const progressEl = document.querySelector('[data-stat="progress"]');
+                    const completedEl = document.querySelector('[data-stat="completed"]');
+                    const totalEl = document.querySelector('[data-stat="total"]');
+                    
+                    if (pendingEl && pendingEl.textContent !== data.stats.pending.toString()) {
+                        pendingEl.textContent = data.stats.pending;
+                        pendingEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (progressEl && progressEl.textContent !== data.stats.progress.toString()) {
+                        progressEl.textContent = data.stats.progress;
+                        progressEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (completedEl && completedEl.textContent !== data.stats.completed.toString()) {
+                        completedEl.textContent = data.stats.completed;
+                        completedEl.style.animation = 'pulse 0.5s';
+                    }
+                    if (totalEl && totalEl.textContent !== data.stats.total.toString()) {
+                        totalEl.textContent = data.stats.total;
+                        totalEl.style.animation = 'pulse 0.5s';
+                    }
+                }
+            })
+            .catch(error => console.error('Error updating tech dashboard:', error));
+    }
+    
+    // Update every 8 seconds
+    setInterval(updateTechDashboardStats, 8000);
+    
+    // Auto-refresh page when booking status changes
+    let lastBookingData = null;
+    let isPageVisible = true;
+    
+    document.addEventListener('visibilitychange', function() {
+        isPageVisible = !document.hidden;
+    });
+    
+    function checkForBookingChanges() {
+        if (!isPageVisible) return;
+        
+        fetch('api-get-my-bookings.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const currentData = JSON.stringify(data.bookings);
+                    
+                    if (lastBookingData !== null && lastBookingData !== currentData) {
+                        // Booking status changed - show notification and reload
+                        showNotification('Booking status updated!');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                    
+                    lastBookingData = currentData;
+                }
+            })
+            .catch(error => console.log('Auto-refresh error:', error));
+    }
+    
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            z-index: 9999;
+            font-weight: 600;
+            font-size: 14px;
+            animation: slideDown 0.3s ease;
+        `;
+        notification.innerHTML = `<i class="fas fa-sync-alt fa-spin" style="margin-right: 8px;"></i>${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    // Check every 10 seconds
+    setInterval(checkForBookingChanges, 10000);
+    </script>
 </body>
 </html>

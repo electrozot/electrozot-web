@@ -25,12 +25,13 @@ $create_table = "CREATE TABLE IF NOT EXISTS tms_admin_notifications (
 )";
 $mysqli->query($create_table);
 
-// Get unread notifications
+// Get unread notifications (exclude cancelled bookings)
 $query = "SELECT an.*, t.t_name as technician_name, sb.sb_id as booking_number
           FROM tms_admin_notifications an
           LEFT JOIN tms_technician t ON an.an_technician_id = t.t_id
           LEFT JOIN tms_service_booking sb ON an.an_booking_id = sb.sb_id
           WHERE an.an_is_read = 0
+          AND (sb.sb_status IS NULL OR sb.sb_status != 'Cancelled')
           ORDER BY an.an_created_at DESC
           LIMIT 10";
 

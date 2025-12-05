@@ -3,7 +3,7 @@
 $current_page = basename($_SERVER['PHP_SELF']);
 $is_home = ($current_page == 'user-dashboard.php');
 $is_book = (strpos($current_page, 'book-service') !== false || $current_page == 'book-custom-service.php');
-$is_orders = (strpos($current_page, 'manage-booking') !== false || strpos($current_page, 'track-booking') !== false || strpos($current_page, 'booking-details') !== false);
+$is_orders = (strpos($current_page, 'manage-booking') !== false || strpos($current_page, 'track-booking') !== false || strpos($current_page, 'view-booking-details') !== false);
 $is_profile = (strpos($current_page, 'profile') !== false || strpos($current_page, 'view-profile') !== false);
 ?>
 <div class="bottom-nav">
@@ -22,5 +22,9 @@ $is_profile = (strpos($current_page, 'profile') !== false || strpos($current_pag
     <a href="user-view-profile.php" class="nav-item <?php echo $is_profile ? 'active' : ''; ?>">
         <i class="fas fa-user"></i>
         <span>Profile</span>
+    </a>
+    <a href="../index.php" class="nav-item">
+        <i class="fas fa-store"></i>
+        <span>Main</span>
     </a>
 </div>

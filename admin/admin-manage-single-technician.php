@@ -25,17 +25,46 @@
                 $t_booking_limit = 1;
             }
             
+            // Add QR column if not exists
+            $mysqli->query("ALTER TABLE tms_technician ADD COLUMN IF NOT EXISTS t_payment_qr VARCHAR(255) DEFAULT NULL");
+            
+            // Handle payment QR upload
+            $t_payment_qr_updated = false;
+            $t_payment_qr = '';
+            if(!empty($_FILES["t_payment_qr"]["name"])) {
+                $qr_dir = "../uploads/technician_qr/";
+                if(!file_exists($qr_dir)) {
+                    mkdir($qr_dir, 0777, true);
+                }
+                $qr_extension = pathinfo($_FILES["t_payment_qr"]["name"], PATHINFO_EXTENSION);
+                $qr_filename = "tech_qr_" . time() . "_" . rand(1000, 9999) . "." . $qr_extension;
+                if(move_uploaded_file($_FILES["t_payment_qr"]["tmp_name"], $qr_dir . $qr_filename)) {
+                    $t_payment_qr = "uploads/technician_qr/" . $qr_filename;
+                    $t_payment_qr_updated = true;
+                }
+            }
+            
             // Check if new photo is uploaded
-            if(!empty($_FILES["t_pic"]["name"])) {
-                // New photo uploaded - update with new photo
+            $photo_updated = !empty($_FILES["t_pic"]["name"]);
+            if($photo_updated) {
                 $t_pic = $_FILES["t_pic"]["name"];
                 move_uploaded_file($_FILES["t_pic"]["tmp_name"],"../vendor/img/".$_FILES["t_pic"]["name"]);
-                
+            }
+            
+            // Build query based on what's being updated
+            if($photo_updated && $t_payment_qr_updated) {
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_payment_qr=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_payment_qr, $t_booking_limit, $t_id);
+            } elseif($photo_updated) {
                 $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_pic=?, t_booking_limit=? where t_id = ?";
                 $stmt = $mysqli->prepare($query);
                 $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_pic, $t_booking_limit, $t_id);
+            } elseif($t_payment_qr_updated) {
+                $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_payment_qr=?, t_booking_limit=? where t_id = ?";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('ssssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_payment_qr, $t_booking_limit, $t_id);
             } else {
-                // No new photo - update without changing photo
                 $query="update tms_technician set t_name=?, t_id_no=?, t_specialization=?, t_category=?, t_experience=?, t_booking_limit=? where t_id = ?";
                 $stmt = $mysqli->prepare($query);
                 $rc=$stmt->bind_param('sssssii', $t_name, $t_id_no, $t_specialization, $t_category, $t_experience, $t_booking_limit, $t_id);
@@ -183,11 +212,48 @@
                                  </small>
                              </div>
                              
-                             <div class="card form-group" style="width: 30rem">
-                                 <img src="../vendor/img/<?php echo $row->t_pic;?>" class="card-img-top">
-                                 <div class="card-body">
-                                     <h5 class="card-title">Technician Picture</h5>
-                                     <input type="file" class="btn btn-success" id="exampleInputEmail1" name="t_pic">
+                             <!-- Skills Section -->
+                             <div class="form-group">
+                                 <label>
+                                     <i class="fas fa-tools text-primary"></i> Update Technician Skills
+                                 </label>
+                                 <div class="alert alert-info">
+                                     <i class="fas fa-info-circle"></i> Select additional skills this technician can perform. This allows technicians to expand their service capabilities over time.
+                                 </div>
+                                 <a href="admin-edit-technician-skills.php?t_id=<?php echo $row->t_id; ?>" class="btn btn-primary btn-block">
+                                     <i class="fas fa-edit"></i> Manage Technician Skills
+                                 </a>
+                             </div>
+                             
+                             <div class="row">
+                                 <div class="col-md-6">
+                                     <div class="card form-group">
+                                         <img src="../vendor/img/<?php echo $row->t_pic;?>" class="card-img-top" style="max-height: 300px; object-fit: cover;">
+                                         <div class="card-body">
+                                             <h5 class="card-title"><i class="fas fa-user-circle"></i> Technician Picture</h5>
+                                             <input type="file" class="btn btn-success btn-sm" name="t_pic" accept="image/*">
+                                         </div>
+                                     </div>
+                                 </div>
+                                 
+                                 <div class="col-md-6">
+                                     <div class="card form-group">
+                                         <?php if(!empty($row->t_payment_qr) && file_exists("../" . $row->t_payment_qr)): ?>
+                                             <img src="../<?php echo $row->t_payment_qr;?>" class="card-img-top" style="max-height: 300px; object-fit: contain; padding: 20px;">
+                                         <?php else: ?>
+                                             <div class="card-img-top" style="height: 300px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                                                 <div class="text-center text-muted">
+                                                     <i class="fas fa-qrcode" style="font-size: 4rem; opacity: 0.3;"></i>
+                                                     <p class="mt-2">No QR Code</p>
+                                                 </div>
+                                             </div>
+                                         <?php endif; ?>
+                                         <div class="card-body">
+                                             <h5 class="card-title"><i class="fas fa-qrcode"></i> Payment QR Code</h5>
+                                             <input type="file" class="btn btn-warning btn-sm" name="t_payment_qr" accept="image/*">
+                                             <small class="d-block mt-2 text-muted">Technician's personal payment QR</small>
+                                         </div>
+                                     </div>
                                  </div>
                              </div>
                              <hr>

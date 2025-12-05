@@ -9,7 +9,7 @@ $aid = $_SESSION['u_id'];
 $booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
 
 // Check if booking exists and belongs to user
-$check_query = "SELECT sb_id, sb_technician_id, sb_status FROM tms_service_booking WHERE sb_id = ? AND sb_user_id = ?";
+$check_query = "SELECT sb_id, sb_technician_id, sb_status, sb_was_on_hold FROM tms_service_booking WHERE sb_id = ? AND sb_user_id = ?";
 $check_stmt = $mysqli->prepare($check_query);
 $check_stmt->bind_param('ii', $booking_id, $aid);
 $check_stmt->execute();
@@ -19,6 +19,13 @@ $booking = $check_result->fetch_object();
 if(!$booking) {
     $_SESSION['error'] = "Booking not found or you don't have permission to cancel it.";
     header("Location: user-manage-booking.php");
+    exit();
+}
+
+// Check if booking was on hold - if yes, customer cannot cancel it
+if($booking->sb_was_on_hold == 1) {
+    $_SESSION['error'] = "This booking cannot be cancelled. It was previously on hold and only admin can cancel it. Please contact support if you need assistance.";
+    header("Location: user-booking-details.php?booking_id=" . $booking_id);
     exit();
 }
 

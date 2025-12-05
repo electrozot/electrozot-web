@@ -20,15 +20,17 @@
     
     // Free up the technician if one was assigned
     if($booking && $booking->sb_technician_id) {
-      // Update all status fields to ensure technician is fully available
-      $free_tech = "UPDATE tms_technician 
-                   SET t_status='Available', 
-                       t_is_available=1, 
-                       t_current_booking_id=NULL 
-                   WHERE t_id=?";
-      $free_stmt = $mysqli->prepare($free_tech);
-      $free_stmt->bind_param('i', $booking->sb_technician_id);
-      $free_stmt->execute();
+      // Decrement technician's current bookings count
+      require_once('vendor/inc/booking-limit-helper.php');
+      decrementTechnicianBookings($mysqli, $booking->sb_technician_id);
+      
+      // Update technician status to Available if they have capacity
+      $mysqli->query("UPDATE tms_technician 
+                     SET t_status = CASE 
+                         WHEN t_current_bookings >= t_booking_limit THEN 'Busy'
+                         ELSE 'Available'
+                     END
+                     WHERE t_id = {$booking->sb_technician_id}");
     }
     
     // Use soft delete function

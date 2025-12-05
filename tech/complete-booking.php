@@ -60,6 +60,51 @@ if($booking->sb_status == 'Completed' || $booking->sb_status == 'Not Done'){
     exit();
 }
 
+// Ensure payment collection table exists
+$mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+    pc_id INT AUTO_INCREMENT PRIMARY KEY,
+    pc_booking_id INT NOT NULL,
+    pc_amount DECIMAL(10,2) NOT NULL,
+    pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+    pc_collected_by INT NOT NULL,
+    pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+    INDEX(pc_booking_id),
+    INDEX(pc_collected_by)
+)");
+
+// PAYMENT VERIFICATION - Check if payment has been collected and get details
+$payment_check = $mysqli->prepare("SELECT pc.*, t.t_name as technician_name 
+                                   FROM tms_payment_collection pc
+                                   LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
+                                   WHERE pc.pc_booking_id = ?");
+$payment_check->bind_param('i', $sb_id);
+$payment_check->execute();
+$payment_result = $payment_check->get_result();
+$payment_collected = $payment_result->num_rows > 0;
+$payment_data = $payment_collected ? $payment_result->fetch_object() : null;
+
+// If payment not collected and trying to mark as done, redirect to payment collection
+if(!$payment_collected && $action == 'done'){
+    $_SESSION['error'] = "Please collect payment first before completing the service.";
+    header('Location: collect-payment.php?id=' . $sb_id);
+    exit();
+}
+
+// If payment already collected, cannot mark as "Not Done"
+if($payment_collected && $action == 'not-done'){
+    $_SESSION['error'] = "Cannot mark as 'Not Done' after payment has been collected. Please contact admin.";
+    header('Location: dashboard.php');
+    exit();
+}
+
+// HOLD PROTECTION: If booking was on hold and then unholded, technician cannot mark as "Not Done"
+if(isset($booking->sb_was_on_hold) && $booking->sb_was_on_hold == 1 && $action == 'not-done'){
+    $_SESSION['error'] = "This booking cannot be marked as 'Not Done'. It was previously on hold and must be completed. Please contact admin if there is an issue.";
+    header('Location: dashboard.php');
+    exit();
+}
+
 $success = '';
 $error = '';
 
@@ -68,10 +113,15 @@ $debug_mode = isset($_GET['debug']);
 
 // Handle Mark as Done
 if(isset($_POST['mark_done'])){
-    $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
+    // Use payment amount if available, otherwise use posted amount
+    if($payment_collected && $payment_data) {
+        $bill_amount = $payment_data->pc_amount;
+    } else {
+        $bill_amount = isset($_POST['bill_amount']) ? floatval($_POST['bill_amount']) : 0;
+    }
     
-    // Validate inputs (skip validation if admin has set fixed price)
-    if($bill_amount <= 0 && !$admin_price_set){
+    // Validate inputs (skip validation if payment already collected or admin has set fixed price)
+    if($bill_amount <= 0 && !$admin_price_set && !$payment_collected){
         $error = 'Please enter a valid bill amount greater than 0';
     }
     elseif(!isset($_FILES['service_image']) || $_FILES['service_image']['error'] == 4){
@@ -133,14 +183,22 @@ if(isset($_POST['mark_done'])){
                     $free_tech = "UPDATE tms_technician 
                                  SET t_status = 'Available', 
                                      t_is_available = 1, 
-                                     t_current_booking_id = NULL 
+                                     t_current_bookings = 0 
                                  WHERE t_id = ?";
                     $free_stmt = $mysqli->prepare($free_tech);
                     $free_stmt->bind_param('i', $t_id);
                     $free_stmt->execute();
                     
-                    $_SESSION['success'] = "Service completed successfully!";
-                    header('Location: dashboard.php');
+                    // Store completion details for success modal
+                    $_SESSION['completion_success'] = true;
+                    $_SESSION['completion_booking_id'] = $sb_id;
+                    $_SESSION['completion_customer'] = $booking->u_fname . ' ' . $booking->u_lname;
+                    $_SESSION['completion_service'] = $booking->s_name;
+                    $_SESSION['completion_amount'] = $bill_amount;
+                    $_SESSION['completion_payment_method'] = $payment_data ? $payment_data->pc_method : 'N/A';
+                    
+                    // Redirect to success page
+                    header('Location: complete-booking.php?success=1');
                     exit();
                 } else {
                     $error = 'Failed to update booking status. Please try again.';
@@ -184,7 +242,6 @@ if(isset($_POST['mark_not_done'])){
                              WHEN t_current_bookings - 1 < t_booking_limit THEN 1 
                              ELSE 0 
                          END,
-                         t_current_booking_id = NULL,
                          t_current_bookings = GREATEST(t_current_bookings - 1, 0)
                          WHERE t_id = ?";
             $free_stmt = $mysqli->prepare($free_tech);
@@ -266,71 +323,177 @@ if(isset($_POST['mark_not_done'])){
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../admin/vendor/fontawesome-free/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
             min-height: 100vh;
-            padding: 20px;
+            padding-top: 80px;
+            padding-bottom: 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        
-        .back-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            display: inline-flex;
+        /* Navbar Styles */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #43e97b 100%);
+            padding: 12px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.3s;
+            justify-content: space-between;
         }
         
-        .back-btn:hover {
-            background: rgba(255,255,255,0.3);
-            color: white;
-            text-decoration: none;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
         
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
-        }
-        
-        .card h3 {
-            color: #667eea;
-            font-weight: 900;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
+        .logo-section {
             display: flex;
             align-items: center;
             gap: 12px;
         }
         
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            background: transparent;
+            border-radius: 8px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-icon-btn:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            animation: slideUp 0.4s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card h3 {
+            color: #4facfe;
+            font-weight: 900;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: center;
+            justify-content: center;
+        }
+        
         .booking-info {
-            background: #f8f9ff;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 25px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            padding: 25px;
+            border-radius: 20px;
+            margin-bottom: 30px;
             border: 2px solid #e0e7ff;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
         }
         
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #e0e7ff;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e7ff;
         }
         
         .info-row:last-child {
@@ -341,13 +504,14 @@ if(isset($_POST['mark_not_done'])){
         
         .info-row label {
             font-weight: 700;
-            color: #667eea;
-            font-size: 0.9rem;
+            color: #4facfe;
+            font-size: 1rem;
         }
         
         .info-row span {
-            font-weight: 700;
+            font-weight: 800;
             color: #1e293b;
+            font-size: 1.05rem;
         }
         
         .form-group {
@@ -370,8 +534,8 @@ if(isset($_POST['mark_not_done'])){
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
             outline: none;
         }
         
@@ -386,8 +550,8 @@ if(isset($_POST['mark_not_done'])){
         }
         
         .file-upload:hover {
-            border-color: #667eea;
-            background: #f0f4ff;
+            border-color: #4facfe;
+            background: #e6f7ff;
         }
         
         .file-upload i {
@@ -422,19 +586,27 @@ if(isset($_POST['mark_not_done'])){
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            padding: 15px;
+            padding: 18px;
             border-radius: 50px;
             font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             border: none;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         
         .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.6);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(-1px);
         }
         
         .btn-not-done {
@@ -479,14 +651,356 @@ if(isset($_POST['mark_not_done'])){
             min-height: 120px;
             resize: vertical;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+                padding-bottom: 10px;
+            }
+            
+            .top-navbar {
+                padding: 10px 15px;
+            }
+            
+            .logo-image {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .brand-title {
+                font-size: 1.1rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.6rem;
+            }
+            
+            .nav-icon-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 0 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                border-radius: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .card h3 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
+            
+            .booking-info {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 12px;
+                padding-bottom: 12px;
+            }
+            
+            .info-row label {
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+            
+            .info-row span {
+                font-size: 0.95rem;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+            }
+            
+            .form-group label {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+            
+            .form-control {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .file-upload {
+                padding: 20px;
+            }
+            
+            .file-upload i {
+                font-size: 2rem;
+            }
+            
+            .file-upload p {
+                font-size: 0.85rem;
+            }
+            
+            .btn-submit {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .btn-not-done {
+                padding: 12px;
+                font-size: 0.95rem;
+            }
+            
+            .alert {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+            
+            textarea.form-control {
+                min-height: 100px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding-top: 65px;
+                padding-bottom: 5px;
+            }
+            
+            .top-navbar {
+                padding: 8px 10px;
+            }
+            
+            .logo-section {
+                gap: 8px;
+            }
+            
+            .logo-image {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .brand-title {
+                font-size: 1rem;
+            }
+            
+            .brand-subtitle {
+                font-size: 0.55rem;
+            }
+            
+            .nav-icon-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 0.9rem;
+            }
+            
+            .card {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .card h3 {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            
+            .booking-info {
+                padding: 12px;
+            }
+            
+            .info-row label {
+                font-size: 0.8rem;
+            }
+            
+            .info-row span {
+                font-size: 0.9rem;
+            }
+            
+            .file-upload {
+                padding: 15px;
+            }
+            
+            .file-upload i {
+                font-size: 1.5rem;
+            }
+            
+            .file-upload p {
+                font-size: 0.8rem;
+            }
+            
+            .btn-submit {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .btn-not-done {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="dashboard.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <div class="logo-section">
+                <div class="logo-image">
+                    <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
+                </div>
+                <div class="brand-info">
+                    <span class="brand-title">Electrozot</span>
+                    <span class="brand-subtitle">We Make Perfect</span>
+                </div>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <a href="dashboard.php" class="nav-icon-btn" title="Dashboard">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="notifications.php" class="nav-icon-btn" title="Notifications">
+                <i class="fas fa-bell"></i>
+            </a>
+        </div>
+    </nav>
+    
+    <!-- Success Modal -->
+    <?php if(isset($_GET['success']) && isset($_SESSION['completion_success'])): ?>
+    <div id="successModal" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease;
+    ">
+        <div style="
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease;
+        ">
+            <div style="
+                width: 100px;
+                height: 100px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 25px;
+                animation: scaleIn 0.6s ease;
+            ">
+                <i class="fas fa-check" style="font-size: 3.5rem; color: white;"></i>
+            </div>
+            
+            <h2 style="color: #10b981; font-weight: 900; margin-bottom: 15px;">
+                Service Completed!
+            </h2>
+            
+            <div style="background: #f8fafc; padding: 20px; border-radius: 15px; margin: 20px 0; text-align: left;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Booking ID:</strong>
+                    <span style="color: #1e293b; font-weight: 700;">#<?php echo $_SESSION['completion_booking_id']; ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Customer:</strong>
+                    <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($_SESSION['completion_customer']); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Service:</strong>
+                    <span style="color: #1e293b; font-weight: 700;"><?php echo htmlspecialchars($_SESSION['completion_service']); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                    <strong style="color: #64748b;">Amount:</strong>
+                    <span style="color: #10b981; font-weight: 900; font-size: 1.2rem;">₹<?php echo number_format($_SESSION['completion_amount'], 2); ?></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <strong style="color: #64748b;">Payment Method:</strong>
+                    <span style="color: #1e293b; font-weight: 700;">
+                        <?php 
+                        $method = $_SESSION['completion_payment_method'];
+                        if($method == 'QR') {
+                            echo '<span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Company QR</span>';
+                        } elseif($method == 'TechQR') {
+                            echo '<span style="background: #f59e0b; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Tech QR</span>';
+                        } else {
+                            echo '<span style="background: #10b981; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.85rem;">Cash</span>';
+                        }
+                        ?>
+                    </span>
+                </div>
+            </div>
+            
+            <p style="color: #64748b; font-size: 0.95rem; margin-top: 15px;">
+                <i class="fas fa-info-circle"></i> Redirecting to dashboard...
+            </p>
+        </div>
+    </div>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+    
+    <script>
+        // Auto redirect after 2 seconds
+        setTimeout(function() {
+            window.location.href = 'dashboard.php';
+        }, 2000);
+    </script>
+    <?php 
+    // Clear session variables
+    unset($_SESSION['completion_success']);
+    unset($_SESSION['completion_booking_id']);
+    unset($_SESSION['completion_customer']);
+    unset($_SESSION['completion_service']);
+    unset($_SESSION['completion_amount']);
+    unset($_SESSION['completion_payment_method']);
+    ?>
+    <?php endif; ?>
+    
+    <div class="container">
         <?php if(!empty($error)): ?>
         <div class="alert alert-danger">
             <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
@@ -496,6 +1010,12 @@ if(isset($_POST['mark_not_done'])){
         <?php if(!empty($success)): ?>
         <div class="alert alert-success">
             <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success); ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if($debug_mode): ?>
+        <div class="alert alert-success">
+            Debug Info: Action = "<?php echo htmlspecialchars($action); ?>", Payment Collected = <?php echo $payment_collected ? 'Yes' : 'No'; ?>, Booking ID = <?php echo $sb_id; ?>
         </div>
         <?php endif; ?>
         
@@ -546,23 +1066,80 @@ if(isset($_POST['mark_not_done'])){
                     <img id="bill_preview" class="preview-image" alt="Bill Preview">
                 </div>
                 
-                <!-- Bill Amount -->
-                <?php if(!$admin_price_set): ?>
-                <div class="form-group">
-                    <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
-                    <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
-                </div>
-                <?php else: ?>
-                <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
-                <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
-                        <div>
-                            <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
-                            <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                <!-- Bill Amount - Show payment collected amount -->
+                <?php if($payment_collected && $payment_data): ?>
+                    <input type="hidden" name="bill_amount" value="<?php echo $payment_data->pc_amount; ?>">
+                    <div style="border-left: 6px solid #ec4899; padding: 20px; border-radius: 15px; margin-bottom: 25px; background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); box-shadow: 0 4px 15px rgba(236, 72, 153, 0.15);">
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                                <i class="fas fa-check" style="font-size: 2rem; color: white;"></i>
+                            </div>
+                            <div style="flex: 1;">
+                                <h4 style="color: #065f46; font-size: 1.1rem; font-weight: 700; margin: 0 0 5px 0;">
+                                    <i class="fas fa-rupee-sign"></i> Payment Collected:
+                                </h4>
+                                <div style="color: #065f46; font-size: 1.8rem; font-weight: 900; line-height: 1;">
+                                    ₹<?php echo number_format($payment_data->pc_amount, 2); ?>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid rgba(236, 72, 153, 0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-credit-card"></i> Payment Method:
+                                </span>
+                                <span>
+                                    <?php 
+                                    if($payment_data->pc_method == 'QR') {
+                                        echo '<span style="background: #3b82f6; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Company QR</span>';
+                                    } elseif($payment_data->pc_method == 'TechQR') {
+                                        echo '<span style="background: #f59e0b; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Tech QR</span>';
+                                    } else {
+                                        echo '<span style="background: #10b981; color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700;">Cash</span>';
+                                    }
+                                    ?>
+                                </span>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-clock"></i> Collected At:
+                                </span>
+                                <span style="color: #065f46; font-weight: 700; font-size: 0.9rem;">
+                                    <?php echo date('d M Y, h:i A', strtotime($payment_data->pc_collected_at)); ?>
+                                </span>
+                            </div>
+                            
+                            <?php if(isset($payment_data->technician_name)): ?>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #047857; font-weight: 600; font-size: 0.9rem;">
+                                    <i class="fas fa-user"></i> Collected By:
+                                </span>
+                                <span style="color: #065f46; font-weight: 700; font-size: 0.9rem;">
+                                    <?php echo htmlspecialchars($payment_data->technician_name); ?>
+                                </span>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        
+                    </div>
+                <?php elseif($admin_price_set): ?>
+                    <input type="hidden" name="bill_amount" value="<?php echo $display_price; ?>">
+                    <div class="alert alert-success" style="border-left: 4px solid #28a745; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-lock" style="font-size: 1.5rem; color: #28a745;"></i>
+                            <div>
+                                <strong style="color: #28a745;">Fixed Price: ₹<?php echo number_format($display_price, 2); ?></strong>
+                                <p style="margin: 5px 0 0 0; color: #6c757d; font-size: 0.9rem;">This price is set by admin and cannot be changed.</p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                <?php else: ?>
+                    <div class="form-group">
+                        <label><i class="fas fa-rupee-sign"></i> Bill Amount (₹) *</label>
+                        <input type="number" name="bill_amount" class="form-control" placeholder="Enter bill amount based on parts and work" step="0.01" min="0.01" required>
+                    </div>
                 <?php endif; ?>
                 
                 <button type="submit" name="mark_done" class="btn-submit">

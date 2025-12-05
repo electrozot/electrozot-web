@@ -20,10 +20,86 @@
   $res=$stmt->get_result();
   $booking = $res->fetch_object();
   
+  // Get payment collection details
+  $mysqli->query("CREATE TABLE IF NOT EXISTS tms_payment_collection (
+      pc_id INT AUTO_INCREMENT PRIMARY KEY,
+      pc_booking_id INT NOT NULL,
+      pc_amount DECIMAL(10,2) NOT NULL,
+      pc_method ENUM('QR','TechQR','Cash') NOT NULL,
+      pc_collected_by INT NOT NULL,
+      pc_collected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      pc_status ENUM('Collected','Verified') DEFAULT 'Collected',
+      INDEX(pc_booking_id),
+      INDEX(pc_collected_by)
+  )");
+  
+  $payment_query = "SELECT pc.*, t.t_name as collector_name 
+                    FROM tms_payment_collection pc
+                    LEFT JOIN tms_technician t ON pc.pc_collected_by = t.t_id
+                    WHERE pc.pc_booking_id = ?";
+  $payment_stmt = $mysqli->prepare($payment_query);
+  $payment_stmt->bind_param('i', $sb_id);
+  $payment_stmt->execute();
+  $payment_result = $payment_stmt->get_result();
+  $payment_data = $payment_result->fetch_object();
+  
   // Ensure price tracking columns exist
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_price_set_by_tech TINYINT(1) DEFAULT 0");
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_tech_decided_price DECIMAL(10,2) DEFAULT NULL");
   $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_final_price DECIMAL(10,2) DEFAULT NULL");
+  
+  // Ensure hold system columns exist
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_on_hold TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_reason TEXT NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_start_date TIMESTAMP NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_hold_end_date TIMESTAMP NULL");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_is_high_priority TINYINT(1) DEFAULT 0");
+  $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_priority_reason VARCHAR(255) NULL");
+  
+  // Handle hold/unhold actions
+  if(isset($_POST['hold_action'])) {
+      $action = $_POST['hold_action'];
+      
+      if($action == 'hold') {
+          $reason = $_POST['hold_reason'] ?? 'Admin hold - requires attention';
+          $hold_start = date('Y-m-d H:i:s');
+          $hold_end = date('Y-m-d H:i:s', strtotime('+4 days'));
+          
+          $update = "UPDATE tms_service_booking 
+                     SET sb_is_on_hold = 1,
+                         sb_hold_reason = ?,
+                         sb_hold_start_date = ?,
+                         sb_hold_end_date = ?,
+                         sb_was_on_hold = 1,
+                         sb_status = 'On Hold'
+                     WHERE sb_id = ?";
+          $stmt_hold = $mysqli->prepare($update);
+          $stmt_hold->bind_param('sssi', $reason, $hold_start, $hold_end, $sb_id);
+          if($stmt_hold->execute()) {
+              $_SESSION['success'] = "Booking put on hold successfully";
+              header("Location: admin-view-service-booking.php?sb_id=$sb_id");
+              exit;
+          }
+          
+      } elseif($action == 'unhold') {
+          $update = "UPDATE tms_service_booking 
+                     SET sb_is_on_hold = 0,
+                         sb_hold_reason = NULL,
+                         sb_hold_start_date = NULL,
+                         sb_hold_end_date = NULL,
+                         sb_is_high_priority = 1,
+                         sb_priority_reason = 'Admin unholded - high priority',
+                         sb_status = 'In Progress'
+                     WHERE sb_id = ?";
+          $stmt_unhold = $mysqli->prepare($update);
+          $stmt_unhold->bind_param('i', $sb_id);
+          if($stmt_unhold->execute()) {
+              $_SESSION['success'] = "Booking unholded and marked as high priority";
+              header("Location: admin-view-service-booking.php?sb_id=$sb_id");
+              exit;
+          }
+      }
+  }
 ?>
  <!DOCTYPE html>
  <html lang="en">
@@ -102,8 +178,46 @@
                                      </tr>
                                      <tr>
                                        <th>Bill Amount Charged:</th>
-                                       <td><strong style="font-size:1.3rem;color:#28a745;">₹<?php echo isset($booking->sb_bill_amount) ? number_format($booking->sb_bill_amount, 2) : '0.00';?></strong></td>
+                                       <td><strong style="font-size:1.3rem;color:#28a745;">₹<?php 
+                                       // Show payment amount if collected, otherwise bill amount
+                                       if($payment_data && $payment_data->pc_amount > 0) {
+                                           echo number_format($payment_data->pc_amount, 2);
+                                       } elseif(isset($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                           echo number_format($booking->sb_bill_amount, 2);
+                                       } else {
+                                           echo '0.00';
+                                       }
+                                       ?></strong></td>
                                      </tr>
+                                     <?php if($payment_data): ?>
+                                     <tr>
+                                       <th>Payment Method:</th>
+                                       <td>
+                                         <?php 
+                                         if($payment_data->pc_method == 'QR') {
+                                             echo '<span class="badge badge-primary" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-qrcode"></i> Company QR Code</span>';
+                                         } elseif($payment_data->pc_method == 'TechQR') {
+                                             echo '<span class="badge badge-warning" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-user-circle"></i> Technician QR</span>';
+                                         } else {
+                                             echo '<span class="badge badge-success" style="font-size:0.95rem;padding:8px 15px;"><i class="fas fa-money-bill-wave"></i> Cash Payment</span>';
+                                         }
+                                         ?>
+                                       </td>
+                                     </tr>
+                                     <tr>
+                                       <th>Payment Collected By:</th>
+                                       <td><strong><?php echo htmlspecialchars($payment_data->collector_name); ?></strong></td>
+                                     </tr>
+                                     <tr>
+                                       <th>Payment Collected At:</th>
+                                       <td><strong><?php echo date('M d, Y h:i A', strtotime($payment_data->pc_collected_at)); ?></strong></td>
+                                     </tr>
+                                     <?php else: ?>
+                                     <tr>
+                                       <th>Payment Status:</th>
+                                       <td><span class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Payment Not Recorded</span></td>
+                                     </tr>
+                                     <?php endif; ?>
                                    </table>
                                    
                                    <?php 
@@ -227,28 +341,93 @@
                                                  echo '<span class="badge badge-primary">'.$booking->sb_status.'</span>'; 
                                              } elseif($booking->sb_status == "Completed"){ 
                                                  echo '<span class="badge badge-success">'.$booking->sb_status.'</span>'; 
+                                             } elseif($booking->sb_status == "On Hold"){ 
+                                                 echo '<span class="badge badge-warning" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%);"><i class="fas fa-pause-circle"></i> '.$booking->sb_status.'</span>'; 
                                              } else { 
                                                  echo '<span class="badge badge-danger">'.$booking->sb_status.'</span>'; 
                                              }
                                              ?>
+                                             <?php if($booking->sb_is_high_priority == 1): ?>
+                                             <br><span class="badge badge-danger mt-1" style="background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);"><i class="fas fa-fire"></i> HIGH PRIORITY</span>
+                                             <?php endif; ?>
                                          </td>
                                      </tr>
+                                     <?php if($booking->sb_is_on_hold == 1): ?>
+                                     <tr>
+                                         <th>Hold Information:</th>
+                                         <td>
+                                             <div class="alert alert-warning mb-0" style="background: #fff3cd; border-left: 4px solid #ffa502;">
+                                                 <strong><i class="fas fa-pause-circle"></i> Booking is On Hold</strong><br>
+                                                 <small><strong>Reason:</strong> <?php echo htmlspecialchars($booking->sb_hold_reason); ?></small><br>
+                                                 <small><strong>Hold Until:</strong> <?php echo date('M d, Y h:i A', strtotime($booking->sb_hold_end_date)); ?></small>
+                                             </div>
+                                         </td>
+                                     </tr>
+                                     <?php endif; ?>
                                      <tr>
                                          <th>Booking Price:</th>
-                                         <td>₹<?php echo number_format($booking->sb_total_price, 2);?></td>
+                                         <td>
+                                             <?php 
+                                                 // Check all price fields: sb_bill_amount > sb_final_price > sb_tech_decided_price > sb_total_price
+                                                 $display_price = 0;
+                                                 $is_tech_set = false;
+                                                 
+                                                 if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                                     $display_price = $booking->sb_bill_amount;
+                                                     $is_tech_set = true;
+                                                 } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                                     $display_price = $booking->sb_final_price;
+                                                     $is_tech_set = true;
+                                                 } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                                     $display_price = $booking->sb_tech_decided_price;
+                                                     $is_tech_set = true;
+                                                 } else {
+                                                     $display_price = $booking->sb_total_price;
+                                                 }
+                                                 
+                                                 // Show price
+                                                 if($display_price > 0) {
+                                                     echo '<strong style="color: #28a745;">₹' . number_format($display_price, 2) . '</strong>';
+                                                 } else {
+                                                     echo '<span style="color: #6c757d;">₹0.00</span>';
+                                                 }
+                                             ?>
+                                             <?php if($is_tech_set): ?>
+                                             <br><small class="badge badge-info"><i class="fas fa-user-cog"></i> Price set by technician</small>
+                                             <?php elseif($display_price == 0 && $booking->sb_status != 'Completed'): ?>
+                                             <br><small class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Price not set yet</small>
+                                             <?php endif; ?>
+                                         </td>
                                      </tr>
                                      <?php if($booking->sb_status == 'Completed'): ?>
                                      <tr>
-                                         <th>Final Charged Price:</th>
+                                         <th>Final Charged Price (Bill Amount):</th>
                                          <td>
+                                             <?php 
+                                                 // Use same logic as booking price
+                                                 $final_price = 0;
+                                                 if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                                     $final_price = $booking->sb_bill_amount;
+                                                 } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                                     $final_price = $booking->sb_final_price;
+                                                 } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                                     $final_price = $booking->sb_tech_decided_price;
+                                                 } else {
+                                                     $final_price = $booking->sb_total_price;
+                                                 }
+                                             ?>
                                              <strong style="color: #007bff; font-size: 1.2rem;">
-                                                 ₹<?php echo number_format($booking->sb_final_price ?? $booking->sb_total_price, 2);?>
+                                                 ₹<?php echo number_format($final_price, 2);?>
                                              </strong>
-                                             <?php if(isset($booking->sb_price_set_by_tech) && $booking->sb_price_set_by_tech == 1): ?>
+                                             <?php if($final_price > 0 && ($booking->sb_bill_amount > 0 || $booking->sb_final_price > 0 || $booking->sb_tech_decided_price > 0)): ?>
                                              <br>
                                              <span class="badge badge-info mt-1">
-                                                 <i class="fas fa-user-cog"></i> Price set by Technician for this booking
+                                                 <i class="fas fa-user-cog"></i> Price set by Technician - Same as Booking Price
                                              </span>
+                                             <br>
+                                             <small class="text-muted">
+                                                 <i class="fas fa-info-circle"></i> For this booking, the technician decided the price based on actual work done
+                                             </small>
                                              <?php elseif($booking->s_price !== null && $booking->s_price > 0): ?>
                                              <br>
                                              <span class="badge badge-success mt-1">
@@ -257,12 +436,24 @@
                                              <?php endif; ?>
                                          </td>
                                      </tr>
-                                     <?php if(isset($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price !== null): ?>
+                                     <?php 
+                                     // Show technician decided price if available
+                                     $tech_price = 0;
+                                     if(!empty($booking->sb_bill_amount) && $booking->sb_bill_amount > 0) {
+                                         $tech_price = $booking->sb_bill_amount;
+                                     } elseif(!empty($booking->sb_tech_decided_price) && $booking->sb_tech_decided_price > 0) {
+                                         $tech_price = $booking->sb_tech_decided_price;
+                                     } elseif(!empty($booking->sb_final_price) && $booking->sb_final_price > 0) {
+                                         $tech_price = $booking->sb_final_price;
+                                     }
+                                     
+                                     if($tech_price > 0): 
+                                     ?>
                                      <tr>
                                          <th>Technician Decided Price:</th>
                                          <td>
                                              <span class="badge badge-warning" style="font-size: 1rem; padding: 8px 12px;">
-                                                 ₹<?php echo number_format($booking->sb_tech_decided_price, 2);?>
+                                                 ₹<?php echo number_format($tech_price, 2);?>
                                              </span>
                                              <br>
                                              <small class="text-muted">
@@ -322,14 +513,36 @@
                          <?php endif; ?>
                          
                          <?php if($booking->sb_status != 'Cancelled' && $booking->sb_status != 'Completed'): ?>
-                         <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Are you sure you want to CANCEL this booking? The technician will be freed up.')">
-                             <i class="fas fa-ban"></i> Cancel Booking
-                         </a>
+                             <?php if($booking->sb_is_on_hold == 1): ?>
+                             <!-- Unhold Button -->
+                             <button type="button" class="btn btn-success" onclick="unholdBooking()">
+                                 <i class="fas fa-play-circle"></i> Unhold Booking
+                             </button>
+                             <?php else: ?>
+                             <!-- Hold Button -->
+                             <button type="button" class="btn" style="background: linear-gradient(135deg, #ffa502 0%, #ff6348 100%); color: white;" onclick="holdBooking()">
+                                 <i class="fas fa-pause-circle"></i> Put on Hold
+                             </button>
+                             <?php endif; ?>
+                             
+                             <a href="admin-cancel-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-warning" onclick="return confirm('Are you sure you want to CANCEL this booking? The technician will be freed up.')">
+                                 <i class="fas fa-ban"></i> Cancel Booking
+                             </a>
                          <?php endif; ?>
                          
                          <a href="admin-delete-service-booking.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-danger" onclick="return confirm('Delete this booking permanently? This cannot be undone!')">
                              <i class="fas fa-trash"></i> Delete Permanently
                          </a>
+                         
+                         <!-- Hidden forms for hold/unhold actions -->
+                         <form id="holdForm" method="POST" style="display: none;">
+                             <input type="hidden" name="hold_action" value="hold">
+                             <input type="hidden" name="hold_reason" id="holdReason">
+                         </form>
+                         
+                         <form id="unholdForm" method="POST" style="display: none;">
+                             <input type="hidden" name="hold_action" value="unhold">
+                         </form>
                      </div>
                  </div>
              </div>
@@ -380,6 +593,22 @@
 
      <!-- Demo scripts for this page-->
      <script src="vendor/js/demo/datatables-demo.js"></script>
+     
+     <script>
+     function holdBooking() {
+         const reason = prompt('Enter reason for holding this booking:', 'Admin hold - requires attention');
+         if(reason && reason.trim() !== '') {
+             document.getElementById('holdReason').value = reason;
+             document.getElementById('holdForm').submit();
+         }
+     }
+     
+     function unholdBooking() {
+         if(confirm('Unhold this booking? It will be marked as HIGH PRIORITY and returned to In Progress status.')) {
+             document.getElementById('unholdForm').submit();
+         }
+     }
+     </script>
  </body>
 
  </html>

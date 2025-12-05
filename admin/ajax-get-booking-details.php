@@ -140,8 +140,20 @@ if(isset($_GET['sb_id'])) {
                         <td><strong class="text-success">₹<?php echo number_format($booking->s_price, 2); ?></strong></td>
                     </tr>
                     <tr>
-                        <th>Total Price:</th>
-                        <td><strong class="text-success">₹<?php echo isset($booking->sb_total_price) ? number_format($booking->sb_total_price, 2) : '0.00'; ?></strong></td>
+                        <th>Booking Price:</th>
+                        <td>
+                            <strong class="text-success">
+                                ₹<?php 
+                                    $display_price = !empty($booking->sb_final_price) ? $booking->sb_final_price : $booking->sb_total_price;
+                                    echo number_format($display_price, 2); 
+                                ?>
+                            </strong>
+                            <?php if($booking->sb_price_set_by_tech == 1): ?>
+                            <br><small class="badge badge-info"><i class="fas fa-user-cog"></i> Price set by technician</small>
+                            <?php elseif(empty($booking->sb_final_price) && $booking->sb_total_price == 0): ?>
+                            <br><small class="badge badge-warning"><i class="fas fa-exclamation-triangle"></i> Price not set yet</small>
+                            <?php endif; ?>
+                        </td>
                     </tr>
                 </table>
                 <?php if(isset($booking->s_description) && !empty($booking->s_description)): ?>

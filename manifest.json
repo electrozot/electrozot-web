@@ -2,12 +2,12 @@
   "name": "ElectroZot - Technician Booking System",
   "short_name": "ElectroZot",
   "description": "Professional electrical and technical service booking platform",
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
-  "scope": "./",
+  "scope": "/",
   "icons": [
     {
       "src": "vendor/img/icons/icon-72x72.png",

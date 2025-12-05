@@ -23,8 +23,8 @@ if (!$booking_id) {
     exit;
 }
 
-// Verify booking belongs to this technician
-$stmt = $mysqli->prepare("SELECT sb_technician_id FROM tms_service_booking WHERE sb_id = ?");
+// Verify booking belongs to this technician and check if protected
+$stmt = $mysqli->prepare("SELECT sb_technician_id, sb_was_on_hold FROM tms_service_booking WHERE sb_id = ?");
 $stmt->bind_param('i', $booking_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -32,6 +32,12 @@ $booking = $result->fetch_object();
 
 if (!$booking || $booking->sb_technician_id != $technician_id) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
+// Check if booking was on hold - if yes, technician cannot reject it
+if ($booking->sb_was_on_hold == 1) {
+    echo json_encode(['success' => false, 'message' => 'This booking cannot be rejected. It was previously on hold and only admin can cancel it. Please contact admin if there is an issue.']);
     exit;
 }
 
@@ -54,6 +60,14 @@ if ($stmt->execute()) {
     $status_stmt = $mysqli->prepare($update_status_sql);
     $status_stmt->bind_param('i', $technician_id);
     $status_stmt->execute();
+    
+    // Track rejection in rejection tracking table
+    $track_stmt = $mysqli->prepare("INSERT INTO tms_technician_rejections (tr_technician_id, tr_booking_id, tr_reason) VALUES (?, ?, ?)");
+    $track_stmt->bind_param('iis', $technician_id, $booking_id, $reason);
+    $track_stmt->execute();
+    
+    // Increment rejection counter
+    $mysqli->query("UPDATE tms_technician SET t_rejection_count = t_rejection_count + 1 WHERE t_id = $technician_id");
     
     // Create admin notification
     $get_tech_name = $mysqli->prepare("SELECT t_name FROM tms_technician WHERE t_id = ?");

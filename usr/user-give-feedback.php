@@ -44,28 +44,36 @@ if(isset($_POST['give_feedback'])) {
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding-top: 75px;
             padding-bottom: 55px;
             min-height: 100vh;
         }
         
         .top-header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+            z-index: 1000;
         }
         
         .header-content {
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
         }
         
         .logo {
@@ -252,7 +260,7 @@ if(isset($_POST['give_feedback'])) {
         .submit-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
             border: none;
             border-radius: 15px;
@@ -268,7 +276,7 @@ if(isset($_POST['give_feedback'])) {
         
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 20px rgba(209, 58, 189, 0.3);
         }
         
         .submit-btn:active {
@@ -360,13 +368,15 @@ if(isset($_POST['give_feedback'])) {
         .bottom-nav {
             position: fixed;
             bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 16px);
+            max-width: 450px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
-            padding: 6px 0;
+            padding: 4px 6px;
             z-index: 1000;
             border-radius: 20px;
         }
@@ -375,22 +385,65 @@ if(isset($_POST['give_feedback'])) {
             flex: 1;
             text-align: center;
             text-decoration: none;
-            color: #999;
-            transition: all 0.3s;
-            padding: 4px;
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 2px;
+            position: relative;
+            border-radius: 12px;
         }
         
-        .nav-item.active { color: #667eea; }
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active { 
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
         
         .nav-item i {
-            font-size: 20px;
+            font-size: 16px;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
+        }
+        
+        .nav-item.active i {
+            animation: bounce 0.4s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
         
         .nav-item span {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-nav {
+                max-width: 400px;
+                bottom: 10px;
+                padding: 5px 8px;
+            }
+            
+            .nav-item {
+                padding: 5px 4px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+            
+            .nav-item span {
+                font-size: 9px;
+            }
         }
         
         @media (min-width: 768px) {
@@ -451,13 +504,13 @@ if(isset($_POST['give_feedback'])) {
 
     <div class="top-header">
         <div class="header-content">
-            <div class="brand-section">
+            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
                 </div>
-            </div>
+            </a>
             <div class="user-section">
                 <div class="header-icons">
                     <a href="user-view-profile.php" class="header-icon">
@@ -546,6 +599,10 @@ if(isset($_POST['give_feedback'])) {
         <a href="user-view-profile.php" class="nav-item">
             <i class="fas fa-user"></i>
             <span>Profile</span>
+        </a>
+        <a href="../index.php" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Main</span>
         </a>
     </div>
 

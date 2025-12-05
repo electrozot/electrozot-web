@@ -63,12 +63,118 @@ if(isset($_POST['change_password'])){
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 90px 20px 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            padding: 8px 20px;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(6, 182, 212, 0.3);
+            height: 70px;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+        
+        .logo-image {
+            width: 55px;
+            height: 55px;
+            background: transparent;
+            border-radius: 8px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .logo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .brand-info {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            justify-content: center;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: white;
+            margin: 0;
+            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .notif-icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .notif-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
         }
         
         .change-password-container {
@@ -244,7 +350,7 @@ if(isset($_POST['change_password'])){
         
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
+            box-shadow: 0 8px 20px rgba(226, 117, 248, 0.4);
         }
         
         .btn-back {
@@ -324,6 +430,25 @@ if(isset($_POST['change_password'])){
     </style>
 </head>
 <body>
+    <!-- Header -->
+    <div class="header">
+        <a href="dashboard.php" class="logo-section">
+            <div class="logo-image">
+                <img src="../vendor/EZlogonew.png" alt="EZ">
+            </div>
+            <div class="brand-info">
+                <h1 class="brand-title">Electrozot</h1>
+                <p class="brand-subtitle">We Make Perfect</p>
+            </div>
+        </a>
+        
+        <div class="header-actions">
+            <button class="notif-icon-btn" onclick="window.location.href='notifications.php'">
+                <i class="fas fa-bell"></i>
+            </button>
+        </div>
+    </div>
+
     <div class="change-password-container">
         <div class="header-section">
             <div class="header-icon">

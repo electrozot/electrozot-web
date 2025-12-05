@@ -15,18 +15,30 @@
             $u_email=$_POST['u_email'];
             $u_pwd=$_POST['u_pwd'];
             $u_category=$_POST['u_category'];
-            $query="insert into tms_user (u_fname, u_lname, u_phone, u_addr, u_category, u_email, u_pwd) values(?,?,?,?,?,?,?)";
-            $stmt = $mysqli->prepare($query);
-            $rc=$stmt->bind_param('sssssss', $u_fname,  $u_lname, $u_phone, $u_addr, $u_category, $u_email, $u_pwd);
-            $stmt->execute();
-                if($stmt)
-                {
-                    $succ = "User Added";
-                }
-                else 
-                {
-                    $err = "Please Try Again Later";
-                }
+            
+            // Check if mobile number already exists
+            $check_phone = $mysqli->prepare("SELECT u_id FROM tms_user WHERE u_phone = ?");
+            $check_phone->bind_param('s', $u_phone);
+            $check_phone->execute();
+            $check_phone->store_result();
+            
+            if($check_phone->num_rows > 0) {
+                $err = "This mobile number is already registered. Each mobile number can only have one account.";
+            } else {
+                $query="insert into tms_user (u_fname, u_lname, u_phone, u_addr, u_category, u_email, u_pwd) values(?,?,?,?,?,?,?)";
+                $stmt = $mysqli->prepare($query);
+                $rc=$stmt->bind_param('sssssss', $u_fname,  $u_lname, $u_phone, $u_addr, $u_category, $u_email, $u_pwd);
+                $stmt->execute();
+                    if($stmt)
+                    {
+                        $succ = "User Added";
+                    }
+                    else 
+                    {
+                        $err = "Please Try Again Later";
+                    }
+            }
+            $check_phone->close();
             }
 ?>
  <!DOCTYPE html>

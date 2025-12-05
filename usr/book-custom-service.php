@@ -17,6 +17,7 @@ $user = $result->fetch_object();
 if(isset($_POST['submit_custom_booking'])) {
     $service_name = trim($_POST['service_name']);
     $service_description = trim($_POST['service_description']);
+    $subcategory = isset($_POST['subcategory']) ? trim($_POST['subcategory']) : '';
     $preferred_date = $_POST['preferred_date'];
     $preferred_time = $_POST['preferred_time'];
     $address = trim($_POST['address']);
@@ -40,8 +41,8 @@ if(isset($_POST['submit_custom_booking'])) {
         $error = "You have reached the maximum limit of 3 active bookings. Please wait for one of your bookings to be completed.";
     }
     // Validation
-    elseif(empty($service_name) || empty($service_description) || empty($preferred_date) || empty($address) || empty($pincode)) {
-        $error = "Please fill all required fields";
+    elseif(empty($service_name) || empty($service_description) || empty($subcategory) || empty($preferred_date) || empty($address) || empty($pincode)) {
+        $error = "Please fill all required fields including service category";
     } else {
         // Check if "Custom Service" exists in tms_service table, if not create it
         $check_service = "SELECT s_id FROM tms_service WHERE s_name = 'Custom Service Request' LIMIT 1";
@@ -101,29 +102,34 @@ if(isset($_POST['submit_custom_booking'])) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7ff 0%, #e8f4f8 100%);
             min-height: 100vh;
+            padding-top: 75px;
             padding-bottom: 70px;
         }
         
         .header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+            z-index: 1000;
         }
         
         .header-content {
             display: flex;
             align-items: center;
             gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
         }
         
         .brand-section {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 4px;
         }
         
         .logo {
@@ -194,21 +200,21 @@ if(isset($_POST['submit_custom_booking'])) {
         }
         
         .info-box {
-            background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #ffe8f0 0%, #ffd6e8 100%);
+            border-left: 4px solid #d13abd;
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 25px;
         }
         
         .info-box i {
-            color: #3b82f6;
+            color: #d13abd;
             margin-right: 8px;
         }
         
         .info-box p {
             font-size: 13px;
-            color: #1e40af;
+            color: #b91c9e;
             margin: 0;
             line-height: 1.6;
         }
@@ -217,7 +223,7 @@ if(isset($_POST['submit_custom_booking'])) {
             background: white;
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
         }
         
         .form-group {
@@ -253,8 +259,8 @@ if(isset($_POST['submit_custom_booking'])) {
         .form-textarea:focus,
         .form-select:focus {
             outline: none;
-            border-color: #6366f1;
-            background: #f9fafb;
+            border-color: #d13abd;
+            background: #fff5f7;
         }
         
         .form-textarea {
@@ -271,7 +277,7 @@ if(isset($_POST['submit_custom_booking'])) {
         .btn-submit {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
             color: white;
             border: none;
             border-radius: 12px;
@@ -338,16 +344,64 @@ if(isset($_POST['submit_custom_booking'])) {
             color: #6366f1;
         }
         
+        .subcategory-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .subcategory-btn {
+            padding: 15px 10px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .subcategory-btn i {
+            font-size: 24px;
+            color: #6366f1;
+        }
+        
+        .subcategory-btn:hover {
+            border-color: #d13abd;
+            background: linear-gradient(135deg, rgba(209, 58, 189, 0.05) 0%, rgba(236, 110, 173, 0.05) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(209, 58, 189, 0.15);
+        }
+        
+        .subcategory-btn.active {
+            border-color: #d13abd;
+            background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+        }
+        
+        .subcategory-btn.active i {
+            color: white;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 8px;
-            left: 8px;
-            right: 8px;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 16px);
+            max-width: 450px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
-            padding: 6px 0;
+            padding: 4px 6px;
             z-index: 1000;
             border-radius: 20px;
         }
@@ -356,35 +410,78 @@ if(isset($_POST['submit_custom_booking'])) {
             flex: 1;
             text-align: center;
             text-decoration: none;
-            color: #999;
-            transition: all 0.3s;
-            padding: 4px;
+            color: rgba(255, 255, 255, 0.75);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 4px 2px;
+            position: relative;
+            border-radius: 12px;
         }
         
-        .nav-item.active { color: #667eea; }
+        .nav-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        .nav-item.active { 
+            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
         
         .nav-item i {
-            font-size: 20px;
+            font-size: 16px;
             display: block;
-            margin-bottom: 3px;
+            margin-bottom: 1px;
+        }
+        
+        .nav-item.active i {
+            animation: bounce 0.4s ease;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
         }
         
         .nav-item span {
-            font-size: 10px;
+            font-size: 8px;
             font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        
+        @media (min-width: 768px) {
+            .bottom-nav {
+                max-width: 400px;
+                bottom: 10px;
+                padding: 5px 8px;
+            }
+            
+            .nav-item {
+                padding: 5px 4px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+            
+            .nav-item span {
+                font-size: 9px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="header-content">
-            <div class="brand-section">
+            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
                 <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
                 <div class="brand-text">
                     <h2>Electrozot</h2>
                     <p>We make perfect</p>
                 </div>
-            </div>
+            </a>
             <div class="user-section">
                 <div class="header-icons">
                     <a href="user-view-profile.php" class="header-icon">
@@ -436,6 +533,48 @@ if(isset($_POST['submit_custom_booking'])) {
                     <textarea name="service_description" class="form-textarea" required 
                               placeholder="Please describe what you need in detail..."></textarea>
                     <div class="form-hint">Provide as much detail as possible about your requirements</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Service Category <span class="required">*</span>
+                    </label>
+                    <div class="subcategory-grid">
+                        <button type="button" class="subcategory-btn" data-subcategory="Wiring & Fixtures">
+                            <i class="fas fa-plug"></i>
+                            <span>Wiring & Fixtures</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Safety & Power">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Safety & Power</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Major Appliances">
+                            <i class="fas fa-tv"></i>
+                            <span>Major Appliances</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Other Gadgets">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Other Gadgets</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Appliance Setup">
+                            <i class="fas fa-tools"></i>
+                            <span>Appliance Setup</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Tech & Security">
+                            <i class="fas fa-video"></i>
+                            <span>Tech & Security</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Routine Care">
+                            <i class="fas fa-wrench"></i>
+                            <span>Routine Care</span>
+                        </button>
+                        <button type="button" class="subcategory-btn" data-subcategory="Fixtures & Taps">
+                            <i class="fas fa-faucet"></i>
+                            <span>Fixtures & Taps</span>
+                        </button>
+                    </div>
+                    <input type="hidden" name="subcategory" id="subcategoryInput" required>
+                    <div class="form-hint" id="subcategoryHint">Select the category that best matches your service</div>
                 </div>
 
                 <div class="form-group">
@@ -510,6 +649,40 @@ if(isset($_POST['submit_custom_booking'])) {
             <i class="fas fa-user"></i>
             <span>Profile</span>
         </a>
+        <a href="../index.php" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Main</span>
+        </a>
     </div>
+
+    <script>
+        // Handle subcategory button clicks
+        document.querySelectorAll('.subcategory-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.subcategory-btn').forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Set hidden input value
+                const subcategory = this.getAttribute('data-subcategory');
+                document.getElementById('subcategoryInput').value = subcategory;
+                
+                // Update hint
+                document.getElementById('subcategoryHint').innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> Selected: <strong>' + subcategory + '</strong>';
+            });
+        });
+        
+        // Form validation - ensure subcategory is selected
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const subcategoryInput = document.getElementById('subcategoryInput');
+            if(!subcategoryInput.value) {
+                e.preventDefault();
+                alert('Please select a service category');
+                document.querySelector('.subcategory-grid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
 </body>
 </html>
