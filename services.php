@@ -40,13 +40,13 @@ include('admin/vendor/inc/config.php');
     <div class="container" style="padding-top: 40px; padding-bottom: 80px;">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px;">
-                <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600;">
+            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; display: flex; flex-wrap: nowrap; align-items: center;">
+                <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
+                    <a href="index.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500;">Services</li>
+                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Services</li>
             </ol>
         </nav>
 
@@ -393,10 +393,34 @@ include('admin/vendor/inc/config.php');
             color: white !important;
         }
 
+        .services-breadcrumb {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        
+        .services-breadcrumb .breadcrumb-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+        
         .services-breadcrumb a:hover {
             color: #F472B6 !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 576px) {
+            .services-breadcrumb {
+                padding: 10px 15px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .services-breadcrumb .breadcrumb-item a,
+            .services-breadcrumb .breadcrumb-item {
+                font-size: 0.85rem !important;
+            }
         }
 
         @media (max-width: 768px) {

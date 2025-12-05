@@ -20,7 +20,7 @@
     <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #E0F2FE 0%, #FECDD3 25%, #D1FAE5 50%, #FBCFE8 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 100px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #95e3f3ff 0%, #FECDD3 25%, #a9f6ceff 50%, #f783c5ff 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 100px 0 80px 0; position: relative; overflow: hidden;">
             
             <style>
                 @keyframes gradientShift {
@@ -37,41 +37,60 @@
                 /* Mobile responsive heading */
                 @media (max-width: 768px) {
                     .hero-title {
-                        font-size: 3.5rem !important;
+                        font-size: 3rem !important;
+                        padding: 0 15px !important;
+                    }
+                    
+                    .hero-description {
+                        font-size: 0.85rem !important;
+                        line-height: 1.5 !important;
+                        padding: 0 15px !important;
                     }
                     
                     .hero-buttons-wrapper {
                         display: flex !important;
                         flex-direction: row !important;
-                        justify-content: flex-start !important;
+                        justify-content: center !important;
                         gap: 10px !important;
+                        flex-wrap: wrap !important;
                     }
                     
                     .hero-btn {
                         flex: 0 1 auto !important;
-                        min-width: auto !important;
-                        padding: 8px 18px !important;
+                        min-width: 150px !important;
+                        padding: 10px 20px !important;
                         font-size: 0.85rem !important;
                     }
                 }
                 
                 @media (max-width: 576px) {
                     .hero-title {
-                        font-size: 3rem !important;
+                        font-size: 2.5rem !important;
+                        padding: 0 10px !important;
+                    }
+                    
+                    .hero-description {
+                        font-size: 0.75rem !important;
+                        line-height: 1.5 !important;
+                        padding: 0 10px !important;
+                        word-wrap: break-word !important;
+                        text-align: center !important;
                     }
                     
                     .hero-buttons-wrapper {
                         display: flex !important;
                         flex-direction: row !important;
-                        justify-content: flex-start !important;
+                        justify-content: center !important;
                         gap: 8px !important;
-                        flex-wrap: nowrap !important;
+                        flex-wrap: wrap !important;
+                        padding: 0 10px !important;
                     }
                     
                     .hero-btn {
-                        flex: 1 1 0 !important;
-                        min-width: 0 !important;
-                        padding: 8px 12px !important;
+                        flex: 1 1 auto !important;
+                        min-width: 140px !important;
+                        max-width: 48% !important;
+                        padding: 10px 15px !important;
                         font-size: 0.8rem !important;
                         white-space: nowrap !important;
                     }
@@ -80,22 +99,50 @@
                         font-size: 0.75rem !important;
                     }
                 }
+                
+                /* Extra small screens (below 400px) */
+                @media (max-width: 400px) {
+                    .hero-title {
+                        font-size: 2rem !important;
+                        padding: 0 5px !important;
+                    }
+                    
+                    .hero-description {
+                        font-size: 0.7rem !important;
+                        line-height: 1.4 !important;
+                        padding: 0 5px !important;
+                    }
+                    
+                    .hero-description br {
+                        display: inline !important;
+                    }
+                    
+                    .hero-description br::after {
+                        content: " " !important;
+                    }
+                    
+                    .hero-btn {
+                        min-width: 120px !important;
+                        padding: 8px 12px !important;
+                        font-size: 0.75rem !important;
+                    }
+                }
             </style>
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-1 font-weight-bold mb-4 hero-title" style="color: #2d3748; font-size: 4.5rem;">
+                        <h1 class="display-1 mb-4 hero-title" style="color: #2d3748; font-size: 4.5rem; text-align: center; font-weight: 400;">
                             <span class="electrozot-animated">Electrozot</span>
                         </h1>
-                        <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.5; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700;">
-                            Your Trusted Partner for Perfect Work. Quality Service. Certified Technicians. We Make Perfection Our Promise.
+                        <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.6; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700; text-align: center; padding: 0 15px;">
+                            Your Trusted Partner for electrical & plumbing services,<br> Quality Service & Certified Technicians.<br>We Deliver Perfection in Every Job.
                         </p>
-                        <div class="hero-buttons-wrapper d-flex flex-wrap" style="gap: 12px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(232, 138, 119, 0.5); transition: all 0.3s ease; min-width: 160px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
+                        <div class="hero-buttons-wrapper d-flex flex-wrap justify-content-center" style="gap: 12px;">
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; min-width: 160px; text-align: center; border: none;">
                                 <i class="fas fa-bolt" style="color: #000000;"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; box-shadow: 0 6px 20px rgba(232, 138, 119, 0.5); transition: all 0.3s ease; min-width: 190px; text-align: center; border: 2px solid rgba(255,255,255,0.3);">
+                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; min-width: 190px; text-align: center; border: none;">
                                 <i class="fas fa-phone" style="color: #000000;"></i> 7559606925
                             </a>
                         </div>
@@ -210,7 +257,7 @@
                                         <!-- Hidden field to store selected subcategory -->
                                         <input type="hidden" name="sb_subcategory" id="guestSubcategoryHidden" value="">
                                         <div class="text-center mt-2">
-                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: #1e293b; border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: #10b981; border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
                                                 <i class="fas fa-paper-plane" id="submitIcon"></i> <span id="submitText">Submit Booking</span>
                                             </button>
                                         </div>
@@ -282,11 +329,7 @@
                 padding: 6px 10px !important;
                 min-height: 36px !important;
                 cursor: pointer !important;
-                background-image: linear-gradient(45deg, transparent 50%, #dc143c 50%), linear-gradient(135deg, #dc143c 50%, transparent 50%) !important;
-                background-position: calc(100% - 15px) center, calc(100% - 10px) center !important;
-                background-size: 5px 5px, 5px 5px !important;
-                background-repeat: no-repeat !important;
-                padding-right: 35px !important;
+                background: linear-gradient(to bottom, #ffffff, #f9fafb) !important;
             }
             
             .booking-form-compact .form-group {
@@ -416,9 +459,9 @@
             
             /* Submit button hover effect */
             .booking-submit-btn:hover {
-                background: #0f172a !important;
+                background: #059669 !important;
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(15, 23, 42, 0.6) !important;
+                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
             }
             
             .booking-submit-btn:active {
@@ -465,50 +508,71 @@
             
             /* Mobile Responsive Styles for Small Screens */
             @media (max-width: 576px) {
+                /* Hero section mobile adjustments */
+                .hero-section-enhanced {
+                    padding: 80px 0 40px 0 !important;
+                }
+                
+                .hero-content {
+                    padding-right: 15px !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                .hero-description {
+                    font-size: 0.85rem !important;
+                    line-height: 1.4 !important;
+                }
+                
                 /* Reduce booking form width on small screens */
                 .booking-card {
-                    max-width: 95% !important;
+                    max-width: 100% !important;
                     margin: 0 auto !important;
+                    padding: 0 10px !important;
                 }
                 
                 .booking-form-card {
                     margin: 0 auto !important;
+                    border-radius: 15px !important;
                 }
                 
                 /* Compact spacing for mobile - keep text size same */
                 .booking-form-compact .form-label-compact {
                     margin-bottom: 2px !important;
-                    font-size: 0.75rem !important;
+                    font-size: 0.7rem !important;
                 }
                 
                 .booking-form-compact .form-group {
-                    margin-bottom: 0.4rem !important;
+                    margin-bottom: 0.5rem !important;
                 }
                 
                 /* Compact card on mobile */
                 .card-body.p-3 {
-                    padding: 0.6rem !important;
+                    padding: 0.75rem !important;
                 }
                 
                 .card-header.py-3 {
-                    padding: 0.5rem !important;
+                    padding: 0.6rem !important;
                 }
                 
                 .card-header h3 {
-                    font-size: 1.1rem !important;
+                    font-size: 1rem !important;
+                }
+                
+                .card-header h3 i {
+                    font-size: 0.9rem !important;
                 }
                 
                 /* Keep two columns on mobile like desktop */
                 .booking-form-compact .col-md-6 {
-                    padding-left: 6px !important;
-                    padding-right: 6px !important;
+                    padding-left: 5px !important;
+                    padding-right: 5px !important;
                     flex: 0 0 50% !important;
                     max-width: 50% !important;
                 }
                 
                 .booking-form-compact .row {
-                    margin-left: -6px !important;
-                    margin-right: -6px !important;
+                    margin-left: -5px !important;
+                    margin-right: -5px !important;
                 }
                 
                 /* Ensure all form controls are full width and aligned on mobile */
@@ -518,32 +582,143 @@
                 .service-dropdown {
                     width: 100% !important;
                     max-width: 100% !important;
+                    font-size: 0.85rem !important;
+                    padding: 5px 8px !important;
+                    min-height: 32px !important;
+                }
+                
+                .booking-form-compact textarea.form-control {
+                    font-size: 0.85rem !important;
+                    padding: 5px 8px !important;
                 }
                 
                 /* Hide duplicate dropdown error by ensuring proper spacing */
                 .booking-form-compact .form-group + .form-group {
-                    margin-top: 0.6rem !important;
+                    margin-top: 0.5rem !important;
                 }
                 
-                /* Smaller service cards on mobile */
+                /* Submit button mobile */
+                .booking-submit-btn {
+                    padding: 8px 20px !important;
+                    font-size: 0.85rem !important;
+                }
+                
+                /* Section spacing mobile */
+                .features-section,
+                .services-section {
+                    padding: 15px 0 10px 0 !important;
+                }
+                
+                .section-title {
+                    font-size: 1.3rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                /* Feature cards mobile */
+                .feature-card {
+                    margin-bottom: 15px !important;
+                }
+                
+                .feature-card .card-body {
+                    padding: 15px !important;
+                }
+                
+                .feature-card .card-title {
+                    font-size: 0.95rem !important;
+                }
+                
+                .feature-card .card-text {
+                    font-size: 0.8rem !important;
+                }
+                
+                .feature-icon {
+                    width: 45px !important;
+                    height: 45px !important;
+                    font-size: 1.3rem !important;
+                }
+                
+                /* Service cards mobile */
                 .service-card {
-                    transform: scale(0.9) !important;
+                    margin-bottom: 15px !important;
                 }
                 
                 .service-img-wrapper {
-                    height: 150px !important;
+                    height: 120px !important;
+                }
+                
+                .service-icon {
+                    font-size: 2.5rem !important;
                 }
                 
                 .service-card .card-body {
-                    padding: 1rem !important;
+                    padding: 15px !important;
                 }
                 
                 .service-card .card-title {
-                    font-size: 1rem !important;
+                    font-size: 0.95rem !important;
                 }
                 
                 .service-card .card-text {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .price-badge {
                     font-size: 0.85rem !important;
+                    padding: 5px 12px !important;
+                }
+                
+                /* Container padding mobile */
+                .container-fluid {
+                    padding-left: 0 !important;
+                    padding-right: 0 !important;
+                }
+                
+                .container {
+                    padding-left: 15px !important;
+                    padding-right: 15px !important;
+                }
+                
+                /* Portfolio section mobile */
+                #portfolioSection {
+                    padding: 15px 0 0 0 !important;
+                }
+                
+                #workCarousel {
+                    border-radius: 8px !important;
+                }
+            }
+            
+            /* Extra small screens (very small phones) */
+            @media (max-width: 375px) {
+                .hero-title {
+                    font-size: 2.5rem !important;
+                }
+                
+                .hero-btn {
+                    padding: 6px 10px !important;
+                    font-size: 0.75rem !important;
+                    min-width: 0 !important;
+                }
+                
+                .booking-form-compact .form-label-compact {
+                    font-size: 0.65rem !important;
+                }
+                
+                .booking-form-compact .form-control,
+                .booking-form-compact select.form-control,
+                .booking-form-compact textarea.form-control {
+                    font-size: 0.8rem !important;
+                    padding: 4px 6px !important;
+                    min-height: 30px !important;
+                }
+                
+                .card-header h3 {
+                    font-size: 0.9rem !important;
+                }
+                
+                .section-title {
+                    font-size: 1.1rem !important;
                 }
             }
         </style>
@@ -1165,21 +1340,20 @@
 
     <!-- PWA Service Worker Registration -->
     <script>
-        // Get the base path for the application
-        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-        const swPath = basePath ? basePath + '/sw.js' : '/sw.js';
-        
-        // Register Service Worker
+        // Register Service Worker with relative path (works for any subdirectory)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register(swPath)
+                // Use relative path - works regardless of subdirectory
+                navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
-                        console.log('✅ Service Worker registered successfully:', registration.scope);
-                        console.log('📍 Service Worker path:', swPath);
+                        console.log('✅ Service Worker registered successfully');
+                        console.log('📍 Scope:', registration.scope);
+                        
+                        // Check for updates
+                        registration.update();
                     })
                     .catch((error) => {
                         console.error('❌ Service Worker registration failed:', error);
-                        console.log('Tried path:', swPath);
                     });
             });
         } else {

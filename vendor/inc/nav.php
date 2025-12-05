@@ -1,8 +1,70 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #155e75 0%, #0891b2 25%, #06b6d4 50%, #0891b2 75%, #155e75 100%); background-size: 400% 400%; animation: gradientShift 20s ease infinite; box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4); backdrop-filter: blur(10px); padding: 12px 0; overflow: visible; position: fixed; top: 0; left: 0; right: 0; z-index: 10000;">
-    <!-- Glossy overlay effect -->
-    <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 100%); pointer-events: none; z-index: 1;"></div>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark navbar-color-transition" style="backdrop-filter: blur(10px); padding: 18px 0 8px 0; overflow: visible; position: fixed !important; top: 0 !important; left: 0; right: 0; width: 100%; z-index: 10000 !important; border: none; margin: 0; box-sizing: border-box;">
+    <style>
+        /* Force navbar to stay fixed at top */
+        .navbar.fixed-top {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 10000 !important;
+            border: none !important;
+            border-top: none !important;
+            border-bottom: none !important;
+            margin: 0 !important;
+            padding-top: 0 !important;
+            box-sizing: border-box !important;
+        }
+        
+        /* Remove any white lines or borders on mobile */
+        @media (max-width: 991px) {
+            .navbar.fixed-top {
+                border: none !important;
+                border-top: none !important;
+                border-bottom: none !important;
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
+                padding: 10px 0 6px 0 !important;
+            }
+            
+            .navbar.fixed-top::after,
+            .navbar.fixed-top::before {
+                display: none !important;
+            }
+            
+            .navbar.fixed-top > div {
+                border-top: none !important;
+            }
+        }
+        
+        /* Remove any container borders */
+        .navbar .container-fluid {
+            border: none !important;
+            border-top: none !important;
+        }
+        
+        @keyframes navbarColorChange {
+            0% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            50% {
+                background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
+                box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            100% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+        }
+        
+        .navbar-color-transition {
+            animation: navbarColorChange 6s ease-in-out infinite;
+        }
+    </style>
+    <!-- Glossy overlay effect - removed to fix white line -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: transparent; pointer-events: none; z-index: 1; display: none;"></div>
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
-        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 3px;">
+        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px;">
             <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
             <div class="d-flex flex-column">
@@ -10,25 +72,33 @@
                 <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
             </div>
         </a>
-        <!-- Mobile Login Button (visible only on mobile) - Direct to Client Login -->
-        <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 12px;">
-            <a href="usr/" class="btn mobile-login-btn" style="background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.4); color: #ffffff; font-weight: 600; padding: 5px 10px; border-radius: 5px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); text-decoration: none; font-size: 0.7rem; transition: all 0.3s ease; height: 28px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                <i class="fas fa-user" style="font-size: 0.65rem; margin-right: 4px;"></i> Login
+        <!-- PWA Install Button - Mobile Left Side -->
+        <button id="pwa-install-mobile-btn" class="btn d-lg-none" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 4px; border-radius: 4px; box-shadow: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px; margin-left: 3px;">
+            <i class="fas fa-download" style="font-size: 0.65rem; margin-bottom: 1px;"></i><span style="font-weight: 600; font-size: 0.5rem; white-space: nowrap;">App</span>
+        </button>
+        <!-- Mobile Buttons (visible only on mobile) -->
+        <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 3px; margin-right: 10px;">
+            <a href="usr/" class="btn mobile-login-btn" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 5px; border-radius: 4px; box-shadow: none; text-decoration: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px;">
+                <i class="fas fa-user" style="font-size: 0.65rem; margin-bottom: 1px;"></i><span style="font-weight: 600; font-size: 0.5rem; white-space: nowrap;">Login</span>
             </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: 1.5px solid rgba(255, 255, 255, 0.4); padding: 5px 10px; background: rgba(255, 255, 255, 0.25); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); border-radius: 5px; transition: all 0.3s ease; height: 28px; width: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; transition: all 0.3s ease;"></span>
-                <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; margin-top: 3px; transition: all 0.3s ease;"></span>
-                <span class="navbar-toggler-icon" style="width: 16px; height: 1.5px; background: #ffffff; display: block; position: relative; margin-top: 3px; transition: all 0.3s ease;"></span>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: none; padding: 2px 4px; background: transparent; box-shadow: none; border-radius: 4px; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; min-height: 32px; width: 26px;">
+                <i class="fas fa-bars" style="font-size: 0.6rem; color: #ffffff;"></i>
             </button>
         </div>
         
         <style>
+            #pwa-install-mobile-btn:hover,
             .mobile-login-btn:hover {
                 background: rgba(255, 255, 255, 0.4) !important;
                 transform: translateY(-2px);
                 box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3) !important;
                 color: #ffffff !important;
                 border-color: rgba(255, 255, 255, 0.6) !important;
+            }
+            
+            #pwa-install-mobile-btn:active,
+            .mobile-login-btn:active {
+                transform: scale(0.95);
             }
             
             /* Hamburger menu button hover effect */
@@ -103,33 +173,33 @@
             /* Responsive logo sizing */
             @media (max-width: 768px) {
                 .navbar-logo {
-                    height: 55px !important;
+                    height: 45px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.6rem !important;
+                    font-size: 1.3rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.8rem !important;
+                    font-size: 0.65rem !important;
                 }
             }
             
             @media (max-width: 576px) {
                 .navbar-logo {
-                    height: 50px !important;
+                    height: 40px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.4rem !important;
+                    font-size: 1.1rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.75rem !important;
+                    font-size: 0.6rem !important;
                 }
                 
                 .navbar-brand {
-                    gap: 3px !important;
+                    gap: 0px !important;
                 }
             }
             
@@ -284,8 +354,13 @@
                     <a class="nav-link" href="gallery.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Gallery</a>
                  </li>
                  <li class="nav-item d-none d-lg-block">
-                    <a class="nav-link" href="usr/" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">
-                         <i class="fas fa-user"></i> Login
+                    <button id="pwa-install-nav-btn" class="btn nav-link" style="color: #fff !important; font-weight: 600; font-size: 0.75rem; padding: 5px 10px !important; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 5px; transition: all 0.3s ease; display: inline-block !important; z-index: 1000; position: relative;">
+                         <i class="fas fa-download" style="font-size: 0.7rem;"></i> Download
+                     </button>
+                 </li>
+                 <li class="nav-item d-none d-lg-block">
+                    <a class="nav-link" href="usr/" style="color: #fff !important; font-weight: 600; font-size: 0.7rem; padding: 5px 8px !important; display: flex; flex-direction: column; align-items: center; line-height: 1.2; white-space: nowrap;">
+                         <i class="fas fa-user" style="font-size: 1.1rem; margin-bottom: 2px;"></i><span style="font-weight: 600; font-size: 0.7rem; white-space: nowrap;">Login</span>
                      </a>
                  </li>
              </ul>
@@ -308,5 +383,115 @@
                 }
             }
         });
+        
+        // PWA Install Button Handler
+        let deferredPrompt;
+        const installButtonDesktop = document.getElementById('pwa-install-nav-btn');
+        const installButtonMobile = document.getElementById('pwa-install-mobile-btn');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show the install buttons
+            if (installButtonDesktop) {
+                installButtonDesktop.style.display = 'inline-block';
+                installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Download App';
+            }
+            if (installButtonMobile) {
+                installButtonMobile.style.display = 'flex';
+            }
+        });
+        
+        // Handle desktop button click
+        if (installButtonDesktop) {
+            installButtonDesktop.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    alert('📱 PWA Installation Info:\n\n' +
+                          '✓ Button is visible and working!\n\n' +
+                          'To enable installation:\n' +
+                          '1. Browse the site for 30 seconds\n' +
+                          '2. The install prompt will appear\n' +
+                          '3. Or check browser menu for "Install ElectroZot"');
+                    return;
+                }
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('PWA installed');
+                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                    if (installButtonMobile) installButtonMobile.style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+        }
+        
+        // Handle mobile button click
+        if (installButtonMobile) {
+            installButtonMobile.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    alert('📱 Install ElectroZot App\n\n' +
+                          'Browse the site for 30 seconds, then the install option will appear!\n\n' +
+                          'Or check your browser menu for "Install ElectroZot"');
+                    return;
+                }
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('PWA installed');
+                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                    if (installButtonMobile) installButtonMobile.style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
+        }
+        
+        // Hide buttons if already installed
+        window.addEventListener('appinstalled', () => {
+            if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+            if (installButtonMobile) installButtonMobile.style.display = 'none';
+        });
+        
+        // Check if running as PWA
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            if (installButtonDesktop) {
+                installButtonDesktop.innerHTML = '<i class="fas fa-check-circle"></i> Installed';
+                installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            }
+            if (installButtonMobile) {
+                installButtonMobile.innerHTML = '<i class="fas fa-check-circle"></i>';
+                installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonMobile.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            }
+        }
     </script>
+    
+    <style>
+        #pwa-install-nav-btn {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            }
+        }
+        
+        #pwa-install-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.4) !important;
+            border-color: rgba(255, 255, 255, 0.7) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.5) !important;
+            animation: none;
+        }
+        
+        #pwa-install-nav-btn:active {
+            transform: translateY(0);
+        }
+    </style>
  </nav>

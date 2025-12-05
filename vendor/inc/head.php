@@ -1,34 +1,36 @@
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
     <meta name="description" content="Technician Booking System - Book Professional Technicians">
     <meta name="author" content="Electrozot">
 
-    <title>Technician Booking System</title>
+    <title>Electrozot - We Make Perfect</title>
     
     <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="ElectroZot">
     <meta name="mobile-web-app-capable" content="yes">
     
+
+    
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     
     <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="72x72" href="/vendor/img/icons/icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="96x96" href="/vendor/img/icons/icon-96x96.png">
-    <link rel="apple-touch-icon" sizes="128x128" href="/vendor/img/icons/icon-128x128.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="/vendor/img/icons/icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/vendor/img/icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="/vendor/img/icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="384x384" href="/vendor/img/icons/icon-384x384.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="/vendor/img/icons/icon-512x512.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="vendor/img/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="vendor/img/icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="vendor/img/icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="vendor/img/icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="vendor/img/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="vendor/img/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="vendor/img/icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="vendor/img/icons/icon-512x512.png">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/vendor/img/icons/icon-72x72.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/vendor/img/icons/icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="vendor/img/icons/icon-72x72.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="vendor/img/icons/icon-72x72.png">
     
     <!-- Bootstrap core CSS -->
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -39,5 +41,11 @@
     <link href="usr/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <!-- Compact UI overrides -->
     <link href="vendor/css/custom.css" rel="stylesheet">
+    <!-- PWA Orientation Lock -->
+    <link href="css/pwa-orientation-lock.css" rel="stylesheet">
+    <!-- PWA Scripts -->
+    <script defer src="pwa-install.js"></script>
+    <script defer src="pwa-update-notification.js"></script>
+    <script defer src="js/orientation-lock.js"></script>
 
 </head>

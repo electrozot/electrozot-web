@@ -113,7 +113,12 @@ if(isset($_POST['complete_service'])){
         $tech_stmt->bind_param('i', $t_id);
         $tech_stmt->execute();
         
-        $_SESSION['success_msg'] = "Service marked as completed successfully!";
+        // Generate bill automatically
+        require_once('../admin/vendor/inc/bill-generator.php');
+        $billGen = new BillGenerator($mysqli, $sb_id);
+        $billGen->saveBillRecord();
+        
+        $_SESSION['success_msg'] = "Service marked as completed successfully! Bill generated.";
         header('Location: completed-bookings.php');
         exit();
     } else {

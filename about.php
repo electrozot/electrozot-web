@@ -38,13 +38,13 @@ include('admin/vendor/inc/config.php');
 
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb about-breadcrumb" style="background: white; border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #A855F7;">
-                <li class="breadcrumb-item">
-                    <a href="index.php" style="color: #A855F7; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease;">
+            <ol class="breadcrumb about-breadcrumb" style="background: white; border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-left: 4px solid #A855F7; display: flex; flex-wrap: nowrap; align-items: center;">
+                <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
+                    <a href="index.php" style="color: #A855F7; text-decoration: none; font-size: 0.95rem; font-weight: 600; transition: all 0.3s ease; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500;">About</li>
+                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">About</li>
             </ol>
         </nav>
 
@@ -437,10 +437,34 @@ include('admin/vendor/inc/config.php');
             color: #11998e;
         }
 
+        .about-breadcrumb {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        
+        .about-breadcrumb .breadcrumb-item {
+            display: inline-flex !important;
+            align-items: center !important;
+            white-space: nowrap !important;
+        }
+        
         .about-breadcrumb a:hover {
             color: #38ef7d !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
+        }
+        
+        @media (max-width: 576px) {
+            .about-breadcrumb {
+                padding: 10px 15px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .about-breadcrumb .breadcrumb-item a,
+            .about-breadcrumb .breadcrumb-item {
+                font-size: 0.85rem !important;
+            }
         }
 
         .about-heading {

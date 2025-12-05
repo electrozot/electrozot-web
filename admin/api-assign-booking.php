@@ -23,6 +23,24 @@ if (!$booking_id || !$technician_id) {
     exit;
 }
 
+// Check if technician is locked before assignment
+$check_lock = $mysqli->prepare("SELECT t_name, account_locked, lock_reason FROM tms_technician WHERE t_id = ?");
+$check_lock->bind_param('i', $technician_id);
+$check_lock->execute();
+$tech_result = $check_lock->get_result();
+$tech = $tech_result->fetch_object();
+
+if ($tech && isset($tech->account_locked) && $tech->account_locked == 1) {
+    echo json_encode([
+        'success' => false,
+        'is_locked' => true,
+        'technician_name' => $tech->t_name,
+        'lock_reason' => $tech->lock_reason ?? 'Account locked by system',
+        'message' => "Cannot assign booking to {$tech->t_name}. This technician's account is locked."
+    ]);
+    exit;
+}
+
 $result = assignBookingToTechnician($mysqli, $booking_id, $technician_id, $admin_id);
 echo json_encode($result);
 ?>

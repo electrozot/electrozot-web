@@ -97,17 +97,18 @@ $hold_requests_result = $hold_stmt->get_result();
 $pending_hold_count = $hold_requests_result->num_rows;
 
 // Get active bookings only (exclude completed): On Hold → New/In Progress → Rejected
-$all_bookings_query = "SELECT sb.*, s.s_name, t.t_name,
+$all_bookings_query = "SELECT sb.*, s.s_name, t.t_name, sb.sb_hold_reason, sb.sb_hold_end_date,
                        CASE 
                            WHEN sb.sb_is_on_hold = 1 THEN 1
-                           WHEN sb.sb_status IN ('Pending', 'Approved', 'In Progress') THEN 2
+                           WHEN sb.sb_status IN ('Pending', 'Approved', 'In Progress', 'On Hold') THEN 2
                            WHEN sb.sb_status IN ('Rejected', 'Not Done', 'Cancelled') THEN 3
                            ELSE 4
                        END as sort_order
                        FROM tms_service_booking sb
                        LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id
                        LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
-                       WHERE sb.sb_user_id = ? AND sb.sb_status != 'Completed'
+                       WHERE sb.sb_user_id = ? 
+                       AND sb.sb_status NOT IN ('Completed')
                        ORDER BY sort_order ASC, sb.sb_created_at DESC
                        LIMIT 20";
 $all_bookings_stmt = $mysqli->prepare($all_bookings_query);
@@ -583,14 +584,14 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             $all_bookings_result->data_seek(0);
             while($booking = $all_bookings_result->fetch_object()): 
             ?>
-            <a href="user-track-booking.php?id=<?php echo $booking->sb_id; ?>" style="display: block; background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-decoration: none; border-left: 4px solid <?php 
+            <div style="display: block; background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid <?php 
                 if($booking->sb_is_on_hold == 1) echo '#ffa502';
                 elseif($booking->sb_status == 'Completed') echo '#10b981';
                 elseif($booking->sb_status == 'Pending') echo '#ffd700';
                 else echo '#0ea5e9';
-            ?>;">
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                    <div style="flex: 1;">
+            ?>; <?php echo $booking->sb_is_on_hold == 1 ? 'background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);' : ''; ?>">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+                    <a href="user-track-booking.php?id=<?php echo $booking->sb_id; ?>" style="flex: 1; text-decoration: none;">
                         <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 4px; flex-wrap: wrap;">
                             <span style="font-weight: 700; color: #333; font-size: 14px;">
                                 #<?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?>
@@ -637,13 +638,20 @@ $all_bookings_result = $all_bookings_stmt->get_result();
                             <i class="fas fa-info-circle"></i> <?php echo htmlspecialchars(substr($booking->sb_hold_reason, 0, 40)); ?><?php echo strlen($booking->sb_hold_reason) > 40 ? '...' : ''; ?>
                         </div>
                         <?php endif; ?>
-                    </div>
+                    </a>
                     
-                    <div>
+                    <div style="display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                        <?php if($booking->sb_is_on_hold == 1): ?>
+                        <button onclick="event.stopPropagation(); unholdBookingDashboard(<?php echo $booking->sb_id; ?>)" 
+                           style="background: linear-gradient(135deg, #00c853 0%, #00F260 100%); color: white; padding: 8px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 11px; cursor: pointer; box-shadow: 0 2px 8px rgba(0, 200, 83, 0.3); white-space: nowrap;">
+                            <i class="fas fa-play-circle"></i> Resume
+                        </button>
+                        <?php else: ?>
                         <i class="fas fa-chevron-right" style="color: #d13abd; font-size: 14px;"></i>
+                        <?php endif; ?>
                     </div>
                 </div>
-            </a>
+            </div>
             <?php endwhile; ?>
         </div>
     </div>
@@ -810,6 +818,45 @@ $all_bookings_result = $all_bookings_stmt->get_result();
         }
     }
     
+    // Unhold/Resume booking from dashboard - Single click
+    function unholdBookingDashboard(bookingId) {
+        if(confirm('Resume this booking?\n\n✓ Booking will be marked as HIGH PRIORITY\n✓ Technician will be notified immediately\n✓ Service will continue\n\nClick OK to resume now.')) {
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+            
+            fetch('api-unhold-booking.php?id=' + bookingId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.success) {
+                    alert('✅ Booking resumed successfully!\n\nYour booking is now HIGH PRIORITY.\nTechnician has been notified.');
+                    location.reload();
+                } else {
+                    alert('❌ Error: ' + (data.message || 'Failed to resume booking'));
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Unhold error:', error);
+                alert('❌ Error: Could not resume booking. Please try again.\n\nDetails: ' + error.message);
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            });
+        }
+    }
+    
     // Live dashboard updates
     function updateDashboardStats() {
         fetch('api-dashboard-stats.php')
@@ -834,6 +881,10 @@ $all_bookings_result = $all_bookings_stmt->get_result();
     // Update every 10 seconds
     setInterval(updateDashboardStats, 10000);
     </script>
+
+    <!-- Customer Notification System - DISABLED -->
+    <?php // include('vendor/inc/customer-notification-system.php'); ?>
+    <?php // <script src="js/customer-notifications.js"></script> ?>
 
 </body>
 </html>

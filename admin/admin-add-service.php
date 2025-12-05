@@ -40,7 +40,7 @@
             if(!isset($err)) {
                 $query="insert into tms_service (s_name, s_description, s_category, s_subcategory, s_gadget_name, s_price, s_duration, s_status, is_popular) values(?,?,?,?,?,?,?,?,?)";
                 $stmt = $mysqli->prepare($query);
-                $rc=$stmt->bind_param('sssssdssi', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
+                $rc=$stmt->bind_param('sssssdss i', $s_name, $s_description, $s_category, $s_subcategory, $s_gadget_name, $s_price, $s_duration, $s_status, $is_popular);
                 $stmt->execute();
             }
                 if($stmt)
@@ -256,7 +256,8 @@
                          'Induction Cooktop and Electric Stove Repair',
                          'Air Cooler Repair',
                          'Power Tools Repair (Drills, Cutters, Grinders, etc.)',
-                         'Water Filter/Purifier Repair'
+                         'Water Filter/Purifier Repair',
+                         'Mixer Grinder / Juicer Repair and Clean'
                      ]
                  },
                  'INSTALLATION & SETUP': {

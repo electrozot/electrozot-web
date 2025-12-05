@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Debug - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .pass { color: green; font-weight: bold; }
+        .fail { color: red; font-weight: bold; }
+        .pending { color: orange; font-weight: bold; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #5568d3; }
+        pre {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 PWA Installation Debug</h1>
+    
+    <div class="debug-box">
+        <h2>Installation Status</h2>
+        <div id="status">Checking...</div>
+    </div>
+    
+    <div class="debug-box">
+        <h2>Quick Actions</h2>
+        <button onclick="forceInstall()">🚀 Try Install Now</button>
+        <button onclick="checkManifest()">📄 Check Manifest</button>
+        <button onclick="checkServiceWorker()">⚙️ Check Service Worker</button>
+        <button onclick="checkIcons()">🖼️ Check Icons</button>
+        <button onclick="location.reload()">🔄 Refresh Page</button>
+    </div>
+    
+    <div class="debug-box">
+        <h2>Debug Log</h2>
+        <pre id="log"></pre>
+    </div>
+    
+    <div class="debug-box">
+        <h2>Manual Install Instructions</h2>
+        <p><strong>Chrome/Edge Desktop:</strong></p>
+        <ol>
+            <li>Click the ⊕ icon in the address bar (right side)</li>
+            <li>OR: Click ⋮ menu → "Install ElectroZot..."</li>
+        </ol>
+        <p><strong>Chrome Android:</strong></p>
+        <ol>
+            <li>Click ⋮ menu → "Install app" or "Add to Home screen"</li>
+        </ol>
+        <p><strong>Safari iOS:</strong></p>
+        <ol>
+            <li>Tap Share button → "Add to Home Screen"</li>
+        </ol>
+    </div>
+
+    <script>
+        let deferredPrompt = null;
+        const logEl = document.getElementById('log');
+        const statusEl = document.getElementById('status');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue';
+            logEl.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            console.log(message);
+        }
+        
+        function updateStatus(message, type = 'pending') {
+            statusEl.innerHTML = `<span class="${type}">${message}</span>`;
+        }
+        
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            updateStatus('✅ App is already installed!', 'pass');
+            log('App is running in standalone mode (already installed)', 'success');
+        } else {
+            updateStatus('⏳ Waiting for install prompt...', 'pending');
+            log('App is running in browser mode', 'info');
+        }
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            log('✅ beforeinstallprompt event fired!', 'success');
+            e.preventDefault();
+            deferredPrompt = e;
+            updateStatus('✅ Ready to install! Click "Try Install Now" button above.', 'pass');
+        });
+        
+        // Listen for app installed
+        window.addEventListener('appinstalled', () => {
+            log('✅ App installed successfully!', 'success');
+            updateStatus('✅ App installed!', 'pass');
+            deferredPrompt = null;
+        });
+        
+        // Force install
+        async function forceInstall() {
+            if (!deferredPrompt) {
+                log('❌ Install prompt not available yet', 'error');
+                alert('Install prompt not ready yet.\n\nTry:\n1. Browse the site for 30 seconds\n2. Refresh and try again\n3. Use browser menu: ⋮ → "Install ElectroZot..."');
+                return;
+            }
+            
+            log('Showing install prompt...', 'info');
+            deferredPrompt.prompt();
+            
+            const { outcome } = await deferredPrompt.userChoice;
+            log(`User choice: ${outcome}`, outcome === 'accepted' ? 'success' : 'error');
+            
+            if (outcome === 'accepted') {
+                updateStatus('✅ Installation accepted!', 'pass');
+            } else {
+                updateStatus('❌ Installation dismissed', 'fail');
+            }
+            
+            deferredPrompt = null;
+        }
+        
+        // Check manifest
+        async function checkManifest() {
+            log('Checking manifest.json...', 'info');
+            try {
+                const response = await fetch('manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    log('✅ Manifest loaded successfully', 'success');
+                    log(`App name: ${manifest.name}`, 'info');
+                    log(`Icons: ${manifest.icons.length} found`, 'info');
+                } else {
+                    log('❌ Manifest not found (404)', 'error');
+                }
+            } catch (error) {
+                log('❌ Manifest error: ' + error.message, 'error');
+            }
+        }
+        
+        // Check service worker
+        async function checkServiceWorker() {
+            log('Checking service worker...', 'info');
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        log('✅ Service worker registered', 'success');
+                        log(`State: ${registration.active ? 'active' : 'not active'}`, 'info');
+                    } else {
+                        log('❌ Service worker not registered', 'error');
+                        log('Attempting to register...', 'info');
+                        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+                        const swPath = basePath ? basePath + '/sw.js' : '/sw.js';
+                        await navigator.serviceWorker.register(swPath);
+                        log('✅ Service worker registered successfully', 'success');
+                    }
+                } catch (error) {
+                    log('❌ Service worker error: ' + error.message, 'error');
+                }
+            } else {
+                log('❌ Service workers not supported', 'error');
+            }
+        }
+        
+        // Check icons
+        async function checkIcons() {
+            log('Checking icons...', 'info');
+            const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+            let allFound = true;
+            
+            for (const size of sizes) {
+                try {
+                    const response = await fetch(`vendor/img/icons/icon-${size}x${size}.png`);
+                    if (response.ok) {
+                        log(`✅ icon-${size}x${size}.png found`, 'success');
+                    } else {
+                        log(`❌ icon-${size}x${size}.png missing`, 'error');
+                        allFound = false;
+                    }
+                } catch (error) {
+                    log(`❌ icon-${size}x${size}.png error`, 'error');
+                    allFound = false;
+                }
+            }
+            
+            if (allFound) {
+                log('✅ All icons present!', 'success');
+            } else {
+                log('❌ Some icons are missing', 'error');
+            }
+        }
+        
+        // Auto-run checks on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                log('Running automatic checks...', 'info');
+                checkManifest();
+                setTimeout(checkServiceWorker, 1000);
+                setTimeout(checkIcons, 2000);
+            }, 500);
+        });
+        
+        // Log page visibility changes
+        document.addEventListener('visibilitychange', () => {
+            log(`Page visibility: ${document.hidden ? 'hidden' : 'visible'}`, 'info');
+        });
+    </script>
+</body>
+</html>

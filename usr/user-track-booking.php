@@ -747,10 +747,15 @@ $user = $user_result->fetch_object();
                 <i class="fas fa-bolt"></i> Quick Actions
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="display: grid; grid-template-columns: <?php echo ($booking->sb_status == 'Completed') ? '1fr 1fr 1fr' : '1fr 1fr'; ?>; gap: 10px;">
                 <a href="user-view-booking-details.php?booking_id=<?php echo $booking->sb_id; ?>" style="background: linear-gradient(135deg, #f48fb1 0%, #ec6ead 80%, #d13abd 100%); color: white; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-eye" style="margin-right: 6px;"></i> View Full Details
                 </a>
+                <?php if($booking->sb_status == 'Completed'): ?>
+                <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-file-invoice" style="margin-right: 6px;"></i> View Bill
+                </a>
+                <?php endif; ?>
                 <a href="user-manage-booking.php" style="background: white; color: #d13abd; border: 2px solid #d13abd; padding: 12px; border-radius: 12px; text-decoration: none; text-align: center; font-weight: 600; font-size: 14px; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-list" style="margin-right: 6px;"></i> All Orders
                 </a>

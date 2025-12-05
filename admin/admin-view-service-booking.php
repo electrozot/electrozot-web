@@ -506,6 +506,13 @@
                          <?php endif; ?>
                          <hr>
                          <a href="admin-manage-service-booking.php" class="btn btn-secondary">Back to List</a>
+                         
+                         <?php if($booking->sb_status == 'Completed'): ?>
+                         <a href="admin-view-bill.php?booking_id=<?php echo $booking->sb_id;?>" class="btn btn-info" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                             <i class="fas fa-file-invoice"></i> View Bill
+                         </a>
+                         <?php endif; ?>
+                         
                          <?php if(!$booking->tech_name): ?>
                          <a href="admin-assign-technician.php?sb_id=<?php echo $booking->sb_id;?>" class="btn btn-success">Assign Technician</a>
                          <?php elseif($booking->sb_status == 'Rejected' || $booking->sb_status == 'Cancelled'): ?>

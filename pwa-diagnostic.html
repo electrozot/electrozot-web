@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Installation Diagnostic</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .check-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+        }
+        .check-item.pass {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+        .check-item.fail {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        .check-item.warning {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+        .check-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .check-detail {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+        }
+        button:hover { opacity: 0.9; }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .install-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .error-section {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .icon-preview {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .icon-preview img {
+            width: 72px;
+            height: 72px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 PWA Installation Diagnostic</h1>
+        <p class="subtitle">Checking why your PWA isn't installing on localhost...</p>
+        
+        <div id="diagnostics"></div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="runDiagnostics()">🔄 Re-run Diagnostics</button>
+            <button onclick="testInstall()" id="installBtn" disabled>📥 Try Install</button>
+            <button onclick="window.location.href='generate-512-icon.html'">🎨 Generate 512x512 Icon</button>
+        </div>
+        
+        <div id="installSection"></div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').disabled = false;
+            console.log('✅ Install prompt available');
+        });
+
+        async function runDiagnostics() {
+            const results = [];
+            
+            // 1. Check HTTPS
+            const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            results.push({
+                title: 'Secure Context (HTTPS)',
+                pass: isSecure,
+                detail: isSecure ? `✅ Running on ${window.location.protocol}//${window.location.host}` : '❌ PWA requires HTTPS (localhost is OK)'
+            });
+
+            // 2. Check Service Worker
+            const hasSW = 'serviceWorker' in navigator;
+            results.push({
+                title: 'Service Worker Support',
+                pass: hasSW,
+                detail: hasSW ? '✅ Browser supports Service Workers' : '❌ Browser does not support Service Workers'
+            });
+
+            // 3. Check Service Worker Registration
+            let swRegistered = false;
+            if (hasSW) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    swRegistered = !!registration;
+                    results.push({
+                        title: 'Service Worker Registration',
+                        pass: swRegistered,
+                        detail: swRegistered ? `✅ Registered at: ${registration.scope}` : '⚠️ Not registered yet - reload page'
+                    });
+                } catch (e) {
+                    results.push({
+                        title: 'Service Worker Registration',
+                        pass: false,
+                        detail: `❌ Error: ${e.message}`
+                    });
+                }
+            }
+
+            // 4. Check Manifest
+            let manifestValid = false;
+            try {
+                const response = await fetch('manifest.json');
+                const manifest = await response.json();
+                manifestValid = true;
+                
+                results.push({
+                    title: 'Web App Manifest',
+                    pass: true,
+                    detail: `✅ Found: ${manifest.name || manifest.short_name}`
+                });
+
+                // 5. Check Icons
+                const requiredSizes = ['192x192', '512x512'];
+                const foundIcons = manifest.icons || [];
+                const iconSizes = foundIcons.map(icon => icon.sizes);
+                
+                for (const size of requiredSizes) {
+                    const hasSize = iconSizes.some(s => s.includes(size));
+                    results.push({
+                        title: `Icon ${size}`,
+                        pass: hasSize,
+                        detail: hasSize ? `✅ Found in manifest` : `❌ Missing ${size} icon`,
+                        warning: !hasSize
+                    });
+                }
+
+                // 6. Check start_url
+                results.push({
+                    title: 'Start URL',
+                    pass: !!manifest.start_url,
+                    detail: manifest.start_url ? `✅ ${manifest.start_url}` : '❌ Missing start_url'
+                });
+
+                // 7. Check display mode
+                results.push({
+                    title: 'Display Mode',
+                    pass: !!manifest.display,
+                    detail: manifest.display ? `✅ ${manifest.display}` : '⚠️ No display mode set'
+                });
+
+            } catch (e) {
+                results.push({
+                    title: 'Web App Manifest',
+                    pass: false,
+                    detail: `❌ Error loading manifest: ${e.message}`
+                });
+            }
+
+            // 8. Check Install Prompt
+            results.push({
+                title: 'Install Prompt Available',
+                pass: !!deferredPrompt,
+                detail: deferredPrompt ? '✅ Ready to install!' : '⚠️ Not available (may already be installed or criteria not met)'
+            });
+
+            // Display results
+            displayResults(results);
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('diagnostics');
+            const passCount = results.filter(r => r.pass).length;
+            const totalCount = results.length;
+            
+            let html = `<h2 style="margin-bottom: 15px;">Results: ${passCount}/${totalCount} checks passed</h2>`;
+            
+            results.forEach(result => {
+                const status = result.pass ? 'pass' : (result.warning ? 'warning' : 'fail');
+                const icon = result.pass ? '✅' : (result.warning ? '⚠️' : '❌');
+                
+                html += `
+                    <div class="check-item ${status}">
+                        <div class="check-title">${icon} ${result.title}</div>
+                        <div class="check-detail">${result.detail}</div>
+                    </div>
+                `;
+            });
+
+            // Add recommendations
+            const failedChecks = results.filter(r => !r.pass);
+            if (failedChecks.length > 0) {
+                html += `
+                    <div class="error-section">
+                        <h3 style="margin-bottom: 10px;">🔧 How to Fix:</h3>
+                        <ol style="margin-left: 20px; line-height: 1.8;">
+                            ${failedChecks.map(check => {
+                                if (check.title.includes('512x512')) {
+                                    return '<li>Generate 512x512 icon using the button above</li>';
+                                } else if (check.title.includes('Service Worker Registration')) {
+                                    return '<li>Reload the page to register Service Worker</li>';
+                                } else if (check.title.includes('HTTPS')) {
+                                    return '<li>Use HTTPS or localhost (you may need to configure your server)</li>';
+                                } else {
+                                    return `<li>Fix: ${check.title}</li>`;
+                                }
+                            }).join('')}
+                        </ol>
+                    </div>
+                `;
+            } else if (deferredPrompt) {
+                html += `
+                    <div class="install-section">
+                        <h3>🎉 Your PWA is ready to install!</h3>
+                        <p style="margin: 10px 0;">Click the "Try Install" button above to install the app.</p>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        async function testInstall() {
+            if (!deferredPrompt) {
+                alert('Install prompt not available. Check diagnostics above.');
+                return;
+            }
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                document.getElementById('installSection').innerHTML = `
+                    <div class="install-section">
+                        <h3>✅ App Installed Successfully!</h3>
+                        <p>You can now use ElectroZot as a standalone app.</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('installSection').innerHTML = `
+                    <div class="error-section">
+                        <h3>❌ Installation Cancelled</h3>
+                        <p>You can try again anytime.</p>
+                    </div>
+                `;
+            }
+            
+            deferredPrompt = null;
+            document.getElementById('installBtn').disabled = true;
+        }
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('✅ SW registered:', reg.scope))
+                .catch(err => console.error('❌ SW registration failed:', err));
+        }
+
+        // Run diagnostics on load
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostics, 1000);
+        });
+    </script>
+</body>
+</html>

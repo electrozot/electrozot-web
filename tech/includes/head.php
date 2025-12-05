@@ -2,8 +2,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($page_title) ? $page_title . ' - ' : ''; ?>Technician Dashboard - Electrozot</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ElectroZot Tech">
+    <link rel="manifest" href="/manifest.json">
+    
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
+    
+    <!-- PWA Orientation Lock -->
+    <link href="../css/pwa-orientation-lock.css" rel="stylesheet">
+    
+    <!-- PWA Scripts -->
+    <script defer src="/pwa-install.js"></script>
+    <script defer src="/pwa-update-notification.js"></script>
+    <script defer src="/js/orientation-lock.js"></script>
     <style>
         :root {
             --primary: #667eea;

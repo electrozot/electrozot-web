@@ -49,34 +49,7 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
-        .logo-section {
-            position: fixed;
-            top: 20px;
-            left: 30px;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 20px;
-            border-radius: 50px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            backdrop-filter: blur(10px);
-            animation: slideInLeft 0.6s ease-out;
-        }
-        @keyframes slideInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .logo-section img { height: 55px; width: auto; }
-        .logo-section .brand-name {
-            font-size: 1.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+
         .forgot-container {
             position: relative;
             z-index: 10;
@@ -99,7 +72,7 @@
         }
         .forgot-header {
             background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            padding: 40px 30px;
+            padding: 25px 30px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -119,11 +92,11 @@
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
         .logo-circle {
-            width: 80px;
-            height: 80px;
+            width: 65px;
+            height: 65px;
             background: white;
             border-radius: 50%;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -135,7 +108,7 @@
             50% { transform: scale(1.05); }
         }
         .logo-circle i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -143,7 +116,7 @@
         }
         .forgot-header h2 {
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
             position: relative;
@@ -151,21 +124,21 @@
         }
         .forgot-header p {
             color: rgba(255, 255, 255, 0.9);
-            margin: 10px 0 0;
-            font-size: 0.95rem;
+            margin: 8px 0 0;
+            font-size: 0.9rem;
             position: relative;
             z-index: 1;
         }
         .forgot-body { 
-            padding: 40px 35px;
+            padding: 30px 35px;
             background: linear-gradient(180deg, #FFFEF0 0%, #FFF9E0 100%);
         }
         .info-box {
             background: linear-gradient(135deg, rgba(236, 110, 173, 0.1) 0%, rgba(209, 58, 189, 0.1) 100%);
             border-left: 4px solid #ec6ead;
-            padding: 15px;
+            padding: 12px;
             border-radius: 10px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .info-box p {
             margin: 0;
@@ -177,13 +150,13 @@
             color: #ec6ead;
             margin-right: 8px;
         }
-        .form-group { margin-bottom: 25px; }
+        .form-group { margin-bottom: 18px; }
         .form-group label {
             display: block;
             color: #4a5568;
             font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
         }
         .form-group label i {
             color: #ec6ead;
@@ -191,10 +164,10 @@
         }
         .form-control {
             width: 100%;
-            padding: 14px 15px;
+            padding: 12px;
             border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             background: #f7fafc;
         }
@@ -206,18 +179,19 @@
         }
         .btn-reset {
             width: 100%;
-            padding: 15px;
+            padding: 12px 20px;
             background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             color: white;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
         }
         .btn-reset::before {
             content: '';
@@ -245,41 +219,82 @@
         }
         .links-section {
             text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
+            margin-top: 20px;
+            padding-top: 18px;
             border-top: 1px solid #e2e8f0;
         }
-        .links-section a {
+        .btn-link {
             display: inline-block;
-            color: #ec6ead;
+            padding: 10px 16px;
+            background: white;
+            border: 2px solid #ec6ead;
+            border-radius: 10px;
+            color: #ec6ead !important;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
+            font-weight: 600;
+            transition: all 0.15s ease;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(236, 110, 173, 0.15);
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
         }
-        .links-section a::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #ec6ead;
-            transition: width 0.3s ease;
+        .btn-link:hover {
+            background: linear-gradient(135deg, #ec6ead 0%, #d13abd 100%);
+            color: white !important;
+            border-color: #d13abd;
+            box-shadow: 0 4px 12px rgba(236, 110, 173, 0.35);
         }
-        .links-section a:hover {
-            color: #d13abd;
+        .btn-link:active {
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%) !important;
+            color: white !important;
+            border-color: #ff1493;
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(255, 20, 147, 0.5);
+            transition: all 0.05s ease;
         }
-        .links-section a:hover::after {
-            width: 100%;
+        .btn-link:visited {
+            color: #ec6ead !important;
+            text-decoration: none;
         }
-        .links-section a i {
-            margin-right: 5px;
+        .btn-link:visited:hover {
+            color: white !important;
+        }
+        .btn-link:visited:active {
+            color: white !important;
+        }
+        .btn-link i {
+            margin-right: 6px;
+        }
+        .btn-link-home {
+            background: white;
+            border-color: #667eea;
+            color: #667eea !important;
+        }
+        .btn-link-home:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            border-color: #764ba2;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.35);
+        }
+        .btn-link-home:active {
+            background: linear-gradient(135deg, #4169e1 0%, #6a5acd 100%) !important;
+            color: white !important;
+            border-color: #4169e1;
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(65, 105, 225, 0.5);
+            transition: all 0.05s ease;
+        }
+        .btn-link-home:visited {
+            color: #667eea !important;
+        }
+        .btn-link-home:visited:hover {
+            color: white !important;
+        }
+        .btn-link-home:visited:active {
+            color: white !important;
         }
         @media (max-width: 768px) {
-            .logo-section { top: 15px; left: 15px; padding: 10px 15px; }
-            .logo-section img { height: 45px; }
-            .logo-section .brand-name { font-size: 1.3rem; }
             .forgot-body { padding: 30px 25px; }
             .forgot-header { padding: 35px 25px; }
             .forgot-header h2 { font-size: 1.5rem; }
@@ -288,9 +303,6 @@
         }
         @media (max-width: 480px) {
             body { padding: 10px 5px; }
-            .logo-section { top: 10px; left: 10px; padding: 8px 12px; gap: 8px; }
-            .logo-section img { height: 30px; }
-            .logo-section .brand-name { font-size: 1rem; }
             .forgot-card { border-radius: 20px; }
             .forgot-body { padding: 25px 20px; }
             .forgot-header { padding: 30px 20px; }
@@ -300,16 +312,12 @@
             .logo-circle i { font-size: 1.8rem; }
             .form-control { padding: 12px; font-size: 0.95rem; }
             .btn-reset { padding: 13px; font-size: 1rem; }
+            .btn-link { display: block; margin: 10px auto; max-width: 280px; }
         }
     </style>
 </head>
 
 <body>
-    <div class="logo-section">
-        <img src="../vendor/EZlogonew.png" alt="Electrozot Logo">
-        <span class="brand-name">Electrozot</span>
-    </div>
-
     <div class="forgot-container">
         <div class="forgot-card">
             <div class="forgot-header">
@@ -336,7 +344,10 @@
                 </form>
 
                 <div class="links-section">
-                    <a href="index.php"><i class="fas fa-arrow-left"></i> Back to Login</a>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                        <a href="index.php" class="btn-link" style="flex: 1; min-width: 130px;"><i class="fas fa-arrow-left"></i> Login</a>
+                        <a href="../index.php" class="btn-link btn-link-home" style="flex: 1; min-width: 130px;"><i class="fas fa-home"></i> Home</a>
+                    </div>
                 </div>
             </div>
         </div>

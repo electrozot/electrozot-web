@@ -13,15 +13,17 @@ $stmt->execute();
 $result = $stmt->get_result();
 $admin = $result->fetch_object();
 
-// Ensure photo column exists
+// Ensure photo and phone columns exist
 try {
     $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_photo VARCHAR(200) DEFAULT NULL");
+    $mysqli->query("ALTER TABLE tms_admin ADD COLUMN IF NOT EXISTS a_phone VARCHAR(15) DEFAULT NULL");
 } catch(Exception $e) {}
 
 // Update profile
 if(isset($_POST['update_profile'])) {
     $a_name = $_POST['a_name'];
     $a_email = $_POST['a_email'];
+    $a_phone = $_POST['a_phone'];
     $a_photo = $admin->a_photo; // Keep existing photo by default
     
     // Handle photo upload
@@ -44,9 +46,9 @@ if(isset($_POST['update_profile'])) {
         }
     }
     
-    $update_query = "UPDATE tms_admin SET a_name = ?, a_email = ?, a_photo = ? WHERE a_id = ?";
+    $update_query = "UPDATE tms_admin SET a_name = ?, a_email = ?, a_phone = ?, a_photo = ? WHERE a_id = ?";
     $update_stmt = $mysqli->prepare($update_query);
-    $update_stmt->bind_param('sssi', $a_name, $a_email, $a_photo, $aid);
+    $update_stmt->bind_param('ssssi', $a_name, $a_email, $a_phone, $a_photo, $aid);
     
     if($update_stmt->execute()) {
         $_SESSION['a_name'] = $a_name;
@@ -115,9 +117,14 @@ if(isset($_POST['update_profile'])) {
                                     <?php endif; ?>
                                 </div>
                                 <h4 class="mb-2"><?php echo htmlspecialchars($admin->a_name); ?></h4>
-                                <p class="text-muted mb-3">
+                                <p class="text-muted mb-2">
                                     <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($admin->a_email); ?>
                                 </p>
+                                <?php if(isset($admin->a_phone) && !empty($admin->a_phone)): ?>
+                                <p class="text-muted mb-3">
+                                    <i class="fas fa-phone"></i> <?php echo htmlspecialchars($admin->a_phone); ?>
+                                </p>
+                                <?php endif; ?>
                                 <hr>
                                 <div class="text-left">
                                     <p class="mb-2">
@@ -214,6 +221,21 @@ if(isset($_POST['update_profile'])) {
                                                value="<?php echo htmlspecialchars($admin->a_email); ?>" 
                                                required>
                                         <small class="form-text text-muted">Used for login and notifications</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="a_phone">
+                                            <i class="fas fa-phone"></i> Mobile Number
+                                        </label>
+                                        <input type="tel" 
+                                               class="form-control" 
+                                               id="a_phone" 
+                                               name="a_phone" 
+                                               value="<?php echo isset($admin->a_phone) ? htmlspecialchars($admin->a_phone) : ''; ?>" 
+                                               maxlength="10"
+                                               pattern="[0-9]{10}"
+                                               placeholder="Enter 10-digit mobile number">
+                                        <small class="form-text text-muted">10-digit mobile number for contact</small>
                                     </div>
 
                                     <div class="form-group">

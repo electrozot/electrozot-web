@@ -720,10 +720,15 @@ if($status == 'Approved' && $has_technician) {
         </div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons">
+        <div class="action-buttons" style="grid-template-columns: <?php echo ($booking->sb_status == 'Completed') ? '1fr 1fr 1fr' : '1fr 1fr'; ?>;">
             <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                 <i class="fas fa-map-marker-alt"></i> Track Order
             </a>
+            <?php if($booking->sb_status == 'Completed'): ?>
+            <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <i class="fas fa-file-invoice"></i> View Bill
+            </a>
+            <?php endif; ?>
             <a href="user-manage-booking.php" class="btn btn-orders">
                 <i class="fas fa-list"></i> All Orders
             </a>

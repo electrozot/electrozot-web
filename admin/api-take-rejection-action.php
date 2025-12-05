@@ -55,16 +55,14 @@ try {
         $action_message = "No action taken - Reviewed by admin";
     }
     
-    // Mark all rejections as notified/handled
-    $stmt = $mysqli->prepare("UPDATE tms_technician_rejections 
-                             SET tr_admin_notified = 1,
-                                 tr_admin_action = ?,
-                                 tr_admin_action_at = NOW(),
-                                 tr_admin_notes = ?
-                             WHERE tr_technician_id = ? 
-                             AND tr_admin_notified = 0");
-    $stmt->bind_param('ssi', $action, $admin_notes, $technician_id);
+    // DELETE all rejections for this technician (reset count to 0)
+    // This allows the system to track fresh rejections after admin action
+    $stmt = $mysqli->prepare("DELETE FROM tms_technician_rejections WHERE tr_technician_id = ?");
+    $stmt->bind_param('i', $technician_id);
     $stmt->execute();
+    
+    // Reset rejection counter in technician table
+    $mysqli->query("UPDATE tms_technician SET t_rejection_count = 0 WHERE t_id = $technician_id");
     
     // Log admin action (using existing syslogs structure)
     $admin_email = $_SESSION['a_email'] ?? 'admin';

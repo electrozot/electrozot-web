@@ -148,9 +148,16 @@
              $guest_count_main_query = "SELECT COUNT(*) as count FROM tms_technician WHERE t_is_guest = 1 AND t_status = 'Pending'";
              $guest_count_main_result = $mysqli->query($guest_count_main_query);
              $guest_count_main = $guest_count_main_result->fetch_object()->count;
-             if($guest_count_main > 0):
+             
+             // Get locked technicians count (both types: commission and rejection)
+             $locked_count_query = "SELECT COUNT(*) as count FROM tms_technician WHERE account_locked = 1 OR t_status = 'Locked'";
+             $locked_count_result = $mysqli->query($locked_count_query);
+             $locked_count = $locked_count_result ? $locked_count_result->fetch_object()->count : 0;
+             
+             $total_badges = $guest_count_main + $locked_count;
+             if($total_badges > 0):
              ?>
-                 <span class="badge badge-danger badge-counter ml-auto" style="animation: pulse 2s infinite;"><?php echo $guest_count_main; ?></span>
+                 <span class="badge badge-danger badge-counter ml-auto" style="animation: pulse 2s infinite;"><?php echo $total_badges; ?></span>
              <?php endif; ?>
          </a>
          <div class="dropdown-menu" aria-labelledby="techniciansDropdown">
@@ -166,6 +173,14 @@
                  if($guest_count > 0):
                  ?>
                      <span class="badge badge-danger ml-auto" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; animation: pulse 2s infinite;"><?php echo $guest_count; ?> NEW</span>
+                 <?php endif; ?>
+             </a>
+             <div class="dropdown-divider"></div>
+             <a class="dropdown-item" href="admin-unlock-technician.php" style="<?php echo ($locked_count > 0) ? 'background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(255, 193, 7, 0.15) 100%); font-weight: 700;' : ''; ?>">
+                 <i class="fas fa-unlock"></i> 
+                 <span>Unlock Technicians</span>
+                 <?php if($locked_count > 0): ?>
+                     <span class="badge badge-danger ml-auto" style="font-size: 0.75rem; padding: 0.25rem 0.5rem; animation: pulse 2s infinite;"><?php echo $locked_count; ?> LOCKED</span>
                  <?php endif; ?>
              </a>
              <div class="dropdown-divider"></div>

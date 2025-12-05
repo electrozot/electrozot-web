@@ -55,7 +55,7 @@
                 
                 try {
                     // STEP 1: Lock technician row and check availability (prevents concurrent assignments)
-                    $check_tech_query = "SELECT t_id, t_name, t_current_bookings, t_booking_limit 
+                    $check_tech_query = "SELECT t_id, t_name, t_current_bookings, t_booking_limit, account_locked, lock_reason 
                                         FROM tms_technician 
                                         WHERE t_id = ? FOR UPDATE";
                     $tech_lock_stmt = $mysqli->prepare($check_tech_query);
@@ -66,6 +66,12 @@
                     
                     if(!$tech_data) {
                         throw new Exception("Technician not found");
+                    }
+                    
+                    // Check if technician account is locked
+                    if(isset($tech_data->account_locked) && $tech_data->account_locked == 1) {
+                        $lock_reason = $tech_data->lock_reason ?? 'Account locked by system';
+                        throw new Exception("Cannot assign booking to {$tech_data->t_name}. This technician's account is LOCKED. Reason: {$lock_reason}. Please unlock the technician first or select another technician.");
                     }
                     
                     // Check if technician has available slots
@@ -527,13 +533,16 @@
                                          // Custom booking WITHOUT subcategory - show ALL available technicians
                                          $all_techs_query = "SELECT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
                                                                     (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                    t.account_locked, t.lock_reason,
                                                                     (SELECT COUNT(*) FROM tms_service_booking sb 
                                                                      WHERE sb.sb_technician_id = t.t_id 
                                                                      AND sb.sb_technician_id IS NOT NULL
                                                                      AND DATE(COALESCE(sb.sb_assigned_at, sb.sb_created_at)) = CURDATE()) as today_booking_count
                                                              FROM tms_technician t
-                                                             WHERE t.t_status != 'Inactive'
+                                                             WHERE t.t_status NOT IN ('Inactive', 'Locked')
                                                              AND t.t_current_bookings < t.t_booking_limit
+                                                             AND (t.account_locked IS NULL OR t.account_locked = 0)
+                                                             AND (t.t_blocked_until IS NULL OR t.t_blocked_until < NOW())
                                                              ORDER BY t.t_current_bookings ASC, t.t_name ASC";
                                          
                                          $all_techs_result = $mysqli->query($all_techs_query);
@@ -558,6 +567,7 @@
                                          // Uses fuzzy matching to handle service name variations (e.g., "Tap/Faucet - Installation" vs "Tap, Faucet, and Shower Installation/Repair")
                                          $skill_match_query = "SELECT DISTINCT t.t_id, t.t_name, t.t_experience, t.t_current_bookings, t.t_booking_limit,
                                                                       (t.t_booking_limit - t.t_current_bookings) as available_slots,
+                                                                      t.account_locked, t.lock_reason,
                                                                       (SELECT COUNT(*) FROM tms_service_booking sb 
                                                                        WHERE sb.sb_technician_id = t.t_id 
                                                                        AND sb.sb_technician_id IS NOT NULL
@@ -576,8 +586,10 @@
                                                                        AND s_tech.s_name LIKE CONCAT('%', SUBSTRING_INDEX(SUBSTRING_INDEX(s_booking.s_name, ' ', 2), ' ', -1), '%')
                                                                    )
                                                                )
-                                                               AND t.t_status != 'Inactive'
+                                                               AND t.t_status NOT IN ('Inactive', 'Locked')
                                                                AND t.t_current_bookings < t.t_booking_limit
+                                                               AND (t.account_locked IS NULL OR t.account_locked = 0)
+                                                               AND (t.t_blocked_until IS NULL OR t.t_blocked_until < NOW())
                                                                ORDER BY 
                                                                    CASE WHEN ts.ts_service_id = ? THEN 0 ELSE 1 END,
                                                                    t.t_current_bookings ASC,
@@ -589,8 +601,15 @@
                                          $all_techs_stmt->execute();
                                          $all_techs_result = $all_techs_stmt->get_result();
                                          $available_techs = [];
+                                         $seen_tech_ids = []; // Track technician IDs to prevent duplicates
                                          
                                          while($tech = $all_techs_result->fetch_assoc()) {
+                                             // Skip if we've already added this technician
+                                             if(in_array($tech['t_id'], $seen_tech_ids)) {
+                                                 continue;
+                                             }
+                                             
+                                             $seen_tech_ids[] = $tech['t_id'];
                                              $available_techs[] = [
                                                  't_id' => $tech['t_id'],
                                                  't_name' => $tech['t_name'],
@@ -744,6 +763,42 @@
                                              }
                                              echo '</optgroup>';
                                          }
+                                     }
+                                     
+                                     // Query for LOCKED technicians (show as disabled for awareness)
+                                     // Includes: commission locks, rejection locks, and temporary blocks
+                                     $locked_techs_query = "SELECT t.t_id, t.t_name, 
+                                                           COALESCE(t.lock_reason, t.t_block_reason, 'Account locked') as lock_reason, 
+                                                           t.locked_at, t.t_phone, t.t_status, t.account_locked, t.t_blocked_until
+                                                           FROM tms_technician t
+                                                           WHERE (t.account_locked = 1 
+                                                                  OR t.t_status = 'Locked' 
+                                                                  OR (t.t_blocked_until IS NOT NULL AND t.t_blocked_until > NOW()))
+                                                           ORDER BY t.locked_at DESC
+                                                           LIMIT 10";
+                                     $locked_result = $mysqli->query($locked_techs_query);
+                                     
+                                     if($locked_result && $locked_result->num_rows > 0) {
+                                         echo '<optgroup label="🔒 LOCKED/BLOCKED - Cannot Assign ('.$locked_result->num_rows.')">';
+                                         while($locked_tech = $locked_result->fetch_assoc()) {
+                                             // Determine lock type
+                                             $lock_type = '';
+                                             if($locked_tech['account_locked'] == 1) {
+                                                 $lock_type = 'Commission Lock';
+                                             } elseif($locked_tech['t_status'] == 'Locked') {
+                                                 $lock_type = 'Rejection Lock';
+                                             } elseif(!empty($locked_tech['t_blocked_until']) && strtotime($locked_tech['t_blocked_until']) > time()) {
+                                                 $lock_type = 'Temp Block until ' . date('M d h:i A', strtotime($locked_tech['t_blocked_until']));
+                                             }
+                                             
+                                             $lock_reason_short = substr($locked_tech['lock_reason'], 0, 40);
+                                             if(strlen($locked_tech['lock_reason']) > 40) $lock_reason_short .= '...';
+                                             
+                                             echo '<option value="'.$locked_tech['t_id'].'" disabled data-locked="1" data-tech-name="'.htmlspecialchars($locked_tech['t_name']).'" data-lock-reason="'.htmlspecialchars($locked_tech['lock_reason']).'" data-lock-type="'.htmlspecialchars($lock_type).'">';
+                                             echo '🔒 ' . htmlspecialchars($locked_tech['t_name']) . ' - ' . $lock_type . ' (' . htmlspecialchars($lock_reason_short) . ')';
+                                             echo '</option>';
+                                         }
+                                         echo '</optgroup>';
                                      }
                                      ?>
                                  </select>
@@ -964,6 +1019,40 @@
              }
          }
          
+         // Validate technician selection - prevent locked technician assignment
+         $(document).ready(function() {
+             // Form submission validation
+             $('#assignForm').on('submit', function(e) {
+                 const selectedOption = $('#sb_technician_id option:selected');
+                 const isLocked = selectedOption.attr('data-locked');
+                 
+                 if(isLocked === '1') {
+                     e.preventDefault();
+                     const techName = selectedOption.attr('data-tech-name');
+                     const lockReason = selectedOption.attr('data-lock-reason');
+                     showLockedTechnicianModal(techName, lockReason, selectedOption.val());
+                     return false;
+                 }
+             });
+             
+             // Technician selection change handler
+             $('#sb_technician_id').on('change', function() {
+                 const selectedOption = $(this).find('option:selected');
+                 const isLocked = selectedOption.attr('data-locked');
+                 
+                 if(isLocked === '1') {
+                     const techName = selectedOption.attr('data-tech-name');
+                     const lockReason = selectedOption.attr('data-lock-reason');
+                     
+                     // Reset selection
+                     $(this).val('');
+                     
+                     // Show modal
+                     showLockedTechnicianModal(techName, lockReason, selectedOption.val());
+                 }
+             });
+         });
+         
          // Update technician list when service changes
          function updateTechnicianList() {
              const serviceId = document.getElementById('sb_service_id').value;
@@ -1068,6 +1157,9 @@
          
          <!-- Success Modal -->
          <?php include("vendor/inc/success-modal.php");?>
+         
+         <!-- Locked Technician Warning Modal -->
+         <?php include("modal-locked-technician-warning.php");?>
 
  </body>
 

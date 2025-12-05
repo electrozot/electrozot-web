@@ -5,9 +5,6 @@
   check_login();
   $aid=$_SESSION['a_id'];
 
-  // AUTO-FIX: Sync technician slots and availability
-  include('auto-fix-technician-slots.php');
-
   // Include soft delete helper
   include('vendor/inc/soft-delete.php');
 
