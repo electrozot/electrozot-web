@@ -120,10 +120,37 @@ $all_bookings_result = $all_bookings_stmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard - Electrozot</title>
+    
+    <!-- PWA Meta Tags for Fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-tap-highlight" content="no">
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>
+        /* Hide browser loading bars in PWA */
+        ::-webkit-progress-bar,
+        ::-webkit-progress-value {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Hide Android Chrome loading bar */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent !important;
+            z-index: 9999;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -132,6 +159,7 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             padding-top: 75px;
             padding-bottom: 70px;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .top-header {
@@ -142,6 +170,7 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
             color: white;
             padding: 10px 15px;
+            padding-top: calc(10px + env(safe-area-inset-top));
             box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
             z-index: 1000;
         }

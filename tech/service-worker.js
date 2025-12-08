@@ -1,5 +1,8 @@
-// Service Worker for Push Notifications
+// Technician Service Worker - Background Notifications
+// This enables notifications even when device is locked or browser is closed
+
 const CACHE_NAME = 'electrozot-tech-v1';
+const NOTIFICATION_CHECK_INTERVAL = 10000; // 10 seconds
 
 // Install event
 self.addEventListener('install', (event) => {
@@ -9,138 +12,206 @@ self.addEventListener('install', (event) => {
 
 // Activate event
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activated');
-    event.waitUntil(clients.claim());
+    console.log('Service Worker: Activating...');
+    event.waitUntil(self.clients.claim());
 });
 
-// Push notification event
+// Background sync for checking notifications
+self.addEventListener('sync', (event) => {
+    console.log('Service Worker: Sync event triggered');
+    if (event.tag === 'check-bookings') {
+        event.waitUntil(checkForNewBookings());
+    }
+});
+
+// Periodic background sync (if supported)
+self.addEventListener('periodicsync', (event) => {
+    console.log('Service Worker: Periodic sync triggered');
+    if (event.tag === 'check-bookings') {
+        event.waitUntil(checkForNewBookings());
+    }
+});
+
+// Push notification received
 self.addEventListener('push', (event) => {
-    console.log('Push notification received:', event);
+    console.log('Service Worker: Push notification received');
     
-    let notificationData = {
-        title: 'New Booking Assignment',
-        body: 'You have been assigned a new booking',
-        icon: '/vendor/img/icons/icon-192x192.png',
-        badge: '/vendor/img/icons/badge-72x72.png',
-        vibrate: [200, 100, 200, 100, 200],
-        tag: 'booking-notification',
-        requireInteraction: true,
-        data: {
-            url: '/tech/dashboard.php'
-        }
-    };
-    
+    let data = {};
     if (event.data) {
-        try {
-            const data = event.data.json();
-            notificationData = {
-                title: data.title || notificationData.title,
-                body: data.body || notificationData.body,
-                icon: data.icon || notificationData.icon,
-                badge: data.badge || notificationData.badge,
-                vibrate: data.vibrate || notificationData.vibrate,
-                tag: data.tag || notificationData.tag,
-                requireInteraction: true,
-                data: {
-                    url: data.url || notificationData.data.url,
-                    booking_id: data.booking_id
-                },
-                actions: [
-                    {
-                        action: 'view',
-                        title: 'View Booking',
-                        icon: '/vendor/img/icons/view-icon.png'
-                    },
-                    {
-                        action: 'dismiss',
-                        title: 'Dismiss',
-                        icon: '/vendor/img/icons/close-icon.png'
-                    }
-                ]
-            };
-        } catch (e) {
-            console.error('Error parsing push data:', e);
-        }
+        data = event.data.json();
     }
     
+    const title = data.title || '🔔 New Booking Assignment!';
+    const options = {
+        body: data.body || 'You have a new booking',
+        icon: '/vendor/img/icons/icon-192x192.png',
+        badge: '/vendor/img/icons/badge-72x72.png',
+        vibrate: [300, 100, 300, 100, 300],
+        tag: data.tag || 'booking-notification',
+        requireInteraction: true,
+        data: data.data || {},
+        actions: [
+            {
+                action: 'view',
+                title: 'View Booking'
+            },
+            {
+                action: 'dismiss',
+                title: 'Dismiss'
+            }
+        ]
+    };
+    
     event.waitUntil(
-        self.registration.showNotification(notificationData.title, notificationData)
+        self.registration.showNotification(title, options)
     );
 });
 
-// Notification click event
+// Notification click handler
 self.addEventListener('notificationclick', (event) => {
-    console.log('Notification clicked:', event);
-    
+    console.log('Service Worker: Notification clicked');
     event.notification.close();
     
     if (event.action === 'view' || !event.action) {
-        const urlToOpen = event.notification.data.url || '/tech/dashboard.php';
-        
+        // Open or focus the dashboard
         event.waitUntil(
             clients.matchAll({ type: 'window', includeUncontrolled: true })
                 .then((clientList) => {
-                    // Check if there's already a window open
+                    // Check if dashboard is already open
                     for (let client of clientList) {
-                        if (client.url.includes('/tech/') && 'focus' in client) {
-                            return client.focus().then(() => {
-                                return client.navigate(urlToOpen);
-                            });
+                        if (client.url.includes('/tech/dashboard.php') && 'focus' in client) {
+                            return client.focus();
                         }
                     }
-                    // If no window is open, open a new one
+                    // Open new window if not found
                     if (clients.openWindow) {
-                        return clients.openWindow(urlToOpen);
+                        return clients.openWindow('/tech/dashboard.php');
                     }
                 })
         );
     }
 });
 
-// Background sync for offline notifications
-self.addEventListener('sync', (event) => {
-    if (event.tag === 'check-notifications') {
-        event.waitUntil(checkForNewNotifications());
+// Message from client
+self.addEventListener('message', (event) => {
+    console.log('Service Worker: Message received from client', event.data);
+    
+    if (event.data.type === 'NEW_BOOKING') {
+        // Show notification for new booking
+        const notifications = event.data.notifications || [];
+        notifications.forEach(notif => {
+            self.registration.showNotification('🔔 New Booking Assignment!', {
+                body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+                icon: '/vendor/img/icons/icon-192x192.png',
+                badge: '/vendor/img/icons/badge-72x72.png',
+                vibrate: [300, 100, 300, 100, 300],
+                tag: `booking-${notif.id}`,
+                requireInteraction: true,
+                data: {
+                    url: '/tech/dashboard.php',
+                    booking_id: notif.id
+                },
+                actions: [
+                    {
+                        action: 'view',
+                        title: 'View Booking'
+                    },
+                    {
+                        action: 'dismiss',
+                        title: 'Dismiss'
+                    }
+                ]
+            });
+        });
     }
 });
 
-async function checkForNewNotifications() {
+// Check for new bookings in background
+async function checkForNewBookings() {
+    console.log('Service Worker: Checking for new bookings...');
+    
     try {
         const response = await fetch('/tech/check-technician-notifications.php', {
-            credentials: 'include'
+            credentials: 'include',
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
         });
         
-        if (response.ok) {
-            const data = await response.json();
+        if (!response.ok) {
+            console.error('Service Worker: Failed to check notifications');
+            return;
+        }
+        
+        const data = await response.json();
+        
+        if (data.has_notifications && data.notifications.length > 0) {
+            console.log('Service Worker: New notifications found:', data.notification_count);
             
-            if (data.has_notifications && data.notifications.length > 0) {
-                // Show notification for each new booking
-                for (const notification of data.notifications) {
-                    await self.registration.showNotification('New Booking Assignment', {
-                        body: `Booking #${notification.id} - ${notification.service}\nCustomer: ${notification.customer}`,
-                        icon: '/vendor/img/icons/icon-192x192.png',
-                        badge: '/vendor/img/icons/badge-72x72.png',
-                        vibrate: [200, 100, 200],
-                        tag: `booking-${notification.id}`,
-                        requireInteraction: true,
-                        data: {
-                            url: '/tech/dashboard.php',
-                            booking_id: notification.id
+            // Show notification for each new booking
+            for (const notif of data.notifications) {
+                await self.registration.showNotification('🔔 New Booking Assignment!', {
+                    body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+                    icon: '/vendor/img/icons/icon-192x192.png',
+                    badge: '/vendor/img/icons/badge-72x72.png',
+                    vibrate: [300, 100, 300, 100, 300],
+                    tag: `booking-${notif.id}`,
+                    requireInteraction: true,
+                    silent: false,
+                    data: {
+                        url: '/tech/dashboard.php',
+                        booking_id: notif.id
+                    },
+                    actions: [
+                        {
+                            action: 'view',
+                            title: 'View Booking'
+                        },
+                        {
+                            action: 'dismiss',
+                            title: 'Dismiss'
                         }
-                    });
-                }
+                    ]
+                });
             }
+            
+            // Notify all open clients
+            const clients = await self.clients.matchAll({ includeUncontrolled: true });
+            clients.forEach(client => {
+                client.postMessage({
+                    type: 'NEW_BOOKING',
+                    notifications: data.notifications
+                });
+            });
+        } else {
+            console.log('Service Worker: No new notifications');
         }
     } catch (error) {
-        console.error('Error checking notifications:', error);
+        console.error('Service Worker: Error checking bookings:', error);
     }
 }
 
-// Periodic background sync (if supported)
-self.addEventListener('periodicsync', (event) => {
-    if (event.tag === 'check-bookings') {
-        event.waitUntil(checkForNewNotifications());
+// Keep service worker alive with periodic checks
+// This helps ensure notifications work even when device is locked
+let keepAliveInterval;
+
+self.addEventListener('activate', (event) => {
+    console.log('Service Worker: Starting keepalive checks');
+    
+    // Clear any existing interval
+    if (keepAliveInterval) {
+        clearInterval(keepAliveInterval);
     }
+    
+    // Check for notifications every 10 seconds
+    keepAliveInterval = setInterval(() => {
+        checkForNewBookings();
+    }, NOTIFICATION_CHECK_INTERVAL);
+    
+    // Do an immediate check
+    checkForNewBookings();
 });
 
-console.log('Service Worker: Loaded and ready');
+console.log('Service Worker: Loaded and ready for background notifications');

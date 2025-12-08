@@ -125,9 +125,12 @@ $types = 'i';
 if($filter == 'pending') {
     $where_clause .= " AND sb.sb_status = 'In Progress'";
 } elseif($filter == 'completed') {
-    $where_clause .= " AND sb.sb_status = 'Completed'";
+    // Completed filter shows only bookings completed today
+    $where_clause .= " AND sb.sb_status = 'Completed' AND DATE(sb.sb_completed_at) = CURDATE()";
+} elseif($filter == 'all') {
+    // All filter shows only active bookings (exclude completed)
+    $where_clause .= " AND sb.sb_status != 'Completed'";
 }
-// Note: "All" filter shows everything with Pending bookings automatically at top due to status_priority sorting
 
 if(!empty($search)) {
     $where_clause .= " AND (u.u_phone LIKE ? OR u.u_fname LIKE ? OR u.u_lname LIKE ? OR CONCAT(u.u_fname, ' ', u.u_lname) LIKE ? OR sb.sb_id LIKE ?)";
@@ -186,11 +189,13 @@ $bookings_result = $stmt_bookings->get_result();
 $new_count = 0;
 $pending_count = 0;
 $completed_count = 0;
+$all_active_count = 0;
 
 $count_query = "SELECT 
                 COUNT(CASE WHEN sb.sb_status = 'Pending' THEN 1 END) as new_count,
                 COUNT(CASE WHEN sb.sb_status = 'In Progress' THEN 1 END) as pending_count,
-                COUNT(CASE WHEN sb.sb_status = 'Completed' THEN 1 END) as completed_count
+                COUNT(CASE WHEN sb.sb_status = 'Completed' AND DATE(sb.sb_completed_at) = CURDATE() THEN 1 END) as completed_count,
+                COUNT(CASE WHEN sb.sb_status != 'Completed' THEN 1 END) as all_active_count
                 FROM tms_service_booking sb
                 LEFT JOIN tms_cancelled_bookings cb ON sb.sb_id = cb.cb_booking_id AND cb.cb_technician_id = ?
                 WHERE sb.sb_technician_id = ? AND cb.cb_id IS NULL";
@@ -202,16 +207,54 @@ $counts = $count_result->fetch_object();
 $new_count = $counts->new_count;
 $pending_count = $counts->pending_count;
 $completed_count = $counts->completed_count;
+$all_active_count = $counts->all_active_count;
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Technician Dashboard - Electrozot</title>
+    
+    <!-- PWA Meta Tags for Fullscreen -->
+    <meta name="application-name" content="Electrozot Technician">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="EZ Tech">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="../vendor/img/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../vendor/img/icons/icon-192x192.png">
+    
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
     <style>
+        /* Hide browser loading bars in PWA */
+        ::-webkit-progress-bar,
+        ::-webkit-progress-value {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Hide Android Chrome loading bar */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent !important;
+            z-index: 9999;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -235,6 +278,7 @@ $completed_count = $counts->completed_count;
             position: relative;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body::before {
@@ -251,10 +295,11 @@ $completed_count = $counts->completed_count;
             z-index: -1;
         }
         
-        /* Header */
+        /* Header - Fullscreen PWA Mode */
         .header {
             background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             padding: 10px 20px;
+            padding-top: calc(10px + env(safe-area-inset-top));
             box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             display: flex;
             align-items: center;
@@ -271,7 +316,8 @@ $completed_count = $counts->completed_count;
             transform: translateZ(0);
             -webkit-backface-visibility: hidden;
             backface-visibility: hidden;
-            height: 70px;
+            min-height: 70px;
+            height: auto;
         }
         
         /* Search Bar */
@@ -284,7 +330,7 @@ $completed_count = $counts->completed_count;
             justify-content: space-between;
             gap: 15px;
             position: fixed;
-            top: 70px;
+            top: calc(70px + env(safe-area-inset-top));
             left: 0;
             right: 0;
             width: 100%;
@@ -833,7 +879,7 @@ $completed_count = $counts->completed_count;
             border-bottom: 3px solid transparent;
             border-image: linear-gradient(90deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%) 1;
             position: fixed;
-            top: 120px;
+            top: calc(120px + env(safe-area-inset-top));
             left: 0;
             right: 0;
             width: 100%;
@@ -2226,14 +2272,14 @@ $completed_count = $counts->completed_count;
             </a>
             
             <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
-                <i class="fas fa-list"></i> All
-                <?php if(($new_count + $pending_count + $completed_count) > 0): ?>
-                    <span class="badge"><?php echo ($new_count + $pending_count + $completed_count); ?></span>
+                <i class="fas fa-list"></i> All Active
+                <?php if($all_active_count > 0): ?>
+                    <span class="badge"><?php echo $all_active_count; ?></span>
                 <?php endif; ?>
             </a>
             
             <a href="?filter=completed<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
-                <i class="fas fa-check-circle"></i> Completed
+                <i class="fas fa-check-circle"></i> Today's Completed
                 <?php if($completed_count > 0): ?>
                     <span class="badge"><?php echo $completed_count; ?></span>
                 <?php endif; ?>
@@ -2617,8 +2663,8 @@ $completed_count = $counts->completed_count;
     <!-- Push Notification Setup -->
     <?php include('includes/push-notification-setup.php'); ?>
     
-    <!-- Technician Notification System -->
-    <?php include('includes/notification-system.php'); ?>
+    <!-- Technician Notification System - DEBUG MODE -->
+    <?php include('includes/notification-system-debug.php'); ?>
     
     <!-- Bottom Navigation Bar -->
     <?php include('includes/bottom-nav.php'); ?>
@@ -2657,65 +2703,8 @@ $completed_count = $counts->completed_count;
             .catch(error => console.error('Error updating tech dashboard:', error));
     }
     
-    // Update every 8 seconds
-    setInterval(updateTechDashboardStats, 8000);
-    
-    // Auto-refresh page when booking status changes
-    let lastBookingData = null;
-    let isPageVisible = true;
-    
-    document.addEventListener('visibilitychange', function() {
-        isPageVisible = !document.hidden;
-    });
-    
-    function checkForBookingChanges() {
-        if (!isPageVisible) return;
-        
-        fetch('api-get-my-bookings.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const currentData = JSON.stringify(data.bookings);
-                    
-                    if (lastBookingData !== null && lastBookingData !== currentData) {
-                        // Booking status changed - show notification and reload
-                        showNotification('Booking status updated!');
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    }
-                    
-                    lastBookingData = currentData;
-                }
-            })
-            .catch(error => console.log('Auto-refresh error:', error));
-    }
-    
-    function showNotification(message) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-            z-index: 9999;
-            font-weight: 600;
-            font-size: 14px;
-            animation: slideDown 0.3s ease;
-        `;
-        notification.innerHTML = `<i class="fas fa-sync-alt fa-spin" style="margin-right: 8px;"></i>${message}`;
-        document.body.appendChild(notification);
-        
-        setTimeout(() => notification.remove(), 3000);
-    }
-    
-    // Check every 10 seconds
-    setInterval(checkForBookingChanges, 10000);
+    // Update every 30 seconds (reduced frequency to avoid conflicts with notification system)
+    setInterval(updateTechDashboardStats, 30000);
     </script>
 </body>
 </html>

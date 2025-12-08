@@ -266,9 +266,17 @@ function assignBookingToTechnician($mysqli, $booking_id, $technician_id, $admin_
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP");
         $mysqli->query("ALTER TABLE tms_service_booking ADD COLUMN IF NOT EXISTS sb_assigned_at TIMESTAMP NULL DEFAULT NULL");
         
-        // Update booking with explicit sb_updated_at to trigger notification
+        // Determine if this is a reassignment
+        $is_reassignment = ($old_technician_id && $old_technician_id != $technician_id);
+        
+        // Update booking with explicit timestamps to trigger notification
+        // CRITICAL: Set sb_assigned_at to NOW() for both new assignments and reassignments
+        // This ensures the notification system can detect the event
         $stmt = $mysqli->prepare("UPDATE tms_service_booking 
-                                 SET sb_technician_id = ?, sb_status = 'Approved', sb_assigned_at = NOW(), sb_updated_at = NOW()
+                                 SET sb_technician_id = ?, 
+                                     sb_status = 'Approved', 
+                                     sb_assigned_at = NOW(), 
+                                     sb_updated_at = NOW()
                                  WHERE sb_id = ?");
         $stmt->bind_param('ii', $technician_id, $booking_id);
         $stmt->execute();

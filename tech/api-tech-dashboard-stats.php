@@ -7,9 +7,8 @@ ini_set('display_errors', 0);
 ob_start();
 
 session_start();
-include('vendor/inc/config.php');
-include('vendor/inc/checklogin.php');
-check_login();
+include('../admin/vendor/inc/config.php');
+include('includes/checklogin.php');
 
 // Ensure hold system columns exist before querying
 try {

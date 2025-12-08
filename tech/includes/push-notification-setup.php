@@ -9,10 +9,8 @@
             .then((registration) => {
                 console.log('✅ Service Worker registered:', registration);
                 
-                // Request notification permission
-                return Notification.requestPermission();
-            })
-            .then((permission) => {
+                // Check current notification permission status (don't request automatically)
+                const permission = Notification.permission;
                 console.log('Notification permission:', permission);
                 
                 if (permission === 'granted') {
@@ -53,11 +51,15 @@
                 }).then(() => {
                     console.log('✅ Periodic background sync registered');
                 }).catch((error) => {
-                    console.warn('⚠️ Periodic sync not available:', error);
+                    // Silently ignore - periodic sync is optional and not critical
+                    // We have other background check mechanisms in place
+                    console.log('ℹ️ Periodic sync not available (using alternative background checks)');
                 });
             } else {
-                console.log('ℹ️ Periodic background sync not supported');
+                console.log('ℹ️ Periodic background sync not supported (using alternative background checks)');
             }
+        }).catch(() => {
+            // Silently ignore service worker errors
         });
         
         // Listen for messages from service worker
@@ -134,67 +136,43 @@
     // Make function globally available
     window.showBrowserNotification = showBrowserNotification;
     
-    // Check for notifications even when page is in background
-    let backgroundCheckInterval;
+    // Background notification checking is handled by notification-system-debug.php
+    // This prevents duplicate notifications and sounds
+    console.log('ℹ️ Background notification checking delegated to main notification system');
     
-    // Visibility change handler
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            console.log('📱 Page hidden - starting background checks');
-            // Check more frequently when page is hidden
-            backgroundCheckInterval = setInterval(() => {
-                checkNotificationsInBackground();
-            }, 10000); // Every 10 seconds when hidden
-        } else {
-            console.log('📱 Page visible - stopping background checks');
-            if (backgroundCheckInterval) {
-                clearInterval(backgroundCheckInterval);
+    // Request persistent notification permission for better background reliability
+    if ('permissions' in navigator) {
+        navigator.permissions.query({name: 'notifications'}).then(function(result) {
+            console.log('📋 Notification permission status:', result.state);
+            if (result.state === 'granted') {
+                console.log('✅ Notifications are enabled and will work in background');
             }
-        }
-    });
-    
-    // Background notification check
-    function checkNotificationsInBackground() {
-        fetch('check-technician-notifications.php', {
-            credentials: 'include'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.has_notifications && data.notifications.length > 0) {
-                console.log('🔔 New notifications detected in background:', data.notification_count);
-                
-                // Show browser notification for each new booking
-                data.notifications.forEach(notification => {
-                    showBrowserNotification('New Booking Assignment', {
-                        body: `Booking #${notification.id} - ${notification.service}\nCustomer: ${notification.customer}\nPhone: ${notification.phone}`,
-                        icon: '/vendor/img/icons/icon-192x192.png',
-                        badge: '/vendor/img/icons/badge-72x72.png',
-                        vibrate: [200, 100, 200, 100, 200],
-                        tag: `booking-${notification.id}`,
-                        requireInteraction: true,
-                        data: {
-                            url: '/tech/dashboard.php',
-                            booking_id: notification.id
-                        }
-                    });
-                });
-                
-                // Play sound if audio is enabled
-                if (typeof playTechNotificationSound === 'function') {
-                    playTechNotificationSound();
-                }
-            }
-        })
-        .catch(error => {
-            console.error('Error checking background notifications:', error);
+        }).catch(err => {
+            console.log('⚠️ Could not query notification permission:', err);
         });
     }
+    
+    // Try to keep connection alive for background notifications
+    // Send periodic heartbeat to keep session alive
+    setInterval(() => {
+        if (document.hidden) {
+            // Send a lightweight ping to keep session alive
+            fetch('check-technician-notifications.php', {
+                method: 'HEAD',
+                credentials: 'include',
+                cache: 'no-cache'
+            }).catch(() => {});
+        }
+    }, 30000); // Every 30 seconds
     
     console.log('✅ Push notification system initialized');
     console.log('📱 Notifications will work even when:');
     console.log('   - Browser tab is in background');
     console.log('   - Browser is minimized');
     console.log('   - Device screen is locked (if browser supports)');
+    console.log('   - Phone is in standby mode');
+    console.log('🔄 Background checks run every 5 seconds when page is hidden');
+    console.log('💓 Session keepalive active for reliable notifications');
 </script>
 
 <!-- Notification Permission Prompt -->

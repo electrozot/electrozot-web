@@ -18,6 +18,32 @@ if($tech_id > 0) {
 }
 ?>
 
+<!-- Real-time Lock Status Checker -->
+<script>
+// Check account lock status every 3 seconds
+(function() {
+    function checkLockStatus() {
+        fetch('api-check-lock-status.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.is_locked) {
+                    // Account is locked - redirect to lock page
+                    window.location.href = 'account-locked.php';
+                }
+            })
+            .catch(error => {
+                console.error('Lock status check failed:', error);
+            });
+    }
+    
+    // Check immediately on page load
+    checkLockStatus();
+    
+    // Then check every 3 seconds
+    setInterval(checkLockStatus, 3000);
+})();
+</script>
+
 <!-- Bottom Navigation Bar -->
 <div class="bottom-nav">
     <a href="dashboard.php" class="nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">

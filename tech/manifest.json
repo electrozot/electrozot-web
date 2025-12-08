@@ -3,9 +3,10 @@
   "short_name": "EZ Tech",
   "description": "Electrozot Technician Dashboard - Manage your service bookings",
   "start_url": "/tech/dashboard.php",
-  "display": "standalone",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "background_color": "#ffffff",
-  "theme_color": "#667eea",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
     {
