@@ -98,7 +98,7 @@ $stmt->close();
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         
@@ -402,7 +402,7 @@ $stmt->close();
             }
             
             .logo {
-                height: 50px;
+                height: 29px;
             }
             
             .brand-text h2 {

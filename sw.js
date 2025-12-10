@@ -1,10 +1,10 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.4.1'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.5.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.4.1';
+const APP_VERSION = '3.5.0';
 
 // DEVELOPMENT MODE - Set to true during development to disable caching
-const DEV_MODE = true; // Change to false for production
+const DEV_MODE = false; // Change to false for production
 
 // Files to cache for offline functionality (using relative paths)
 const CACHE_URLS = [

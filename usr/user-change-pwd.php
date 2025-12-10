@@ -95,7 +95,7 @@ if (isset($_POST['change_password'])) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
             margin-right: 12px;
         }

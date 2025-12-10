@@ -1,38 +1,40 @@
-# Robots.txt for Electrozot
-
 User-agent: *
+Allow: /
 
-# Block admin panel from search engines
-Disallow: /admin/
-Disallow: /admin
-
-# Block user portal from search engines
-Disallow: /usr/
-Disallow: /usr
-
-# Block technician portal from search engines
-Disallow: /tech/
-Disallow: /tech
-
-# Block database and config files
-Disallow: /DATABASE FILE/
-Disallow: /config.php
-Disallow: /vendor/inc/
-
-# Block uploads folder (optional - remove if you want images indexed)
-# Disallow: /uploads/
-
-# Allow blog
-Allow: /blog
-Allow: /blog.php
-Allow: /blog-post.php
-
-# Allow main pages
+# Allow important pages for SEO
 Allow: /index.php
 Allow: /about.php
 Allow: /services.php
 Allow: /contact.php
 Allow: /gallery.php
+Allow: /blog.php
+Allow: /blog-post.php
+Allow: /faq.php
+Allow: /privacy-policy.php
+Allow: /process-guest-booking.php
 
-# Sitemap (create this later)
-Sitemap: https://yoursite.com/sitemap.xml
+# Allow CSS, JS, and images for proper rendering
+Allow: /css/
+Allow: /js/
+Allow: /vendor/
+Allow: /uploads/
+
+# Disallow admin and user areas (not for public indexing)
+Disallow: /admin/
+Disallow: /usr/
+Disallow: /tech/
+
+# Disallow sensitive files
+Disallow: /config.php
+Disallow: /DATABASE FILE/
+Disallow: /*.sql
+Disallow: /sessions/
+
+# Allow sitemap
+Allow: /sitemap.xml
+
+# Sitemap location
+Sitemap: https://electrozot.in/sitemap.xml
+
+# Crawl delay (optional - helps prevent server overload)
+Crawl-delay: 1

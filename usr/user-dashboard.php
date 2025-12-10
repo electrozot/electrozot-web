@@ -190,7 +190,7 @@ $all_bookings_result = $all_bookings_stmt->get_result();
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

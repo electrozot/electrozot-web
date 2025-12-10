@@ -105,7 +105,7 @@ if($cancel_error) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

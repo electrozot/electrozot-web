@@ -62,7 +62,7 @@ $user = $user_result->fetch_object();
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

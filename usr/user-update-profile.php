@@ -90,7 +90,7 @@ if (isset($_POST['update_profile'])) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
             margin-right: 12px;
         }

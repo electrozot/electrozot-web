@@ -133,7 +133,7 @@ if(isset($_POST['submit_custom_booking'])) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

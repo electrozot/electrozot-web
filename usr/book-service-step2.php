@@ -92,7 +92,7 @@ if (isset($subcategories_map[$category])) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

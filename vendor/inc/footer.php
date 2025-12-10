@@ -104,6 +104,17 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
 
         <!-- Bottom Bar -->
         <div style="border-top: 1px solid #4a5568; margin-top: 25px; padding-top: 20px; text-align: center;">
+            <div style="margin-bottom: 10px;">
+                <a href="privacy-policy.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                    <i class="fas fa-shield-alt" style="margin-right: 5px;"></i>Privacy Policy
+                </a>
+                <a href="contact.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                    <i class="fas fa-envelope" style="margin-right: 5px;"></i>Contact Us
+                </a>
+                <a href="sitemap.xml" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                    <i class="fas fa-sitemap" style="margin-right: 5px;"></i>Sitemap
+                </a>
+            </div>
             <p style="margin: 0; color: #cbd5e0; font-size: 0.9rem; font-weight: 500;">
                 &copy; <?php echo date('Y');?> <span style="color: #ffffff; font-weight: 700;">Electrozot</span> - All rights reserved
             </p>

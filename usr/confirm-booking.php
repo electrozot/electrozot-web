@@ -153,7 +153,7 @@ if ($show_success) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

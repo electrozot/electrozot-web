@@ -50,7 +50,7 @@ $aid = $_SESSION['u_id'];
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

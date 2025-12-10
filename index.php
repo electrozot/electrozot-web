@@ -1475,17 +1475,20 @@
             console.log('✅ beforeinstallprompt event fired - App is installable!');
             e.preventDefault();
             deferredPrompt = e;
-            installButton.style.display = 'block';
+            // Don't show install button automatically
+            // installButton.style.display = 'block';
         });
 
         installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to install prompt: ${outcome}`);
-                deferredPrompt = null;
-                installButton.style.display = 'none';
-            }
+            // Simple PWA installation guide
+            alert('📱 Install ElectroZot App\n\n' +
+                  'To install our app:\n' +
+                  '• Chrome: Menu → "Install ElectroZot"\n' +
+                  '• Safari: Share → "Add to Home Screen"\n' +
+                  '• Edge: Menu → "Apps" → "Install ElectroZot"\n\n' +
+                  'Enjoy faster access to our services!');
+            
+            installButton.style.display = 'none';
         });
 
         window.addEventListener('appinstalled', () => {

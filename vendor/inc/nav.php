@@ -65,15 +65,15 @@
     <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: transparent; pointer-events: none; z-index: 1; display: none;"></div>
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
         <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px;">
-            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
+            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 85px; width: auto; transition: transform 0.3s ease; object-fit: contain; margin-right: -20px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700; margin-right: -20px;"></i>
             <div class="d-flex flex-column">
-                <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
-                <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
+                <span style="font-size: 1.8rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
+                <small class="navbar-tagline" style="font-size: 0.8rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
             </div>
         </a>
         <!-- PWA Install Button - Mobile Left Side -->
-        <button id="pwa-install-mobile-btn" class="btn d-lg-none" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 4px; border-radius: 4px; box-shadow: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px; margin-left: 3px;">
+        <button id="pwa-install-mobile-btn" class="btn d-lg-none" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 4px; border-radius: 4px; box-shadow: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px; margin-left: -5px;">
             <i class="fas fa-download" style="font-size: 0.65rem; margin-bottom: 1px;"></i><span style="font-weight: 600; font-size: 0.5rem; white-space: nowrap;">App</span>
         </button>
         <!-- Mobile Buttons (visible only on mobile) -->
@@ -173,29 +173,29 @@
             /* Responsive logo sizing */
             @media (max-width: 768px) {
                 .navbar-logo {
-                    height: 45px !important;
+                    height: 60px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.3rem !important;
+                    font-size: 1.2rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.65rem !important;
+                    font-size: 0.6rem !important;
                 }
             }
             
             @media (max-width: 576px) {
                 .navbar-logo {
-                    height: 40px !important;
+                    height: 55px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.1rem !important;
+                    font-size: 1.0rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.6rem !important;
+                    font-size: 0.55rem !important;
                 }
                 
                 .navbar-brand {
@@ -356,6 +356,9 @@
                  <li class="nav-item">
                     <a class="nav-link" href="blog.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Blog</a>
                  </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="faq.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">FAQ</a>
+                 </li>
                  <li class="nav-item d-none d-lg-block">
                     <button id="pwa-install-nav-btn" class="btn nav-link" style="color: #fff !important; font-weight: 600; font-size: 0.75rem; padding: 5px 10px !important; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 5px; transition: all 0.3s ease; display: inline-block !important; z-index: 1000; position: relative;">
                          <i class="fas fa-download" style="font-size: 0.7rem;"></i> Download
@@ -387,67 +390,114 @@
             }
         });
         
-        // PWA Install Button Handler
-        let deferredPrompt;
+        // PWA Install Button Handler - Completely Rewritten
+        let deferredPrompt = null;
+        let installPromptShown = false;
         const installButtonDesktop = document.getElementById('pwa-install-nav-btn');
         const installButtonMobile = document.getElementById('pwa-install-mobile-btn');
         
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Show the install buttons
+        // Check if already installed
+        function isAppInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true ||
+                   document.referrer.includes('android-app://');
+        }
+        
+        // Hide buttons if already installed
+        if (isAppInstalled()) {
             if (installButtonDesktop) {
-                installButtonDesktop.style.display = 'inline-block';
-                installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Download App';
+                installButtonDesktop.innerHTML = '<i class="fas fa-check-circle"></i> Installed';
+                installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonDesktop.disabled = true;
             }
             if (installButtonMobile) {
-                installButtonMobile.style.display = 'flex';
+                installButtonMobile.innerHTML = '<i class="fas fa-check-circle"></i><span>Installed</span>';
+                installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonMobile.disabled = true;
+            }
+        }
+        
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install buttons only if not already installed
+            if (!isAppInstalled()) {
+                if (installButtonDesktop) {
+                    installButtonDesktop.style.display = 'inline-block';
+                    installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Install App';
+                }
+                if (installButtonMobile) {
+                    installButtonMobile.style.display = 'flex';
+                }
             }
         });
         
-        // Handle desktop button click
-        if (installButtonDesktop) {
-            installButtonDesktop.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    alert('📱 PWA Installation Info:\n\n' +
-                          '✓ Button is visible and working!\n\n' +
-                          'To enable installation:\n' +
-                          '1. Browse the site for 30 seconds\n' +
-                          '2. The install prompt will appear\n' +
-                          '3. Or check browser menu for "Install ElectroZot"');
-                    return;
-                }
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    console.log('PWA installed');
-                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-                    if (installButtonMobile) installButtonMobile.style.display = 'none';
+        // Function to handle installation
+        async function handleInstallClick() {
+            if (isAppInstalled()) {
+                alert('✅ ElectroZot is already installed on your device!');
+                return;
+            }
+            
+            if (deferredPrompt) {
+                try {
+                    console.log('Showing install prompt...');
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    console.log('Install prompt result:', outcome);
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA installation accepted');
+                        // Hide buttons after successful installation
+                        if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                        if (installButtonMobile) installButtonMobile.style.display = 'none';
+                    } else {
+                        console.log('❌ PWA installation declined');
+                    }
+                } catch (error) {
+                    console.error('Installation error:', error);
+                    showManualInstallInstructions();
                 }
                 deferredPrompt = null;
-            });
+            } else {
+                showManualInstallInstructions();
+            }
         }
         
-        // Handle mobile button click
-        if (installButtonMobile) {
-            installButtonMobile.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    alert('📱 Install ElectroZot App\n\n' +
-                          'Browse the site for 30 seconds, then the install option will appear!\n\n' +
-                          'Or check your browser menu for "Install ElectroZot"');
-                    return;
-                }
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    console.log('PWA installed');
-                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-                    if (installButtonMobile) installButtonMobile.style.display = 'none';
-                }
-                deferredPrompt = null;
-            });
+        // Function to show manual installation instructions
+        function showManualInstallInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '📱 Install ElectroZot App\n\n';
+            
+            if (userAgent.includes('chrome') && userAgent.includes('mobile')) {
+                instructions += '1. Tap the menu (⋮) in the top right\n2. Select "Add to Home screen"\n3. Tap "Add"';
+            } else if (userAgent.includes('chrome')) {
+                instructions += '1. Click the menu (⋮) in the top right\n2. Select "Install ElectroZot"\n3. Click "Install"';
+            } else if (userAgent.includes('firefox')) {
+                instructions += '1. Tap the menu (☰)\n2. Select "Install"\n3. Tap "Add to Home Screen"';
+            } else if (userAgent.includes('safari')) {
+                instructions += '1. Tap the Share button (□↗)\n2. Select "Add to Home Screen"\n3. Tap "Add"';
+            } else if (userAgent.includes('edge')) {
+                instructions += '1. Click the menu (...)\n2. Select "Apps"\n3. Click "Install this site as an app"';
+            } else {
+                instructions += 'Look for "Install app", "Add to Home screen", or similar option in your browser menu.';
+            }
+            
+            instructions += '\n\n💡 Tip: Make sure you\'re using HTTPS and have browsed the site for a few minutes.';
+            alert(instructions);
+        }
+        
+        // Attach event listeners
+        if (installButtonDesktop && !isAppInstalled()) {
+            installButtonDesktop.addEventListener('click', handleInstallClick);
+        }
+        
+        if (installButtonMobile && !isAppInstalled()) {
+            installButtonMobile.addEventListener('click', handleInstallClick);
         }
         
         // Hide buttons if already installed

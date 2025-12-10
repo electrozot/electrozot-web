@@ -77,7 +77,7 @@ if(isset($_POST['give_feedback'])) {
         }
         
         .logo {
-            height: 55px;
+            height: 29px;
             width: auto;
         }
         

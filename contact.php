@@ -138,7 +138,7 @@
                             <div class="contact-info-content">
                                 <h5 class="font-weight-bold mb-2" style="color: #0d9488;">Email</h5>
                                 <p class="mb-0" style="color: #1a202c; font-weight: 600;">
-                                    <a href="mailto:electrozot.in@gmail.com" class="contact-link" style="color: #1a202c; font-weight: 700;">electrozot.in@gmail.com</a>
+                                    <a href="mailto:electrozot@outlook.com" class="contact-link" style="color: #1a202c; font-weight: 700;">electrozot@outlook.com</a>
                                 </p>
                             </div>
                         </div>
