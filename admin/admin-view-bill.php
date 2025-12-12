@@ -53,6 +53,13 @@ $billHTML = $billGen->generateBillHTML();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Bill - Electrozot Admin</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png">
+    
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>
         .action-buttons {

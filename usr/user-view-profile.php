@@ -22,6 +22,7 @@ $user = $user_result->fetch_object();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>My Profile - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>
@@ -34,70 +35,6 @@ $user = $user_result->fetch_object();
             padding-top: 75px;
             padding-bottom: 70px;
         }
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-        }
-        
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-left: 0;
-            margin-left: -5px;
-        }
-        
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .logo {
-            height: 29px;
-            width: auto;
-        }
-        
-        .brand-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 3px 0 0 0;
-            font-style: italic;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-left: auto;
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
             align-items: center;
             justify-content: center;
             color: white;
@@ -321,7 +258,242 @@ $user = $user_result->fetch_object();
         .logout-btn:active {
             transform: scale(0.98);
         }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            padding: 10px 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+            z-index: 1000;
+        }
         
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
+        }
+        
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .logo {
+            height: 42px;
+            width: auto;
+        }
+        
+        .brand-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-text p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin: 3px 0 0 0;
+            font-style: italic;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .header-icon:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            margin-top: 75px;
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 auto 15px;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        
+        .profile-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .profile-email {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.95;
+            color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 20px 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #d13abd;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 15px;
+            padding: 0;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            overflow: hidden;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .info-content {
+            flex: 1;
+        }
+        
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(209, 58, 189, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .action-btn i {
+            margin-right: 8px;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 8px;
@@ -380,6 +552,13 @@ $user = $user_result->fetch_object();
             font-size: 8px;
             font-weight: 600;
             letter-spacing: 0.2px;
+        }
+        
+        /* Mobile Specific - Larger Logo */
+        @media (max-width: 767px) {
+            .logo {
+                height: 55px;
+            }
         }
         
         @media (min-width: 768px) {

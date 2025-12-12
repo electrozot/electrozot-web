@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="Reset your Electrozot account password">
     <meta name="author" content="Electrozot">
+    <meta name="theme-color" content="#000000">
 
     <title>Forgot Password - Electrozot</title>
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">

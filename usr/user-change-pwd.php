@@ -52,6 +52,7 @@ if (isset($_POST['change_password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>Change Password - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>

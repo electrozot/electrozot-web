@@ -65,6 +65,7 @@ if($cancel_error) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>My Bookings - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>
@@ -378,7 +379,311 @@ if($cancel_error) {
             color: #991b1b;
             border: 1px solid #ef4444;
         }
+
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+            padding: 10px 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+            z-index: 1000;
+        }
         
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-left: 0;
+            margin-left: -5px;
+        }
+        
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .logo {
+            height: 29px;
+            width: auto;
+        }
+        
+        .brand-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+        }
+        
+        .brand-text p {
+            font-size: 13px;
+            opacity: 0.85;
+            margin: 3px 0 0 0;
+            font-style: italic;
+        }
+        
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .header-icons {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .header-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .header-icon:hover {
+            background: rgba(255,255,255,0.35);
+            transform: scale(1.05);
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .booking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(209, 58, 189, 0.2);
+        }
+        
+        .booking-card.status-pending {
+            border-left-color: #ffc107;
+        }
+        
+        .booking-card.status-approved {
+            border-left-color: #17a2b8;
+        }
+        
+        .booking-card.status-completed {
+            border-left-color: #28a745;
+        }
+        
+        .booking-card.status-cancelled {
+            border-left-color: #dc3545;
+        }
+        
+        .booking-card.on-hold {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left-color: #ffa502;
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+        
+        .booking-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .booking-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-on-hold {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .booking-service {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .booking-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .booking-detail i {
+            color: #d13abd;
+            width: 14px;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            color: white;
+        }
+        
+        .no-bookings {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .no-bookings i {
+            font-size: 48px;
+            color: #d13abd;
+            margin-bottom: 15px;
+        }
+        
+        .no-bookings h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .no-bookings p {
+            margin-bottom: 20px;
+        }
+        
+        .hold-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        .hold-info i {
+            color: #ffa502;
+            margin-right: 5px;
+        }
+
         .bottom-nav {
             position: fixed;
             bottom: 8px;

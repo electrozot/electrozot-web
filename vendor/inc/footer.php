@@ -11,8 +11,10 @@ if($settings_result) {
 
 // Get social media URLs with defaults
 $instagram_url = !empty($settings['instagram_url']) ? $settings['instagram_url'] : 'https://www.instagram.com/electrozot.in/';
-$facebook_url = !empty($settings['facebook_url']) ? $settings['facebook_url'] : '#';
-$twitter_url = !empty($settings['twitter_url']) ? $settings['twitter_url'] : '#';
+$facebook_url = !empty($settings['facebook_url']) ? $settings['facebook_url'] : 'https://www.facebook.com/electrozot';
+$twitter_url = !empty($settings['twitter_url']) ? $settings['twitter_url'] : 'https://twitter.com/electrozot_in';
+$youtube_url = !empty($settings['youtube_url']) ? $settings['youtube_url'] : 'https://youtube.com/@electrozot_ez?si=UAyPrmU33S28VLlO';
+$linkedin_url = !empty($settings['linkedin_url']) ? $settings['linkedin_url'] : 'https://www.linkedin.com/in/electrozot';
 $whatsapp_number = !empty($settings['whatsapp_number']) ? $settings['whatsapp_number'] : '917559606925';
 $primary_phone = !empty($settings['primary_phone']) ? $settings['primary_phone'] : '7559606925';
 $primary_email = !empty($settings['primary_email']) ? $settings['primary_email'] : 'electrozot.in@gmail.com';
@@ -48,24 +50,39 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
             <!-- Social Icons -->
             <div class="col-6 col-md-3 mb-3">
                 <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Social</h5>
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 40px; height: 40px; background: #e1306c; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 12px rgba(225, 48, 108, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <?php endif; ?>
-                    
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                     <?php if(!empty($facebook_url) && $facebook_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 40px; height: 40px; background: #4267B2; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 12px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #4267B2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Facebook">
                         <i class="fab fa-facebook-f"></i>
                     </a>
                     <?php endif; ?>
                     
-                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 40px; height: 40px; background: #25d366; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                        <i class="fab fa-whatsapp"></i>
+                    <?php if(!empty($youtube_url) && $youtube_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($youtube_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #FF0000; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(255, 0, 0, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="YouTube">
+                        <i class="fab fa-youtube"></i>
                     </a>
-                    <a href="tel:<?php echo htmlspecialchars($primary_phone); ?>" style="width: 40px; height: 40px; background: #63b3ed; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 12px rgba(99, 179, 237, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                        <i class="fas fa-phone"></i>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($twitter_url) && $twitter_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($twitter_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #1DA1F2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(29, 161, 242, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($linkedin_url) && $linkedin_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($linkedin_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #0077B5; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(0, 119, 181, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(225, 48, 108, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <?php endif; ?>
+                    
+                    <a href="https://wa.me/<?php echo htmlspecialchars($whatsapp_number); ?>?text=Hi%20Electrozot%2C%20I%20want%20to%20book%20your%20services" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #25d366; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
                     </a>
                 </div>
             </div>

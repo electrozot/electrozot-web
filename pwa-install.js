@@ -20,9 +20,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
     showInstallPromotion();
 });
 
-// Show install promotion UI
+// Show install promotion UI - Only show if main section is not visible
 function showInstallPromotion() {
-    // Create install banner if it doesn't exist
+    // Check if main PWA section exists and is visible
+    const mainPwaSection = document.querySelector('.pwa-install-section');
+    if (mainPwaSection) {
+        console.log('📱 Main PWA section found, skipping banner');
+        return; // Don't show banner if main section exists
+    }
+    
+    // Create install banner if it doesn't exist and main section is not present
     if (!document.getElementById('pwa-install-banner')) {
         const banner = document.createElement('div');
         banner.id = 'pwa-install-banner';

@@ -270,6 +270,131 @@
             </div>
         </section>
 
+        <!-- PWA Installation Section -->
+        <section class="pwa-install-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px 0; position: relative; overflow: hidden;">
+            <div class="pwa-background-pattern" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"white\"/><circle cx=\"80\" cy=\"20\" r=\"2\" fill=\"white\"/><circle cx=\"20\" cy=\"80\" r=\"2\" fill=\"white\"/><circle cx=\"80\" cy=\"80\" r=\"2\" fill=\"white\"/><circle cx=\"50\" cy=\"50\" r=\"3\" fill=\"white\"/></svg>'); background-size: 50px 50px;"></div>
+            
+            <div class="container" style="position: relative; z-index: 2;">
+                <div class="row align-items-center">
+                    <div class="col-lg-8 col-md-7 mb-3 mb-md-0">
+                        <div class="pwa-content">
+                            <h3 class="text-white font-weight-bold mb-2" style="font-size: 1.4rem;">
+                                <i class="fas fa-mobile-alt" style="color: #FFD700; margin-right: 10px;"></i>
+                                Get Our Mobile App
+                            </h3>
+                            <p class="text-white mb-2" style="font-size: 0.95rem; opacity: 0.9; line-height: 1.4;">
+                                Install ElectroZot app for faster booking, offline access, and instant notifications. 
+                                <span class="d-none d-md-inline">Works like a native app on your phone!</span>
+                            </p>
+                            <div class="pwa-features d-none d-lg-flex" style="gap: 20px; margin-top: 10px;">
+                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
+                                    <i class="fas fa-bolt" style="color: #FFD700;"></i> Fast Loading
+                                </span>
+                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
+                                    <i class="fas fa-wifi" style="color: #FFD700;"></i> Works Offline
+                                </span>
+                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
+                                    <i class="fas fa-bell" style="color: #FFD700;"></i> Push Notifications
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-5 text-center text-md-right">
+                        <div class="pwa-install-buttons">
+                            <!-- Main Install Button -->
+                            <button id="pwa-main-install-btn" class="btn btn-light font-weight-bold mb-2" style="background: white; color: #667eea; border: none; padding: 12px 25px; border-radius: 25px; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; display: none;">
+                                <i class="fas fa-download"></i> Install App
+                            </button>
+                            
+                            <!-- Manual Install Guide Button -->
+                            <button id="pwa-guide-btn" class="btn btn-outline-light font-weight-bold" style="border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; font-size: 1rem; transition: all 0.3s ease;">
+                                <i class="fas fa-info-circle"></i> How to Install
+                            </button>
+                            
+                            <!-- Already Installed Message -->
+                            <div id="pwa-installed-msg" style="display: none;">
+                                <div class="alert alert-success mb-0" style="background: rgba(255,255,255,0.9); color: #28a745; border: none; border-radius: 15px; padding: 10px 20px;">
+                                    <i class="fas fa-check-circle"></i> App Already Installed!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PWA Install Guide Modal -->
+        <div class="modal fade" id="pwaGuideModal" tabindex="-1" role="dialog" aria-labelledby="pwaGuideModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <h5 class="modal-title font-weight-bold" id="pwaGuideModalLabel">
+                            <i class="fas fa-mobile-alt"></i> Install ElectroZot App
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding: 25px;">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="install-step">
+                                    <h6 class="font-weight-bold text-primary mb-3">
+                                        <i class="fab fa-chrome"></i> Chrome / Edge Browser
+                                    </h6>
+                                    <ol class="install-steps" style="font-size: 0.9rem; line-height: 1.6;">
+                                        <li>Look for the <strong>"Install"</strong> button in the address bar</li>
+                                        <li>Or click the <strong>menu (⋮)</strong> → "Install ElectroZot"</li>
+                                        <li>Click <strong>"Install"</strong> in the popup</li>
+                                        <li>App will be added to your home screen!</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="install-step">
+                                    <h6 class="font-weight-bold text-success mb-3">
+                                        <i class="fab fa-safari"></i> Safari (iPhone/iPad)
+                                    </h6>
+                                    <ol class="install-steps" style="font-size: 0.9rem; line-height: 1.6;">
+                                        <li>Tap the <strong>Share button</strong> (□↗)</li>
+                                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                                        <li>ElectroZot app will appear on your home screen!</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pwa-benefits mt-4 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                            <h6 class="font-weight-bold mb-3 text-center">
+                                <i class="fas fa-star text-warning"></i> App Benefits
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <i class="fas fa-bolt text-primary" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Faster Loading</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-wifi text-success" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Works Offline</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-bell text-warning" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Push Notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border: none; padding: 15px 25px;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="tryInstallAgain">
+                            <i class="fas fa-download"></i> Try Install
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <style>
             /* Compact Form Styling - Enhanced Design */
             .booking-form-compact .form-label-compact {
@@ -1224,78 +1349,362 @@
         </section>
 
         <!-- Recent Blog Posts Section -->
-        <section style="background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%); padding: 60px 0;">
+        <section style="background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%); padding: 30px 0;">
             <div class="container">
-                <div class="row text-center mb-5">
+                <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 2.5rem;">Latest from Our Blog</h2>
-                        <p class="text-muted" style="font-size: 1.1rem;">Expert tips and guides from our certified technicians</p>
+                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.8rem;">Latest from Our Blog</h2>
+                        <p class="text-muted" style="font-size: 0.9rem;">Expert tips and guides from our certified technicians</p>
                     </div>
                 </div>
                 
-                <div class="row">
-                    <?php
-                    // Get 3 most recent published blog posts
-                    $blog_query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC LIMIT 3";
-                    $blog_result = $mysqli->query($blog_query);
-                    
-                    if($blog_result && $blog_result->num_rows > 0) {
-                        while($blog = $blog_result->fetch_object()) {
+                <?php
+                // Get all published blog posts for carousel
+                $blog_query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC";
+                $blog_result = $mysqli->query($blog_query);
+                $blogs = [];
+                if($blog_result && $blog_result->num_rows > 0) {
+                    while($blog = $blog_result->fetch_object()) {
+                        $blogs[] = $blog;
+                    }
+                }
+                ?>
+                
+                <?php if(!empty($blogs)) { ?>
+                <!-- Desktop View - Show 3 blogs in a row -->
+                <div class="row d-none d-md-flex" id="desktop-blogs">
+                    <?php 
+                    $desktop_blogs = array_slice($blogs, 0, 3); // Show first 3 blogs on desktop
+                    foreach($desktop_blogs as $blog) { 
                     ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 shadow-sm" style="border-radius: 10px; overflow: hidden;">
                             <?php if($blog->blog_image) { ?>
-                                <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 200px; object-fit: cover;">
+                                <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
                             <?php } else { ?>
-                                <div class="card-img-top" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-blog" style="font-size: 4rem; color: rgba(255,255,255,0.8);"></i>
+                                <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
                                 </div>
                             <?php } ?>
-                            <div class="card-body d-flex flex-column">
+                            <div class="card-body p-3 d-flex flex-column">
                                 <?php if($blog->blog_category) { ?>
-                                    <span class="badge badge-primary mb-2" style="width: fit-content;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                    <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
                                 <?php } ?>
-                                <h5 class="card-title font-weight-bold" style="color: #2d3748;"><?php echo htmlspecialchars($blog->blog_title); ?></h5>
-                                <p class="card-text text-muted" style="flex-grow: 1;">
+                                <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
+                                <p class="card-text text-muted mb-2" style="flex-grow: 1; font-size: 0.8rem; line-height: 1.3;">
                                     <?php 
                                     $excerpt = $blog->blog_excerpt ?: strip_tags($blog->blog_content);
-                                    echo htmlspecialchars(substr($excerpt, 0, 120)) . '...'; 
+                                    echo htmlspecialchars(substr($excerpt, 0, 80)) . '...'; 
                                     ?>
                                 </p>
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar"></i> <?php echo date('M d, Y', strtotime($blog->blog_published_at)); ?>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted" style="font-size: 0.7rem;">
+                                        <i class="fas fa-calendar"></i> <?php echo date('M d', strtotime($blog->blog_published_at)); ?>
                                     </small>
-                                    <small class="text-muted">
+                                    <small class="text-muted" style="font-size: 0.7rem;">
                                         <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
                                     </small>
                                 </div>
-                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-block" style="border-radius: 25px;">
+                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
                                     Read More <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <?php 
-                        }
-                    } else {
-                        // Show placeholder if no blogs yet
-                        echo '<div class="col-12 text-center"><p class="text-muted">No blog posts available yet. Check back soon!</p></div>';
-                    }
-                    ?>
+                    <?php } ?>
                 </div>
-                
-                <?php if($blog_result && $blog_result->num_rows > 0) { ?>
-                <div class="row mt-4">
+
+                <!-- Mobile View - Carousel with auto-rotation -->
+                <div class="d-block d-md-none" id="mobile-blog-carousel">
+                    <div class="blog-carousel-container" style="position: relative; overflow: hidden; border-radius: 15px;">
+                        <?php foreach($blogs as $index => $blog) { ?>
+                        <div class="blog-slide <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="display: <?php echo $index === 0 ? 'block' : 'none'; ?>; animation: <?php echo $index === 0 ? 'slideInRight 0.5s ease-in-out' : 'none'; ?>;">
+                            <div class="card shadow-sm mx-2" style="border-radius: 10px; overflow: hidden;">
+                                <?php if($blog->blog_image) { ?>
+                                    <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
+                                <?php } else { ?>
+                                    <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
+                                    </div>
+                                <?php } ?>
+                                <div class="card-body p-3">
+                                    <?php if($blog->blog_category) { ?>
+                                        <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                    <?php } ?>
+                                    <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
+                                    <p class="card-text text-muted mb-2" style="font-size: 0.8rem; line-height: 1.3;">
+                                        <?php 
+                                        $excerpt = $blog->blog_excerpt ?: strip_tags($blog->blog_content);
+                                        echo htmlspecialchars(substr($excerpt, 0, 70)) . '...'; 
+                                        ?>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            <i class="fas fa-calendar"></i> <?php echo date('M d', strtotime($blog->blog_published_at)); ?>
+                                        </small>
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
+                                        </small>
+                                    </div>
+                                    <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
+                                        Read More <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        
+                        <!-- Carousel indicators -->
+                        <div class="carousel-indicators" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px;">
+                            <?php foreach($blogs as $index => $blog) { ?>
+                            <button class="indicator-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="width: 8px; height: 8px; border-radius: 50%; border: none; background: <?php echo $index === 0 ? '#007bff' : '#ccc'; ?>; cursor: pointer; transition: all 0.3s ease;"></button>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View All Button -->
+                <div class="row mt-3">
                     <div class="col-12 text-center">
-                        <a href="blog.php" class="btn btn-outline-primary btn-lg" style="border-radius: 25px; padding: 12px 40px;">
+                        <a href="blog.php" class="btn btn-outline-primary" style="border-radius: 20px; padding: 8px 24px; font-size: 0.9rem;">
                             View All Posts <i class="fas fa-arrow-right"></i>
                         </a>
+                    </div>
+                </div>
+                
+                <?php } else { ?>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No blog posts available yet. Check back soon!</p>
                     </div>
                 </div>
                 <?php } ?>
             </div>
         </section>
+
+        <!-- Blog Carousel Styles and Script -->
+        <style>
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            .blog-carousel-container {
+                margin-bottom: 25px;
+            }
+            
+            .blog-slide {
+                transition: all 0.5s ease-in-out;
+            }
+            
+            .indicator-dot:hover {
+                background: #007bff !important;
+                transform: scale(1.2);
+            }
+            
+            .indicator-dot.active {
+                background: #007bff !important;
+                transform: scale(1.1);
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 768px) {
+                .blog-carousel-container {
+                    margin: 0 10px;
+                }
+                
+                .card {
+                    margin: 0 !important;
+                }
+                
+                /* Compact blog images on mobile */
+                #mobile-blog-carousel .card-img-top {
+                    height: 120px !important;
+                    width: 100% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    overflow: hidden !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top img {
+                    height: 120px !important;
+                    width: 100% !important;
+                    object-fit: cover !important;
+                    object-position: center !important;
+                    border-radius: 0 !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top i {
+                    font-size: 2rem !important;
+                }
+                
+                #mobile-blog-carousel .card-body {
+                    padding: 0.75rem !important;
+                }
+                
+                #mobile-blog-carousel .card-title {
+                    font-size: 0.85rem !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-text {
+                    font-size: 0.75rem !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .badge {
+                    font-size: 0.6rem !important;
+                    padding: 0.2rem 0.4rem !important;
+                }
+                
+                #mobile-blog-carousel .btn {
+                    font-size: 0.75rem !important;
+                    padding: 4px 8px !important;
+                }
+            }
+            
+            /* Extra compact for very small screens */
+            @media (max-width: 480px) {
+                #mobile-blog-carousel .card-img-top {
+                    height: 100px !important;
+                    width: 100% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    overflow: hidden !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top img {
+                    height: 100px !important;
+                    width: 100% !important;
+                    object-fit: cover !important;
+                    object-position: center !important;
+                    border-radius: 0 !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top i {
+                    font-size: 1.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-body {
+                    padding: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-title {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .card-text {
+                    font-size: 0.7rem !important;
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .d-flex {
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .d-flex small {
+                    font-size: 0.6rem !important;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slides = document.querySelectorAll('.blog-slide');
+                const indicators = document.querySelectorAll('.indicator-dot');
+                
+                if (slides.length === 0) return;
+                
+                let currentSlide = 0;
+                let carouselInterval;
+                
+                function showSlide(index) {
+                    // Hide all slides
+                    slides.forEach((slide, i) => {
+                        slide.style.display = 'none';
+                        slide.style.animation = 'none';
+                    });
+                    
+                    // Update indicators
+                    indicators.forEach((indicator, i) => {
+                        indicator.classList.remove('active');
+                        indicator.style.background = '#ccc';
+                    });
+                    
+                    // Show current slide with animation
+                    if (slides[index]) {
+                        slides[index].style.display = 'block';
+                        slides[index].style.animation = 'slideInRight 0.5s ease-in-out';
+                        
+                        // Update active indicator
+                        if (indicators[index]) {
+                            indicators[index].classList.add('active');
+                            indicators[index].style.background = '#007bff';
+                        }
+                    }
+                }
+                
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                }
+                
+                function startCarousel() {
+                    if (slides.length > 1) {
+                        carouselInterval = setInterval(nextSlide, 5000); // Change every 5 seconds
+                    }
+                }
+                
+                // Indicator click handlers
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        currentSlide = index;
+                        showSlide(currentSlide);
+                        
+                        // Restart carousel
+                        clearInterval(carouselInterval);
+                        startCarousel();
+                    });
+                });
+                
+                // Start the carousel automatically
+                startCarousel();
+                
+                // Pause on hover (optional)
+                const carouselContainer = document.querySelector('.blog-carousel-container');
+                if (carouselContainer) {
+                    carouselContainer.addEventListener('mouseenter', () => {
+                        clearInterval(carouselInterval);
+                    });
+                    
+                    carouselContainer.addEventListener('mouseleave', () => {
+                        startCarousel();
+                    });
+                }
+            });
+        </script>
 
     </div>
     <!-- /.container -->
@@ -1434,36 +1843,12 @@
             console.log('⚠️ Service Workers not supported in this browser');
         }
 
-        // PWA Install Prompt with better debugging
+        // Enhanced PWA Installation Handler
         let deferredPrompt;
-        const installButton = document.createElement('button');
-        installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
-        installButton.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            z-index: 9999;
-            display: none;
-            transition: all 0.3s ease;
-        `;
-        installButton.onmouseover = () => {
-            installButton.style.transform = 'translateY(-3px)';
-            installButton.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
-        };
-        installButton.onmouseout = () => {
-            installButton.style.transform = 'translateY(0)';
-            installButton.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-        };
-        document.body.appendChild(installButton);
+        const mainInstallBtn = document.getElementById('pwa-main-install-btn');
+        const guideBtn = document.getElementById('pwa-guide-btn');
+        const installedMsg = document.getElementById('pwa-installed-msg');
+        const tryInstallAgainBtn = document.getElementById('tryInstallAgain');
 
         // Debug: Check if PWA is installable
         console.log('🔍 Checking PWA installability...');
@@ -1471,35 +1856,184 @@
         console.log('- Manifest link:', document.querySelector('link[rel="manifest"]') ? '✅ Found' : '❌ Missing');
         console.log('- HTTPS:', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
 
+        // Check if app is already installed
+        function checkIfInstalled() {
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                console.log('✅ Running as installed PWA');
+                showInstalledState();
+                return true;
+            }
+            return false;
+        }
+
+        function showInstalledState() {
+            if (mainInstallBtn) mainInstallBtn.style.display = 'none';
+            if (guideBtn) guideBtn.style.display = 'none';
+            if (installedMsg) installedMsg.style.display = 'block';
+        }
+
+        function showInstallableState() {
+            if (mainInstallBtn) mainInstallBtn.style.display = 'inline-block';
+            if (guideBtn) guideBtn.style.display = 'inline-block';
+            if (installedMsg) installedMsg.style.display = 'none';
+        }
+
+        // Listen for install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
             console.log('✅ beforeinstallprompt event fired - App is installable!');
             e.preventDefault();
             deferredPrompt = e;
-            // Don't show install button automatically
-            // installButton.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', async () => {
-            // Simple PWA installation guide
-            alert('📱 Install ElectroZot App\n\n' +
-                  'To install our app:\n' +
-                  '• Chrome: Menu → "Install ElectroZot"\n' +
-                  '• Safari: Share → "Add to Home Screen"\n' +
-                  '• Edge: Menu → "Apps" → "Install ElectroZot"\n\n' +
-                  'Enjoy faster access to our services!');
             
-            installButton.style.display = 'none';
+            if (!checkIfInstalled()) {
+                showInstallableState();
+            }
         });
 
+        // Main install button click
+        if (mainInstallBtn) {
+            mainInstallBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    console.log('❌ Install prompt not available');
+                    $('#pwaGuideModal').modal('show');
+                    return;
+                }
+
+                try {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    console.log(`👤 User response: ${outcome}`);
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA installed successfully');
+                        showInstalledState();
+                    } else {
+                        console.log('❌ User dismissed install prompt');
+                    }
+                    
+                    // Clear the deferredPrompt
+                    deferredPrompt = null;
+                } catch (error) {
+                    console.error('❌ Install error:', error);
+                    $('#pwaGuideModal').modal('show');
+                }
+            });
+        }
+
+        // Guide button click
+        if (guideBtn) {
+            guideBtn.addEventListener('click', () => {
+                $('#pwaGuideModal').modal('show');
+            });
+        }
+
+        // Try install again from modal
+        if (tryInstallAgainBtn) {
+            tryInstallAgainBtn.addEventListener('click', () => {
+                $('#pwaGuideModal').modal('hide');
+                if (mainInstallBtn) {
+                    mainInstallBtn.click();
+                }
+            });
+        }
+
+        // Listen for successful installation
         window.addEventListener('appinstalled', () => {
             console.log('✅ PWA installed successfully!');
-            installButton.style.display = 'none';
+            showInstalledState();
+            
+            // Show success message
+            const successToast = document.createElement('div');
+            successToast.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; background: #28a745; color: white; 
+                           padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+                           z-index: 10000; animation: slideInRight 0.3s ease-out;">
+                    <i class="fas fa-check-circle"></i> App installed successfully!
+                </div>
+            `;
+            document.body.appendChild(successToast);
+            
+            setTimeout(() => {
+                successToast.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => successToast.remove(), 300);
+            }, 3000);
         });
 
-        // Check if app is installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            console.log('✅ Running as installed PWA');
-        }
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkIfInstalled()) {
+                // Show guide button by default, main install button only when prompt is available
+                if (guideBtn) guideBtn.style.display = 'inline-block';
+                if (mainInstallBtn) mainInstallBtn.style.display = 'none';
+            }
+        });
+
+        // Add CSS animations
+        const pwaStyles = document.createElement('style');
+        pwaStyles.textContent = `
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideOutRight {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+            
+            .pwa-install-section .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+            }
+            
+            .install-steps li {
+                margin-bottom: 8px;
+                padding-left: 5px;
+            }
+            
+            .install-steps li strong {
+                color: #007bff;
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 768px) {
+                .pwa-install-section {
+                    padding: 15px 0 !important;
+                }
+                
+                .pwa-install-section h3 {
+                    font-size: 1.2rem !important;
+                }
+                
+                .pwa-install-section p {
+                    font-size: 0.85rem !important;
+                }
+                
+                .pwa-install-buttons .btn {
+                    padding: 10px 20px !important;
+                    font-size: 0.9rem !important;
+                    margin: 5px !important;
+                    display: block !important;
+                    width: 100% !important;
+                }
+                
+                .modal-dialog {
+                    margin: 10px !important;
+                }
+                
+                .modal-body {
+                    padding: 15px !important;
+                }
+                
+                .install-steps {
+                    font-size: 0.8rem !important;
+                }
+            }
+        `;
+        document.head.appendChild(pwaStyles);
     </script>
 
     <!-- Bottom Navigation Bar -->

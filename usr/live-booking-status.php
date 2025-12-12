@@ -15,6 +15,7 @@ if (!$booking_id || !$phone) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
     <title>Live Booking Status - EZ Technician</title>
     <link href="../admin/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
     <link href="../admin/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">

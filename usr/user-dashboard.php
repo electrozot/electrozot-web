@@ -190,7 +190,7 @@ $all_bookings_result = $all_bookings_stmt->get_result();
         }
         
         .logo {
-            height: 29px;
+            height: 42px;
             width: auto;
         }
         
@@ -372,6 +372,13 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             font-size: 8px;
             font-weight: 600;
             letter-spacing: 0.2px;
+        }
+        
+        /* Mobile Specific - Larger Logo */
+        @media (max-width: 767px) {
+            .logo {
+                height: 55px;
+            }
         }
         
         /* Tablet & Desktop Responsive */

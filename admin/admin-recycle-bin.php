@@ -5,6 +5,245 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
+// PIN Protection for Recycle Bin
+$RECYCLE_BIN_PIN = '398878';
+
+// Handle PIN reset (requires old PIN)
+if(isset($_POST['reset_pin']) && isset($_POST['old_pin'])) {
+    $old_pin = $_POST['old_pin'];
+    $new_pin = $_POST['new_pin'];
+    
+    // Verify old PIN
+    if($old_pin === $RECYCLE_BIN_PIN) {
+        // Update PIN in file
+        $file_content = file_get_contents(__FILE__);
+        $new_content = preg_replace(
+            '/\$RECYCLE_BIN_PIN = \'[0-9]+\';/',
+            '$RECYCLE_BIN_PIN = \'' . $new_pin . '\';',
+            $file_content
+        );
+        
+        if(file_put_contents(__FILE__, $new_content)) {
+            $_SESSION['pin_reset_success'] = "PIN changed successfully! New PIN: " . $new_pin;
+            header("Location: admin-recycle-bin.php");
+            exit();
+        } else {
+            $pin_error = "Failed to update PIN. Check file permissions.";
+        }
+    } else {
+        $pin_error = "Invalid old PIN. PIN reset denied.";
+    }
+}
+
+// Handle PIN verification
+if(isset($_POST['verify_pin'])) {
+    $entered_pin = $_POST['pin'];
+    if($entered_pin === $RECYCLE_BIN_PIN) {
+        $_SESSION['recycle_bin_access'] = true;
+        $_SESSION['recycle_bin_time'] = time();
+        header("Location: admin-recycle-bin.php");
+        exit();
+    } else {
+        $pin_error = "Invalid PIN. Access denied.";
+    }
+}
+
+// Handle lock request
+if(isset($_GET['lock']) && $_GET['lock'] == '1') {
+    unset($_SESSION['recycle_bin_access']);
+    unset($_SESSION['recycle_bin_time']);
+    header("Location: admin-recycle-bin.php");
+    exit();
+}
+
+// Handle session clear request (from JavaScript)
+if(isset($_GET['clear_session']) && $_GET['clear_session'] == '1') {
+    unset($_SESSION['recycle_bin_access']);
+    unset($_SESSION['recycle_bin_time']);
+    exit(); // Just exit, don't redirect
+}
+
+// Check if user has access (PIN verified and not manually locked)
+$has_access = false;
+if(isset($_SESSION['recycle_bin_access']) && $_SESSION['recycle_bin_access'] === true) {
+    if(isset($_SESSION['recycle_bin_time']) && (time() - $_SESSION['recycle_bin_time']) < 300) { // 5 minutes
+        $has_access = true;
+        $_SESSION['recycle_bin_time'] = time(); // Refresh time on activity
+    } else {
+        // Session expired
+        unset($_SESSION['recycle_bin_access']);
+        unset($_SESSION['recycle_bin_time']);
+    }
+}
+
+// If no access, show PIN entry form
+if(!$has_access) {
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <?php include('vendor/inc/head.php'); ?>
+    <body id="page-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-8 col-md-10">
+                    <div class="card o-hidden border-0 shadow-lg my-5" style="margin-top: 10rem !important;">
+                        <div class="card-body p-0">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="p-5">
+                                        <div class="text-center">
+                                            <i class="fas fa-lock fa-3x text-danger mb-4"></i>
+                                            <h1 class="h4 text-gray-900 mb-2">🔒 Recycle Bin Access</h1>
+                                            <p class="mb-4 text-gray-600">This area is protected. Enter the 6-digit PIN to continue.</p>
+                                        </div>
+                                        
+                                        <?php if(isset($pin_error)): ?>
+                                            <div class="alert alert-danger text-center">
+                                                <i class="fas fa-exclamation-triangle"></i> <?php echo $pin_error; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <?php if(isset($_SESSION['pin_reset_success'])): ?>
+                                            <div class="alert alert-success text-center">
+                                                <i class="fas fa-check-circle"></i> <?php echo $_SESSION['pin_reset_success']; unset($_SESSION['pin_reset_success']); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <!-- PIN Entry Form -->
+                                        <form method="POST" class="user" id="pinForm">
+                                            <div class="form-group">
+                                                <input type="password" 
+                                                       name="pin" 
+                                                       class="form-control form-control-user text-center" 
+                                                       placeholder="Enter 6-digit PIN"
+                                                       maxlength="6"
+                                                       pattern="[0-9]{6}"
+                                                       style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: bold;"
+                                                       required
+                                                       autofocus
+                                                       oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                                            </div>
+                                            <button type="submit" name="verify_pin" class="btn btn-danger btn-user btn-block">
+                                                <i class="fas fa-unlock"></i> Unlock Recycle Bin
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- PIN Reset Form (Hidden by default) -->
+                                        <form method="POST" class="user mt-3" id="resetForm" style="display: none;">
+                                            <div class="text-center mb-3">
+                                                <h6 class="text-warning">🔑 Change PIN</h6>
+                                                <small class="text-muted">Enter current PIN to set a new one</small>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <input type="password" 
+                                                       name="old_pin" 
+                                                       class="form-control form-control-user text-center" 
+                                                       placeholder="Current 6-digit PIN"
+                                                       maxlength="6"
+                                                       pattern="[0-9]{6}"
+                                                       style="font-size: 1.2rem; letter-spacing: 0.3rem; font-weight: bold;"
+                                                       required
+                                                       oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <input type="text" 
+                                                       name="new_pin" 
+                                                       class="form-control form-control-user text-center" 
+                                                       placeholder="New 6-digit PIN"
+                                                       maxlength="6"
+                                                       pattern="[0-9]{6}"
+                                                       style="font-size: 1.2rem; letter-spacing: 0.3rem; font-weight: bold;"
+                                                       required
+                                                       oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+                                            </div>
+                                            
+                                            <button type="submit" name="reset_pin" class="btn btn-warning btn-user btn-block">
+                                                <i class="fas fa-key"></i> Change PIN
+                                            </button>
+                                            
+                                            <button type="button" class="btn btn-secondary btn-user btn-block mt-2" onclick="toggleResetForm()">
+                                                <i class="fas fa-arrow-left"></i> Back to PIN Entry
+                                            </button>
+                                        </form>
+                                        
+                                        <hr>
+                                        <div class="text-center">
+                                            <a class="small text-primary" href="javascript:void(0)" onclick="toggleResetForm()" id="forgotPinLink">
+                                                <i class="fas fa-key"></i> Change PIN
+                                            </a>
+                                        </div>
+                                        
+                                        <div class="text-center mt-2">
+                                            <a class="small text-muted" href="admin-dashboard.php">
+                                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                                            </a>
+                                        </div>
+                                        
+                                        <div class="text-center mt-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle"></i> Access expires after 30 minutes of inactivity
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        
+        <script>
+            // Auto-focus on PIN input
+            document.addEventListener('DOMContentLoaded', function() {
+                const pinInput = document.querySelector('input[name="pin"]');
+                if(pinInput) {
+                    pinInput.focus();
+                }
+            });
+            
+            // Toggle between PIN entry and reset forms
+            function toggleResetForm() {
+                const pinForm = document.getElementById('pinForm');
+                const resetForm = document.getElementById('resetForm');
+                const forgotLink = document.getElementById('forgotPinLink');
+                
+                if(resetForm.style.display === 'none') {
+                    // Show reset form
+                    pinForm.style.display = 'none';
+                    resetForm.style.display = 'block';
+                    forgotLink.style.display = 'none';
+                    
+                    // Focus on old PIN input
+                    setTimeout(() => {
+                        document.querySelector('input[name="old_pin"]').focus();
+                    }, 100);
+                } else {
+                    // Show PIN form
+                    pinForm.style.display = 'block';
+                    resetForm.style.display = 'none';
+                    forgotLink.style.display = 'block';
+                    
+                    // Focus on PIN input
+                    setTimeout(() => {
+                        document.querySelector('input[name="pin"]').focus();
+                    }, 100);
+                }
+            }
+            
+
+        </script>
+    </body>
+    </html>
+    <?php
+    exit();
+}
+
 // Create deleted_items table if not exists
 try {
     $create_table = "CREATE TABLE IF NOT EXISTS tms_deleted_items (
@@ -444,6 +683,9 @@ $counts = $counts_result->fetch_object();
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <i class="fas fa-recycle"></i> Recycle Bin
+                                <small class="ml-2 text-light">
+                                    <i class="fas fa-lock"></i> Secured Access
+                                </small>
                             </div>
                             <div>
                                 <button class="btn btn-sm btn-success" id="bulkRestoreBtn" style="display: none;" onclick="bulkRestore()">
@@ -457,6 +699,9 @@ $counts = $counts_result->fetch_object();
                                         <i class="fas fa-trash-alt"></i> Empty All
                                     </button>
                                 <?php endif; ?>
+                                <a href="?lock=1" class="btn btn-sm btn-secondary ml-2" onclick="return confirm('Lock recycle bin access?')">
+                                    <i class="fas fa-lock"></i> Lock
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -648,6 +893,21 @@ $counts = $counts_result->fetch_object();
                 form.submit();
             }
         }
+        
+        // Auto-lock when clicking on navigation links (sidebar and navbar only)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Target only sidebar and navbar links, not filter buttons or recycle bin actions
+            const sidebarLinks = document.querySelectorAll('#wrapper .sidebar a[href], .navbar a[href]');
+            sidebarLinks.forEach(link => {
+                // Only lock if it's going to a different page (not recycle bin)
+                if(!link.href.includes('admin-recycle-bin.php') && !link.href.includes('#') && !link.href.includes('javascript:')) {
+                    link.addEventListener('click', function() {
+                        // Clear session before navigating away
+                        fetch('admin-recycle-bin.php?clear_session=1', {method: 'POST'});
+                    });
+                }
+            });
+        });
     </script>
 </body>
 </html>

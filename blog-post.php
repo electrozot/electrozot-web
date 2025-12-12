@@ -21,12 +21,20 @@ if(!$post) {
 // Update view count
 $mysqli->query("UPDATE tms_blog_posts SET blog_views = blog_views + 1 WHERE blog_id = $blog_id");
 
-// SEO Meta
+// Dynamic SEO Meta for Blog Post
 $seo_title = $post->blog_seo_title ?: $post->blog_title . " | Electrozot Blog";
-$seo_description = $post->blog_seo_description ?: substr(strip_tags($post->blog_content), 0, 160);
+$seo_description = $post->blog_seo_description ?: substr(strip_tags($post->blog_content), 0, 160) . '...';
 $seo_keywords = $post->blog_seo_keywords ?: $post->blog_tags;
-$seo_image = $post->blog_image ? "https://" . $_SERVER['HTTP_HOST'] . "/" . $post->blog_image : null;
+$seo_image = $post->blog_image ? "https://" . $_SERVER['HTTP_HOST'] . "/" . $post->blog_image : "https://" . $_SERVER['HTTP_HOST'] . "/vendor/EZlogonew.png";
 $seo_type = "article";
+$canonical_url = "https://" . $_SERVER['HTTP_HOST'] . "/blog-post.php?id=" . $blog_id . ($slug ? "&slug=" . $slug : "");
+
+// Article-specific Open Graph data
+$og_article_author = "Electrozot Team";
+$og_article_published_time = date('c', strtotime($post->blog_published_at));
+$og_article_modified_time = date('c', strtotime($post->blog_updated_at));
+$og_article_section = $post->blog_category ?: "Electrical Tips";
+$og_article_tag = $post->blog_tags;
 ?>
 <!DOCTYPE html>
 <html lang="en">

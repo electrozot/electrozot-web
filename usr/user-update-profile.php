@@ -47,6 +47,7 @@ if (isset($_POST['update_profile'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>Edit Profile - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <style>
@@ -90,7 +91,7 @@ if (isset($_POST['update_profile'])) {
         }
         
         .logo {
-            height: 29px;
+            height: 42px;
             width: auto;
             margin-right: 12px;
         }
@@ -290,6 +291,13 @@ if (isset($_POST['update_profile'])) {
             font-size: 8px;
             font-weight: 600;
             letter-spacing: 0.2px;
+        }
+        
+        /* Mobile Specific - Larger Logo */
+        @media (max-width: 767px) {
+            .logo {
+                height: 55px;
+            }
         }
         
         @media (min-width: 768px) {

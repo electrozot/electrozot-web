@@ -1,17 +1,17 @@
 /* WhatsApp Floating Button - Enhanced with Floating Animation */
 .whatsapp-chat-btn {
     position: fixed;
-    width: 65px;
-    height: 65px;
+    width: 50px;
+    height: 50px;
     top: 50%;
-    right: 30px;
-    transform: translateY(calc(-50% - 85px));
+    right: 20px;
+    transform: translateY(calc(-50% - 65px));
     background-color: #25d366;
     color: #FFF;
     border-radius: 50%;
     text-align: center;
-    font-size: 32px;
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5);
+    font-size: 24px;
+    box-shadow: 0 3px 15px rgba(37, 211, 102, 0.4);
     z-index: 1001;
     display: flex;
     align-items: center;
@@ -58,22 +58,22 @@
 /* Book Service Floating Button - Enhanced with Gradient and Blinking */
 .book-service-fab {
     position: fixed;
-    bottom: 160px;
-    right: 30px;
+    bottom: 130px;
+    right: 20px;
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
     color: #FFF;
-    width: 65px;
-    height: 65px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+    box-shadow: 0 3px 15px rgba(255, 107, 107, 0.4);
     z-index: 10000;
     transition: all 0.3s ease;
     text-decoration: none;
-    font-size: 22px;
+    font-size: 18px;
     animation: float-book 3s ease-in-out infinite, blink-book 2s ease-in-out infinite;
 }
 
@@ -87,10 +87,10 @@
 }
 
 .book-service-fab span {
-    font-size: 10px;
+    font-size: 8px;
     font-weight: 700;
-    margin-top: 2px;
-    letter-spacing: 0.5px;
+    margin-top: 1px;
+    letter-spacing: 0.3px;
 }
 
 /* Book Button Floating Animation */
@@ -118,24 +118,24 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .whatsapp-chat-btn {
-        width: 55px;
-        height: 55px;
+        width: 45px;
+        height: 45px;
         top: 50%;
-        right: 20px;
-        transform: translateY(calc(-50% - 75px));
-        font-size: 28px;
-    }
-    
-    .book-service-fab {
-        width: 55px;
-        height: 55px;
-        bottom: 140px !important;
-        right: 20px;
+        right: 15px;
+        transform: translateY(calc(-50% - 55px));
         font-size: 20px;
     }
     
+    .book-service-fab {
+        width: 45px;
+        height: 45px;
+        bottom: 110px !important;
+        right: 15px;
+        font-size: 16px;
+    }
+    
     .book-service-fab span {
-        font-size: 9px;
+        font-size: 7px;
     }
 }
 
@@ -893,34 +893,34 @@ select.service-dropdown,
 
 
 /* ========================================
-   DISABLE TEXT SELECTION AND COPYING
+   ENABLE TEXT SELECTION AND COPYING
    ======================================== */
 
-/* Disable text selection on entire website */
+/* Enable text selection on entire website */
 * {
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
 }
 
-/* Disable text selection on body */
+/* Enable text selection on body */
 body {
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
 }
 
-/* Disable selection on all text elements */
+/* Enable selection on all text elements */
 p, h1, h2, h3, h4, h5, h6, span, div, a, li, td, th, label {
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
 }
 
-/* Allow selection only in input fields (for user convenience) */
+/* Ensure input fields remain selectable */
 input[type="text"],
 input[type="email"],
 input[type="tel"],
@@ -934,39 +934,33 @@ select {
     user-select: text !important;
 }
 
-/* Disable right-click context menu */
+/* Enable right-click context menu for text selection */
 body {
-    -webkit-touch-callout: none !important;
+    -webkit-touch-callout: default !important;
 }
 
-/* Disable drag on images */
+/* Allow drag on images but prevent accidental dragging */
 img {
-    -webkit-user-drag: none !important;
-    -khtml-user-drag: none !important;
-    -moz-user-drag: none !important;
-    -o-user-drag: none !important;
-    user-drag: none !important;
-    pointer-events: none !important;
-}
-
-/* Re-enable pointer events for clickable images */
-a img,
-button img {
+    -webkit-user-drag: auto !important;
+    -khtml-user-drag: auto !important;
+    -moz-user-drag: auto !important;
+    -o-user-drag: auto !important;
+    user-drag: auto !important;
     pointer-events: auto !important;
 }
 
-/* Disable selection on links but keep them clickable */
+/* Enable selection on links while keeping them clickable */
 a {
-    -webkit-user-select: none !important;
-    -moz-user-select: none !important;
-    -ms-user-select: none !important;
-    user-select: none !important;
-    -webkit-touch-callout: none !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    -webkit-touch-callout: default !important;
 }
 
-/* Disable text selection cursor */
+/* Enable text selection cursor */
 * {
-    cursor: default !important;
+    cursor: auto !important;
 }
 
 /* Keep pointer cursor for clickable elements */

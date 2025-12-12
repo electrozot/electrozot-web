@@ -1,4 +1,4 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark navbar-color-transition" style="backdrop-filter: blur(10px); padding: 18px 0 8px 0; overflow: visible; position: fixed !important; top: 0 !important; left: 0; right: 0; width: 100%; z-index: 10000 !important; border: none; margin: 0; box-sizing: border-box;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark navbar-color-transition" style="backdrop-filter: blur(10px); padding: 8px 0 4px 0; overflow: visible; position: fixed !important; top: 0 !important; left: 0; right: 0; width: 100%; z-index: 10000 !important; border: none; margin: 0; box-sizing: border-box;">
     <style>
         /* Force navbar to stay fixed at top */
         .navbar.fixed-top {
@@ -23,7 +23,7 @@
                 border-top: none !important;
                 border-bottom: none !important;
                 box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
-                padding: 10px 0 6px 0 !important;
+                padding: 4px 0 2px 0 !important;
             }
             
             .navbar.fixed-top::after,
@@ -64,12 +64,12 @@
     <!-- Glossy overlay effect - removed to fix white line -->
     <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: transparent; pointer-events: none; z-index: 1; display: none;"></div>
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
-        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px;">
-            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 85px; width: auto; transition: transform 0.3s ease; object-fit: contain; margin-right: -20px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700; margin-right: -20px;"></i>
-            <div class="d-flex flex-column">
-                <span style="font-size: 1.8rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
-                <small class="navbar-tagline" style="font-size: 0.8rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
+        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;">
+            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 95px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <i class="fas fa-bolt logo-fallback" style="font-size: 3rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
+            <div class="d-flex flex-column" style="margin-left: -10px;">
+                <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
+                <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
             </div>
         </a>
         <!-- PWA Install Button - Mobile Left Side -->
@@ -117,13 +117,61 @@
                 transform: scale(0.95);
             }
             
-            /* Logo hover effect */
-            .navbar-logo:hover {
-                transform: scale(1.05) rotate(2deg);
+            /* Logo hover effect - disabled on mobile */
+            @media (min-width: 992px) {
+                .navbar-logo:hover {
+                    transform: scale(1.05) rotate(2deg);
+                }
+                
+                .navbar-brand:hover .navbar-tagline {
+                    color: #ffd700 !important;
+                }
             }
             
-            .navbar-brand:hover .navbar-tagline {
-                color: #ffd700 !important;
+            /* Prevent navbar brand movement on touch */
+            .navbar-brand {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: manipulation !important;
+                position: relative !important;
+                transform: translateZ(0) !important;
+                backface-visibility: hidden !important;
+            }
+            
+            .navbar-brand,
+            .navbar-brand *,
+            .navbar-logo,
+            .logo-fallback {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: manipulation !important;
+                pointer-events: auto !important;
+            }
+            
+            /* Prevent any transform animations on touch */
+            @media (max-width: 991px) {
+                .navbar-brand,
+                .navbar-logo,
+                .logo-fallback {
+                    transform: none !important;
+                    transition: none !important;
+                }
+                
+                .navbar-brand:active,
+                .navbar-brand:focus,
+                .navbar-logo:active,
+                .navbar-logo:focus {
+                    transform: none !important;
+                    outline: none !important;
+                }
             }
             
             @keyframes blink {
@@ -173,33 +221,45 @@
             /* Responsive logo sizing */
             @media (max-width: 768px) {
                 .navbar-logo {
-                    height: 60px !important;
+                    height: 65px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.2rem !important;
+                    font-size: 1.3rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.6rem !important;
+                    font-size: 0.65rem !important;
+                }
+                
+                .navbar-brand {
+                    gap: 0px !important;
+                }
+                
+                .navbar-brand .d-flex.flex-column {
+                    margin-left: -8px !important;
                 }
             }
             
             @media (max-width: 576px) {
                 .navbar-logo {
-                    height: 55px !important;
+                    height: 60px !important;
                 }
                 
                 .navbar-brand span {
-                    font-size: 1.0rem !important;
+                    font-size: 1.1rem !important;
                 }
                 
                 .navbar-tagline {
-                    font-size: 0.55rem !important;
+                    font-size: 0.6rem !important;
                 }
                 
                 .navbar-brand {
                     gap: 0px !important;
+                }
+                
+                .navbar-brand .d-flex.flex-column {
+                    margin-left: -6px !important;
                 }
             }
             

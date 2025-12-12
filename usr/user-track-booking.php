@@ -24,6 +24,7 @@ $user = $user_result->fetch_object();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>Track Order - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <?php include('vendor/inc/user-header-styles.php'); ?>
