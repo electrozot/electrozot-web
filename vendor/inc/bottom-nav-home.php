@@ -38,7 +38,7 @@
         z-index: 9999;
         border: 1px solid rgba(255,255,255,0.3);
         border-bottom: none;
-        border-radius: 12px 12px 0 0;
+        border-radius: 20px;
         height: 50px;
     }
 

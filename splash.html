@@ -9,6 +9,10 @@
     <meta name="screen-orientation" content="portrait">
     <meta name="x5-orientation" content="portrait">
     <title>Electrozot - We Make Perfect</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
     <style>
         * {
             margin: 0;
@@ -416,10 +420,32 @@
     </div>
     
     <script>
-        // Auto-redirect to main page after 2 seconds
-        setTimeout(function() {
+        // Enhanced PWA splash screen logic
+        function redirectToMain() {
+            // Check if running as PWA
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
+            
+            if (isPWA) {
+                console.log('Running as PWA - showing splash screen');
+            }
+            
+            // Redirect to main page after splash
             window.location.href = './index.php';
-        }, 2000);
+        }
+        
+        // Auto-redirect to main page after 2 seconds
+        setTimeout(redirectToMain, 2000);
+        
+        // Also allow manual skip by clicking
+        document.addEventListener('click', function() {
+            redirectToMain();
+        });
+        
+        // Skip on any key press
+        document.addEventListener('keydown', function() {
+            redirectToMain();
+        });
     </script>
 </body>
 </html>

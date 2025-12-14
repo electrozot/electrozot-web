@@ -1,6 +1,16 @@
 <?php
-// Get current page
-$current_page = isset($_SERVER['PHP_SCRIPT_NAME']) ? basename($_SERVER['PHP_SCRIPT_NAME']) : '';
+// Get current page with better detection
+$current_page = '';
+if (isset($_SERVER['PHP_SCRIPT_NAME'])) {
+    $current_page = basename($_SERVER['PHP_SCRIPT_NAME']);
+} elseif (isset($_SERVER['SCRIPT_NAME'])) {
+    $current_page = basename($_SERVER['SCRIPT_NAME']);
+} elseif (isset($_SERVER['REQUEST_URI'])) {
+    $current_page = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+}
+
+// Debug: Add this temporarily to see what page is detected
+// echo "<!-- Current page detected: " . $current_page . " -->";
 
 // Get technician ID
 $tech_id = isset($_SESSION['t_id']) ? $_SESSION['t_id'] : 0;
@@ -42,26 +52,79 @@ if($tech_id > 0) {
     // Then check every 3 seconds
     setInterval(checkLockStatus, 3000);
 })();
+
+// Optimize navigation transitions and ensure active states
+document.addEventListener('DOMContentLoaded', function() {
+    const navItems = document.querySelectorAll('.nav-item');
+    const currentPath = window.location.pathname;
+    const currentFile = currentPath.split('/').pop();
+    
+    // Ensure active state is properly applied
+    navItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && !href.startsWith('tel:') && !href.startsWith('http') && !item.target) {
+            const linkFile = href.split('/').pop();
+            
+            // Check if this nav item should be active
+            if (linkFile === currentFile || 
+                (linkFile === 'dashboard.php' && (currentFile === 'index.php' || currentFile.includes('dashboard'))) ||
+                (linkFile === 'completed-bookings.php' && currentFile.includes('completed')) ||
+                (linkFile === 'my-profile.php' && (currentFile.includes('profile') || currentFile === 'change-password.php'))) {
+                
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        }
+        
+        // Prevent transition hang during navigation
+        item.addEventListener('click', function(e) {
+            // Only apply to internal links (not tel: or external)
+            if (this.href && !this.href.startsWith('tel:') && !this.target) {
+                // Add quick visual feedback
+                this.style.opacity = '0.7';
+                this.style.transform = 'scale(0.95)';
+                
+                // Reset after short delay
+                setTimeout(() => {
+                    this.style.opacity = '';
+                    this.style.transform = '';
+                }, 100);
+            }
+        });
+    });
+});
 </script>
 
 <!-- Bottom Navigation Bar -->
 <div class="bottom-nav">
-    <a href="dashboard.php" class="nav-item <?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
-        <i class="fas fa-chart-line"></i>
+    <a href="dashboard.php" class="nav-item <?php 
+        echo ($current_page == 'dashboard.php' || 
+              $current_page == 'index.php' || 
+              strpos($current_page, 'dashboard') !== false) ? 'active' : ''; 
+    ?>">
+        <i class="fas fa-home"></i>
         <span>Dashboard</span>
         <?php if($new_count > 0): ?>
         <span class="badge"><?php echo $new_count; ?></span>
         <?php endif; ?>
     </a>
-    <a href="completed-bookings.php" class="nav-item <?php echo ($current_page == 'completed-bookings.php') ? 'active' : ''; ?>">
+    <a href="completed-bookings.php" class="nav-item <?php 
+        echo ($current_page == 'completed-bookings.php' || 
+              strpos($current_page, 'completed') !== false) ? 'active' : ''; 
+    ?>">
         <i class="fas fa-check-circle"></i>
         <span>Completed</span>
     </a>
     <a href="../index.php" class="nav-item" target="_blank">
-        <i class="fas fa-home"></i>
+        <i class="fas fa-chart-line"></i>
         <span>Main Site</span>
     </a>
-    <a href="my-profile.php" class="nav-item <?php echo ($current_page == 'my-profile.php') ? 'active' : ''; ?>">
+    <a href="my-profile.php" class="nav-item <?php 
+        echo ($current_page == 'my-profile.php' || 
+              $current_page == 'change-password.php' ||
+              strpos($current_page, 'profile') !== false) ? 'active' : ''; 
+    ?>">
         <i class="fas fa-user"></i>
         <span>Profile</span>
     </a>
@@ -72,95 +135,114 @@ if($tech_id > 0) {
 </div>
 
 <style>
-/* Bottom Navigation Bar - Optimized Performance */
+/* Bottom Navigation Bar - Wide & Low Design */
 .bottom-nav {
     position: fixed;
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%) translateZ(0);
     width: calc(100% - 16px);
-    max-width: 600px;
-    background: linear-gradient(135deg, #EEBD89 0%, #F5A8B8 35%, #E87BA8 70%, #D13ABD 100%);
-    box-shadow: 0 4px 20px rgba(238, 189, 137, 0.4);
+    max-width: 480px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 35%, #f093fb 70%, #f5576c 100%);
+    box-shadow: 0 3px 20px rgba(102, 126, 234, 0.35), 0 1px 5px rgba(0,0,0,0.1);
     display: flex;
     justify-content: space-around;
-    padding: 8px 6px;
+    padding: 3px 4px;
     z-index: 1000;
-    border-radius: 20px;
+    border-radius: 15px;
     will-change: transform;
     backface-visibility: hidden;
+    height: 44px;
+}
+
+/* Remove any underlines or borders from all nav elements */
+.bottom-nav * {
+    text-decoration: none !important;
+    border: none !important;
+    outline: none !important;
 }
 
 .nav-item {
     flex: 1;
     text-align: center;
-    text-decoration: none;
-    color: rgba(255, 255, 255, 0.9);
-    transition: all 0.2s ease;
-    padding: 6px 4px;
+    text-decoration: none !important;
+    color: rgba(255, 255, 255, 0.75);
+    transition: all 0.15s ease;
+    padding: 3px 2px;
     position: relative;
-    border-radius: 12px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    outline: none;
 }
 
 .nav-item:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.2);
+    color: white !important;
+    background: rgba(255, 255, 255, 0.15);
+    text-decoration: none !important;
 }
 
 .nav-item.active { 
-    color: white;
-    background: rgba(255, 255, 255, 0.25);
+    color: white !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+    text-decoration: none !important;
+    font-weight: 700 !important;
+}
+
+.nav-item.active:hover {
+    color: white !important;
+    background: rgba(255, 255, 255, 0.4) !important;
+    text-decoration: none !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
 }
 
 .nav-item i {
-    font-size: 22px;
+    font-size: 14px;
     display: block;
-    margin-bottom: 3px;
-    transition: all 0.3s ease;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-}
-
-.nav-item:hover i {
-    transform: scale(1.15) translateY(-2px);
-    filter: drop-shadow(0 4px 6px rgba(255, 255, 255, 0.3));
+    margin-bottom: 1px;
+    text-decoration: none !important;
+    border: none;
+    outline: none;
 }
 
 .nav-item.active i {
-    transform: scale(1.2);
-    filter: drop-shadow(0 3px 8px rgba(255, 255, 255, 0.5));
-    animation: iconPulse 2s ease-in-out infinite;
+    transform: scale(1.1) !important;
+    filter: drop-shadow(0 2px 4px rgba(255, 255, 255, 0.3)) !important;
 }
 
-@keyframes iconPulse {
-    0%, 100% { 
-        transform: scale(1.2);
-    }
-    50% { 
-        transform: scale(1.25);
-    }
+.nav-item.active span:not(.badge) {
+    font-weight: 700 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
 }
 
 .nav-item span:not(.badge) {
-    font-size: 10px;
-    font-weight: 700;
-    display: block;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+    line-height: 1;
+    text-decoration: none !important;
+    border: none;
+    outline: none;
 }
 
 .nav-item .badge {
     position: absolute;
-    top: 2px;
-    right: 8px;
+    top: -2px;
+    right: 6px;
     background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
     color: #856404;
-    border-radius: 10px;
-    padding: 2px 6px;
-    font-size: 10px;
+    border-radius: 8px;
+    padding: 1px 4px;
+    font-size: 7px;
     font-weight: 900;
-    min-width: 18px;
+    min-width: 12px;
     text-align: center;
-    border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(255, 215, 0, 0.5);
+    border: 1px solid white;
+    box-shadow: 0 1px 4px rgba(255, 215, 0, 0.5);
     animation: simplePulse 2s ease-in-out infinite;
 }
 
@@ -175,47 +257,33 @@ if($tech_id > 0) {
 
 /* Add padding to body to prevent content from being hidden behind bottom nav */
 body {
-    padding-bottom: 70px;
+    padding-bottom: 55px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Tablet & Desktop Responsive */
+@media (min-width: 768px) {
     .bottom-nav {
-        max-width: 550px;
+        max-width: 520px;
         bottom: 10px;
+        padding: 4px 6px;
+        height: 48px;
     }
     
-    .bottom-nav .nav-item i {
-        font-size: 20px;
+    .nav-item {
+        padding: 4px 3px;
     }
     
-    .bottom-nav .nav-item span:not(.badge) {
-        font-size: 10px;
-    }
-}
-
-/* Desktop view - show with better styling */
-@media (min-width: 769px) {
-    .bottom-nav {
-        display: flex;
-        padding: 12px 0;
+    .nav-item i {
+        font-size: 16px;
+        margin-bottom: 2px;
     }
     
-    .bottom-nav .nav-item {
-        padding: 10px 20px;
-        max-width: 150px;
-    }
-    
-    .bottom-nav .nav-item i {
-        font-size: 24px;
-    }
-    
-    .bottom-nav .nav-item span:not(.badge) {
-        font-size: 12px;
+    .nav-item span:not(.badge) {
+        font-size: 8px;
     }
     
     body {
-        padding-bottom: 90px;
+        padding-bottom: 60px;
     }
 }
 </style>

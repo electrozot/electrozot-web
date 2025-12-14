@@ -350,5 +350,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
             document.getElementById('reasonText').value = text;
         }
     </script>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

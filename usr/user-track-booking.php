@@ -27,10 +27,16 @@ $user = $user_result->fetch_object();
     <meta name="theme-color" content="#000000">
     <title>Track Order - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
-    <?php include('vendor/inc/user-header-styles.php'); ?>
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
+        body {
+            padding-top: 75px;
+            padding-bottom: 70px;
+        }
+        
         .content {
             padding: 15px;
+            padding-bottom: 25px;
         }
         
         .status-card {
@@ -443,7 +449,7 @@ $user = $user_result->fetch_object();
     </style>
 </head>
 <body>
-    <?php include('vendor/inc/user-header.php'); ?>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <?php
@@ -839,5 +845,7 @@ $user = $user_result->fetch_object();
     setInterval(updateBookingData, 5000);
     <?php endif; ?>
     </script>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

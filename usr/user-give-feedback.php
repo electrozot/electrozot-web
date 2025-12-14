@@ -5,6 +5,41 @@ include('vendor/inc/checklogin.php');
 check_login();
 $aid = $_SESSION['u_id'];
 
+// Ensure feedback table has booking_id column
+try {
+    $mysqli->query("ALTER TABLE tms_feedback ADD COLUMN IF NOT EXISTS f_booking_id INT NULL");
+    $mysqli->query("ALTER TABLE tms_feedback ADD COLUMN IF NOT EXISTS f_rating INT DEFAULT 5");
+} catch(Exception $e) {
+    // Column might already exist
+}
+
+// Get booking_id if provided
+$booking_id = isset($_GET['booking_id']) ? intval($_GET['booking_id']) : 0;
+$booking = null;
+$service_name = '';
+
+// If booking_id is provided, get booking details
+if($booking_id > 0) {
+    $booking_query = "SELECT sb.*, s.s_name, t.t_name 
+                      FROM tms_service_booking sb 
+                      LEFT JOIN tms_service s ON sb.sb_service_id = s.s_id 
+                      LEFT JOIN tms_technician t ON sb.sb_technician_id = t.t_id
+                      WHERE sb.sb_id = ? AND sb.sb_user_id = ? AND sb.sb_status = 'Completed'";
+    $booking_stmt = $mysqli->prepare($booking_query);
+    $booking_stmt->bind_param('ii', $booking_id, $aid);
+    $booking_stmt->execute();
+    $booking_result = $booking_stmt->get_result();
+    
+    if($booking_result->num_rows > 0) {
+        $booking = $booking_result->fetch_object();
+        $service_name = $booking->s_name;
+    } else {
+        // Invalid booking or not completed, redirect to bookings page
+        header("Location: user-manage-booking.php");
+        exit;
+    }
+}
+
 // Get user info
 $user_query = "SELECT * FROM tms_user WHERE u_id = ?";
 $user_stmt = $mysqli->prepare($user_query);
@@ -20,10 +55,18 @@ if(isset($_POST['give_feedback'])) {
     $f_uname = $_POST['f_uname'];
     $f_content = $_POST['f_content'];
     $f_rating = isset($_POST['f_rating']) ? $_POST['f_rating'] : 5;
+    $f_booking_id = isset($_POST['f_booking_id']) ? intval($_POST['f_booking_id']) : null;
     
-    $query = "INSERT INTO tms_feedback (f_uname, f_content) VALUES(?, ?)";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('ss', $f_uname, $f_content);
+    // Insert feedback with booking_id if provided
+    if($f_booking_id) {
+        $query = "INSERT INTO tms_feedback (f_uname, f_content, f_booking_id, f_rating) VALUES(?, ?, ?, ?)";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('ssii', $f_uname, $f_content, $f_booking_id, $f_rating);
+    } else {
+        $query = "INSERT INTO tms_feedback (f_uname, f_content, f_rating) VALUES(?, ?, ?)";
+        $stmt = $mysqli->prepare($query);
+        $stmt->bind_param('ssi', $f_uname, $f_content, $f_rating);
+    }
     
     if($stmt->execute()) {
         $success = true;
@@ -38,8 +81,9 @@ if(isset($_POST['give_feedback'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
-    <title>Give Feedback - Electrozot</title>
+    <title><?php echo $booking ? 'Rate Service - Electrozot' : 'Give Feedback - Electrozot'; ?></title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -51,72 +95,8 @@ if(isset($_POST['give_feedback'])) {
             min-height: 100vh;
         }
         
-        .top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-        }
-        
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-left: 0;
-            margin-left: -5px;
-        }
-        
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .logo {
-            height: 42px;
-            width: auto;
-        }
-        
-        .brand-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 3px 0 0 0;
-            font-style: italic;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-left: auto;
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+
+
             text-decoration: none;
             font-size: 14px;
         }
@@ -172,6 +152,47 @@ if(isset($_POST['give_feedback'])) {
             border-radius: 20px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .booking-info-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .booking-info-header {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .booking-details {
+            display: grid;
+            gap: 8px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
+        
+        .detail-value {
+            font-weight: 700;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 8px;
+            border-radius: 6px;
         }
         
         .form-section-title {
@@ -366,85 +387,7 @@ if(isset($_POST['give_feedback'])) {
             display: inline-block;
         }
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 16px);
-            max-width: 450px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 4px 6px;
-            z-index: 1000;
-            border-radius: 20px;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.75);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 4px 2px;
-            position: relative;
-            border-radius: 12px;
-        }
-        
-        .nav-item:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-        
-        .nav-item.active { 
-            color: white;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-item i {
-            font-size: 16px;
-            display: block;
-            margin-bottom: 1px;
-        }
-        
-        .nav-item.active i {
-            animation: bounce 0.4s ease;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .nav-item span {
-            font-size: 8px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-        
-        @media (min-width: 768px) {
-            .bottom-nav {
-                max-width: 400px;
-                bottom: 10px;
-                padding: 5px 8px;
-            }
-            
-            .nav-item {
-                padding: 5px 4px;
-            }
-            
-            .nav-item i {
-                font-size: 18px;
-                margin-bottom: 2px;
-            }
-            
-            .nav-item span {
-                font-size: 9px;
-            }
+
             .content {
                 padding: 30px 20px;
             }
@@ -500,38 +443,57 @@ if(isset($_POST['give_feedback'])) {
     </div>
     <?php endif; ?>
 
-    <div class="top-header">
-        <div class="header-content">
-            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
-                <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
-                <div class="brand-text">
-                    <h2>Electrozot</h2>
-                    <p>We make perfect</p>
-                </div>
-            </a>
-            <div class="user-section">
-                <div class="header-icons">
-                    <a href="user-view-profile.php" class="header-icon">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <div class="intro-card">
             <div class="intro-icon">
-                <i class="fas fa-comments"></i>
+                <i class="fas fa-<?php echo $booking ? 'star' : 'comments'; ?>"></i>
             </div>
-            <div class="intro-title">We Value Your Opinion</div>
+            <div class="intro-title">
+                <?php echo $booking ? 'Rate Your Service Experience' : 'We Value Your Opinion'; ?>
+            </div>
             <div class="intro-text">
-                Your feedback helps us improve our services and provide better experiences for all our customers.
+                <?php if($booking): ?>
+                    How was your experience with our service? Your feedback helps us maintain quality and improve our services.
+                <?php else: ?>
+                    Your feedback helps us improve our services and provide better experiences for all our customers.
+                <?php endif; ?>
             </div>
         </div>
 
         <div class="feedback-card">
             <form method="POST" id="feedbackForm">
+                <?php if($booking): ?>
+                <div class="booking-info-card">
+                    <div class="booking-info-header">
+                        <i class="fas fa-check-circle"></i>
+                        Feedback for Completed Service
+                    </div>
+                    <div class="booking-details">
+                        <div class="booking-detail">
+                            <span class="detail-label">Booking #:</span>
+                            <span class="detail-value"><?php echo str_pad($booking->sb_id, 5, '0', STR_PAD_LEFT); ?></span>
+                        </div>
+                        <div class="booking-detail">
+                            <span class="detail-label">Service:</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($service_name); ?></span>
+                        </div>
+                        <?php if($booking->t_name): ?>
+                        <div class="booking-detail">
+                            <span class="detail-label">Technician:</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($booking->t_name); ?></span>
+                        </div>
+                        <?php endif; ?>
+                        <div class="booking-detail">
+                            <span class="detail-label">Completed:</span>
+                            <span class="detail-value"><?php echo date('M d, Y', strtotime($booking->sb_completed_date ?? $booking->sb_booking_date)); ?></span>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name="f_booking_id" value="<?php echo $booking_id; ?>">
+                <?php endif; ?>
+                
                 <div class="form-section-title">
                     <i class="fas fa-user-circle"></i>
                     Your Information
@@ -581,28 +543,7 @@ if(isset($_POST['give_feedback'])) {
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="user-dashboard.php" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="book-service-step1.php" class="nav-item">
-            <i class="fas fa-calendar-plus"></i>
-            <span>Book</span>
-        </a>
-        <a href="user-manage-booking.php" class="nav-item">
-            <i class="fas fa-list-alt"></i>
-            <span>Orders</span>
-        </a>
-        <a href="user-view-profile.php" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-        <a href="../index.php" class="nav-item">
-            <i class="fas fa-store"></i>
-            <span>Main</span>
-        </a>
-    </div>
+
 
     <script>
         // Star rating functionality
@@ -651,5 +592,7 @@ if(isset($_POST['give_feedback'])) {
             });
         }
     </script>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

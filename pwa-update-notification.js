@@ -8,8 +8,7 @@ let newWorker;
 // Check for service worker updates
 if ('serviceWorker' in navigator) {
     // Use relative path to work in any directory
-    const swPath = new URL('./sw.js', document.baseURI).pathname;
-    navigator.serviceWorker.register(swPath).then((registration) => {
+    navigator.serviceWorker.register('./sw.js').then((registration) => {
         console.log('✅ Service Worker registered');
         
         // Check for updates every hour

@@ -68,6 +68,67 @@ $seo_keywords = "electrical tips, home maintenance, DIY guides, safety tips, ele
         </div>
     </div>
     
+    <?php include("vendor/inc/footer.php"); ?>
+    
+    <!-- Bootstrap core JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Enhanced Mobile menu fix -->
+    <script>
+        $(document).ready(function() {
+            console.log('Mobile menu script loaded');
+            
+            // Enhanced mobile menu toggle - works with both Bootstrap 4 and 5
+            $('.navbar-toggler').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                console.log('Menu toggle clicked');
+                
+                var target = $(this).attr('data-target') || $(this).attr('data-bs-target');
+                var $target = $(target);
+                
+                if ($target.length) {
+                    $target.toggleClass('show');
+                    console.log('Menu toggled, show class:', $target.hasClass('show'));
+                    
+                    // Update aria-expanded
+                    var isExpanded = $target.hasClass('show');
+                    $(this).attr('aria-expanded', isExpanded);
+                } else {
+                    console.error('Target not found:', target);
+                }
+            });
+            
+            // Close menu when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar').length) {
+                    $('.navbar-collapse').removeClass('show');
+                    $('.navbar-toggler').attr('aria-expanded', 'false');
+                }
+            });
+            
+            // Close menu when clicking on menu items
+            $('.navbar-nav .nav-link').on('click', function() {
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Close menu with arrow button
+            $('.mobile-menu-arrow-close').on('click', function(e) {
+                e.preventDefault();
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Prevent menu from closing when clicking inside it
+            $('.navbar-collapse').on('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+    
     <?php include("vendor/inc/bottom-nav-home.php"); ?>
 </body>
 </html>

@@ -57,8 +57,16 @@
             }
         }
         
+        /* Disable heavy animation by default - only enable on desktop */
+        @media (min-width: 992px) {
+            .navbar-color-transition {
+                animation: navbarColorChange 6s ease-in-out infinite;
+            }
+        }
+        
+        /* Static background for mobile and loading */
         .navbar-color-transition {
-            animation: navbarColorChange 6s ease-in-out infinite;
+            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%) !important;
         }
     </style>
     <!-- Glossy overlay effect - removed to fix white line -->
@@ -368,6 +376,23 @@
         </style>
         
         <script>
+            // Immediate navbar optimization - prevent hanging
+            (function() {
+                // Force navbar to be visible immediately
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.style.opacity = '1';
+                    navbar.style.visibility = 'visible';
+                }
+                
+                // Optimize logo loading
+                const logo = document.querySelector('.navbar-logo');
+                if (logo) {
+                    logo.style.display = 'block';
+                    logo.style.opacity = '1';
+                }
+            })();
+            
             document.addEventListener('DOMContentLoaded', function() {
                 var loginBtn = document.querySelector('.mobile-login-btn');
                 if (loginBtn) {
@@ -379,16 +404,20 @@
                     });
                 }
                 
-                // Close mobile menu on scroll
+                // Close mobile menu on scroll - optimized
                 var navbarCollapse = document.querySelector('.navbar-collapse');
                 var navbarToggler = document.querySelector('.navbar-toggler');
                 
                 if (navbarCollapse && navbarToggler) {
+                    let scrollTimeout;
                     window.addEventListener('scroll', function() {
-                        if (navbarCollapse.classList.contains('show')) {
-                            navbarToggler.click();
-                        }
-                    });
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(function() {
+                            if (navbarCollapse.classList.contains('show')) {
+                                navbarToggler.click();
+                            }
+                        }, 100);
+                    }, { passive: true });
                 }
             });
         </script>

@@ -63,11 +63,17 @@ if($status == 'Approved' && $has_technician) {
     <meta name="theme-color" content="#000000">
     <title>Booking Details - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
-    <?php include('vendor/inc/user-header-styles.php'); ?>
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <!-- Force reload: <?php echo time(); ?> -->
     <style>
+        body {
+            padding-top: 75px;
+            padding-bottom: 70px;
+        }
+        
         .content {
             padding: 15px;
+            padding-bottom: 25px;
         }
         
         .status-header {
@@ -280,6 +286,7 @@ if($status == 'Approved' && $has_technician) {
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 15px;
+            margin-bottom: 20px;
         }
         
         .btn-track {
@@ -333,7 +340,7 @@ if($status == 'Approved' && $has_technician) {
     </style>
 </head>
 <body>
-    <?php include('vendor/inc/user-header.php'); ?>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <!-- Status Header -->
@@ -721,13 +728,16 @@ if($status == 'Approved' && $has_technician) {
         </div>
 
         <!-- Action Buttons -->
-        <div class="action-buttons" style="grid-template-columns: <?php echo ($booking->sb_status == 'Completed') ? '1fr 1fr 1fr' : '1fr 1fr'; ?>;">
+        <div class="action-buttons" style="grid-template-columns: <?php echo ($booking->sb_status == 'Completed') ? '1fr 1fr 1fr 1fr' : '1fr 1fr'; ?>;">
             <a href="user-track-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track">
                 <i class="fas fa-map-marker-alt"></i> Track Order
             </a>
             <?php if($booking->sb_status == 'Completed'): ?>
             <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                 <i class="fas fa-file-invoice"></i> View Bill
+            </a>
+            <a href="user-give-feedback.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="fas fa-star"></i> Give Feedback
             </a>
             <?php endif; ?>
             <a href="user-manage-booking.php" class="btn btn-orders">
@@ -820,5 +830,7 @@ if($status == 'Approved' && $has_technician) {
     // Check every 10 seconds
     setInterval(checkBookingStatus, 10000);
     </script>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

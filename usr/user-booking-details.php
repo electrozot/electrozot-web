@@ -40,14 +40,16 @@ if(!$booking) {
     <meta name="theme-color" content="#000000">
     <title>Booking Details - Electrozot</title>
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
-    <?php include('vendor/inc/user-header-styles.php'); ?>
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
         body {
-            padding-top: 0;
+            padding-top: 75px;
+            padding-bottom: 70px;
         }
         
         .content {
             padding: 15px;
+            padding-bottom: 25px;
         }
 
         
@@ -211,6 +213,7 @@ if(!$booking) {
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 20px;
+            margin-bottom: 20px;
         }
         
         .btn-track {
@@ -246,7 +249,7 @@ if(!$booking) {
     </style>
 </head>
 <body>
-    <?php include('vendor/inc/user-header.php'); ?>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <!-- Status Header -->
@@ -593,7 +596,14 @@ if(!$booking) {
                                 <a href="user-manage-booking.php" class="btn btn-info btn-lg mx-2">
                                     <i class="fas fa-list"></i> All Bookings
                                 </a>
-                                <?php if($booking->sb_status == 'Pending' && empty($booking->sb_technician_id)): ?>
+                                <?php if($booking->sb_status == 'Completed'): ?>
+                                    <a href="user-give-feedback.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-success btn-lg mx-2">
+                                        <i class="fas fa-star"></i> Give Feedback
+                                    </a>
+                                    <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-warning btn-lg mx-2">
+                                        <i class="fas fa-file-invoice"></i> View Bill
+                                    </a>
+                                <?php elseif($booking->sb_status == 'Pending' && empty($booking->sb_technician_id)): ?>
                                     <a href="user-cancel-service-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-danger btn-lg mx-2">
                                         <i class="fas fa-times-circle"></i> Cancel Booking
                                     </a>
@@ -634,5 +644,7 @@ if(!$booking) {
             margin-right: 10px;
         }
     </style>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

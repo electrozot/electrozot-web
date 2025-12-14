@@ -146,7 +146,8 @@
     <meta name="apple-mobile-web-app-title" content="ElectroZot">
     <meta name="mobile-web-app-capable" content="yes">
     
-
+    <!-- CRITICAL: Preload navbar logo to prevent loading hang -->
+    <link rel="preload" href="vendor/EZlogonew.png" as="image" type="image/png">
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -184,20 +185,237 @@
     <link rel="icon" type="image/png" sizes="32x32" href="vendor/img/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="vendor/img/icons/favicon-96x96.png">
     
+    <!-- CRITICAL CSS - Prevents navbar loading hang -->
+    <style>
+        /* CRITICAL: Immediate navbar rendering - prevents loading hang */
+        .navbar.fixed-top {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            z-index: 10000 !important;
+            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%) !important;
+            box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
+            padding: 8px 0 4px 0 !important;
+            border: none !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            /* Prevent loading hang */
+            will-change: auto !important;
+            transform: translateZ(0) !important;
+            backface-visibility: hidden !important;
+        }
+        
+        /* CRITICAL: Logo and brand immediate sizing */
+        .navbar-logo {
+            height: 70px !important;
+            width: auto !important;
+            max-height: 70px !important;
+            object-fit: contain !important;
+            display: block !important;
+        }
+        
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            color: #fff !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+        }
+        
+        .navbar-brand span {
+            font-size: 2rem !important;
+            line-height: 1.1 !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+        }
+        
+        .navbar-tagline {
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+        }
+        
+        /* CRITICAL: Container immediate sizing */
+        .navbar .container-fluid {
+            max-width: 1400px !important;
+            padding: 0 10px !important;
+            position: relative !important;
+            z-index: 2 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        
+        /* CRITICAL: Mobile responsive sizes - immediate loading */
+        @media (max-width: 768px) {
+            .navbar-logo {
+                height: 55px !important;
+                max-height: 55px !important;
+            }
+            .navbar-brand span {
+                font-size: 1.3rem !important;
+            }
+            .navbar-tagline {
+                font-size: 0.65rem !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-logo {
+                height: 50px !important;
+                max-height: 50px !important;
+            }
+            .navbar-brand span {
+                font-size: 1.1rem !important;
+            }
+            .navbar-tagline {
+                font-size: 0.6rem !important;
+            }
+        }
+        
+        /* CRITICAL: Mobile buttons immediate display */
+        @media (max-width: 991px) {
+            .d-lg-none {
+                display: flex !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            
+            .navbar-toggler {
+                border: none !important;
+                background: transparent !important;
+                padding: 2px 4px !important;
+                min-height: 32px !important;
+                width: 26px !important;
+                display: flex !important;
+            }
+            
+            .navbar-collapse {
+                position: fixed !important;
+                top: 94px !important;
+                right: -100% !important;
+                width: 150px !important;
+                background: #4a5568 !important;
+                padding: 10px !important;
+                z-index: 99999 !important;
+                transition: right 0.2s ease !important;
+            }
+            
+            .navbar-collapse.show {
+                right: 0 !important;
+            }
+            
+            /* Disable animations on mobile to prevent hang */
+            .navbar-color-transition {
+                animation: none !important;
+            }
+        }
+        
+        /* CRITICAL: Loaded state for smooth transitions */
+        .navbar.loaded {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        .navbar.loaded .navbar-logo,
+        .navbar.loaded .navbar-brand {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    </style>
+
     <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="css/modern-business.css" rel="stylesheet">
+    <link href="css/modern-business.css?v=<?php echo time(); ?>" rel="stylesheet">
     <!--Font Awesome--->
-    <link href="usr/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="usr/vendor/fontawesome-free/css/all.min.css?v=<?php echo time(); ?>" rel="stylesheet" type="text/css">
     <!-- Compact UI overrides -->
-    <link href="vendor/css/custom.css" rel="stylesheet">
+    <link href="vendor/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
     <!-- PWA Orientation Lock -->
-    <link href="css/pwa-orientation-lock.css" rel="stylesheet">
+    <link href="css/pwa-orientation-lock.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <!-- CRITICAL: Immediate navbar loading script - prevents hang -->
+    <script>
+        // Immediate execution to prevent navbar loading hang
+        (function() {
+            // Force immediate navbar visibility
+            document.addEventListener('DOMContentLoaded', function() {
+                const navbar = document.querySelector('.navbar');
+                const logo = document.querySelector('.navbar-logo');
+                const brand = document.querySelector('.navbar-brand');
+                
+                if (navbar) {
+                    navbar.style.opacity = '1';
+                    navbar.style.visibility = 'visible';
+                    navbar.style.display = 'block';
+                }
+                
+                if (logo) {
+                    logo.style.opacity = '1';
+                    logo.style.visibility = 'visible';
+                    logo.style.display = 'block';
+                }
+                
+                if (brand) {
+                    brand.style.opacity = '1';
+                    brand.style.visibility = 'visible';
+                    brand.style.display = 'flex';
+                }
+            });
+            
+            // Fallback for immediate loading
+            window.addEventListener('load', function() {
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.classList.add('loaded');
+                }
+            });
+        })();
+    </script>
+    
     <!-- PWA Scripts -->
-    <script defer src="pwa-install.js"></script>
-    <script defer src="pwa-update-notification.js"></script>
-    <script defer src="js/orientation-lock.js"></script>
+    <script defer src="pwa-install.js?v=<?php echo time(); ?>"></script>
+    <script defer src="pwa-update-notification.js?v=<?php echo time(); ?>"></script>
+    <script defer src="js/orientation-lock.js?v=<?php echo time(); ?>"></script>
+    
+
+    
+    <!-- Enhanced PWA Installation Support -->
+    <script>
+        // Global PWA installer function that can be called from anywhere
+        window.installElectroZotPWA = function() {
+            // Try to use the PWA installer from pwa-install.js
+            if (window.PWAInstaller && window.PWAInstaller.install) {
+                window.PWAInstaller.install();
+            } else {
+                // Fallback to manual guide
+                console.log('PWA installer not available, showing manual guide');
+                if (typeof $ !== 'undefined' && $('#pwaGuideModal').length) {
+                    $('#pwaGuideModal').modal('show');
+                } else {
+                    // Ultimate fallback - show browser-specific instructions
+                    const userAgent = navigator.userAgent.toLowerCase();
+                    let instructions = '';
+                    
+                    if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+                        instructions = 'Chrome: Look for the install icon (⊕) in the address bar, or go to Menu > Install ElectroZot';
+                    } else if (userAgent.includes('firefox')) {
+                        instructions = 'Firefox: This app can be installed. Look for the install prompt or add to home screen option';
+                    } else if (userAgent.includes('safari')) {
+                        instructions = 'Safari: Tap the Share button and select "Add to Home Screen"';
+                    } else if (userAgent.includes('edg')) {
+                        instructions = 'Edge: Look for the install icon in the address bar, or go to Menu > Apps > Install ElectroZot';
+                    } else {
+                        instructions = 'Look for an "Install" or "Add to Home Screen" option in your browser menu';
+                    }
+                    
+                    alert('Install ElectroZot App\n\n' + instructions);
+                }
+            }
+        };
+    </script>
 
 </head>

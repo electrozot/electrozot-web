@@ -977,3 +977,127 @@ input[type="password"],
 textarea {
     cursor: text !important;
 }
+
+/* ========================================
+   MOBILE MENU FIX - SLIDE FROM RIGHT
+   ======================================== */
+
+/* Mobile Menu Fix - Add to your CSS */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        position: fixed !important;
+        top: 94px !important;
+        right: -100% !important;
+        width: 250px !important;
+        height: auto !important;
+        max-height: calc(100vh - 100px) !important;
+        background: #4a5568 !important;
+        padding: 20px !important;
+        box-shadow: -3px 3px 12px rgba(0,0,0,0.25) !important;
+        transition: right 0.3s ease-in-out !important;
+        z-index: 99999 !important;
+        overflow-y: auto !important;
+        border-radius: 8px 0 0 8px !important;
+    }
+    
+    .navbar-collapse.show {
+        right: 0 !important;
+    }
+    
+    .navbar-collapse .navbar-nav {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .navbar-collapse .nav-link {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        padding: 12px 15px !important;
+        margin-bottom: 5px !important;
+        border-radius: 6px !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .navbar-collapse .nav-link:hover {
+        background: rgba(102, 126, 234, 0.3) !important;
+    }
+    
+    /* Backdrop overlay */
+    .navbar-collapse.show::before {
+        content: '' !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        background: rgba(0, 0, 0, 0.5) !important;
+        z-index: -1 !important;
+    }
+}
+
+/* Fix navbar toggler button */
+@media (max-width: 991px) {
+    .navbar-toggler {
+        border: none !important;
+        padding: 2px 4px !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        border-radius: 4px !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-height: 32px !important;
+        width: 26px !important;
+    }
+    
+    .navbar-toggler:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    .navbar-toggler .fas {
+        font-size: 0.6rem !important;
+        color: #ffffff !important;
+    }
+}
+/* ========================================
+   ADDITIONAL MOBILE MENU FIXES
+   ======================================== */
+
+/* Ensure navbar toggler is clickable */
+.navbar-toggler {
+    position: relative !important;
+    z-index: 10001 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* Fix for navbar collapse positioning */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    
+    .navbar-collapse:not(.show) {
+        right: -100% !important;
+    }
+    
+    /* Ensure menu items are clickable */
+    .navbar-collapse .nav-link {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        display: block !important;
+    }
+    
+    /* Fix for arrow close button */
+    .mobile-menu-arrow-close {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        z-index: 10002 !important;
+    }
+}
+
+/* Mobile menu is now properly configured */

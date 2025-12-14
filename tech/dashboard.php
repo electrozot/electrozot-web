@@ -320,134 +320,116 @@ $all_active_count = $counts->all_active_count;
             height: auto;
         }
         
-        /* Search Bar */
-        .search-menu-bar {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(20, 184, 166, 0.95) 35%, rgba(6, 182, 212, 0.95) 70%, rgba(14, 165, 233, 0.95) 100%);
-            padding: 10px 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            display: flex !important;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            position: fixed;
-            top: calc(70px + env(safe-area-inset-top));
-            left: 0;
-            right: 0;
-            width: 100%;
-            z-index: 999;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            visibility: visible !important;
-            opacity: 1 !important;
-            height: 50px;
-        }
+
         
-        .search-menu-bar .menu-toggle-btn {
-            flex-shrink: 0;
-            margin-right: auto;
-        }
-        
-        .search-menu-bar .header-search {
-            max-width: 280px;
-            width: 100%;
-            flex: 1;
-        }
-        
-        .logo-section {
+
+        /* Header Logo and Search Section */
+        .header-left-section {
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-shrink: 0;
+            flex: 1;
         }
         
-        .logo-image {
+        .header-logo {
             width: 55px;
             height: 55px;
             background: transparent;
-            border-radius: 8px;
-            padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.3s ease;
-        }
-
-        .logo-image:hover {
-            transform: scale(1.05);
+            flex-shrink: 0;
+            padding: 0;
+            margin: 0;
+            margin-left: -10px;
         }
         
-        .logo-image img {
+        .header-logo img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-        }
-
-        .brand-info {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.2;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .brand-title {
-            font-size: 1.4rem;
-            font-weight: 900;
-            color: white;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3));
+            padding: 0;
             margin: 0;
-            text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-            letter-spacing: -0.5px;
-        }
-
-        .brand-subtitle {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: white;
-            margin: 0;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
         
-        .header-search {
-            flex: 0 0 auto;
-            max-width: 220px;
+        .header-search-bar {
+            flex: 1;
+            max-width: 500px;
         }
         
-        .header-search form {
+        .header-search-bar form {
             width: 100%;
         }
         
-        .header-search input {
+        .header-search-bar input {
             width: 100%;
-            padding: 8px 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 30px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            background: rgba(255, 255, 255, 0.2);
-            box-sizing: border-box;
-            color: white;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .header-search input:focus {
-            outline: none;
-            border-color: white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .header-search input::placeholder {
-            color: rgba(255, 255, 255, 0.8);
+            height: 40px;
+            padding: 8px 16px;
+            border: 2px solid transparent;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 500;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
         }
+        
+        .header-search-bar input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2), 0 4px 15px rgba(0,0,0,0.15);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.98)), linear-gradient(135deg, #ec4899 0%, #dc2626 100%);
+            transform: translateY(-1px);
+        }
+        
+        .header-search-bar input::placeholder {
+            color: #6c757d;
+            font-weight: 400;
+        }
+
         
         .header-actions {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             align-items: center;
+        }
+        
+        /* Header Menu Button - Slim */
+        .header-menu-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            padding: 6px;
+            gap: 2px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .header-menu-btn span {
+            width: 100%;
+            height: 1.5px;
+            background: white;
+            border-radius: 1px;
+            transition: all 0.2s;
+        }
+        
+        .header-menu-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: white;
+            transform: scale(1.05);
         }
         
         .header-tier-badge {
@@ -489,39 +471,7 @@ $all_active_count = $counts->all_active_count;
             text-decoration: none;
         }
         
-        /* Hamburger Menu Button */
-        .menu-toggle-btn {
-            width: 42px;
-            height: 42px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 8px;
-            gap: 4px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .menu-toggle-btn span {
-            width: 100%;
-            height: 3px;
-            background: white;
-            border-radius: 2px;
-        }
-        
-        .menu-toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: white;
-        }
-        
-        .menu-toggle-btn:hover span {
-            background: white;
-        }
+
         
         .notif-icon-btn {
             width: 40px;
@@ -566,22 +516,219 @@ $all_active_count = $counts->all_active_count;
             50% { transform: scale(1.1); }
         }
         
-        /* Sidebar Menu */
+
+        
+        .tech-info-horizontal {
+            display: none;
+        }
+        
+        .tech-actions-horizontal {
+            display: none;
+        }
+        
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        
+        .btn-icon:hover {
+            transform: scale(1.05);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .btn-profile {
+            background: #667eea;
+        }
+        
+        .btn-logout {
+            background: #dc3545;
+        }
+        
+        .btn-logout:hover {
+            background: #c82333;
+        }
+        
+        /* Menu Toggle Button */
+        .btn-menu {
+            background: #28a745;
+        }
+        
+        /* Mobile Notification Alert */
+        .mobile-notification-alert {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
+            color: white;
+            padding: 12px 15px;
+            margin: 75px 15px 10px 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+            animation: slideDown 0.5s ease-out;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .mobile-alert-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .mobile-alert-content i {
+            font-size: 1.5rem;
+            animation: bellShake 1s ease-in-out infinite;
+        }
+        
+        @keyframes bellShake {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-15deg); }
+            20%, 40% { transform: rotate(15deg); }
+            50% { transform: rotate(0deg); }
+        }
+        
+        .mobile-alert-content span {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        
+        .mobile-alert-btn {
+            background: white;
+            color: #10b981;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+        
+        .mobile-alert-btn:hover {
+            background: #ffd700;
+            color: #10b981;
+            text-decoration: none;
+        }
+        
+
+        
+        .btn-notifications {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-notifications:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+        
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #ff4757;
+            border-radius: 50%;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 6px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
+            animation: notificationPulse 2s infinite, notificationGlow 2s infinite;
+        }
+        
+        @keyframes notificationPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        @keyframes notificationGlow {
+            0%, 100% { 
+                box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
+            }
+            50% { 
+                box-shadow: 0 5px 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.4);
+            }
+        }
+        
+        /* Control Bar - Touching Bottom of Nav */
+        .control-bar {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 6px 12px;
+            margin: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-bottom: 2px solid transparent;
+            border-image: linear-gradient(90deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%) 1;
+            position: fixed;
+            top: calc(70px + env(safe-area-inset-top));
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 998;
+            border-top: 1px solid rgba(16, 185, 129, 0.1);
+        }
+        
+        .control-main-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 15px;
+        }
+        
+        .control-left-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+
+        
+
+        
+        /* Sidebar Menu - Slides from Left */
         .sidebar-menu {
             position: fixed;
             top: 0;
-            right: -300px;
+            left: -300px;
             width: 280px;
             height: 100vh;
             background: white;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.2);
-            transition: right 0.3s ease;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.2);
+            transition: left 0.3s ease;
             z-index: 1001;
             overflow-y: auto;
         }
         
         .sidebar-menu.active {
-            right: 0;
+            left: 0;
         }
         
         .sidebar-overlay {
@@ -709,189 +856,11 @@ $all_active_count = $counts->all_active_count;
             color: #dc3545;
         }
         
-        .tech-info-horizontal {
-            display: none;
-        }
-        
-        .tech-actions-horizontal {
-            display: none;
-        }
-        
-        .btn-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #007bff;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        
-        .btn-icon:hover {
-            transform: scale(1.05);
-            text-decoration: none;
-            color: white;
-        }
-        
-        .btn-profile {
-            background: #667eea;
-        }
-        
-        .btn-logout {
-            background: #dc3545;
-        }
-        
-        .btn-logout:hover {
-            background: #c82333;
-        }
-        
-        /* Menu Toggle Button */
-        .btn-menu {
-            background: #28a745;
-        }
-        
-        /* Mobile Notification Alert */
-        .mobile-notification-alert {
-            background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
-            color: white;
-            padding: 12px 15px;
-            margin: 125px 15px 10px 15px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
-            animation: slideDown 0.5s ease-out;
-            position: relative;
-            z-index: 1;
-        }
-        
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        .mobile-alert-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-        }
-        
-        .mobile-alert-content i {
-            font-size: 1.5rem;
-            animation: bellShake 1s ease-in-out infinite;
-        }
-        
-        @keyframes bellShake {
-            0%, 100% { transform: rotate(0deg); }
-            10%, 30% { transform: rotate(-15deg); }
-            20%, 40% { transform: rotate(15deg); }
-            50% { transform: rotate(0deg); }
-        }
-        
-        .mobile-alert-content span {
-            font-size: 1rem;
-            font-weight: 700;
-        }
-        
-        .mobile-alert-btn {
-            background: white;
-            color: #10b981;
-            padding: 10px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1rem;
-            white-space: nowrap;
-        }
-        
-        .mobile-alert-btn:hover {
-            background: #ffd700;
-            color: #10b981;
-            text-decoration: none;
-        }
-        
-
-        
-        .btn-notifications {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            position: relative;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .btn-notifications:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            transform: scale(1.15);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-        
-        .notification-count {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #ff4757;
-            border-radius: 50%;
-            min-width: 22px;
-            height: 22px;
-            padding: 0 6px;
-            font-size: 0.7rem;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 3px solid white;
-            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
-            animation: notificationPulse 2s infinite, notificationGlow 2s infinite;
-        }
-        
-        @keyframes notificationPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-        }
-        
-        @keyframes notificationGlow {
-            0%, 100% { 
-                box-shadow: 0 3px 10px rgba(255, 215, 0, 0.6);
-            }
-            50% { 
-                box-shadow: 0 5px 20px rgba(255, 215, 0, 0.9), 0 0 30px rgba(255, 215, 0, 0.4);
-            }
-        }
-        
-        /* Control Bar - Compact */
-        .control-bar {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 12px 20px;
-            margin: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border-bottom: 3px solid transparent;
-            border-image: linear-gradient(90deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%) 1;
-            position: fixed;
-            top: calc(120px + env(safe-area-inset-top));
-            left: 0;
-            right: 0;
-            width: 100%;
-            z-index: 998;
-        }
-        
         .filter-buttons-row {
             display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            gap: 6px;
             align-items: center;
+            flex-shrink: 0;
         }
         
         .filter-buttons-row::-webkit-scrollbar {
@@ -899,48 +868,53 @@ $all_active_count = $counts->all_active_count;
         }
         
         .filter-btn {
-            padding: 6px 12px;
-            border: 2px solid transparent;
+            padding: 4px 8px;
+            border: 1px solid transparent;
             background: white;
-            border-radius: 20px;
-            font-weight: 700;
+            border-radius: 12px;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             color: #1e293b;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
+            gap: 3px;
+            font-size: 0.7rem;
             white-space: nowrap;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+            height: 28px;
         }
         
         .filter-btn:hover {
             text-decoration: none;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         
         .filter-btn.active {
             background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.4);
         }
         
         .filter-btn .badge {
             background: linear-gradient(135deg, #ec4899 0%, #ef4444 100%);
             color: white;
-            padding: 2px 5px;
-            border-radius: 50px;
-            font-size: 0.65rem;
+            padding: 1px 4px;
+            border-radius: 8px;
+            font-size: 0.6rem;
             font-weight: 900;
-            min-width: 16px;
+            min-width: 14px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 1px 4px rgba(236, 72, 153, 0.3);
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .filter-btn.active .badge {
@@ -949,13 +923,13 @@ $all_active_count = $counts->all_active_count;
         }
         
         .filter-btn i {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
         }
         
         /* Main Content */
         .main-container-full {
             padding: 0 20px 20px 20px;
-            padding-top: 175px;
+            padding-top: 115px;
             max-width: 100%;
             width: 100%;
             margin: 0 auto;
@@ -1228,13 +1202,42 @@ $all_active_count = $counts->all_active_count;
             }
             
             .control-bar {
-                padding: 15px 20px;
-                top: 120px;
+                padding: 8px 12px;
+                top: calc(70px + env(safe-area-inset-top));
             }
+            
+            .control-main-row {
+                gap: 10px;
+            }
+            
+            .control-left-section {
+                gap: 8px;
+            }
+            
+            .header-left-section {
+                gap: 10px;
+            }
+            
+            .header-logo {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .header-search-bar {
+                max-width: 380px;
+            }
+            
+            .header-search-bar input {
+                height: 36px;
+                font-size: 0.85rem;
+                padding: 6px 14px;
+            }
+            
+
             
             .main-container-full {
                 padding: 0 20px 20px 20px;
-                padding-top: 180px;
+                padding-top: 125px;
                 overflow-x: hidden;
             }
 
@@ -1263,18 +1266,7 @@ $all_active_count = $counts->all_active_count;
                 overflow-x: auto;
             }
 
-            .logo-image {
-                width: 55px;
-                height: 55px;
-            }
 
-            .brand-title {
-                font-size: 1.6rem;
-            }
-
-            .brand-subtitle {
-                font-size: 0.75rem;
-            }
 
 
             
@@ -1651,36 +1643,11 @@ $all_active_count = $counts->all_active_count;
                 padding: 12px 15px;
             }
             
-            .search-menu-bar {
-                top: 65px;
-                padding: 8px 15px;
-            }
 
-            .header-search {
-                max-width: 200px;
-            }
+            
 
-            .header-search input {
-                padding: 7px 12px;
-                font-size: 0.75rem;
-            }
             
-            .logo-section {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                flex-shrink: 0;
-            }
-            
-            .logo-image {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .menu-toggle-btn {
-                width: 42px;
-                height: 42px;
-            }
+
             
             .tech-info-horizontal {
                 width: 100%;
@@ -1738,13 +1705,52 @@ $all_active_count = $counts->all_active_count;
             
             .control-bar {
                 flex-direction: column;
-                padding: 12px 15px;
-                top: 115px;
-                gap: 10px;
+                padding: 6px 10px;
+                top: calc(70px + env(safe-area-inset-top));
+                gap: 6px;
             }
+            
+            .control-main-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            
+            .control-left-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+            }
+            
+            .header-left-section {
+                gap: 8px;
+            }
+            
+            .header-logo {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .header-search-bar {
+                max-width: 300px;
+            }
+            
+            .header-search-bar input {
+                height: 32px;
+                font-size: 0.8rem;
+                padding: 5px 12px;
+            }
+            
+            .filter-buttons-row {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 2px;
+            }
+            
+
 
             .main-container-full {
-                padding-top: 185px;
+                padding-top: 165px;
             }
             
             .search-box {
@@ -1752,15 +1758,7 @@ $all_active_count = $counts->all_active_count;
                 min-width: auto;
             }
             
-            .header-search {
-                flex: 1;
-                min-width: 0;
-            }
-            
-            .header-search input {
-                padding: 10px 12px;
-                font-size: 0.85rem;
-            }
+
             
             .header-actions {
                 flex-shrink: 0;
@@ -1778,14 +1776,17 @@ $all_active_count = $counts->all_active_count;
             }
             
             .filter-btn {
-                padding: 8px 14px;
-                font-size: 0.85rem;
-                font-weight: 900;
+                padding: 3px 6px;
+                font-size: 0.65rem;
+                font-weight: 700;
+                height: 26px;
             }
             
             .filter-btn .badge {
-                font-size: 0.7rem;
-                padding: 2px 6px;
+                font-size: 0.55rem;
+                padding: 1px 3px;
+                height: 14px;
+                min-width: 12px;
             }
             
             .filter-btn i {
@@ -1794,7 +1795,7 @@ $all_active_count = $counts->all_active_count;
             
             .main-container-full {
                 padding: 0 10px 60px 10px;
-                padding-top: 195px;
+                padding-top: 140px;
                 width: 100%;
                 max-width: 100vw;
                 overflow-x: hidden;
@@ -1894,20 +1895,9 @@ $all_active_count = $counts->all_active_count;
                 gap: 10px;
             }
             
-            .logo-image {
-                width: 55px;
-                height: 55px;
-            }
+
             
-            .menu-toggle-btn {
-                width: 38px;
-                height: 38px;
-            }
-            
-            .header-search input {
-                padding: 8px 10px;
-                font-size: 0.8rem;
-            }
+
             
             .notif-icon-btn {
                 width: 45px;
@@ -1922,12 +1912,22 @@ $all_active_count = $counts->all_active_count;
             }
             
             .control-bar {
-                padding: 10px;
-                top: 105px;
+                padding: 8px 10px;
+                top: calc(70px + env(safe-area-inset-top));
             }
+            
+            .control-main-row {
+                gap: 8px;
+            }
+            
+            .control-left-section {
+                gap: 6px;
+            }
+            
+
 
             .main-container-full {
-                padding-top: 175px;
+                padding-top: 120px;
             }
             
             .mobile-notification-alert {
@@ -1941,18 +1941,21 @@ $all_active_count = $counts->all_active_count;
             }
             
             .filter-btn {
-                padding: 8px 15px;
-                font-size: 0.85rem;
+                padding: 3px 8px;
+                font-size: 0.7rem;
+                height: 28px;
             }
             
             .filter-btn .badge {
-                font-size: 0.7rem;
-                padding: 2px 6px;
+                font-size: 0.6rem;
+                padding: 1px 4px;
+                height: 15px;
+                min-width: 13px;
             }
             
             .main-container-full {
                 padding: 0 8px 60px 8px;
-                padding-top: 175px;
+                padding-top: 120px;
                 width: 100%;
                 max-width: 100vw;
             }
@@ -2029,30 +2032,9 @@ $all_active_count = $counts->all_active_count;
                 gap: 8px;
             }
             
-            .logo-section {
-                gap: 8px;
-            }
+
             
-            .logo-image {
-                width: 48px;
-                height: 48px;
-            }
-            
-            .menu-toggle-btn {
-                width: 36px;
-                height: 36px;
-                padding: 6px;
-                gap: 3px;
-            }
-            
-            .menu-toggle-btn span {
-                height: 2px;
-            }
-            
-            .header-search input {
-                padding: 6px 8px;
-                font-size: 0.75rem;
-            }
+
             
             .notif-icon-btn {
                 width: 42px;
@@ -2066,8 +2048,9 @@ $all_active_count = $counts->all_active_count;
             }
             
             .filter-btn {
-                font-size: 0.8rem;
-                padding: 7px 12px;
+                font-size: 0.65rem;
+                padding: 3px 6px;
+                height: 26px;
             }
             
             .bookings-table {
@@ -2098,12 +2081,41 @@ $all_active_count = $counts->all_active_count;
             }
             
             .control-bar {
-                padding: 10px 15px;
-                top: 95px;
+                padding: 8px 12px;
+                top: calc(70px + env(safe-area-inset-top));
+            }
+            
+            .control-main-row {
+                gap: 8px;
+            }
+            
+            .control-left-section {
+                gap: 6px;
+            }
+            
+
+
+            .header-left-section {
+                gap: 6px;
+            }
+            
+            .header-logo {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header-search-bar {
+                max-width: 220px;
+            }
+            
+            .header-search-bar input {
+                height: 28px;
+                font-size: 0.7rem;
+                padding: 4px 8px;
             }
 
             .main-container-full {
-                padding-top: 165px;
+                padding-top: 110px;
             }
         }
     </style>
@@ -2184,17 +2196,23 @@ $all_active_count = $counts->all_active_count;
         </div>
     </div>
 
+
     <!-- Header -->
     <div class="header">
-        <div class="logo-section">
-            <div class="logo-image">
+        <div class="header-left-section">
+            <div class="header-logo">
                 <img src="../vendor/EZlogonew.png" alt="EZ">
             </div>
-            <div class="brand-info">
-                <h1 class="brand-title">Electrozot</h1>
-                <p class="brand-subtitle">We Make Perfect</p>
+            <div class="header-search-bar">
+                <form action="" method="GET" id="headerSearchForm">
+                    <input type="search" name="search" id="headerSearchInput" placeholder="Search by phone, name, or ID..." value="<?php echo htmlspecialchars($search); ?>" autocomplete="off">
+                    <?php if($filter != 'all'): ?>
+                        <input type="hidden" name="filter" value="<?php echo $filter; ?>">
+                    <?php endif; ?>
+                </form>
             </div>
         </div>
+
         
         <?php 
         // Display technician tier badge in header
@@ -2231,26 +2249,16 @@ $all_active_count = $counts->all_active_count;
                 <?php endif; ?>
                 <span class="notif-dot" id="headerNotifDot" style="display: none;"></span>
             </button>
+            
+            <button class="header-menu-btn" onclick="toggleSidebar()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
     </div>
     
-    <!-- Search Bar -->
-    <div class="search-menu-bar">
-        <button class="menu-toggle-btn" onclick="toggleSidebar()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        
-        <div class="header-search">
-            <form action="" method="GET" id="searchForm">
-                <input type="search" name="search" id="searchInput" placeholder="Search by phone, name, or ID..." value="<?php echo htmlspecialchars($search); ?>" autocomplete="off">
-                <?php if($filter != 'all'): ?>
-                    <input type="hidden" name="filter" value="<?php echo $filter; ?>">
-                <?php endif; ?>
-            </form>
-        </div>
-    </div>
+
 
     <!-- Mobile Notification Alert -->
     <div class="mobile-notification-alert" id="mobileNotificationAlert" style="display: none;">
@@ -2263,33 +2271,32 @@ $all_active_count = $counts->all_active_count;
 
     <!-- Control Bar -->
     <div class="control-bar">
-        <div class="filter-buttons-row">
-            <a href="?filter=pending<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
-                <i class="fas fa-clock"></i> Pending
-                <?php if($pending_count > 0): ?>
-                    <span class="badge"><?php echo $pending_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
-                <i class="fas fa-list"></i> All Active
-                <?php if($all_active_count > 0): ?>
-                    <span class="badge"><?php echo $all_active_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <a href="?filter=completed<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
-                <i class="fas fa-check-circle"></i> Today's Completed
-                <?php if($completed_count > 0): ?>
-                    <span class="badge"><?php echo $completed_count; ?></span>
-                <?php endif; ?>
-            </a>
-            
-            <?php if(!empty($search)): ?>
-                <a href="?<?php echo $filter != 'all' ? 'filter=' . $filter : ''; ?>" class="filter-btn">
-                    <i class="fas fa-times"></i> Clear Search
-                </a>
-            <?php endif; ?>
+        <!-- Single Row: Menu, Search, and Filter Buttons -->
+        <div class="control-main-row">
+            <div class="control-left-section">
+                <div class="filter-buttons-row">
+                    <a href="?filter=pending<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'pending' ? 'active' : ''; ?>">
+                        <i class="fas fa-clock"></i> Pending
+                        <?php if($pending_count > 0): ?>
+                            <span class="badge"><?php echo $pending_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                    
+                    <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'all' ? 'active' : ''; ?>">
+                        <i class="fas fa-list"></i> All Active
+                        <?php if($all_active_count > 0): ?>
+                            <span class="badge"><?php echo $all_active_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                    
+                    <a href="?filter=completed<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" class="filter-btn <?php echo $filter == 'completed' ? 'active' : ''; ?>">
+                        <i class="fas fa-check-circle"></i> Today's Completed
+                        <?php if($completed_count > 0): ?>
+                            <span class="badge"><?php echo $completed_count; ?></span>
+                        <?php endif; ?>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

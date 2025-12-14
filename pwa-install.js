@@ -81,33 +81,45 @@ function showInstallPromotion() {
     }
 }
 
-// Install PWA
+// Install PWA - Direct installation
 async function installPWA() {
     if (!deferredPrompt) {
         console.log('❌ Install prompt not available');
-        return;
+        // Try to use global install event if available
+        if (window.pwaInstallEvent) {
+            deferredPrompt = window.pwaInstallEvent;
+        } else {
+            return;
+        }
     }
     
-    // Show the install prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    console.log(`👤 User response: ${outcome}`);
-    
-    if (outcome === 'accepted') {
-        console.log('✅ PWA installed successfully');
-        showInstallSuccess();
-    } else {
-        console.log('❌ User dismissed install prompt');
+    try {
+        // Immediately trigger the install prompt
+        console.log('🚀 Triggering direct PWA installation...');
+        await deferredPrompt.prompt();
+        
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        
+        console.log(`👤 User response: ${outcome}`);
+        
+        if (outcome === 'accepted') {
+            console.log('✅ PWA installed successfully');
+            showInstallSuccess();
+        } else {
+            console.log('❌ User dismissed install prompt');
+        }
+        
+        // Clear the deferredPrompt
+        deferredPrompt = null;
+        window.pwaInstallEvent = null;
+        
+        // Hide the install promotion
+        dismissInstallPromotion();
+    } catch (error) {
+        console.error('Install error:', error);
+        // Don't show manual guide, just log the error
     }
-    
-    // Clear the deferredPrompt
-    deferredPrompt = null;
-    
-    // Hide the install promotion
-    dismissInstallPromotion();
 }
 
 // Dismiss install promotion

@@ -72,7 +72,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .forgot-header {
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%);
             padding: 25px 30px;
             text-align: center;
             position: relative;
@@ -181,7 +181,7 @@
         .btn-reset {
             width: 100%;
             padding: 12px 20px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%);
             border: none;
             border-radius: 10px;
             color: white;

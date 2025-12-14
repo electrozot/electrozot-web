@@ -1,4 +1,9 @@
 <?php
+  // Prevent caching to ensure changes are visible immediately
+  header("Cache-Control: no-cache, no-store, must-revalidate");
+  header("Pragma: no-cache");
+  header("Expires: 0");
+  
   session_start();
   include('admin/vendor/inc/config.php');
   //include('vendor/inc/checklogin.php');
@@ -270,58 +275,7 @@
             </div>
         </section>
 
-        <!-- PWA Installation Section -->
-        <section class="pwa-install-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px 0; position: relative; overflow: hidden;">
-            <div class="pwa-background-pattern" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"20\" cy=\"20\" r=\"2\" fill=\"white\"/><circle cx=\"80\" cy=\"20\" r=\"2\" fill=\"white\"/><circle cx=\"20\" cy=\"80\" r=\"2\" fill=\"white\"/><circle cx=\"80\" cy=\"80\" r=\"2\" fill=\"white\"/><circle cx=\"50\" cy=\"50\" r=\"3\" fill=\"white\"/></svg>'); background-size: 50px 50px;"></div>
-            
-            <div class="container" style="position: relative; z-index: 2;">
-                <div class="row align-items-center">
-                    <div class="col-lg-8 col-md-7 mb-3 mb-md-0">
-                        <div class="pwa-content">
-                            <h3 class="text-white font-weight-bold mb-2" style="font-size: 1.4rem;">
-                                <i class="fas fa-mobile-alt" style="color: #FFD700; margin-right: 10px;"></i>
-                                Get Our Mobile App
-                            </h3>
-                            <p class="text-white mb-2" style="font-size: 0.95rem; opacity: 0.9; line-height: 1.4;">
-                                Install ElectroZot app for faster booking, offline access, and instant notifications. 
-                                <span class="d-none d-md-inline">Works like a native app on your phone!</span>
-                            </p>
-                            <div class="pwa-features d-none d-lg-flex" style="gap: 20px; margin-top: 10px;">
-                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
-                                    <i class="fas fa-bolt" style="color: #FFD700;"></i> Fast Loading
-                                </span>
-                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
-                                    <i class="fas fa-wifi" style="color: #FFD700;"></i> Works Offline
-                                </span>
-                                <span class="text-white" style="font-size: 0.8rem; opacity: 0.8;">
-                                    <i class="fas fa-bell" style="color: #FFD700;"></i> Push Notifications
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-5 text-center text-md-right">
-                        <div class="pwa-install-buttons">
-                            <!-- Main Install Button -->
-                            <button id="pwa-main-install-btn" class="btn btn-light font-weight-bold mb-2" style="background: white; color: #667eea; border: none; padding: 12px 25px; border-radius: 25px; font-size: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease; display: none;">
-                                <i class="fas fa-download"></i> Install App
-                            </button>
-                            
-                            <!-- Manual Install Guide Button -->
-                            <button id="pwa-guide-btn" class="btn btn-outline-light font-weight-bold" style="border: 2px solid white; color: white; padding: 12px 25px; border-radius: 25px; font-size: 1rem; transition: all 0.3s ease;">
-                                <i class="fas fa-info-circle"></i> How to Install
-                            </button>
-                            
-                            <!-- Already Installed Message -->
-                            <div id="pwa-installed-msg" style="display: none;">
-                                <div class="alert alert-success mb-0" style="background: rgba(255,255,255,0.9); color: #28a745; border: none; border-radius: 15px; padding: 10px 20px;">
-                                    <i class="fas fa-check-circle"></i> App Already Installed!
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+
 
         <!-- PWA Install Guide Modal -->
         <div class="modal fade" id="pwaGuideModal" tabindex="-1" role="dialog" aria-labelledby="pwaGuideModalLabel" aria-hidden="true">
@@ -1713,8 +1667,54 @@
     <?php include("vendor/inc/footer.php");?>
     <!--.Footer-->
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js?v=<?php echo time(); ?>"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js?v=<?php echo time(); ?>"></script>
+    
+    <!-- Enhanced Mobile menu fix -->
+    <script>
+        $(document).ready(function() {
+            // Enhanced mobile menu toggle
+            $('.navbar-toggler').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var target = $(this).attr('data-target') || $(this).attr('data-bs-target');
+                var $target = $(target);
+                
+                if ($target.length) {
+                    $target.toggleClass('show');
+                    var isExpanded = $target.hasClass('show');
+                    $(this).attr('aria-expanded', isExpanded);
+                }
+            });
+            
+            // Close menu when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar').length) {
+                    $('.navbar-collapse').removeClass('show');
+                    $('.navbar-toggler').attr('aria-expanded', 'false');
+                }
+            });
+            
+            // Close menu when clicking on menu items
+            $('.navbar-nav .nav-link').on('click', function() {
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Close menu with arrow button
+            $('.mobile-menu-arrow-close').on('click', function(e) {
+                e.preventDefault();
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Prevent menu from closing when clicking inside it
+            $('.navbar-collapse').on('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
     
     <!-- Sliding Images Script for Booking Form -->
     <script>
@@ -1823,38 +1823,48 @@
 
     <!-- PWA Service Worker Registration -->
     <script>
-        // Register Service Worker with relative path (works for any subdirectory)
+        // Production-ready Service Worker registration
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Use relative path - works regardless of subdirectory
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('✅ Service Worker registered successfully');
-                        console.log('📍 Scope:', registration.scope);
-                        
-                        // Check for updates
-                        registration.update();
-                    })
-                    .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
+            window.addEventListener('load', async () => {
+                try {
+                    // Register service worker with production settings
+                    const registration = await navigator.serviceWorker.register('./sw.js', {
+                        scope: './',
+                        updateViaCache: 'none' // Always check for updates in production
                     });
+                    
+                    // Wait for service worker to be ready
+                    await navigator.serviceWorker.ready;
+                    
+                    // Check for updates periodically in production
+                    registration.update();
+                    
+                    // Set up automatic update checking
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Check every minute in production
+                    
+                } catch (error) {
+                    // Graceful fallback - try alternative registration
+                    try {
+                        await navigator.serviceWorker.register('sw.js');
+                    } catch (altError) {
+                        // PWA will still work without service worker, just no offline support
+                        console.warn('Service Worker registration failed, PWA will work without offline support');
+                    }
+                }
             });
-        } else {
-            console.log('⚠️ Service Workers not supported in this browser');
         }
 
         // Enhanced PWA Installation Handler
         let deferredPrompt;
+        let installPromptAvailable = false;
         const mainInstallBtn = document.getElementById('pwa-main-install-btn');
         const guideBtn = document.getElementById('pwa-guide-btn');
         const installedMsg = document.getElementById('pwa-installed-msg');
         const tryInstallAgainBtn = document.getElementById('tryInstallAgain');
 
-        // Debug: Check if PWA is installable
-        console.log('🔍 Checking PWA installability...');
-        console.log('- Service Worker support:', 'serviceWorker' in navigator);
-        console.log('- Manifest link:', document.querySelector('link[rel="manifest"]') ? '✅ Found' : '❌ Missing');
-        console.log('- HTTPS:', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
+
 
         // Check if app is already installed
         function checkIfInstalled() {
@@ -1874,34 +1884,53 @@
         }
 
         function showInstallableState() {
-            if (mainInstallBtn) mainInstallBtn.style.display = 'inline-block';
+            // Always show the install button with consistent messaging
+            if (mainInstallBtn) {
+                mainInstallBtn.style.display = 'inline-block';
+                // Always show as install button, regardless of prompt availability
+                mainInstallBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+                mainInstallBtn.title = 'Click to install the ElectroZot app';
+                
+                // Make sure button is enabled
+                mainInstallBtn.disabled = false;
+                mainInstallBtn.style.opacity = '1';
+                mainInstallBtn.style.cursor = 'pointer';
+            }
             if (guideBtn) guideBtn.style.display = 'inline-block';
             if (installedMsg) installedMsg.style.display = 'none';
         }
 
         // Listen for install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('✅ beforeinstallprompt event fired - App is installable!');
             e.preventDefault();
             deferredPrompt = e;
+            installPromptAvailable = true;
             
             if (!checkIfInstalled()) {
                 showInstallableState();
+                window.pwaInstallEvent = e;
+                
+                // Update button text for desktop
+                if (window.screen.width >= 1024 && mainInstallBtn) {
+                    mainInstallBtn.innerHTML = '<i class="fas fa-download"></i> Install Desktop App';
+                    mainInstallBtn.title = 'Install ElectroZot as a desktop application';
+                }
             }
         });
 
-        // Main install button click
-        if (mainInstallBtn) {
-            mainInstallBtn.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    console.log('❌ Install prompt not available');
-                    $('#pwaGuideModal').modal('show');
-                    return;
-                }
-
+        // Enhanced install function for direct installation
+        async function installPWA() {
+            console.log('🔄 Install PWA function called');
+            console.log('- Deferred prompt available:', !!deferredPrompt);
+            console.log('- Install prompt available:', installPromptAvailable);
+            
+            if (deferredPrompt && installPromptAvailable) {
                 try {
-                    // Show the install prompt
-                    deferredPrompt.prompt();
+                    // Force direct install prompt without instructions
+                    console.log('🚀 Triggering direct install...');
+                    
+                    // Immediately show the install prompt
+                    const promptResult = deferredPrompt.prompt();
                     
                     // Wait for the user to respond
                     const { outcome } = await deferredPrompt.userChoice;
@@ -1911,17 +1940,228 @@
                     if (outcome === 'accepted') {
                         console.log('✅ PWA installed successfully');
                         showInstalledState();
+                        showInstallSuccessNotification();
                     } else {
                         console.log('❌ User dismissed install prompt');
+                        // Don't show manual guide if user dismissed
                     }
                     
                     // Clear the deferredPrompt
                     deferredPrompt = null;
+                    installPromptAvailable = false;
                 } catch (error) {
                     console.error('❌ Install error:', error);
-                    $('#pwaGuideModal').modal('show');
+                    // Try alternative installation method
+                    tryAlternativeInstall();
                 }
-            });
+            } else {
+                // Try to trigger installation through other means
+                console.log('ℹ️ Trying alternative install methods...');
+                tryAlternativeInstall();
+            }
+        }
+        
+        function tryAlternativeInstall() {
+            // Try to trigger browser's native install mechanism
+            if (window.chrome && window.chrome.webstore) {
+                // Chrome extension API (if available)
+                console.log('Trying Chrome install API...');
+            } else if ('serviceWorker' in navigator && 'PushManager' in window) {
+                // Force PWA criteria check
+                console.log('PWA criteria met, waiting for browser install prompt...');
+                
+                // Show a brief message instead of full instructions
+                showBriefInstallMessage();
+            } else {
+                showBriefInstallMessage();
+            }
+        }
+        
+        function showBriefInstallMessage(customMessage = null) {
+            // Show a minimal, non-intrusive message
+            const message = customMessage || '📱 Look for the install icon in your browser\'s address bar';
+            const toast = document.createElement('div');
+            toast.innerHTML = `
+                <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                            background: #667eea; color: white; padding: 12px 20px; border-radius: 25px; 
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10000; 
+                            animation: slideUp 0.3s ease-out; font-size: 14px; text-align: center; max-width: 90%;">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+        
+        function showInstallSuccessNotification() {
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; background: #28a745; color: white; 
+                            padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+                            z-index: 10000; animation: slideInRight 0.3s ease-out;">
+                    <strong>✅ App Installed Successfully!</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">You can now use ElectroZot offline</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        function showManualInstallGuide() {
+            if ($('#pwaGuideModal').length) {
+                $('#pwaGuideModal').modal('show');
+            } else {
+                // Use global fallback function
+                if (window.installElectroZotPWA) {
+                    window.installElectroZotPWA();
+                }
+            }
+        }
+
+        // Main install button click - Direct installation with robust attachment
+        function attachInstallButtonHandler() {
+            const installBtn = document.getElementById('pwa-main-install-btn');
+            if (installBtn) {
+                // Remove any existing listeners
+                installBtn.replaceWith(installBtn.cloneNode(true));
+                const newBtn = document.getElementById('pwa-main-install-btn');
+                
+                newBtn.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Visual feedback
+                    newBtn.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        newBtn.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    // Try multiple installation methods
+                    await attemptDirectInstall();
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to attach handler immediately and on DOM ready
+        if (!attachInstallButtonHandler()) {
+            document.addEventListener('DOMContentLoaded', attachInstallButtonHandler);
+        }
+        
+        async function attemptDirectInstall() {
+            
+            // Method 1: Use stored deferred prompt
+            if (deferredPrompt) {
+                try {
+                    await deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        showInstalledState();
+                        showInstallSuccessNotification();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 2: Use global install event
+            if (window.pwaInstallEvent) {
+                try {
+                    await window.pwaInstallEvent.prompt();
+                    const { outcome } = await window.pwaInstallEvent.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        showInstalledState();
+                        showInstallSuccessNotification();
+                        return true;
+                    }
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 3: Try PWA installer
+            if (window.PWAInstaller && window.PWAInstaller.install) {
+                try {
+                    await window.PWAInstaller.install();
+                    return true;
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 4: Show browser-specific instructions
+            const isChrome = navigator.userAgent.includes('Chrome');
+            if (isChrome) {
+                showChromeInstallInstructions();
+            } else {
+                showBrowserSpecificInstructions();
+            }
+            return false;
+        }
+        
+        function showChromeInstallInstructions() {
+            // Create a more prominent notification for Chrome users
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                            background: white; padding: 30px; border-radius: 15px; 
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10000; 
+                            max-width: 400px; text-align: center; border: 3px solid #667eea;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📱 Install ElectroZot App</h3>
+                    <p style="margin-bottom: 20px; color: #333;">Look for the <strong>install icon (⊕)</strong> in your Chrome address bar and click it!</p>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <p style="margin: 0; font-size: 14px; color: #666;">
+                            <strong>Alternative:</strong><br>
+                            Chrome Menu (⋮) → "Install ElectroZot"
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: #667eea; color: white; border: none; padding: 10px 20px; 
+                                   border-radius: 25px; cursor: pointer; font-weight: bold;">
+                        Got it!
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+        
+        function showBrowserSpecificInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '';
+            
+            if (userAgent.includes('firefox')) {
+                instructions = 'Firefox: Look for the install prompt or "Add to Home Screen" option';
+            } else if (userAgent.includes('safari')) {
+                instructions = 'Safari: Tap Share button → "Add to Home Screen"';
+            } else if (userAgent.includes('edg')) {
+                instructions = 'Edge: Look for the install icon in the address bar';
+            } else {
+                instructions = 'Look for "Install" or "Add to Home Screen" in your browser menu';
+            }
+            
+            showBriefInstallMessage(instructions);
+        }
         }
 
         // Guide button click
@@ -1943,7 +2183,6 @@
 
         // Listen for successful installation
         window.addEventListener('appinstalled', () => {
-            console.log('✅ PWA installed successfully!');
             showInstalledState();
             
             // Show success message
@@ -1963,12 +2202,57 @@
             }, 3000);
         });
 
+        // Function to simulate user engagement and trigger install prompt
+        function simulateUserEngagement() {
+            // Dispatch various user interaction events
+            const events = ['click', 'scroll', 'keydown', 'touchstart'];
+            events.forEach(eventType => {
+                const event = new Event(eventType, { bubbles: true });
+                document.dispatchEvent(event);
+            });
+            
+            // Simulate scroll
+            window.scrollBy(0, 1);
+            window.scrollBy(0, -1);
+            
+            // Try again if prompt not available
+            setTimeout(() => {
+                if (!deferredPrompt && !window.pwaInstallEvent) {
+                    setTimeout(simulateUserEngagement, 3000);
+                }
+            }, 1000);
+        }
+        
+        // Event delegation backup for install button
+        document.addEventListener('click', async (event) => {
+            if (event.target.id === 'pwa-main-install-btn' || 
+                event.target.closest('#pwa-main-install-btn')) {
+                
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Visual feedback
+                const btn = event.target.closest('#pwa-main-install-btn') || event.target;
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 150);
+                
+                await attemptDirectInstall();
+            }
+        });
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             if (!checkIfInstalled()) {
-                // Show guide button by default, main install button only when prompt is available
-                if (guideBtn) guideBtn.style.display = 'inline-block';
-                if (mainInstallBtn) mainInstallBtn.style.display = 'none';
+                // Always show both buttons - they handle their own logic
+                showInstallableState();
+                
+                // Ensure install button handler is attached
+                setTimeout(attachInstallButtonHandler, 500);
+                
+                // Start simulating user engagement to trigger install prompt
+                setTimeout(simulateUserEngagement, 2000);
             }
         });
 
@@ -2018,6 +2302,26 @@
                     margin: 5px !important;
                     display: block !important;
                     width: 100% !important;
+                }
+                
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                @keyframes slideUp {
+                    from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+                
+                @keyframes slideDown {
+                    from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    to { transform: translateX(-50%) translateY(100px); opacity: 0; }
                 }
                 
                 .modal-dialog {

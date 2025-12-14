@@ -51,15 +51,21 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
             <div class="col-6 col-md-3 mb-3">
                 <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Social</h5>
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                    <?php if(!empty($facebook_url) && $facebook_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #4267B2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Facebook">
-                        <i class="fab fa-facebook-f"></i>
+                    <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(225, 48, 108, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Instagram">
+                        <i class="fab fa-instagram"></i>
                     </a>
                     <?php endif; ?>
                     
                     <?php if(!empty($youtube_url) && $youtube_url != '#'): ?>
                     <a href="<?php echo htmlspecialchars($youtube_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #FF0000; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(255, 0, 0, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="YouTube">
                         <i class="fab fa-youtube"></i>
+                    </a>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($facebook_url) && $facebook_url != '#'): ?>
+                    <a href="<?php echo htmlspecialchars($facebook_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #4267B2; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(66, 103, 178, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Facebook">
+                        <i class="fab fa-facebook-f"></i>
                     </a>
                     <?php endif; ?>
                     
@@ -72,12 +78,6 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
                     <?php if(!empty($linkedin_url) && $linkedin_url != '#'): ?>
                     <a href="<?php echo htmlspecialchars($linkedin_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: #0077B5; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(0, 119, 181, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="LinkedIn">
                         <i class="fab fa-linkedin-in"></i>
-                    </a>
-                    <?php endif; ?>
-                    
-                    <?php if(!empty($instagram_url) && $instagram_url != '#'): ?>
-                    <a href="<?php echo htmlspecialchars($instagram_url); ?>" target="_blank" rel="noopener" style="width: 35px; height: 35px; background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 3px 8px rgba(225, 48, 108, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'" title="Instagram">
-                        <i class="fab fa-instagram"></i>
                     </a>
                     <?php endif; ?>
                     

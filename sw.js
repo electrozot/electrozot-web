@@ -1,7 +1,23 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.5.0'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.6.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.5.0';
+const APP_VERSION = '3.6.0';
+
+// Debug logging
+console.log(`[Service Worker] Loading ElectroZot PWA Service Worker v${APP_VERSION}`);
+console.log('[Service Worker] Service Worker file loaded successfully');
+
+// Immediate self-test
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SW_TEST') {
+    console.log('[Service Worker] Self-test message received');
+    event.ports[0].postMessage({
+      type: 'SW_TEST_RESPONSE',
+      version: APP_VERSION,
+      status: 'active'
+    });
+  }
+});
 
 // DEVELOPMENT MODE - Set to true during development to disable caching
 const DEV_MODE = false; // Change to false for production
@@ -17,7 +33,9 @@ const CACHE_URLS = [
   './vendor/bootstrap/js/bootstrap.bundle.min.js',
   './css/modern-business.css',
   './vendor/css/custom.css',
-  './usr/vendor/fontawesome-free/css/all.min.css'
+  './usr/vendor/fontawesome-free/css/all.min.css',
+  './vendor/img/icons/icon-192x192.png',
+  './vendor/img/icons/icon-512x512.png'
 ];
 
 // URLs that should NEVER be cached (always fetch fresh from network)
@@ -58,6 +76,17 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     console.log('[Service Worker] Skipping waiting...');
     self.skipWaiting();
+  }
+  
+  // Handle install trigger from main thread
+  if (event.data && event.data.type === 'TRIGGER_INSTALL') {
+    console.log('[Service Worker] Install trigger received');
+    // Notify all clients that install is ready
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({ type: 'INSTALL_READY' });
+      });
+    });
   }
 });
 
