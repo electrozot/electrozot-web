@@ -1,0 +1,405 @@
+<!-- Enhanced Background Notification System for Locked Screens -->
+<script>
+console.log('🔒 Initializing Background Notification System for Locked Screens');
+
+// Background notification configuration
+const TECH_ID = <?php echo $_SESSION['t_id']; ?>;
+let backgroundCheckInterval = null;
+let isPageHidden = false;
+let lastNotificationCheck = 0;
+let backgroundNotificationCount = 0;
+
+// Enhanced Service Worker registration with background sync
+async function registerEnhancedServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        try {
+            const registration = await navigator.serviceWorker.register('service-worker.js', {
+                scope: '/tech/'
+            });
+            
+            console.log('✅ [BG] Enhanced Service Worker registered');
+            
+            // Enable background sync for locked screen notifications
+            if ('sync' in window.ServiceWorkerRegistration.prototype) {
+                await registration.sync.register('background-notification-check');
+                console.log('✅ [BG] Background sync registered');
+            }
+            
+            // Enable periodic sync for continuous background checks (Chrome Android)
+            if ('periodicSync' in window.ServiceWorkerRegistration.prototype) {
+                try {
+                    await registration.periodicSync.register('periodic-notification-check', {
+                        minInterval: 30 * 1000 // 30 seconds minimum
+                    });
+                    console.log('✅ [BG] Periodic sync registered for locked screen');
+                } catch (err) {
+                    console.log('ℹ️ [BG] Periodic sync not available:', err.message);
+                }
+            }
+            
+            return registration;
+        } catch (error) {
+            console.error('❌ [BG] Service Worker registration failed:', error);
+            return null;
+        }
+    }
+    return null;
+}
+
+// Enhanced notification permission request for background
+async function requestBackgroundNotificationPermission() {
+    if ('Notification' in window) {
+        console.log('📋 [BG] Requesting background notification permission...');
+        
+        // Show explanation for mobile users
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            showBackgroundPermissionExplanation();
+        }
+        
+        const permission = await Notification.requestPermission();
+        
+        if (permission === 'granted') {
+            console.log('✅ [BG] Background notifications enabled');
+            
+            // Test background notification immediately
+            setTimeout(() => {
+                testBackgroundNotification();
+            }, 2000);
+            
+            return true;
+        } else {
+            console.log('❌ [BG] Background notifications denied');
+            return false;
+        }
+    }
+    return false;
+}
+
+function showBackgroundPermissionExplanation() {
+    const explanation = document.createElement('div');
+    explanation.style.cssText = `
+        position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        color: white; padding: 20px; border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4); z-index: 99999;
+        max-width: 90%; text-align: center; font-weight: bold;
+    `;
+    explanation.innerHTML = `
+        <div style="font-size: 24px; margin-bottom: 10px;">🔒📱</div>
+        <div style="font-size: 16px; margin-bottom: 8px;">Enable Locked Screen Notifications</div>
+        <div style="font-size: 12px; opacity: 0.9;">Get booking alerts even when your phone is locked!</div>
+    `;
+    document.body.appendChild(explanation);
+    
+    setTimeout(() => {
+        explanation.style.transition = 'opacity 0.5s';
+        explanation.style.opacity = '0';
+        setTimeout(() => explanation.remove(), 500);
+    }, 4000);
+}
+
+function testBackgroundNotification() {
+    if (Notification.permission === 'granted') {
+        const testNotification = new Notification('🔒 Background Test', {
+            body: 'Background notifications are now enabled! You\'ll receive alerts even when your phone is locked.',
+            icon: '../admin/vendor/img/logo.png',
+            badge: '../admin/vendor/img/logo.png',
+            vibrate: [300, 100, 300],
+            tag: 'background-test',
+            requireInteraction: false,
+            silent: false
+        });
+        
+        setTimeout(() => {
+            testNotification.close();
+        }, 5000);
+        
+        console.log('✅ [BG] Background notification test sent');
+    }
+}
+
+// Enhanced background notification checking
+async function checkNotificationsInBackground() {
+    const now = Date.now();
+    
+    // Prevent too frequent checks
+    if (now - lastNotificationCheck < 5000) {
+        return;
+    }
+    
+    lastNotificationCheck = now;
+    backgroundNotificationCount++;
+    
+    console.log(`🔍 [BG-CHECK #${backgroundNotificationCount}] Checking in background mode...`);
+    
+    try {
+        const response = await fetch('check-technician-notifications.php', {
+            method: 'GET',
+            cache: 'no-cache',
+            credentials: 'include',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const rawResponse = await response.text();
+        const cleanResponse = rawResponse.trim().replace(/^\uFEFF/, '');
+        const data = JSON.parse(cleanResponse);
+        
+        if (data.error) {
+            console.error('❌ [BG] Server error:', data.error);
+            return;
+        }
+        
+        console.log('📊 [BG] Background check result:', {
+            notification_count: data.notification_count,
+            has_notifications: data.has_notifications,
+            new_count: data.new_count
+        });
+        
+        if (data.has_notifications && data.new_count > 0) {
+            console.log('🎉 [BG] NEW NOTIFICATIONS IN BACKGROUND!', data.new_count);
+            
+            // Show background notifications for each new booking
+            for (const notif of data.notifications) {
+                await showBackgroundNotification(notif);
+            }
+            
+            // Notify main page if it's visible
+            if (!document.hidden && typeof checkTechNotifications === 'function') {
+                setTimeout(checkTechNotifications, 1000);
+            }
+            
+            // Send message to service worker
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'NEW_BOOKING_BACKGROUND',
+                    notifications: data.notifications,
+                    timestamp: now
+                });
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ [BG] Background check failed:', error);
+    }
+}
+
+// Show enhanced background notification
+async function showBackgroundNotification(notif) {
+    if (Notification.permission !== 'granted') {
+        console.log('⚠️ [BG] Cannot show background notification - permission not granted');
+        return;
+    }
+    
+    try {
+        const notification = new Notification('🔔 New Booking Assignment!', {
+            body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+            icon: '../admin/vendor/img/logo.png',
+            badge: '../admin/vendor/img/logo.png',
+            vibrate: [500, 200, 500, 200, 500, 200, 500], // Longer vibration for locked screen
+            tag: `booking-${notif.id}-background`,
+            requireInteraction: true, // Keep notification until user interacts
+            silent: false, // Allow system sound
+            renotify: true, // Allow re-notification
+            timestamp: Date.now(),
+            data: {
+                bookingId: notif.id,
+                url: '/tech/dashboard.php',
+                type: 'background-booking'
+            },
+            actions: [
+                {
+                    action: 'view',
+                    title: '👁️ View Booking'
+                },
+                {
+                    action: 'call',
+                    title: '📞 Call Customer'
+                }
+            ]
+        });
+        
+        // Handle notification click
+        notification.onclick = function() {
+            console.log('👆 [BG] Background notification clicked');
+            
+            // Focus window if possible
+            if (window.focus) {
+                window.focus();
+            }
+            
+            // Try to open dashboard
+            try {
+                window.location.href = 'dashboard.php';
+            } catch (e) {
+                console.log('Could not navigate:', e);
+            }
+            
+            this.close();
+        };
+        
+        // Auto-close after 30 seconds for locked screen scenarios
+        setTimeout(() => {
+            notification.close();
+        }, 30000);
+        
+        console.log('✅ [BG] Background notification shown for booking:', notif.id);
+        
+    } catch (error) {
+        console.error('❌ [BG] Background notification failed:', error);
+    }
+}
+
+// Page visibility handling for background mode
+function handleVisibilityChange() {
+    isPageHidden = document.hidden;
+    
+    console.log('👁️ [BG] Page visibility changed - hidden:', isPageHidden);
+    
+    if (isPageHidden) {
+        console.log('📱 [BG] Entering background mode - starting enhanced background checks');
+        startBackgroundChecking();
+    } else {
+        console.log('📱 [BG] Returning to foreground - stopping background checks');
+        stopBackgroundChecking();
+        
+        // Do immediate check when returning to foreground
+        if (typeof checkTechNotifications === 'function') {
+            setTimeout(checkTechNotifications, 1000);
+        }
+    }
+    
+    // Notify service worker about visibility change
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'PAGE_VISIBILITY_CHANGE',
+            hidden: isPageHidden,
+            timestamp: Date.now()
+        });
+    }
+}
+
+// Start background checking when page is hidden
+function startBackgroundChecking() {
+    // Clear any existing interval
+    if (backgroundCheckInterval) {
+        clearInterval(backgroundCheckInterval);
+    }
+    
+    // Start more frequent checking in background
+    backgroundCheckInterval = setInterval(() => {
+        if (document.hidden) {
+            checkNotificationsInBackground();
+        }
+    }, 10000); // Check every 10 seconds in background
+    
+    // Do immediate check
+    setTimeout(checkNotificationsInBackground, 2000);
+    
+    console.log('✅ [BG] Background checking started (every 10 seconds)');
+}
+
+// Stop background checking when page is visible
+function stopBackgroundChecking() {
+    if (backgroundCheckInterval) {
+        clearInterval(backgroundCheckInterval);
+        backgroundCheckInterval = null;
+        console.log('✅ [BG] Background checking stopped');
+    }
+}
+
+// Enhanced wake lock for keeping connection alive (if supported)
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            const wakeLock = await navigator.wakeLock.request('screen');
+            console.log('✅ [BG] Wake lock acquired for background operation');
+            
+            wakeLock.addEventListener('release', () => {
+                console.log('ℹ️ [BG] Wake lock released');
+            });
+            
+            return wakeLock;
+        } catch (err) {
+            console.log('ℹ️ [BG] Wake lock not available:', err.message);
+        }
+    }
+    return null;
+}
+
+// Initialize background notification system
+async function initializeBackgroundSystem() {
+    console.log('🎬 [BG] Initializing background notification system...');
+    
+    // Register enhanced service worker
+    const registration = await registerEnhancedServiceWorker();
+    
+    // Request background notification permission
+    const permissionGranted = await requestBackgroundNotificationPermission();
+    
+    // Set up page visibility handling
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Handle page lifecycle events
+    window.addEventListener('beforeunload', () => {
+        console.log('📱 [BG] Page unloading - background system will continue via Service Worker');
+    });
+    
+    window.addEventListener('pagehide', () => {
+        console.log('📱 [BG] Page hidden - activating background mode');
+        startBackgroundChecking();
+    });
+    
+    window.addEventListener('pageshow', () => {
+        console.log('📱 [BG] Page shown - deactivating background mode');
+        stopBackgroundChecking();
+    });
+    
+    // Handle focus/blur for mobile apps
+    window.addEventListener('focus', () => {
+        console.log('📱 [BG] Window focused - checking for missed notifications');
+        if (typeof checkTechNotifications === 'function') {
+            setTimeout(checkTechNotifications, 500);
+        }
+    });
+    
+    window.addEventListener('blur', () => {
+        console.log('📱 [BG] Window blurred - preparing for background mode');
+    });
+    
+    // Request wake lock for better background operation
+    await requestWakeLock();
+    
+    // Start background checking if page is already hidden
+    if (document.hidden) {
+        startBackgroundChecking();
+    }
+    
+    console.log('✅ [BG] Background notification system initialized');
+    console.log('🔒 [BG] Locked screen notifications ready');
+    console.log('📱 [BG] Background checks will run every 10 seconds when hidden');
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeBackgroundSystem);
+} else {
+    initializeBackgroundSystem();
+}
+
+// Make functions globally available for testing
+window.checkNotificationsInBackground = checkNotificationsInBackground;
+window.testBackgroundNotification = testBackgroundNotification;
+window.showBackgroundNotification = showBackgroundNotification;
+
+console.log('✅ Background Notification System Loaded');
+console.log('🔒 Ready for locked screen notifications');
+console.log('📱 Background checks: Every 10 seconds when page is hidden');
+console.log('🔔 Enhanced notifications with longer vibration and persistent display');
+</script>

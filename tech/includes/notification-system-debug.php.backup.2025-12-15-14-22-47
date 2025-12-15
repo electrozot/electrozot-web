@@ -1,0 +1,564 @@
+<!-- Technician Notification System - DEBUG VERSION -->
+<script>
+console.log('═══════════════════════════════════════════════════════');
+console.log('🚀 INITIALIZING NOTIFICATION SYSTEM - DEBUG MODE');
+console.log('═══════════════════════════════════════════════════════');
+
+let techNotificationAudio = null;
+let audioEnabled = false;
+let audioInitialized = false;
+let checkCount = 0;
+
+function initializeAudio() {
+    console.log('🔊 [AUDIO] Initializing audio...');
+    if (!audioInitialized) {
+        try {
+            techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
+            techNotificationAudio.volume = 1.0;
+            techNotificationAudio.preload = 'auto';
+            techNotificationAudio.load();
+            audioInitialized = true;
+            console.log('✅ [AUDIO] Audio initialized successfully');
+        } catch(e) {
+            console.error('❌ [AUDIO] Audio initialization error:', e);
+        }
+    } else {
+        console.log('ℹ️ [AUDIO] Audio already initialized');
+    }
+}
+
+function enableAudio() {
+    console.log('🔊 [AUDIO] Attempting to enable audio...');
+    if (!audioEnabled && audioInitialized && techNotificationAudio) {
+        techNotificationAudio.play().then(() => {
+            techNotificationAudio.pause();
+            techNotificationAudio.currentTime = 0;
+            audioEnabled = true;
+            // Save to localStorage so it stays enabled
+            localStorage.setItem('techAudioEnabled', 'true');
+            console.log('✅ [AUDIO] Audio enabled successfully and saved to localStorage');
+        }).catch((e) => {
+            console.log('⚠️ [AUDIO] Could not enable audio:', e.message);
+        });
+    } else {
+        console.log('ℹ️ [AUDIO] Audio already enabled or not initialized');
+    }
+}
+
+let lastSoundPlayTime = 0;
+const SOUND_COOLDOWN = 2000; // 2 seconds cooldown between sounds
+
+function playNotificationSound() {
+    console.log('🔊 [SOUND] Attempting to play notification sound...');
+    
+    // Prevent duplicate sounds within cooldown period
+    const now = Date.now();
+    if (now - lastSoundPlayTime < SOUND_COOLDOWN) {
+        console.log('⏭️ [SOUND] Skipping - sound played recently (cooldown active)');
+        return;
+    }
+    
+    if (!audioInitialized) {
+        console.log('⚠️ [SOUND] Audio not initialized, initializing now...');
+        initializeAudio();
+    }
+    
+    if (!techNotificationAudio) {
+        console.error('❌ [SOUND] Audio object is null!');
+        return;
+    }
+    
+    // Check if audio is enabled
+    if (!audioEnabled) {
+        console.warn('⚠️ [SOUND] Audio not enabled yet - showing enable prompt');
+        showAudioEnablePrompt();
+        return;
+    }
+    
+    techNotificationAudio.currentTime = 0;
+    techNotificationAudio.volume = 1.0;
+    
+    console.log('🎵 [SOUND] Playing sound...');
+    techNotificationAudio.play()
+        .then(() => {
+            console.log('✅ [SOUND] Sound played successfully!');
+            lastSoundPlayTime = Date.now(); // Update last play time
+            audioEnabled = true;
+        })
+        .catch((error) => {
+            console.error('❌ [SOUND] Sound play error:', error.name, error.message);
+            if (error.name === 'NotAllowedError') {
+                console.log('💡 [SOUND] User interaction required - showing alert');
+                showAudioEnablePrompt();
+            }
+        });
+}
+
+let audioPromptShown = false;
+
+function showAudioEnablePrompt() {
+    // Only show prompt once per session
+    if (audioPromptShown || document.getElementById('audio-enable-alert')) {
+        console.log('ℹ️ [PROMPT] Audio enable prompt already shown or showing');
+        return;
+    }
+    
+    audioPromptShown = true;
+    console.log('📢 [PROMPT] Showing audio enable prompt');
+    const alert = document.createElement('div');
+    alert.id = 'audio-enable-alert';
+    alert.style.cssText = 'position: fixed; top: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 20px 30px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); z-index: 99999; font-weight: bold; cursor: pointer; animation: pulse 2s infinite; text-align: center; max-width: 90%;';
+    alert.innerHTML = '<div style="font-size: 24px; margin-bottom: 10px;">🔊</div><div style="font-size: 18px; margin-bottom: 5px;">Click to Enable Sound Alerts</div><div style="font-size: 12px; opacity: 0.9;">Notification sounds are blocked by browser</div>';
+    alert.onclick = function() {
+        console.log('👆 [PROMPT] User clicked enable prompt');
+        enableAudio();
+        // Try to play sound immediately
+        if (techNotificationAudio && audioEnabled) {
+            techNotificationAudio.currentTime = 0;
+            techNotificationAudio.play()
+                .then(() => console.log('✅ [PROMPT] Sound played after enable'))
+                .catch(e => console.error('❌ [PROMPT] Still cannot play:', e));
+        }
+        this.remove();
+    };
+    document.body.appendChild(alert);
+    
+    // Auto-remove after 15 seconds
+    setTimeout(() => { 
+        if (alert.parentNode) {
+            console.log('⏰ [PROMPT] Auto-removing prompt after timeout');
+            alert.remove();
+        }
+    }, 15000);
+}
+
+function showNotificationToast(notifications) {
+    console.log('📱 [TOAST] Showing notification toast for', notifications.length, 'notifications');
+    
+    const count = notifications.length;
+    document.querySelectorAll('.tech-notification-toast').forEach(el => {
+        console.log('🗑️ [TOAST] Removing old toast');
+        el.remove();
+    });
+    
+    const firstAction = notifications[0].action;
+    let bgColor = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    let icon = 'bell';
+    
+    if(firstAction === 'assigned' || firstAction === 'reassigned') {
+        bgColor = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+        icon = 'user-check';
+    } else if(firstAction === 'approved') {
+        bgColor = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+        icon = 'check-circle';
+    } else if(firstAction === 'hold') {
+        bgColor = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        icon = 'pause-circle';
+    } else if(firstAction === 'resumed') {
+        bgColor = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        icon = 'play-circle';
+    } else if(firstAction === 'hold_approved') {
+        bgColor = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        icon = 'check-circle';
+    } else if(firstAction === 'hold_rejected') {
+        bgColor = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
+        icon = 'times-circle';
+    }
+    
+    let html = '<div class="tech-notification-toast" style="position: fixed; top: 80px; right: 20px; background: ' + bgColor + '; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 99999; min-width: 350px; max-width: 400px; animation: slideIn 0.5s ease-out;">';
+    html += '<div style="display: flex; align-items: center; margin-bottom: 10px;">';
+    html += '<i class="fas fa-' + icon + '" style="font-size: 24px; margin-right: 10px;"></i>';
+    html += '<h4 style="margin: 0; font-weight: bold;">' + (count === 1 ? 'New Notification!' : count + ' New Notifications!') + '</h4>';
+    html += '<button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>';
+    html += '</div>';
+    
+    notifications.forEach(notif => {
+        html += '<div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 10px;">';
+        html += '<strong>📋 Booking #' + notif.id + '</strong><br>';
+        html += '<div style="margin-top: 5px; font-size: 13px;">';
+        html += '<strong>✨ ' + notif.message + '</strong><br>';
+        html += '👤 ' + notif.customer + '<br>';
+        html += '📞 ' + notif.phone + '<br>';
+        html += '🔧 ' + notif.service + '<br>';
+        html += '📊 Status: ' + notif.status;
+        if(notif.deadline_date) {
+            html += '<br>⏰ Deadline: ' + notif.deadline_date + ' ' + (notif.deadline_time || '');
+        }
+        html += '</div></div>';
+    });
+    
+    html += '<div style="margin-top: 15px; text-align: center;">';
+    html += '<a href="dashboard.php" style="background: white; color: #667eea; padding: 8px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">View Dashboard</a>';
+    html += '</div></div>';
+    
+    console.log('✅ [TOAST] Toast HTML created, inserting into page');
+    document.body.insertAdjacentHTML('beforeend', html);
+    console.log('✅ [TOAST] Toast inserted successfully');
+    
+    setTimeout(() => {
+        const toast = document.querySelector('.tech-notification-toast');
+        if (toast) {
+            console.log('⏰ [TOAST] Auto-hiding toast after 15 seconds');
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 15000);
+}
+
+function checkTechNotifications() {
+    checkCount++;
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('🔍 [CHECK #' + checkCount + '] Starting notification check...');
+    console.log('═══════════════════════════════════════════════════════');
+    
+    // REMOVED: Don't skip when page is hidden - we want background notifications!
+    // if (document.hidden) {
+    //     console.log('⏭️ [CHECK] Page is hidden, skipping check');
+    //     return;
+    // }
+    
+    if (document.hidden) {
+        console.log('📱 [CHECK] Page is hidden - checking in BACKGROUND mode');
+    }
+    
+    console.log('📡 [FETCH] Fetching: check-technician-notifications.php');
+    
+    fetch('check-technician-notifications.php', { method: 'GET', cache: 'no-cache' })
+    .then(response => {
+        console.log('📥 [FETCH] Response received, status:', response.status);
+        return response.text();
+    })
+    .then(rawResponse => {
+        console.log('📄 [FETCH] Raw response length:', rawResponse.length, 'chars');
+        console.log('📄 [FETCH] First 200 chars:', rawResponse.substring(0, 200));
+        
+        const cleanResponse = rawResponse.trim().replace(/^\uFEFF/, '');
+        console.log('🧹 [PARSE] Cleaned response, attempting JSON parse...');
+        
+        const response = JSON.parse(cleanResponse);
+        console.log('✅ [PARSE] JSON parsed successfully');
+        console.log('📊 [DATA] Response data:', response);
+        
+        if(response.error) {
+            console.error('❌ [ERROR] Server error:', response.error);
+            return;
+        }
+        
+        console.log('📊 [DATA] Notification count:', response.notification_count);
+        console.log('📊 [DATA] Has notifications:', response.has_notifications);
+        console.log('📊 [DATA] New count:', response.new_count);
+        
+        const badge = document.getElementById('notificationCount');
+        if(badge) {
+            console.log('🔖 [BADGE] Badge element found');
+            if(response.notification_count > 0) {
+                badge.textContent = response.notification_count;
+                badge.style.display = 'flex';
+                console.log('✅ [BADGE] Badge updated to:', response.notification_count);
+            } else {
+                badge.style.display = 'none';
+                console.log('ℹ️ [BADGE] Badge hidden (no notifications)');
+            }
+        } else {
+            console.log('⚠️ [BADGE] Badge element not found (ID: notificationCount)');
+        }
+        
+        if(response.has_notifications && response.new_count > 0) {
+            console.log('🎉🎉🎉 [NOTIFICATION] NEW NOTIFICATIONS DETECTED! 🎉🎉🎉');
+            console.log('🔔 [NOTIFICATION] Count:', response.new_count);
+            console.log('📋 [NOTIFICATION] Details:', response.notifications);
+            
+            // Play sound (works even in background if audio is enabled)
+            console.log('🔊 [ACTION] Playing sound...');
+            playNotificationSound();
+            
+            // Show browser notification (works even when page is hidden/locked)
+            if (Notification.permission === 'granted') {
+                console.log('📢 [BROWSER-NOTIF] Showing browser notification...');
+                response.notifications.forEach(notif => {
+                    try {
+                        const notification = new Notification('🔔 New Booking Assignment!', {
+                            body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+                            icon: '../admin/vendor/img/logo.png',
+                            badge: '../admin/vendor/img/logo.png',
+                            vibrate: [300, 100, 300, 100, 300],
+                            tag: 'booking-' + notif.id,
+                            requireInteraction: true,
+                            silent: false
+                        });
+                        
+                        notification.onclick = function() {
+                            window.focus();
+                            this.close();
+                        };
+                        
+                        console.log('✅ [BROWSER-NOTIF] Browser notification shown');
+                    } catch(e) {
+                        console.error('❌ [BROWSER-NOTIF] Error:', e);
+                    }
+                });
+            } else {
+                console.log('⚠️ [BROWSER-NOTIF] Notification permission not granted');
+            }
+            
+            // Show toast only if page is visible
+            if (!document.hidden) {
+                console.log('📱 [ACTION] Showing toast...');
+                showNotificationToast(response.notifications);
+            } else {
+                console.log('📱 [ACTION] Page hidden, skipping toast (browser notification shown instead)');
+            }
+            
+            const dot = document.getElementById('headerNotifDot');
+            if(dot) {
+                dot.style.display = 'block';
+                console.log('✅ [DOT] Header notification dot shown');
+            } else {
+                console.log('⚠️ [DOT] Header notification dot element not found');
+            }
+            
+            const mobileAlert = document.getElementById('mobileNotificationAlert');
+            const mobileText = document.getElementById('mobileAlertText');
+            if(mobileAlert && mobileText) {
+                mobileText.textContent = 'You have ' + response.notification_count + ' new notification' + (response.notification_count > 1 ? 's' : '') + '!';
+                mobileAlert.style.display = 'flex';
+                console.log('✅ [MOBILE] Mobile alert shown');
+            } else {
+                console.log('⚠️ [MOBILE] Mobile alert elements not found');
+            }
+            
+        } else {
+            console.log('✓ [CHECK] No new notifications (total: ' + response.notification_count + ')');
+        }
+        
+        console.log('═══════════════════════════════════════════════════════');
+        console.log('✅ [CHECK #' + checkCount + '] Check complete');
+        console.log('═══════════════════════════════════════════════════════');
+    })
+    .catch(error => {
+        console.error('❌ [FETCH] AJAX Error:', error);
+        console.error('❌ [FETCH] Error details:', error.message, error.stack);
+    });
+}
+
+console.log('🎬 [INIT] Initializing audio...');
+initializeAudio();
+
+// Check if audio was previously enabled
+if (localStorage.getItem('techAudioEnabled') === 'true') {
+    console.log('💾 [INIT] Audio was previously enabled - marking as enabled');
+    audioEnabled = true; // Mark as enabled from previous session
+    console.log('✅ [INIT] Audio enabled from localStorage - ready to play sounds');
+}
+
+console.log('👆 [INIT] Setting up user interaction listeners...');
+
+// Enable audio immediately on ANY user interaction
+function enableAudioOnInteraction() {
+    console.log('👆 [INTERACTION] User interaction detected, enabling audio...');
+    if (!audioEnabled && audioInitialized && techNotificationAudio) {
+        techNotificationAudio.play().then(() => {
+            techNotificationAudio.pause();
+            techNotificationAudio.currentTime = 0;
+            audioEnabled = true;
+            localStorage.setItem('techAudioEnabled', 'true');
+            console.log('✅ [INTERACTION] Audio enabled successfully and saved!');
+            
+            // Remove all listeners after successful enable
+            ['click', 'touchstart', 'keydown', 'mousedown', 'scroll'].forEach(evt => {
+                document.removeEventListener(evt, enableAudioOnInteraction);
+            });
+        }).catch((e) => {
+            console.log('⚠️ [INTERACTION] Could not enable audio yet:', e.message);
+        });
+    }
+}
+
+// Add listeners for all interaction types
+['click', 'touchstart', 'keydown', 'mousedown', 'scroll'].forEach(event => {
+    document.addEventListener(event, enableAudioOnInteraction, { passive: true });
+});
+
+// Try multiple times to enable audio automatically
+let autoEnableAttempts = 0;
+const maxAutoEnableAttempts = 3;
+
+function tryAutoEnable() {
+    if (audioEnabled || autoEnableAttempts >= maxAutoEnableAttempts) return;
+    
+    autoEnableAttempts++;
+    console.log(`⏰ [AUTO-ENABLE] Attempt ${autoEnableAttempts}/${maxAutoEnableAttempts}...`);
+    
+    if (techNotificationAudio) {
+        techNotificationAudio.play().then(() => {
+            techNotificationAudio.pause();
+            techNotificationAudio.currentTime = 0;
+            audioEnabled = true;
+            localStorage.setItem('techAudioEnabled', 'true');
+            console.log('✅ [AUTO-ENABLE] Success! Audio enabled automatically');
+            
+            // Show success message
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); z-index: 99999; font-weight: bold;';
+            msg.innerHTML = '<i class="fas fa-check-circle"></i> 🔊 Sound Alerts Ready';
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.transition = 'opacity 0.5s';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 500);
+            }, 2000);
+        }).catch(e => {
+            console.log(`⚠️ [AUTO-ENABLE] Attempt ${autoEnableAttempts} failed:`, e.message);
+            if (autoEnableAttempts < maxAutoEnableAttempts) {
+                setTimeout(tryAutoEnable, 1000);
+            }
+        });
+    }
+}
+
+// Try to enable immediately
+setTimeout(tryAutoEnable, 500);
+setTimeout(tryAutoEnable, 1500);
+setTimeout(tryAutoEnable, 3000);
+
+console.log('📡 [INIT] Doing initial notification check...');
+fetch('check-technician-notifications.php', { cache: 'no-cache' })
+    .then(response => response.json())
+    .then(response => {
+        console.log('📊 [INIT] Initial check response:', response);
+        if(response && response.notification_count > 0) {
+            const dot = document.getElementById('headerNotifDot');
+            if(dot) dot.style.display = 'block';
+            const badge = document.getElementById('floatingBadge');
+            if(badge) {
+                badge.textContent = response.notification_count;
+                badge.style.display = 'flex';
+            }
+            console.log('✅ [INIT] Initial badges updated');
+        }
+    })
+    .catch(e => console.error('❌ [INIT] Initial check error:', e));
+
+console.log('⏰ [INIT] Setting up polling interval (5 seconds)...');
+setInterval(checkTechNotifications, 5000);
+
+console.log('⏰ [INIT] Scheduling first check in 2 seconds...');
+setTimeout(checkTechNotifications, 2000);
+
+if(!document.getElementById('tech-notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'tech-notification-styles';
+    style.textContent = '@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes pulse { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } } .tech-notification-toast { transition: all 0.5s ease; } .tech-notification-toast:hover { transform: scale(1.02); }';
+    document.head.appendChild(style);
+    console.log('✅ [STYLES] Notification styles added');
+}
+
+// Request notification permission if not granted
+if ('Notification' in window && Notification.permission === 'default') {
+    console.log('📋 [PERMISSION] Requesting notification permission...');
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            console.log('✅ [PERMISSION] Notification permission granted!');
+        } else {
+            console.log('⚠️ [PERMISSION] Notification permission denied');
+        }
+    });
+} else if (Notification.permission === 'granted') {
+    console.log('✅ [PERMISSION] Notification permission already granted');
+} else if (Notification.permission === 'denied') {
+    console.log('⚠️ [PERMISSION] Notification permission denied by user');
+}
+
+console.log('═══════════════════════════════════════════════════════');
+console.log('✅ NOTIFICATION SYSTEM INITIALIZED - DEBUG MODE');
+console.log('📊 Polling every 5 seconds (CONTINUES IN BACKGROUND)');
+console.log('🔊 Audio ready');
+console.log('📱 Toast notifications ready');
+console.log('📢 Browser notifications ready');
+console.log('🔒 Works even when phone is locked!');
+console.log('═══════════════════════════════════════════════════════');
+
+// Auto-enable audio on FIRST user interaction (any click, scroll, or key press)
+let autoEnableAttempted = false;
+
+function autoEnableAudio() {
+    if (autoEnableAttempted || audioEnabled) return;
+    autoEnableAttempted = true;
+    
+    console.log('🎯 [AUTO] Attempting auto-enable on first interaction...');
+    
+    if (techNotificationAudio) {
+        techNotificationAudio.play().then(() => {
+            techNotificationAudio.pause();
+            techNotificationAudio.currentTime = 0;
+            audioEnabled = true;
+            localStorage.setItem('techAudioEnabled', 'true');
+            console.log('✅ [AUTO] Audio auto-enabled successfully and saved!');
+            
+            // Show brief success message ONLY on first enable
+            if (localStorage.getItem('techAudioFirstEnable') !== 'done') {
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position: fixed; top: 80px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 12px 20px; border-radius: 10px; box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4); z-index: 99999; font-weight: bold; display: flex; align-items: center; gap: 10px;';
+                msg.innerHTML = '<i class="fas fa-check-circle"></i><span>🔊 Sound Alerts Enabled Forever!</span>';
+                document.body.appendChild(msg);
+                setTimeout(() => {
+                    msg.style.transition = 'opacity 0.5s';
+                    msg.style.opacity = '0';
+                    setTimeout(() => msg.remove(), 500);
+                }, 3000);
+                localStorage.setItem('techAudioFirstEnable', 'done');
+            }
+            
+            // Remove all auto-enable listeners
+            ['click', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+                document.removeEventListener(evt, autoEnableAudio);
+            });
+        }).catch(e => {
+            console.log('⚠️ [AUTO] Auto-enable failed, will show button:', e.message);
+            showEnableButton();
+        });
+    }
+}
+
+// Add auto-enable listeners for first interaction
+['click', 'touchstart', 'keydown', 'scroll'].forEach(event => {
+    document.addEventListener(event, autoEnableAudio, { passive: true, once: true });
+});
+
+// Show enable button only if auto-enable fails
+function showEnableButton() {
+    if (document.getElementById('enable-sound-btn')) return;
+    
+    console.log('📢 [BUTTON] Showing enable sound button');
+    const btn = document.createElement('div');
+    btn.id = 'enable-sound-btn';
+    btn.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 15px 25px; border-radius: 50px; box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); z-index: 99998; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px; animation: pulse 2s infinite;';
+    btn.innerHTML = '<i class="fas fa-volume-up" style="font-size: 20px;"></i><span>Click to Enable Sound</span>';
+    btn.onclick = function() {
+        console.log('👆 [BUTTON] User clicked enable sound button');
+        if (techNotificationAudio) {
+            techNotificationAudio.play().then(() => {
+                techNotificationAudio.pause();
+                techNotificationAudio.currentTime = 0;
+                audioEnabled = true;
+                console.log('✅ [BUTTON] Sound enabled successfully');
+                this.innerHTML = '<i class="fas fa-check-circle" style="font-size: 20px;"></i><span>Sound Enabled!</span>';
+                setTimeout(() => this.remove(), 2000);
+            }).catch(e => {
+                console.error('❌ [BUTTON] Failed:', e);
+                this.innerHTML = '<i class="fas fa-exclamation-circle" style="font-size: 20px;"></i><span>Try Again</span>';
+            });
+        }
+    };
+    document.body.appendChild(btn);
+}
+
+// Check if audio is enabled after 2 seconds, show button if not
+setTimeout(() => {
+    if (!audioEnabled) {
+        console.log('⚠️ [CHECK] Audio still not enabled after 2 seconds');
+        showEnableButton();
+    }
+}, 2000);
+</script>

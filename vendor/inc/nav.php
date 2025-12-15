@@ -47,9 +47,21 @@
                 background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
                 box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
             }
-            50% {
+            25% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            37.5% {
                 background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
                 box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            62.5% {
+                background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
+                box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            75% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
             }
             100% {
                 background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
@@ -57,16 +69,10 @@
             }
         }
         
-        /* Disable heavy animation by default - only enable on desktop */
-        @media (min-width: 992px) {
-            .navbar-color-transition {
-                animation: navbarColorChange 6s ease-in-out infinite;
-            }
-        }
-        
-        /* Static background for mobile and loading */
+        /* Enable animation on both desktop and mobile */
         .navbar-color-transition {
-            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%) !important;
+            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+            animation: navbarColorChange 8s ease-in-out infinite !important;
         }
     </style>
     <!-- Glossy overlay effect - removed to fix white line -->

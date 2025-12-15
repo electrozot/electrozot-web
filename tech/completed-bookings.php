@@ -8,7 +8,7 @@ $tech_id = $_SESSION['t_id'];
 // Get filter and search parameters
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$date_filter = isset($_GET['date']) ? $_GET['date'] : 'all';
+$date_filter = isset($_GET['date']) ? $_GET['date'] : 'today';
 $custom_date = isset($_GET['custom_date']) ? $_GET['custom_date'] : '';
 
 // Get today's earnings from payment collection
@@ -682,13 +682,13 @@ elseif($date_filter == 'custom' && !empty($custom_date)) $date_label = date('d M
         <!-- Date Filter Buttons -->
         <div style="background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
             <div style="display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
+                <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'today' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-day"></i> Today
+                </a>
                 <a href="?date=all<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
                    class="date-filter-btn <?php echo $date_filter == 'all' ? 'active' : ''; ?>">
                     <i class="fas fa-infinity"></i> All
-                </a>
-                <a href="?date=today<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
-                   class="date-filter-btn <?php echo $date_filter == 'today' ? 'active' : ''; ?>">
-                    <i class="fas fa-calendar-day"></i> Today
                 </a>
                 <a href="?date=yesterday<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
                    class="date-filter-btn <?php echo $date_filter == 'yesterday' ? 'active' : ''; ?>">

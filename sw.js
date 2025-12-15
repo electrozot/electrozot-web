@@ -1,16 +1,13 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.6.0'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.5.1'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.6.0';
+const APP_VERSION = '3.5.1';
 
-// Debug logging
-console.log(`[Service Worker] Loading ElectroZot PWA Service Worker v${APP_VERSION}`);
-console.log('[Service Worker] Service Worker file loaded successfully');
+// Service Worker for ElectroZot PWA
 
 // Immediate self-test
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SW_TEST') {
-    console.log('[Service Worker] Self-test message received');
     event.ports[0].postMessage({
       type: 'SW_TEST_RESPONSE',
       version: APP_VERSION,
@@ -57,15 +54,12 @@ const NEVER_CACHE = [
 
 // Install event - cache essential files
 self.addEventListener('install', (event) => {
-  console.log(`[Service Worker] Installing v${APP_VERSION}...`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[Service Worker] Caching essential files');
         return cache.addAll(CACHE_URLS);
       })
       .then(() => {
-        console.log('[Service Worker] Installation complete');
         return self.skipWaiting();
       })
   );
@@ -74,13 +68,13 @@ self.addEventListener('install', (event) => {
 // Listen for skip waiting message
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('[Service Worker] Skipping waiting...');
+
     self.skipWaiting();
   }
   
   // Handle install trigger from main thread
   if (event.data && event.data.type === 'TRIGGER_INSTALL') {
-    console.log('[Service Worker] Install trigger received');
+
     // Notify all clients that install is ready
     self.clients.matchAll().then(clients => {
       clients.forEach(client => {
@@ -92,13 +86,13 @@ self.addEventListener('message', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating...');
+
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[Service Worker] Deleting old cache:', cacheName);
+
             return caches.delete(cacheName);
           }
         })
@@ -123,7 +117,7 @@ self.addEventListener('fetch', (event) => {
     (async () => {
       // IN DEVELOPMENT MODE: Always fetch fresh from network
       if (DEV_MODE) {
-        console.log('[Service Worker] DEV MODE: Fetching fresh from network:', event.request.url);
+
         try {
           const response = await fetch(event.request);
           return response;
@@ -235,6 +229,6 @@ self.addEventListener('notificationclick', (event) => {
 // Helper function for background sync (placeholder)
 async function syncBookings() {
   // This would sync offline bookings when connection is restored
-  console.log('[Service Worker] Syncing bookings...');
+
   return Promise.resolve();
 }

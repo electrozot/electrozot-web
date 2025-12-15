@@ -8,7 +8,7 @@ let installButton;
 
 // Listen for the beforeinstallprompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('💾 PWA Install prompt available');
+
     
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
@@ -25,7 +25,7 @@ function showInstallPromotion() {
     // Check if main PWA section exists and is visible
     const mainPwaSection = document.querySelector('.pwa-install-section');
     if (mainPwaSection) {
-        console.log('📱 Main PWA section found, skipping banner');
+
         return; // Don't show banner if main section exists
     }
     
@@ -84,7 +84,7 @@ function showInstallPromotion() {
 // Install PWA - Direct installation
 async function installPWA() {
     if (!deferredPrompt) {
-        console.log('❌ Install prompt not available');
+
         // Try to use global install event if available
         if (window.pwaInstallEvent) {
             deferredPrompt = window.pwaInstallEvent;
@@ -95,19 +95,19 @@ async function installPWA() {
     
     try {
         // Immediately trigger the install prompt
-        console.log('🚀 Triggering direct PWA installation...');
+
         await deferredPrompt.prompt();
         
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
         
-        console.log(`👤 User response: ${outcome}`);
+
         
         if (outcome === 'accepted') {
-            console.log('✅ PWA installed successfully');
+
             showInstallSuccess();
         } else {
-            console.log('❌ User dismissed install prompt');
+
         }
         
         // Clear the deferredPrompt
@@ -153,7 +153,7 @@ function showInstallSuccess() {
 
 // Detect if app is already installed
 window.addEventListener('appinstalled', () => {
-    console.log('✅ PWA was installed');
+
     dismissInstallPromotion();
     
     // Track installation (optional analytics)
@@ -173,7 +173,7 @@ function isRunningAsPWA() {
 
 // Show different UI if running as PWA
 if (isRunningAsPWA()) {
-    console.log('🚀 Running as installed PWA');
+
     document.body.classList.add('pwa-mode');
 }
 

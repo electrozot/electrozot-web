@@ -22,7 +22,7 @@
         // Try to lock orientation using Screen Orientation API
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('portrait').catch(function(error) {
-                console.log('Orientation lock not supported:', error);
+
             });
         } 
         // Fallback for older browsers

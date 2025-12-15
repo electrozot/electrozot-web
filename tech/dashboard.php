@@ -2181,6 +2181,10 @@ $all_active_count = $counts->all_active_count;
                 <i class="fas fa-bell"></i>
                 <span>Notifications</span>
             </a>
+            <a href="notification-settings.php" class="sidebar-menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Sound Settings</span>
+            </a>
             <a href="my-profile.php" class="sidebar-menu-item">
                 <i class="fas fa-user-circle"></i>
                 <span>My Profile</span>
@@ -2667,11 +2671,8 @@ $all_active_count = $counts->all_active_count;
         });
     </script>
     
-    <!-- Push Notification Setup -->
-    <?php include('includes/push-notification-setup.php'); ?>
-    
-    <!-- Technician Notification System - DEBUG MODE -->
-    <?php include('includes/notification-system-debug.php'); ?>
+    <!-- Ultimate Notification System - Works Everywhere, Never Fails -->
+    <?php include('includes/ultimate-notification-system.php'); ?>
     
     <!-- Bottom Navigation Bar -->
     <?php include('includes/bottom-nav.php'); ?>

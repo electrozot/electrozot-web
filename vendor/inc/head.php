@@ -146,6 +146,15 @@
     <meta name="apple-mobile-web-app-title" content="ElectroZot">
     <meta name="mobile-web-app-capable" content="yes">
     
+    <!-- PWA Splash Screens for iOS -->
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-1668x2224.png" media="(device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-1242x2208.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="vendor/img/splash/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    
     <!-- CRITICAL: Preload navbar logo to prevent loading hang -->
     <link rel="preload" href="vendor/EZlogonew.png" as="image" type="image/png">
     
@@ -195,8 +204,6 @@
             right: 0 !important;
             width: 100% !important;
             z-index: 10000 !important;
-            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%) !important;
-            box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
             padding: 8px 0 4px 0 !important;
             border: none !important;
             margin: 0 !important;
@@ -206,6 +213,8 @@
             transform: translateZ(0) !important;
             backface-visibility: hidden !important;
         }
+        
+        /* Navbar color animation is defined in nav.php to avoid conflicts */
         
         /* CRITICAL: Logo and brand immediate sizing */
         .navbar-logo {
@@ -307,10 +316,7 @@
                 right: 0 !important;
             }
             
-            /* Disable animations on mobile to prevent hang */
-            .navbar-color-transition {
-                animation: none !important;
-            }
+            /* Mobile navbar animation is handled in nav.php */
         }
         
         /* CRITICAL: Loaded state for smooth transitions */
