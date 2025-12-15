@@ -86,44 +86,71 @@
                      <li class="breadcrumb-item active">Add User</li>
                  </ol>
                  <hr>
-                 <div class="card">
-                     <div class="card-header">
-                         Add User
+                 <div class="card shadow mb-4">
+                     <div class="card-header py-3 d-flex align-items-center">
+                         <h6 class="m-0 font-weight-bold text-primary">
+                             <i class="fas fa-user-plus"></i> Add New User
+                         </h6>
                      </div>
                      <div class="card-body">
                          <!--Add User Form-->
-                         <form method="POST">
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">First Name</label>
-                                 <input type="text" required class="form-control" id="exampleInputEmail1" name="u_fname">
+                         <form method="POST" id="addUserForm">
+                             <div class="row">
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="u_fname">First Name <span class="text-danger">*</span></label>
+                                         <input type="text" required class="form-control" id="u_fname" name="u_fname" placeholder="Enter first name">
+                                     </div>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="u_lname">Last Name</label>
+                                         <input type="text" class="form-control" id="u_lname" name="u_lname" placeholder="Enter last name">
+                                     </div>
+                                 </div>
                              </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Last Name</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_lname">
+
+                             <div class="row">
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="u_phone">Contact Number <span class="text-danger">*</span></label>
+                                         <input type="tel" required class="form-control" id="u_phone" name="u_phone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" maxlength="10">
+                                         <small class="form-text text-muted">Enter 10-digit mobile number</small>
+                                     </div>
+                                 </div>
+                                 <div class="col-md-6">
+                                     <div class="form-group">
+                                         <label for="u_email">Email Address <span class="text-danger">*</span></label>
+                                         <input type="email" required class="form-control" id="u_email" name="u_email" placeholder="Enter email address">
+                                     </div>
+                                 </div>
                              </div>
+
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Contact</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_phone">
-                             </div>
-                             <div class="form-group">
-                                 <label for="exampleInputEmail1">Address</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" name="u_addr">
+                                 <label for="u_addr">Address</label>
+                                 <textarea class="form-control" id="u_addr" name="u_addr" rows="3" placeholder="Enter complete address"></textarea>
                              </div>
 
                              <div class="form-group" style="display:none">
-                                 <label for="exampleInputEmail1">Category</label>
-                                 <input type="text" class="form-control" id="exampleInputEmail1" value="User" name="u_category">
+                                 <label for="u_category">Category</label>
+                                 <input type="text" class="form-control" id="u_category" value="User" name="u_category">
                              </div>
 
                              <div class="form-group">
-                                 <label for="exampleInputEmail1">Email address</label>
-                                 <input type="email" class="form-control" name="u_email"">
-            </div>            <div class=" form-group">
-                                 <label for="exampleInputPassword1">Password</label>
-                                 <input type="password" class="form-control" name="u_pwd" id="exampleInputPassword1">
+                                 <label for="u_pwd">Password <span class="text-danger">*</span></label>
+                                 <input type="password" required class="form-control" name="u_pwd" id="u_pwd" placeholder="Enter password" minlength="6">
+                                 <small class="form-text text-muted">Password must be at least 6 characters</small>
                              </div>
 
-                             <button type="submit" name="add_user" class="btn btn-success">Add User</button>
+                             <hr>
+                             <div class="form-group mb-0">
+                                 <button type="submit" name="add_user" class="btn btn-success">
+                                     <i class="fas fa-save"></i> Add User
+                                 </button>
+                                 <a href="admin-manage-user.php" class="btn btn-secondary ml-2">
+                                     <i class="fas fa-times"></i> Cancel
+                                 </a>
+                             </div>
                          </form>
                          <!-- End Form-->
                      </div>

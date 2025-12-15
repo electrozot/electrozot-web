@@ -54,6 +54,15 @@ if(isset($_POST['action'])) {
         $stmt->bind_param('sssi', $reason, $hold_start, $hold_end, $booking_id);
         $stmt->execute();
         
+        // Clear notification tracking so technician gets notified about hold status
+        $clear_notif = "DELETE FROM tms_technician_notification_tracking WHERE tnt_booking_id = ?";
+        $clear_stmt = $mysqli->prepare($clear_notif);
+        if($clear_stmt) {
+            $clear_stmt->bind_param('i', $booking_id);
+            $clear_stmt->execute();
+            $clear_stmt->close();
+        }
+        
         $_SESSION['success'] = "Booking #$booking_id put on hold successfully";
         
     } elseif($action == 'unhold') {
@@ -72,6 +81,15 @@ if(isset($_POST['action'])) {
         $stmt = $mysqli->prepare($update);
         $stmt->bind_param('i', $booking_id);
         $stmt->execute();
+        
+        // Clear notification tracking so technician gets notified about unhold status
+        $clear_notif = "DELETE FROM tms_technician_notification_tracking WHERE tnt_booking_id = ?";
+        $clear_stmt = $mysqli->prepare($clear_notif);
+        if($clear_stmt) {
+            $clear_stmt->bind_param('i', $booking_id);
+            $clear_stmt->execute();
+            $clear_stmt->close();
+        }
         
         $_SESSION['success'] = "Booking #$booking_id unholded and marked as high priority";
         

@@ -306,7 +306,7 @@ $all_techs = $mysqli->query("SELECT t_id, t_name, t_ez_id FROM tms_technician OR
                                 <button class="btn btn-sm btn-primary" onclick="pay(<?php echo $t->t_id; ?>,'<?php echo $t->t_name; ?>',<?php echo $t->pending; ?>)" title="Record Payment">
                                     <i class="fas fa-money-bill-wave"></i>
                                 </button>
-                                <button class="btn btn-sm btn-danger" onclick="lock(<?php echo $t->t_id; ?>,'<?php echo $t->t_name; ?>',<?php echo $t->pending; ?>)" title="Lock">
+                                <button class="btn btn-sm btn-danger ml-3" onclick="lock(<?php echo $t->t_id; ?>,'<?php echo $t->t_name; ?>',<?php echo $t->pending; ?>)" title="Lock">
                                     <i class="fas fa-lock"></i>
                                 </button>
                             <?php else: ?>

@@ -8,7 +8,7 @@ let installButton;
 
 // Listen for the beforeinstallprompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('💾 PWA Install prompt available');
+
     
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
@@ -20,9 +20,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
     showInstallPromotion();
 });
 
-// Show install promotion UI
+// Show install promotion UI - Only show if main section is not visible
 function showInstallPromotion() {
-    // Create install banner if it doesn't exist
+    // Check if main PWA section exists and is visible
+    const mainPwaSection = document.querySelector('.pwa-install-section');
+    if (mainPwaSection) {
+
+        return; // Don't show banner if main section exists
+    }
+    
+    // Create install banner if it doesn't exist and main section is not present
     if (!document.getElementById('pwa-install-banner')) {
         const banner = document.createElement('div');
         banner.id = 'pwa-install-banner';
@@ -74,33 +81,45 @@ function showInstallPromotion() {
     }
 }
 
-// Install PWA
+// Install PWA - Direct installation
 async function installPWA() {
     if (!deferredPrompt) {
-        console.log('❌ Install prompt not available');
-        return;
+
+        // Try to use global install event if available
+        if (window.pwaInstallEvent) {
+            deferredPrompt = window.pwaInstallEvent;
+        } else {
+            return;
+        }
     }
     
-    // Show the install prompt
-    deferredPrompt.prompt();
-    
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    
-    console.log(`👤 User response: ${outcome}`);
-    
-    if (outcome === 'accepted') {
-        console.log('✅ PWA installed successfully');
-        showInstallSuccess();
-    } else {
-        console.log('❌ User dismissed install prompt');
+    try {
+        // Immediately trigger the install prompt
+
+        await deferredPrompt.prompt();
+        
+        // Wait for the user to respond to the prompt
+        const { outcome } = await deferredPrompt.userChoice;
+        
+
+        
+        if (outcome === 'accepted') {
+
+            showInstallSuccess();
+        } else {
+
+        }
+        
+        // Clear the deferredPrompt
+        deferredPrompt = null;
+        window.pwaInstallEvent = null;
+        
+        // Hide the install promotion
+        dismissInstallPromotion();
+    } catch (error) {
+        console.error('Install error:', error);
+        // Don't show manual guide, just log the error
     }
-    
-    // Clear the deferredPrompt
-    deferredPrompt = null;
-    
-    // Hide the install promotion
-    dismissInstallPromotion();
 }
 
 // Dismiss install promotion
@@ -134,7 +153,7 @@ function showInstallSuccess() {
 
 // Detect if app is already installed
 window.addEventListener('appinstalled', () => {
-    console.log('✅ PWA was installed');
+
     dismissInstallPromotion();
     
     // Track installation (optional analytics)
@@ -154,7 +173,7 @@ function isRunningAsPWA() {
 
 // Show different UI if running as PWA
 if (isRunningAsPWA()) {
-    console.log('🚀 Running as installed PWA');
+
     document.body.classList.add('pwa-mode');
 }
 

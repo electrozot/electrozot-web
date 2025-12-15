@@ -7,6 +7,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Technician Login - Electrozot</title>
+  
+  <!-- Favicon -->
+  <?php include('includes/favicon.php'); ?>
+  
   <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
   <style>

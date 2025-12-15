@@ -1,4 +1,4 @@
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark navbar-color-transition" style="backdrop-filter: blur(10px); padding: 18px 0 8px 0; overflow: visible; position: fixed !important; top: 0 !important; left: 0; right: 0; width: 100%; z-index: 10000 !important; border: none; margin: 0; box-sizing: border-box;">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark navbar-color-transition" style="backdrop-filter: blur(10px); padding: 8px 0 4px 0; overflow: visible; position: fixed !important; top: 0 !important; left: 0; right: 0; width: 100%; z-index: 10000 !important; border: none; margin: 0; box-sizing: border-box;">
     <style>
         /* Force navbar to stay fixed at top */
         .navbar.fixed-top {
@@ -23,7 +23,7 @@
                 border-top: none !important;
                 border-bottom: none !important;
                 box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
-                padding: 10px 0 6px 0 !important;
+                padding: 4px 0 2px 0 !important;
             }
             
             .navbar.fixed-top::after,
@@ -47,9 +47,21 @@
                 background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
                 box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
             }
-            50% {
+            25% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            37.5% {
                 background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
                 box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            62.5% {
+                background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
+                box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+            }
+            75% {
+                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
             }
             100% {
                 background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
@@ -57,23 +69,25 @@
             }
         }
         
+        /* Enable animation on both desktop and mobile */
         .navbar-color-transition {
-            animation: navbarColorChange 6s ease-in-out infinite;
+            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
+            animation: navbarColorChange 8s ease-in-out infinite !important;
         }
     </style>
     <!-- Glossy overlay effect - removed to fix white line -->
     <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: transparent; pointer-events: none; z-index: 1; display: none;"></div>
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
-        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px;">
-            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 70px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <i class="fas fa-bolt logo-fallback" style="font-size: 2.5rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
-            <div class="d-flex flex-column">
+        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;">
+            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 95px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+            <i class="fas fa-bolt logo-fallback" style="font-size: 3rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
+            <div class="d-flex flex-column" style="margin-left: -10px;">
                 <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
                 <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
             </div>
         </a>
         <!-- PWA Install Button - Mobile Left Side -->
-        <button id="pwa-install-mobile-btn" class="btn d-lg-none" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 4px; border-radius: 4px; box-shadow: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px; margin-left: 3px;">
+        <button id="pwa-install-mobile-btn" class="btn d-lg-none" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 4px; border-radius: 4px; box-shadow: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px; margin-left: -5px;">
             <i class="fas fa-download" style="font-size: 0.65rem; margin-bottom: 1px;"></i><span style="font-weight: 600; font-size: 0.5rem; white-space: nowrap;">App</span>
         </button>
         <!-- Mobile Buttons (visible only on mobile) -->
@@ -117,13 +131,61 @@
                 transform: scale(0.95);
             }
             
-            /* Logo hover effect */
-            .navbar-logo:hover {
-                transform: scale(1.05) rotate(2deg);
+            /* Logo hover effect - disabled on mobile */
+            @media (min-width: 992px) {
+                .navbar-logo:hover {
+                    transform: scale(1.05) rotate(2deg);
+                }
+                
+                .navbar-brand:hover .navbar-tagline {
+                    color: #ffd700 !important;
+                }
             }
             
-            .navbar-brand:hover .navbar-tagline {
-                color: #ffd700 !important;
+            /* Prevent navbar brand movement on touch */
+            .navbar-brand {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: manipulation !important;
+                position: relative !important;
+                transform: translateZ(0) !important;
+                backface-visibility: hidden !important;
+            }
+            
+            .navbar-brand,
+            .navbar-brand *,
+            .navbar-logo,
+            .logo-fallback {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-tap-highlight-color: transparent !important;
+                touch-action: manipulation !important;
+                pointer-events: auto !important;
+            }
+            
+            /* Prevent any transform animations on touch */
+            @media (max-width: 991px) {
+                .navbar-brand,
+                .navbar-logo,
+                .logo-fallback {
+                    transform: none !important;
+                    transition: none !important;
+                }
+                
+                .navbar-brand:active,
+                .navbar-brand:focus,
+                .navbar-logo:active,
+                .navbar-logo:focus {
+                    transform: none !important;
+                    outline: none !important;
+                }
             }
             
             @keyframes blink {
@@ -173,7 +235,7 @@
             /* Responsive logo sizing */
             @media (max-width: 768px) {
                 .navbar-logo {
-                    height: 45px !important;
+                    height: 65px !important;
                 }
                 
                 .navbar-brand span {
@@ -183,11 +245,19 @@
                 .navbar-tagline {
                     font-size: 0.65rem !important;
                 }
+                
+                .navbar-brand {
+                    gap: 0px !important;
+                }
+                
+                .navbar-brand .d-flex.flex-column {
+                    margin-left: -8px !important;
+                }
             }
             
             @media (max-width: 576px) {
                 .navbar-logo {
-                    height: 40px !important;
+                    height: 60px !important;
                 }
                 
                 .navbar-brand span {
@@ -200,6 +270,10 @@
                 
                 .navbar-brand {
                     gap: 0px !important;
+                }
+                
+                .navbar-brand .d-flex.flex-column {
+                    margin-left: -6px !important;
                 }
             }
             
@@ -308,6 +382,23 @@
         </style>
         
         <script>
+            // Immediate navbar optimization - prevent hanging
+            (function() {
+                // Force navbar to be visible immediately
+                const navbar = document.querySelector('.navbar');
+                if (navbar) {
+                    navbar.style.opacity = '1';
+                    navbar.style.visibility = 'visible';
+                }
+                
+                // Optimize logo loading
+                const logo = document.querySelector('.navbar-logo');
+                if (logo) {
+                    logo.style.display = 'block';
+                    logo.style.opacity = '1';
+                }
+            })();
+            
             document.addEventListener('DOMContentLoaded', function() {
                 var loginBtn = document.querySelector('.mobile-login-btn');
                 if (loginBtn) {
@@ -319,16 +410,20 @@
                     });
                 }
                 
-                // Close mobile menu on scroll
+                // Close mobile menu on scroll - optimized
                 var navbarCollapse = document.querySelector('.navbar-collapse');
                 var navbarToggler = document.querySelector('.navbar-toggler');
                 
                 if (navbarCollapse && navbarToggler) {
+                    let scrollTimeout;
                     window.addEventListener('scroll', function() {
-                        if (navbarCollapse.classList.contains('show')) {
-                            navbarToggler.click();
-                        }
-                    });
+                        clearTimeout(scrollTimeout);
+                        scrollTimeout = setTimeout(function() {
+                            if (navbarCollapse.classList.contains('show')) {
+                                navbarToggler.click();
+                            }
+                        }, 100);
+                    }, { passive: true });
                 }
             });
         </script>
@@ -352,6 +447,12 @@
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="gallery.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Gallery</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="blog.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Blog</a>
+                 </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="faq.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">FAQ</a>
                  </li>
                  <li class="nav-item d-none d-lg-block">
                     <button id="pwa-install-nav-btn" class="btn nav-link" style="color: #fff !important; font-weight: 600; font-size: 0.75rem; padding: 5px 10px !important; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 5px; transition: all 0.3s ease; display: inline-block !important; z-index: 1000; position: relative;">
@@ -384,67 +485,114 @@
             }
         });
         
-        // PWA Install Button Handler
-        let deferredPrompt;
+        // PWA Install Button Handler - Completely Rewritten
+        let deferredPrompt = null;
+        let installPromptShown = false;
         const installButtonDesktop = document.getElementById('pwa-install-nav-btn');
         const installButtonMobile = document.getElementById('pwa-install-mobile-btn');
         
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            // Show the install buttons
+        // Check if already installed
+        function isAppInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true ||
+                   document.referrer.includes('android-app://');
+        }
+        
+        // Hide buttons if already installed
+        if (isAppInstalled()) {
             if (installButtonDesktop) {
-                installButtonDesktop.style.display = 'inline-block';
-                installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Download App';
+                installButtonDesktop.innerHTML = '<i class="fas fa-check-circle"></i> Installed';
+                installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonDesktop.disabled = true;
             }
             if (installButtonMobile) {
-                installButtonMobile.style.display = 'flex';
+                installButtonMobile.innerHTML = '<i class="fas fa-check-circle"></i><span>Installed</span>';
+                installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonMobile.disabled = true;
+            }
+        }
+        
+        // Listen for the beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('✅ PWA install prompt available');
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install buttons only if not already installed
+            if (!isAppInstalled()) {
+                if (installButtonDesktop) {
+                    installButtonDesktop.style.display = 'inline-block';
+                    installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Install App';
+                }
+                if (installButtonMobile) {
+                    installButtonMobile.style.display = 'flex';
+                }
             }
         });
         
-        // Handle desktop button click
-        if (installButtonDesktop) {
-            installButtonDesktop.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    alert('📱 PWA Installation Info:\n\n' +
-                          '✓ Button is visible and working!\n\n' +
-                          'To enable installation:\n' +
-                          '1. Browse the site for 30 seconds\n' +
-                          '2. The install prompt will appear\n' +
-                          '3. Or check browser menu for "Install ElectroZot"');
-                    return;
-                }
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    console.log('PWA installed');
-                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-                    if (installButtonMobile) installButtonMobile.style.display = 'none';
+        // Function to handle installation
+        async function handleInstallClick() {
+            if (isAppInstalled()) {
+                alert('✅ ElectroZot is already installed on your device!');
+                return;
+            }
+            
+            if (deferredPrompt) {
+                try {
+                    console.log('Showing install prompt...');
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    console.log('Install prompt result:', outcome);
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA installation accepted');
+                        // Hide buttons after successful installation
+                        if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                        if (installButtonMobile) installButtonMobile.style.display = 'none';
+                    } else {
+                        console.log('❌ PWA installation declined');
+                    }
+                } catch (error) {
+                    console.error('Installation error:', error);
+                    showManualInstallInstructions();
                 }
                 deferredPrompt = null;
-            });
+            } else {
+                showManualInstallInstructions();
+            }
         }
         
-        // Handle mobile button click
-        if (installButtonMobile) {
-            installButtonMobile.addEventListener('click', async () => {
-                if (!deferredPrompt) {
-                    alert('📱 Install ElectroZot App\n\n' +
-                          'Browse the site for 30 seconds, then the install option will appear!\n\n' +
-                          'Or check your browser menu for "Install ElectroZot"');
-                    return;
-                }
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                
-                if (outcome === 'accepted') {
-                    console.log('PWA installed');
-                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-                    if (installButtonMobile) installButtonMobile.style.display = 'none';
-                }
-                deferredPrompt = null;
-            });
+        // Function to show manual installation instructions
+        function showManualInstallInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '📱 Install ElectroZot App\n\n';
+            
+            if (userAgent.includes('chrome') && userAgent.includes('mobile')) {
+                instructions += '1. Tap the menu (⋮) in the top right\n2. Select "Add to Home screen"\n3. Tap "Add"';
+            } else if (userAgent.includes('chrome')) {
+                instructions += '1. Click the menu (⋮) in the top right\n2. Select "Install ElectroZot"\n3. Click "Install"';
+            } else if (userAgent.includes('firefox')) {
+                instructions += '1. Tap the menu (☰)\n2. Select "Install"\n3. Tap "Add to Home Screen"';
+            } else if (userAgent.includes('safari')) {
+                instructions += '1. Tap the Share button (□↗)\n2. Select "Add to Home Screen"\n3. Tap "Add"';
+            } else if (userAgent.includes('edge')) {
+                instructions += '1. Click the menu (...)\n2. Select "Apps"\n3. Click "Install this site as an app"';
+            } else {
+                instructions += 'Look for "Install app", "Add to Home screen", or similar option in your browser menu.';
+            }
+            
+            instructions += '\n\n💡 Tip: Make sure you\'re using HTTPS and have browsed the site for a few minutes.';
+            alert(instructions);
+        }
+        
+        // Attach event listeners
+        if (installButtonDesktop && !isAppInstalled()) {
+            installButtonDesktop.addEventListener('click', handleInstallClick);
+        }
+        
+        if (installButtonMobile && !isAppInstalled()) {
+            installButtonMobile.addEventListener('click', handleInstallClick);
         }
         
         // Hide buttons if already installed

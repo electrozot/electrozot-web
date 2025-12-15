@@ -12,6 +12,7 @@ Thumbs.db
 
 # Temporary Files
 *.tmp
+*.zip
 *.bak
 *.backup
 

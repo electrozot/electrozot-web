@@ -272,9 +272,12 @@ if(isset($_POST['mark_not_done'])){
             )");
             
             // Track rejection in rejection tracking table
-            $track_stmt = $mysqli->prepare("INSERT INTO tms_technician_rejections (tr_technician_id, tr_booking_id, tr_reason) VALUES (?, ?, ?)");
+            // CRITICAL: tr_admin_notified defaults to 0, which triggers the alert system
+            $track_stmt = $mysqli->prepare("INSERT INTO tms_technician_rejections (tr_technician_id, tr_booking_id, tr_reason, tr_admin_notified) VALUES (?, ?, ?, 0)");
             $track_stmt->bind_param('iis', $t_id, $sb_id, $reason);
-            $track_stmt->execute();
+            if(!$track_stmt->execute()) {
+                error_log("Failed to track rejection for technician $t_id, booking $sb_id: " . $track_stmt->error);
+            }
             
             // Increment rejection counter
             $mysqli->query("UPDATE tms_technician SET t_rejection_count = t_rejection_count + 1 WHERE t_id = $t_id");

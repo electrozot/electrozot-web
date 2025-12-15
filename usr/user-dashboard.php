@@ -120,10 +120,45 @@ $all_bookings_result = $all_bookings_stmt->get_result();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard - Electrozot</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="../vendor/img/icons/favicon-96x96.png?v=<?php echo time(); ?>">
+    
+    <!-- PWA Meta Tags for Fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-tap-highlight" content="no">
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
+        /* Hide browser loading bars in PWA */
+        ::-webkit-progress-bar,
+        ::-webkit-progress-value {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Hide Android Chrome loading bar */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent !important;
+            z-index: 9999;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
@@ -132,93 +167,10 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             padding-top: 75px;
             padding-bottom: 70px;
             min-height: 100vh;
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-        }
         
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-left: 0;
-            margin-left: -5px;
-        }
-        
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .logo {
-            height: 55px;
-            width: auto;
-        }
-        
-        .brand-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 3px 0 0 0;
-            font-style: italic;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-left: auto;
-        }
-        
-        .user-name {
-            font-size: 16px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            text-decoration: none;
-            color: white;
-            transition: all 0.3s;
-        }
-        
-        .header-icon:hover {
-            background: rgba(255,255,255,0.35);
-            transform: scale(1.05);
-        }
-        
-
-
-
         .quick-actions {
             padding: 15px 15px 12px;
         }
@@ -285,66 +237,6 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             line-height: 1.2;
         }
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 16px);
-            max-width: 450px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 4px 6px;
-            z-index: 1000;
-            border-radius: 20px;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.75);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 4px 2px;
-            position: relative;
-            border-radius: 12px;
-        }
-        
-        .nav-item:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-        
-        .nav-item.active { 
-            color: white;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-item i {
-            font-size: 16px;
-            display: block;
-            margin-bottom: 1px;
-        }
-        
-        .nav-item.active i {
-            animation: bounce 0.4s ease;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .nav-item span {
-            font-size: 8px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-        
         /* Tablet & Desktop Responsive */
         @media (min-width: 768px) {
             body {
@@ -384,25 +276,6 @@ $all_bookings_result = $all_bookings_stmt->get_result();
             
             .action-label {
                 font-size: 12px;
-            }
-            
-            .bottom-nav {
-                max-width: 400px;
-                bottom: 10px;
-                padding: 5px 8px;
-            }
-            
-            .nav-item {
-                padding: 5px 4px;
-            }
-            
-            .nav-item i {
-                font-size: 18px;
-                margin-bottom: 2px;
-            }
-            
-            .nav-item span {
-                font-size: 9px;
             }
         }
         
@@ -473,25 +346,7 @@ $all_bookings_result = $all_bookings_stmt->get_result();
     </style>
 </head>
 <body>
-    <div class="top-header">
-        <div class="header-content">
-            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
-                <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
-                <div class="brand-text">
-                    <h2>Electrozot</h2>
-                    <p>We make perfect</p>
-                </div>
-            </a>
-            <div class="user-section">
-                <div class="user-name"><?php echo htmlspecialchars($user->u_fname); ?></div>
-                <div class="header-icons">
-                    <a href="user-view-profile.php" class="header-icon">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <?php if(isset($_SESSION['linked_bookings']) && $_SESSION['linked_bookings'] > 0): ?>
     <div style="margin: 15px; padding: 15px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
@@ -743,29 +598,6 @@ $all_bookings_result = $all_bookings_stmt->get_result();
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="user-dashboard.php" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="book-service-step1.php" class="nav-item">
-            <i class="fas fa-calendar-plus"></i>
-            <span>Book</span>
-        </a>
-        <a href="user-manage-booking.php" class="nav-item">
-            <i class="fas fa-list-alt"></i>
-            <span>Orders</span>
-        </a>
-        <a href="user-view-profile.php" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-        <a href="../index.php" class="nav-item">
-            <i class="fas fa-store"></i>
-            <span>Main</span>
-        </a>
-    </div>
-
     <script>
     // Toggle bookings list
     function toggleBookings() {
@@ -886,5 +718,6 @@ $all_bookings_result = $all_bookings_stmt->get_result();
     <?php // include('vendor/inc/customer-notification-system.php'); ?>
     <?php // <script src="js/customer-notifications.js"></script> ?>
 
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

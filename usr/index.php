@@ -84,8 +84,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    <meta name="theme-color" content="#000000">
 
     <title>Client Login - Electrozot</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="../vendor/img/icons/favicon-96x96.png?v=<?php echo time(); ?>">
+    
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <style>
         * {
@@ -172,7 +181,7 @@
         }
         
         .login-header {
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%);
             padding: 25px 30px;
             text-align: center;
             position: relative;
@@ -309,7 +318,7 @@
         .btn-login {
             width: 100%;
             padding: 12px 20px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
+            background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%);
             border: none;
             border-radius: 10px;
             color: white;

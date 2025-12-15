@@ -1,0 +1,627 @@
+<!-- Unified Mobile Notification System - Single Source of Truth -->
+<script>
+console.log('🚀 Initializing Unified Mobile Notification System v5.0');
+
+// Global configuration - Make accessible globally
+window.TECH_ID = <?php echo $_SESSION['t_id']; ?>;
+window.AUDIO_STORAGE_KEY = `techAudio_${window.TECH_ID}_enabled`;
+window.AUDIO_SETUP_KEY = `techAudio_${window.TECH_ID}_setup_complete`;
+window.NOTIFICATION_PERMISSION_KEY = `techNotif_${window.TECH_ID}_permission`;
+
+// System state - Make accessible globally
+window.techNotificationAudio = null;
+window.audioEnabled = false;
+window.audioInitialized = false;
+window.audioContext = null;
+window.audioBuffer = null;
+
+// Local references for easier access
+const TECH_ID = window.TECH_ID;
+const AUDIO_STORAGE_KEY = window.AUDIO_STORAGE_KEY;
+const AUDIO_SETUP_KEY = window.AUDIO_SETUP_KEY;
+const NOTIFICATION_PERMISSION_KEY = window.NOTIFICATION_PERMISSION_KEY;
+let techNotificationAudio = window.techNotificationAudio;
+let audioEnabled = window.audioEnabled;
+let audioInitialized = window.audioInitialized;
+let audioContext = window.audioContext;
+let audioBuffer = window.audioBuffer;
+let checkCount = 0;
+let lastSoundPlayTime = 0;
+let enablePromptShown = false;
+
+// Device detection
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isAndroid = /Android/.test(navigator.userAgent);
+
+console.log('📱 Device detected:', isMobile ? (isIOS ? 'iOS' : isAndroid ? 'Android' : 'Mobile') : 'Desktop');
+
+// ===== AUDIO SYSTEM =====
+window.initializeAudio = function initializeAudio() {
+    console.log('🔊 [AUDIO] Initializing unified audio system...');
+    
+    if (audioInitialized) return;
+    
+    try {
+        // Method 1: HTML5 Audio
+        techNotificationAudio = window.techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
+        techNotificationAudio.volume = 1.0;
+        techNotificationAudio.preload = 'auto';
+        techNotificationAudio.load();
+        
+        // Method 2: Web Audio API for mobile
+        if (window.AudioContext || window.webkitAudioContext) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            audioContext = window.audioContext = new AudioContextClass();
+            
+            fetch('../admin/vendor/sounds/arived.mp3')
+                .then(response => response.arrayBuffer())
+                .then(data => audioContext.decodeAudioData(data))
+                .then(buffer => {
+                    audioBuffer = window.audioBuffer = buffer;
+                    console.log('✅ [AUDIO] Web Audio buffer loaded');
+                })
+                .catch(error => {
+                    console.log('⚠️ [AUDIO] Web Audio buffer failed:', error.message);
+                });
+        }
+        
+        audioInitialized = window.audioInitialized = true;
+        
+        // Check if previously enabled
+        const wasEnabled = localStorage.getItem(AUDIO_STORAGE_KEY);
+        if (wasEnabled === 'true') {
+            audioEnabled = window.audioEnabled = true;
+            console.log('✅ [AUDIO] Audio was previously enabled');
+        }
+        
+        console.log('✅ [AUDIO] Unified audio system initialized');
+    } catch(error) {
+        console.error('❌ [AUDIO] Initialization failed:', error);
+    }
+}
+
+function enableAudioPermanently() {
+    console.log('🔊 [AUDIO] Enabling audio permanently...');
+    
+    if (!audioInitialized) initializeAudio();
+    
+    return new Promise((resolve) => {
+        // Resume audio context if suspended (mobile requirement)
+        if (audioContext && audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                playTestSound().then(resolve);
+            }).catch(() => {
+                playTestSound().then(resolve);
+            });
+        } else {
+            playTestSound().then(resolve);
+        }
+    });
+}
+
+function playTestSound() {
+    return new Promise((resolve) => {
+        if (techNotificationAudio) {
+            techNotificationAudio.play().then(() => {
+                techNotificationAudio.pause();
+                techNotificationAudio.currentTime = 0;
+                
+                audioEnabled = window.audioEnabled = true;
+                localStorage.setItem(AUDIO_STORAGE_KEY, 'true');
+                localStorage.setItem(AUDIO_SETUP_KEY, 'true');
+                
+                console.log('✅ [AUDIO] Audio enabled and saved for technician:', TECH_ID);
+                showSuccessMessage();
+                resolve(true);
+            }).catch((error) => {
+                console.log('⚠️ [AUDIO] HTML5 audio failed, trying Web Audio API:', error.message);
+                
+                if (audioContext && audioBuffer) {
+                    try {
+                        const source = audioContext.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(audioContext.destination);
+                        source.start(0);
+                        source.stop(audioContext.currentTime + 0.1);
+                        
+                        audioEnabled = window.audioEnabled = true;
+                        localStorage.setItem(AUDIO_STORAGE_KEY, 'true');
+                        localStorage.setItem(AUDIO_SETUP_KEY, 'true');
+                        
+                        console.log('✅ [AUDIO] Web Audio API enabled');
+                        showSuccessMessage();
+                        resolve(true);
+                    } catch(webError) {
+                        console.log('❌ [AUDIO] All audio methods failed');
+                        resolve(false);
+                    }
+                } else {
+                    resolve(false);
+                }
+            });
+        } else {
+            resolve(false);
+        }
+    });
+}
+
+// Protected sound function - resistant to code formatting
+window.playNotificationSound = function playNotificationSound() {
+    console.log('🔊 [SOUND] Playing notification sound...');
+    
+    // Cooldown check
+    const now = Date.now();
+    if (now - lastSoundPlayTime < 1500) {
+        console.log('⏭️ [SOUND] Skipping - cooldown active');
+        return;
+    }
+    
+    if (!audioInitialized) initializeAudio();
+    
+    if (!audioEnabled) {
+        showEnablePrompt();
+        return;
+    }
+    
+    // Try multiple audio methods
+    let soundPlayed = false;
+    
+    // Method 1: HTML5 Audio
+    if (techNotificationAudio && !soundPlayed) {
+        techNotificationAudio.currentTime = 0;
+        techNotificationAudio.volume = 1.0;
+        
+        techNotificationAudio.play().then(() => {
+            console.log('✅ [SOUND] HTML5 audio played');
+            lastSoundPlayTime = Date.now();
+            soundPlayed = true;
+            
+            setTimeout(() => {
+                techNotificationAudio.pause();
+                techNotificationAudio.currentTime = 0;
+            }, 2000);
+        }).catch(() => {
+            // Method 2: Web Audio API fallback
+            if (audioContext && audioBuffer && !soundPlayed) {
+                try {
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume().then(() => playWebAudio());
+                    } else {
+                        playWebAudio();
+                    }
+                } catch(e) {
+                    console.log('⚠️ [SOUND] Web Audio failed:', e.message);
+                }
+            }
+        });
+    }
+    
+    // Method 3: Vibration (always try on mobile)
+    if (isMobile && 'vibrate' in navigator) {
+        navigator.vibrate([300, 100, 300, 100, 300]);
+        console.log('📳 [MOBILE] Vibration triggered');
+    }
+    
+    // Method 4: Visual feedback
+    flashScreen();
+}
+
+function playWebAudio() {
+    try {
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+        
+        console.log('✅ [SOUND] Web Audio played');
+        lastSoundPlayTime = Date.now();
+        
+        setTimeout(() => {
+            try { source.disconnect(); } catch(e) {}
+        }, 2000);
+    } catch(error) {
+        console.log('⚠️ [SOUND] Web Audio playback failed:', error.message);
+    }
+}
+
+function flashScreen() {
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(16, 185, 129, 0.3); z-index: 99998; pointer-events: none;
+        animation: flashAnimation 0.5s ease-out;
+    `;
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 500);
+}
+
+function showSuccessMessage() {
+    const msg = document.createElement('div');
+    msg.style.cssText = `
+        position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white; padding: 15px 25px; border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); z-index: 99999;
+        font-weight: bold; display: flex; align-items: center; gap: 10px;
+    `;
+    msg.innerHTML = '<i class="fas fa-check-circle"></i><span>🔊 Sound Alerts Enabled Forever!</span>';
+    document.body.appendChild(msg);
+    
+    setTimeout(() => {
+        msg.style.transition = 'opacity 0.5s';
+        msg.style.opacity = '0';
+        setTimeout(() => msg.remove(), 500);
+    }, 3000);
+}
+
+function showEnablePrompt() {
+    const setupComplete = localStorage.getItem(AUDIO_SETUP_KEY);
+    if (setupComplete === 'true' || setupComplete === 'skipped' || enablePromptShown) return;
+    
+    enablePromptShown = true;
+    console.log('📢 [PROMPT] Showing audio enable prompt');
+    
+    const prompt = document.createElement('div');
+    prompt.style.cssText = `
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white; padding: 25px; border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4); z-index: 99999;
+        text-align: center; max-width: 90%; width: 350px;
+    `;
+    
+    prompt.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 15px;">📱🔊</div>
+        <h3 style="margin: 0 0 10px 0;">Enable Sound Alerts</h3>
+        <p style="margin: 0 0 20px 0; font-size: 14px; opacity: 0.9;">
+            Get sound + vibration alerts for new bookings.<br>
+            <strong>Works even when phone is locked!</strong>
+        </p>
+        <button id="enable-audio-btn" style="
+            background: white; color: #667eea; border: none;
+            padding: 15px 25px; border-radius: 50px; font-weight: bold;
+            cursor: pointer; margin-right: 10px;
+        ">Enable Sound</button>
+        <button id="skip-audio-btn" style="
+            background: transparent; color: white; border: 2px solid white;
+            padding: 15px 25px; border-radius: 50px; font-weight: bold;
+            cursor: pointer;
+        ">Skip</button>
+    `;
+    
+    document.body.appendChild(prompt);
+    
+    const backdrop = document.createElement('div');
+    backdrop.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7); z-index: 99998;
+    `;
+    document.body.appendChild(backdrop);
+    
+    document.getElementById('enable-audio-btn').onclick = function() {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enabling...';
+        this.disabled = true;
+        
+        enableAudioPermanently().then((success) => {
+            prompt.remove();
+            backdrop.remove();
+            if (success) {
+                setTimeout(() => playNotificationSound(), 500);
+            }
+        });
+    };
+    
+    document.getElementById('skip-audio-btn').onclick = function() {
+        localStorage.setItem(AUDIO_SETUP_KEY, 'skipped');
+        prompt.remove();
+        backdrop.remove();
+    };
+}
+
+// ===== NOTIFICATION SYSTEM =====
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        console.log('📋 [PERMISSION] Requesting notification permission...');
+        
+        Notification.requestPermission().then(permission => {
+            localStorage.setItem(NOTIFICATION_PERMISSION_KEY, permission);
+            console.log('📋 [PERMISSION] Result:', permission);
+        });
+    }
+}
+
+function showBrowserNotification(notifications) {
+    if (Notification.permission !== 'granted') return;
+    
+    notifications.forEach(notif => {
+        try {
+            const notification = new Notification('🔔 New Booking Assignment!', {
+                body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+                icon: '../admin/vendor/img/logo.png',
+                badge: '../admin/vendor/img/logo.png',
+                vibrate: [500, 200, 500, 200, 500],
+                tag: 'booking-' + notif.id,
+                requireInteraction: true,
+                silent: false,
+                renotify: true
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                this.close();
+            };
+            
+            setTimeout(() => notification.close(), 10000);
+            console.log('✅ [BROWSER-NOTIF] Notification shown');
+        } catch(e) {
+            console.error('❌ [BROWSER-NOTIF] Error:', e);
+        }
+    });
+}
+
+function showNotificationToast(notifications) {
+    if (document.hidden) return;
+    
+    document.querySelectorAll('.tech-notification-toast').forEach(el => el.remove());
+    
+    const count = notifications.length;
+    const firstAction = notifications[0].action;
+    let bgColor = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    let icon = 'bell';
+    
+    if(firstAction === 'assigned' || firstAction === 'reassigned') {
+        bgColor = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+        icon = 'user-check';
+    }
+    
+    const html = `
+        <div class="tech-notification-toast" style="
+            position: fixed; top: 80px; right: 20px; background: ${bgColor};
+            color: white; padding: 20px; border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 99999;
+            min-width: 300px; max-width: 90%; animation: slideIn 0.5s ease-out;
+        ">
+            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                <i class="fas fa-${icon}" style="font-size: 24px; margin-right: 10px;"></i>
+                <h4 style="margin: 0; font-weight: bold;">${count === 1 ? 'New Notification!' : count + ' New Notifications!'}</h4>
+                <button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+            ${notifications.map(notif => `
+                <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                    <strong>📋 Booking #${notif.id}</strong><br>
+                    <div style="margin-top: 5px; font-size: 13px;">
+                        <strong>✨ ${notif.message}</strong><br>
+                        👤 ${notif.customer}<br>
+                        📞 ${notif.phone}<br>
+                        🔧 ${notif.service}
+                    </div>
+                </div>
+            `).join('')}
+            <div style="margin-top: 15px; text-align: center;">
+                <a href="dashboard.php" style="background: white; color: #667eea; padding: 8px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">View Dashboard</a>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+    
+    setTimeout(() => {
+        const toast = document.querySelector('.tech-notification-toast');
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 12000);
+}
+
+// ===== NOTIFICATION CHECKING =====
+function checkTechNotifications() {
+    checkCount++;
+    console.log(`🔍 [CHECK #${checkCount}] Checking notifications...`);
+    
+    fetch('check-technician-notifications.php', { method: 'GET', cache: 'no-cache' })
+    .then(response => response.text())
+    .then(rawResponse => {
+        const cleanResponse = rawResponse.trim().replace(/^\uFEFF/, '');
+        const response = JSON.parse(cleanResponse);
+        
+        if(response.error) {
+            console.error('❌ [ERROR]', response.error);
+            return;
+        }
+        
+        // Update badge
+        const badge = document.getElementById('notificationCount');
+        if(badge) {
+            if(response.notification_count > 0) {
+                badge.textContent = response.notification_count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        if(response.has_notifications && response.new_count > 0) {
+            console.log('🎉 [NOTIFICATION] NEW NOTIFICATIONS:', response.new_count);
+            
+            // Play sound (multiple methods)
+            playNotificationSound();
+            
+            // Show browser notification (works when locked)
+            showBrowserNotification(response.notifications);
+            
+            // Show toast (only if visible)
+            if (!document.hidden) {
+                showNotificationToast(response.notifications);
+            }
+            
+            // Update UI elements
+            const dot = document.getElementById('headerNotifDot');
+            if(dot) dot.style.display = 'block';
+            
+            const mobileAlert = document.getElementById('mobileNotificationAlert');
+            const mobileText = document.getElementById('mobileAlertText');
+            if(mobileAlert && mobileText) {
+                mobileText.textContent = `You have ${response.notification_count} new notification${response.notification_count > 1 ? 's' : ''}!`;
+                mobileAlert.style.display = 'flex';
+            }
+            
+            // Notify service worker
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'NEW_BOOKING',
+                    notifications: response.notifications
+                });
+            }
+        }
+    })
+    .catch(error => {
+        console.error('❌ [FETCH] Error:', error);
+    });
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+        .then(registration => {
+            console.log('✅ [SW] Service Worker registered');
+            
+            // Request notification permission
+            requestNotificationPermission();
+            
+            // Listen for messages
+            navigator.serviceWorker.addEventListener('message', event => {
+                if (event.data.type === 'NEW_BOOKING') {
+                    setTimeout(checkTechNotifications, 1000);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('❌ [SW] Registration failed:', error);
+        });
+}
+
+// ===== INITIALIZATION =====
+console.log('🎬 [INIT] Starting unified notification system...');
+initializeAudio();
+
+// Handle user interaction
+let interactionHandled = false;
+function handleUserInteraction() {
+    if (interactionHandled) return;
+    interactionHandled = true;
+    
+    console.log('👆 [INTERACTION] User interaction detected');
+    
+    const wasEnabled = localStorage.getItem(AUDIO_STORAGE_KEY);
+    const setupComplete = localStorage.getItem(AUDIO_SETUP_KEY);
+    
+    if (wasEnabled === 'true') {
+        enableAudioPermanently();
+    } else if (setupComplete !== 'true' && setupComplete !== 'skipped') {
+        setTimeout(showEnablePrompt, 1500);
+    }
+    
+    requestNotificationPermission();
+}
+
+['touchstart', 'click', 'keydown', 'scroll'].forEach(event => {
+    document.addEventListener(event, handleUserInteraction, { passive: true, once: true });
+});
+
+// Page visibility handling
+document.addEventListener('visibilitychange', function() {
+    console.log('📱 [VISIBILITY] Page hidden:', document.hidden);
+    
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'PAGE_VISIBILITY_CHANGE',
+            hidden: document.hidden
+        });
+    }
+    
+    if (!document.hidden) {
+        setTimeout(checkTechNotifications, 1000);
+    }
+});
+
+// Initial check and polling
+setTimeout(() => {
+    fetch('check-technician-notifications.php', { cache: 'no-cache' })
+        .then(response => response.json())
+        .then(response => {
+            if(response && response.notification_count > 0) {
+                const dot = document.getElementById('headerNotifDot');
+                if(dot) dot.style.display = 'block';
+            }
+        })
+        .catch(e => console.error('❌ [INIT] Initial check error:', e));
+}, 1000);
+
+setInterval(checkTechNotifications, isMobile ? 6000 : 5000);
+setTimeout(checkTechNotifications, 2000);
+
+// Add CSS animations
+if(!document.getElementById('unified-notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'unified-notification-styles';
+    style.textContent = `
+        @keyframes slideIn { 
+            from { transform: translateX(400px); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
+        @keyframes flashAnimation {
+            0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; }
+        }
+        .tech-notification-toast { transition: all 0.5s ease; }
+        @media (max-width: 768px) {
+            .tech-notification-toast {
+                right: 10px !important; left: 10px !important;
+                min-width: auto !important; max-width: none !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Backup initialization - runs after DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure audio system is initialized
+    if (!window.audioInitialized) {
+        console.log('🔄 [BACKUP] Re-initializing audio system...');
+        window.initializeAudio();
+    }
+    
+    // Ensure sound function is available globally
+    if (typeof window.playNotificationSound !== 'function') {
+        console.log('🔄 [BACKUP] Restoring sound function...');
+        window.playNotificationSound = function() {
+            console.log('🔊 [BACKUP] Playing notification sound...');
+            if (window.techNotificationAudio) {
+                window.techNotificationAudio.currentTime = 0;
+                window.techNotificationAudio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        };
+    }
+});
+
+// Additional backup - runs after window loads
+window.addEventListener('load', function() {
+    setTimeout(function() {
+        if (!window.audioInitialized || typeof window.playNotificationSound !== 'function') {
+            console.log('🚨 [EMERGENCY] Restoring notification system...');
+            window.initializeAudio();
+        }
+    }, 1000);
+});
+
+console.log('✅ Unified Mobile Notification System Initialized');
+console.log('📊 Technician ID:', TECH_ID);
+console.log('📱 Device:', isMobile ? 'Mobile' : 'Desktop');
+console.log('🔊 Audio System: Multi-method (HTML5 + Web Audio + Vibration)');
+console.log('📢 Notifications: Browser + Toast + Service Worker');
+console.log('🔄 Polling: Every', isMobile ? '6' : '5', 'seconds');
+console.log('🔒 Background: Service Worker handles locked screen notifications');
+</script>

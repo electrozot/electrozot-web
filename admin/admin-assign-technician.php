@@ -177,6 +177,17 @@
                     if(!$result || $stmt->affected_rows == 0) {
                         throw new Exception("Failed to update booking");
                     }
+                    
+                    // STEP 7.5: Clear notification tracking for this booking so new technician gets notified
+                    // This ensures reassigned bookings trigger notifications
+                    $clear_notif = "DELETE FROM tms_technician_notification_tracking WHERE tnt_booking_id = ?";
+                    $clear_stmt = $mysqli->prepare($clear_notif);
+                    if($clear_stmt) {
+                        $clear_stmt->bind_param('i', $sb_id);
+                        $clear_stmt->execute();
+                        $clear_stmt->close();
+                    }
+                    
                     // STEP 8: Increment new technician's booking count and update status
                     $update_tech = "UPDATE tms_technician 
                                   SET t_current_bookings = t_current_bookings + 1,

@@ -7,6 +7,20 @@ $aid = $_SESSION['a_id'];
 
 // Check if table exists, if not create it
 $table_check = $mysqli->query("SHOW TABLES LIKE 'tms_site_settings'");
+
+// Add missing social media fields if they don't exist
+$check_youtube = $mysqli->query("SELECT * FROM tms_site_settings WHERE setting_key = 'youtube_url'");
+if($check_youtube && $check_youtube->num_rows == 0) {
+    $insert_youtube = "INSERT INTO tms_site_settings (setting_key, setting_value, setting_label, setting_type, setting_group, display_order) VALUES ('youtube_url', 'https://youtube.com/@electrozot_ez?si=UAyPrmU33S28VLlO', 'YouTube URL', 'url', 'social', 12)";
+    $mysqli->query($insert_youtube);
+}
+
+$check_linkedin = $mysqli->query("SELECT * FROM tms_site_settings WHERE setting_key = 'linkedin_url'");
+if($check_linkedin && $check_linkedin->num_rows == 0) {
+    $insert_linkedin = "INSERT INTO tms_site_settings (setting_key, setting_value, setting_label, setting_type, setting_group, display_order) VALUES ('linkedin_url', '', 'LinkedIn URL', 'url', 'social', 13)";
+    $mysqli->query($insert_linkedin);
+}
+
 if($table_check->num_rows == 0) {
     // Create table
     $create_table = "CREATE TABLE `tms_site_settings` (
@@ -38,7 +52,8 @@ if($table_check->num_rows == 0) {
         ['facebook_url', '', 'Facebook URL', 'url', 'social', 9],
         ['instagram_url', '', 'Instagram URL', 'url', 'social', 10],
         ['twitter_url', '', 'Twitter URL', 'url', 'social', 11],
-        ['linkedin_url', '', 'LinkedIn URL', 'url', 'social', 12]
+        ['youtube_url', 'https://youtube.com/@electrozot_ez?si=UAyPrmU33S28VLlO', 'YouTube URL', 'url', 'social', 12],
+        ['linkedin_url', '', 'LinkedIn URL', 'url', 'social', 13]
     ];
     
     $insert_stmt = $mysqli->prepare("INSERT INTO tms_site_settings (setting_key, setting_value, setting_label, setting_type, setting_group, display_order) VALUES (?, ?, ?, ?, ?, ?)");
@@ -265,6 +280,10 @@ unset($_SESSION['settings_error']);
                                                     $icon = 'fa-facebook';
                                                 } elseif(strpos($setting['setting_key'], 'twitter') !== false) {
                                                     $icon = 'fa-twitter';
+                                                } elseif(strpos($setting['setting_key'], 'youtube') !== false) {
+                                                    $icon = 'fa-youtube';
+                                                } elseif(strpos($setting['setting_key'], 'linkedin') !== false) {
+                                                    $icon = 'fa-linkedin';
                                                 } elseif(strpos($setting['setting_key'], 'address') !== false) {
                                                     $icon = 'fa-map-marker-alt';
                                                 }

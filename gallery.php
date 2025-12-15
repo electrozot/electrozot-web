@@ -102,6 +102,52 @@
      <!-- Bootstrap core JavaScript -->
      <script src="vendor/jquery/jquery.min.js"></script>
      <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+     
+     <!-- Enhanced Mobile menu fix -->
+     <script>
+         $(document).ready(function() {
+             // Enhanced mobile menu toggle
+             $('.navbar-toggler').on('click', function(e) {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 
+                 var target = $(this).attr('data-target') || $(this).attr('data-bs-target');
+                 var $target = $(target);
+                 
+                 if ($target.length) {
+                     $target.toggleClass('show');
+                     var isExpanded = $target.hasClass('show');
+                     $(this).attr('aria-expanded', isExpanded);
+                 }
+             });
+             
+             // Close menu when clicking outside
+             $(document).on('click', function(e) {
+                 if (!$(e.target).closest('.navbar').length) {
+                     $('.navbar-collapse').removeClass('show');
+                     $('.navbar-toggler').attr('aria-expanded', 'false');
+                 }
+             });
+             
+             // Close menu when clicking on menu items
+             $('.navbar-nav .nav-link').on('click', function() {
+                 $('.navbar-collapse').removeClass('show');
+                 $('.navbar-toggler').attr('aria-expanded', 'false');
+             });
+             
+             // Close menu with arrow button
+             $('.mobile-menu-arrow-close').on('click', function(e) {
+                 e.preventDefault();
+                 $('.navbar-collapse').removeClass('show');
+                 $('.navbar-toggler').attr('aria-expanded', 'false');
+             });
+             
+             // Prevent menu from closing when clicking inside it
+             $('.navbar-collapse').on('click', function(e) {
+                 e.stopPropagation();
+             });
+         });
+     </script>
 
     <style>
         /* Gallery Page Styles */

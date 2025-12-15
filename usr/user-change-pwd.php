@@ -52,8 +52,14 @@ if (isset($_POST['change_password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>Change Password - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('vendor/inc/favicon.php'); ?>
+    
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -65,46 +71,7 @@ if (isset($_POST['change_password'])) {
             padding-bottom: 55px;
         }
         
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 12px 15px 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-            z-index: 100;
-        }
-        
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin-right: 12px;
-        }
-        
-        .logo {
-            height: 55px;
-            width: auto;
-            margin-right: 12px;
-        }
-        
-        .top-bar-title {
-            flex: 1;
-            font-size: 18px;
-            font-weight: 700;
-        }
+
         
         .content {
             padding: 20px 15px;
@@ -298,86 +265,7 @@ if (isset($_POST['change_password'])) {
             padding-left: 20px;
         }
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 16px);
-            max-width: 450px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 4px 6px;
-            z-index: 1000;
-            border-radius: 20px;
-        }
-        
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.75);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 4px 2px;
-            position: relative;
-            border-radius: 12px;
-        }
-        
-        .nav-item:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-        
-        .nav-item.active { 
-            color: white;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-item i {
-            font-size: 16px;
-            display: block;
-            margin-bottom: 1px;
-        }
-        
-        .nav-item.active i {
-            animation: bounce 0.4s ease;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .nav-item span {
-            font-size: 8px;
-            font-weight: 600;
-            letter-spacing: 0.2px;
-        }
-        
-        @media (min-width: 768px) {
-            .bottom-nav {
-                max-width: 400px;
-                bottom: 10px;
-                padding: 5px 8px;
-            }
-            
-            .nav-item {
-                padding: 5px 4px;
-            }
-            
-            .nav-item i {
-                font-size: 18px;
-                margin-bottom: 2px;
-            }
-            
-            .nav-item span {
-                font-size: 9px;
-            }
-        }
+
         
         @media (min-width: 768px) {
             .content {
@@ -392,14 +280,7 @@ if (isset($_POST['change_password'])) {
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <a href="user-view-profile.php" class="back-btn">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
-        <div class="top-bar-title">Change Password</div>
-        <div style="width: 40px;"></div>
-    </div>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <?php if ($success_msg): ?>
@@ -482,28 +363,7 @@ if (isset($_POST['change_password'])) {
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <a href="user-dashboard.php" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="user-manage-booking.php" class="nav-item">
-            <i class="fas fa-clipboard-list"></i>
-            <span>Bookings</span>
-        </a>
-        <a href="user-track-booking.php" class="nav-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Track</span>
-        </a>
-        <a href="user-view-profile.php" class="nav-item active">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-        <a href="../index.php" class="nav-item">
-            <i class="fas fa-store"></i>
-            <span>Main</span>
-        </a>
-    </div>
+
 
     <script>
         function togglePassword(fieldId) {
@@ -543,5 +403,7 @@ if (isset($_POST['change_password'])) {
             }
         }
     </script>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

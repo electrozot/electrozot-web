@@ -1,0 +1,845 @@
+<!-- Enhanced Mobile Notification System - Handles Mobile Audio Restrictions -->
+<script>
+console.log('🚀 Initializing Enhanced Mobile Notification System v4.0');
+
+let techNotificationAudio = null;
+let audioEnabled = false;
+let audioInitialized = false;
+let checkCount = 0;
+let persistentAudioEnabled = false;
+let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+let audioContext = null;
+let audioBuffer = null;
+let audioSource = null;
+
+// Unique storage key per technician
+const TECH_ID = <?php echo $_SESSION['t_id']; ?>;
+const AUDIO_STORAGE_KEY = `techAudio_${TECH_ID}_enabled`;
+const AUDIO_SETUP_KEY = `techAudio_${TECH_ID}_setup_complete`;
+const NOTIFICATION_PERMISSION_KEY = `techNotif_${TECH_ID}_permission`;
+
+// Enhanced audio initialization for mobile
+function initializeAudio() {
+    console.log('🔊 [AUDIO] Initializing enhanced mobile audio system...');
+    
+    if (!audioInitialized) {
+        try {
+            // Method 1: Traditional Audio API
+            techNotificationAudio = new Audio('../admin/vendor/sounds/arived.mp3');
+            techNotificationAudio.volume = 1.0;
+            techNotificationAudio.preload = 'auto';
+            techNotificationAudio.load();
+            
+            // Method 2: Web Audio API for better mobile support
+            if (window.AudioContext || window.webkitAudioContext) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContextClass();
+                
+                // Load audio buffer for Web Audio API
+                fetch('../admin/vendor/sounds/arived.mp3')
+                    .then(response => response.arrayBuffer())
+                    .then(data => audioContext.decodeAudioData(data))
+                    .then(buffer => {
+                        audioBuffer = buffer;
+                        console.log('✅ [AUDIO] Web Audio API buffer loaded');
+                    })
+                    .catch(error => {
+                        console.log('⚠️ [AUDIO] Web Audio API buffer load failed:', error);
+                    });
+            }
+            
+            audioInitialized = true;
+            console.log('✅ [AUDIO] Enhanced audio system initialized');
+            
+            // Check if audio was previously enabled
+            const wasEnabled = localStorage.getItem(AUDIO_STORAGE_KEY);
+            if (wasEnabled === 'true') {
+                audioEnabled = true;
+                persistentAudioEnabled = true;
+                console.log('✅ [AUDIO] Audio was previously enabled - ready for mobile playback');
+            }
+            
+        } catch(e) {
+            console.error('❌ [AUDIO] Enhanced audio initialization error:', e);
+        }
+    }
+}
+
+// Enhanced audio enable for mobile devices
+function enableAudioPermanently() {
+    console.log('🔊 [AUDIO] Enabling audio permanently for mobile...');
+    
+    if (!audioInitialized) initializeAudio();
+    
+    return new Promise((resolve) => {
+        // For mobile devices, we need to unlock audio context first
+        if (isMobile && audioContext && audioContext.state === 'suspended') {
+            console.log('📱 [MOBILE] Resuming suspended audio context...');
+            audioContext.resume().then(() => {
+                console.log('✅ [MOBILE] Audio context resumed');
+                enableAudioPlayback().then(resolve);
+            }).catch(() => {
+                enableAudioPlayback().then(resolve);
+            });
+        } else {
+            enableAudioPlayback().then(resolve);
+        }
+    });
+}
+
+function enableAudioPlayback() {
+    return new Promise((resolve) => {
+        if (techNotificationAudio) {
+            // Try traditional audio first
+            techNotificationAudio.play().then(() => {
+                techNotificationAudio.pause();
+                techNotificationAudio.currentTime = 0;
+                audioEnabled = true;
+                persistentAudioEnabled = true;
+                
+                // Save permanently for this technician
+                localStorage.setItem(AUDIO_STORAGE_KEY, 'true');
+                localStorage.setItem(AUDIO_SETUP_KEY, 'true');
+                
+                console.log('✅ [AUDIO] Traditional audio enabled for technician ID:', TECH_ID);
+                
+                // Show success message
+                if (!document.getElementById('audio-success-msg')) {
+                    showSuccessMessage();
+                }
+                
+                resolve(true);
+            }).catch((e) => {
+                console.log('⚠️ [AUDIO] Traditional audio failed, trying Web Audio API:', e.message);
+                
+                // Try Web Audio API as fallback
+                if (audioContext && audioBuffer) {
+                    try {
+                        const source = audioContext.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(audioContext.destination);
+                        source.start(0);
+                        source.stop(audioContext.currentTime + 0.1); // Very short test sound
+                        
+                        audioEnabled = true;
+                        persistentAudioEnabled = true;
+                        localStorage.setItem(AUDIO_STORAGE_KEY, 'true');
+                        localStorage.setItem(AUDIO_SETUP_KEY, 'true');
+                        
+                        console.log('✅ [AUDIO] Web Audio API enabled for technician ID:', TECH_ID);
+                        showSuccessMessage();
+                        resolve(true);
+                    } catch (webAudioError) {
+                        console.log('⚠️ [AUDIO] Web Audio API also failed:', webAudioError.message);
+                        resolve(false);
+                    }
+                } else {
+                    resolve(false);
+                }
+            });
+        } else {
+            resolve(false);
+        }
+    });
+}
+
+function showSuccessMessage() {
+    const msg = document.createElement('div');
+    msg.id = 'audio-success-msg';
+    msg.style.cssText = `
+        position: fixed; 
+        top: 80px; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+        color: white; 
+        padding: 15px 25px; 
+        border-radius: 15px; 
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4); 
+        z-index: 99999; 
+        font-weight: bold; 
+        display: flex; 
+        align-items: center; 
+        gap: 10px;
+        animation: slideDown 0.5s ease-out;
+    `;
+    msg.innerHTML = '<i class="fas fa-check-circle" style="font-size: 20px;"></i><span>🔊 Mobile Sound Alerts Enabled!</span>';
+    document.body.appendChild(msg);
+    
+    setTimeout(() => {
+        msg.style.transition = 'opacity 0.5s, transform 0.5s';
+        msg.style.opacity = '0';
+        msg.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => msg.remove(), 500);
+    }, 3000);
+}
+
+let lastSoundPlayTime = 0;
+const SOUND_COOLDOWN = 1500; // Reduced cooldown for mobile
+
+// Enhanced sound playback for mobile devices
+function playNotificationSound() {
+    console.log('🔊 [SOUND] Attempting mobile-optimized sound playback...');
+    
+    // Prevent duplicate sounds
+    const now = Date.now();
+    if (now - lastSoundPlayTime < SOUND_COOLDOWN) {
+        console.log('⏭️ [SOUND] Skipping - sound played recently');
+        return;
+    }
+    
+    if (!audioInitialized) initializeAudio();
+    
+    // If audio was previously enabled, try multiple playback methods
+    if (persistentAudioEnabled || audioEnabled) {
+        playAudioMultiMethod();
+    } else {
+        // First time - show enable prompt
+        showMobileEnablePrompt();
+    }
+}
+
+function playAudioMultiMethod() {
+    console.log('🎵 [SOUND] Trying multiple audio playback methods...');
+    
+    let soundPlayed = false;
+    
+    // Method 1: Traditional Audio API
+    if (techNotificationAudio && !soundPlayed) {
+        techNotificationAudio.currentTime = 0;
+        techNotificationAudio.volume = 1.0;
+        
+        const playPromise = techNotificationAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('✅ [SOUND] Traditional audio played successfully!');
+                lastSoundPlayTime = Date.now();
+                soundPlayed = true;
+                
+                // Auto-pause after 2 seconds to save battery
+                setTimeout(() => {
+                    if (techNotificationAudio) {
+                        techNotificationAudio.pause();
+                        techNotificationAudio.currentTime = 0;
+                    }
+                }, 2000);
+            }).catch((error) => {
+                console.log('⚠️ [SOUND] Traditional audio failed:', error.message);
+                
+                // Method 2: Web Audio API fallback
+                if (audioContext && audioBuffer && !soundPlayed) {
+                    tryWebAudioPlayback();
+                }
+            });
+        }
+    }
+    
+    // Method 3: Vibration for mobile devices (always works)
+    if (isMobile && 'vibrate' in navigator) {
+        navigator.vibrate([300, 100, 300, 100, 300]);
+        console.log('📳 [MOBILE] Vibration triggered');
+    }
+    
+    // Method 4: Visual flash for additional feedback
+    flashScreen();
+}
+
+function tryWebAudioPlayback() {
+    try {
+        if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+                playWebAudio();
+            });
+        } else {
+            playWebAudio();
+        }
+    } catch (error) {
+        console.log('⚠️ [SOUND] Web Audio API playback failed:', error.message);
+    }
+}
+
+function playWebAudio() {
+    try {
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+        
+        console.log('✅ [SOUND] Web Audio API played successfully!');
+        lastSoundPlayTime = Date.now();
+        
+        // Clean up source after playback
+        setTimeout(() => {
+            try {
+                source.disconnect();
+            } catch (e) {}
+        }, 3000);
+    } catch (error) {
+        console.log('⚠️ [SOUND] Web Audio source creation failed:', error.message);
+    }
+}
+
+function flashScreen() {
+    // Visual feedback for when sound might not work
+    const flash = document.createElement('div');
+    flash.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(16, 185, 129, 0.3);
+        z-index: 99998;
+        pointer-events: none;
+        animation: flashAnimation 0.5s ease-out;
+    `;
+    
+    document.body.appendChild(flash);
+    
+    setTimeout(() => {
+        flash.remove();
+    }, 500);
+}
+
+let enablePromptShown = false;
+
+function showMobileEnablePrompt() {
+    // Check if setup is already complete for this technician
+    const setupComplete = localStorage.getItem(AUDIO_SETUP_KEY);
+    if (setupComplete === 'true') {
+        console.log('ℹ️ [PROMPT] Setup already complete, not showing prompt');
+        return;
+    }
+    
+    // Only show prompt once per session
+    if (enablePromptShown || document.getElementById('mobile-audio-enable-prompt')) {
+        return;
+    }
+    
+    enablePromptShown = true;
+    console.log('📢 [PROMPT] Showing mobile-optimized audio enable prompt');
+    
+    const prompt = document.createElement('div');
+    prompt.id = 'mobile-audio-enable-prompt';
+    prompt.style.cssText = `
+        position: fixed; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: white; 
+        padding: 25px; 
+        border-radius: 20px; 
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4); 
+        z-index: 99999; 
+        text-align: center; 
+        max-width: 90%; 
+        width: 350px;
+        animation: popIn 0.5s ease-out;
+    `;
+    
+    prompt.innerHTML = `
+        <div style="font-size: 48px; margin-bottom: 15px;">📱🔊</div>
+        <h3 style="margin: 0 0 10px 0; font-size: 20px;">Enable Mobile Sound Alerts</h3>
+        <p style="margin: 0 0 20px 0; font-size: 14px; opacity: 0.9; line-height: 1.4;">
+            Get instant sound + vibration notifications for new bookings.<br>
+            <strong>Works even when your phone is locked!</strong>
+        </p>
+        <button id="enable-mobile-audio-btn" style="
+            background: white; 
+            color: #667eea; 
+            border: none; 
+            padding: 15px 25px; 
+            border-radius: 50px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        ">
+            <i class="fas fa-volume-up"></i> Enable Now
+        </button>
+        <button id="skip-mobile-audio-btn" style="
+            background: transparent; 
+            color: white; 
+            border: 2px solid white; 
+            padding: 15px 25px; 
+            border-radius: 50px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer;
+            transition: all 0.3s ease;
+        ">
+            Skip
+        </button>
+    `;
+    
+    document.body.appendChild(prompt);
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'mobile-audio-prompt-backdrop';
+    backdrop.style.cssText = `
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100%; 
+        height: 100%; 
+        background: rgba(0,0,0,0.7); 
+        z-index: 99998;
+        animation: fadeIn 0.3s ease-out;
+    `;
+    document.body.appendChild(backdrop);
+    
+    // Handle enable button
+    document.getElementById('enable-mobile-audio-btn').onclick = function() {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enabling...';
+        this.disabled = true;
+        
+        enableAudioPermanently().then((success) => {
+            if (success) {
+                prompt.remove();
+                backdrop.remove();
+                
+                // Play a test sound to confirm
+                setTimeout(() => {
+                    playAudioMultiMethod();
+                }, 500);
+            } else {
+                this.innerHTML = '<i class="fas fa-exclamation-circle"></i> Try Again';
+                this.disabled = false;
+            }
+        });
+    };
+    
+    // Handle skip button
+    document.getElementById('skip-mobile-audio-btn').onclick = function() {
+        localStorage.setItem(AUDIO_SETUP_KEY, 'skipped');
+        prompt.remove();
+        backdrop.remove();
+        console.log('ℹ️ [PROMPT] User skipped mobile audio setup');
+    };
+}
+
+// Enhanced browser notification for mobile
+function showBrowserNotification(notifications) {
+    if (Notification.permission !== 'granted') return;
+    
+    notifications.forEach(notif => {
+        try {
+            const notification = new Notification('🔔 New Booking Assignment!', {
+                body: `Booking #${notif.id}\n🔧 ${notif.service}\n👤 ${notif.customer}\n📞 ${notif.phone}`,
+                icon: '../admin/vendor/img/logo.png',
+                badge: '../admin/vendor/img/logo.png',
+                vibrate: [300, 100, 300, 100, 300, 100, 300],
+                tag: 'booking-' + notif.id,
+                requireInteraction: true,
+                silent: false, // Allow sound from browser notification
+                renotify: true,
+                data: {
+                    url: '/tech/dashboard.php',
+                    booking_id: notif.id
+                }
+            });
+            
+            notification.onclick = function() {
+                window.focus();
+                this.close();
+            };
+            
+            // Auto-close after 10 seconds to prevent notification spam
+            setTimeout(() => {
+                notification.close();
+            }, 10000);
+            
+            console.log('✅ [BROWSER-NOTIF] Mobile browser notification shown');
+        } catch(e) {
+            console.error('❌ [BROWSER-NOTIF] Error:', e);
+        }
+    });
+}
+
+// Request notification permission aggressively for mobile
+function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+        console.log('📋 [PERMISSION] Requesting notification permission for mobile...');
+        
+        // Show a pre-permission explanation for mobile users
+        if (isMobile) {
+            const prePrompt = document.createElement('div');
+            prePrompt.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+                z-index: 99999;
+                font-weight: bold;
+                text-align: center;
+                max-width: 90%;
+            `;
+            prePrompt.innerHTML = '📱 Enable notifications to receive alerts when your phone is locked!';
+            document.body.appendChild(prePrompt);
+            
+            setTimeout(() => {
+                prePrompt.remove();
+            }, 3000);
+        }
+        
+        Notification.requestPermission().then(permission => {
+            localStorage.setItem(NOTIFICATION_PERMISSION_KEY, permission);
+            if (permission === 'granted') {
+                console.log('✅ [PERMISSION] Mobile notification permission granted!');
+            } else {
+                console.log('⚠️ [PERMISSION] Mobile notification permission denied');
+            }
+        });
+    }
+}
+
+function showNotificationToast(notifications) {
+    // Only show toast if page is visible
+    if (document.hidden) {
+        console.log('📱 [TOAST] Page hidden, skipping toast');
+        return;
+    }
+    
+    console.log('📱 [TOAST] Showing mobile notification toast for', notifications.length, 'notifications');
+    
+    const count = notifications.length;
+    document.querySelectorAll('.tech-notification-toast').forEach(el => el.remove());
+    
+    const firstAction = notifications[0].action;
+    let bgColor = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    let icon = 'bell';
+    
+    if(firstAction === 'assigned' || firstAction === 'reassigned') {
+        bgColor = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+        icon = 'user-check';
+    } else if(firstAction === 'approved') {
+        bgColor = 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+        icon = 'check-circle';
+    } else if(firstAction === 'hold') {
+        bgColor = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        icon = 'pause-circle';
+    } else if(firstAction === 'resumed') {
+        bgColor = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        icon = 'play-circle';
+    }
+    
+    let html = `<div class="tech-notification-toast" style="position: fixed; top: 80px; right: 20px; background: ${bgColor}; color: white; padding: 20px; border-radius: 10px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); z-index: 99999; min-width: 300px; max-width: 90%; animation: slideIn 0.5s ease-out;">`;
+    html += `<div style="display: flex; align-items: center; margin-bottom: 10px;">`;
+    html += `<i class="fas fa-${icon}" style="font-size: 24px; margin-right: 10px;"></i>`;
+    html += `<h4 style="margin: 0; font-weight: bold;">${count === 1 ? 'New Notification!' : count + ' New Notifications!'}</h4>`;
+    html += `<button onclick="this.parentElement.parentElement.remove()" style="margin-left: auto; background: transparent; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>`;
+    html += `</div>`;
+    
+    notifications.forEach(notif => {
+        html += `<div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; margin-top: 10px;">`;
+        html += `<strong>📋 Booking #${notif.id}</strong><br>`;
+        html += `<div style="margin-top: 5px; font-size: 13px;">`;
+        html += `<strong>✨ ${notif.message}</strong><br>`;
+        html += `👤 ${notif.customer}<br>`;
+        html += `📞 ${notif.phone}<br>`;
+        html += `🔧 ${notif.service}<br>`;
+        html += `📊 Status: ${notif.status}`;
+        if(notif.deadline_date) {
+            html += `<br>⏰ Deadline: ${notif.deadline_date} ${notif.deadline_time || ''}`;
+        }
+        html += `</div></div>`;
+    });
+    
+    html += `<div style="margin-top: 15px; text-align: center;">`;
+    html += `<a href="dashboard.php" style="background: white; color: #667eea; padding: 8px 20px; border-radius: 5px; text-decoration: none; font-weight: bold; display: inline-block;">View Dashboard</a>`;
+    html += `</div></div>`;
+    
+    document.body.insertAdjacentHTML('beforeend', html);
+    
+    setTimeout(() => {
+        const toast = document.querySelector('.tech-notification-toast');
+        if (toast) {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(400px)';
+            setTimeout(() => toast.remove(), 500);
+        }
+    }, 12000); // Longer display time for mobile
+}
+
+function checkTechNotifications() {
+    checkCount++;
+    console.log(`🔍 [CHECK #${checkCount}] Starting mobile notification check...`);
+    
+    fetch('check-technician-notifications.php', { method: 'GET', cache: 'no-cache' })
+    .then(response => response.text())
+    .then(rawResponse => {
+        const cleanResponse = rawResponse.trim().replace(/^\uFEFF/, '');
+        const response = JSON.parse(cleanResponse);
+        
+        if(response.error) {
+            console.error('❌ [ERROR] Server error:', response.error);
+            return;
+        }
+        
+        // Update badge
+        const badge = document.getElementById('notificationCount');
+        if(badge) {
+            if(response.notification_count > 0) {
+                badge.textContent = response.notification_count;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+        
+        if(response.has_notifications && response.new_count > 0) {
+            console.log('🎉 [NOTIFICATION] NEW MOBILE NOTIFICATIONS DETECTED!', response.new_count);
+            
+            // Play sound with multiple methods (works even in background)
+            playNotificationSound();
+            
+            // Show browser notification (works when page is hidden/locked)
+            showBrowserNotification(response.notifications);
+            
+            // Show toast only if page is visible
+            if (!document.hidden) {
+                showNotificationToast(response.notifications);
+            }
+            
+            // Update UI elements
+            const dot = document.getElementById('headerNotifDot');
+            if(dot) dot.style.display = 'block';
+            
+            const mobileAlert = document.getElementById('mobileNotificationAlert');
+            const mobileText = document.getElementById('mobileAlertText');
+            if(mobileAlert && mobileText) {
+                mobileText.textContent = `You have ${response.notification_count} new notification${response.notification_count > 1 ? 's' : ''}!`;
+                mobileAlert.style.display = 'flex';
+            }
+            
+            // Send message to service worker for background handling
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'NEW_BOOKING',
+                    notifications: response.notifications
+                });
+            }
+        } else {
+            console.log('✓ [CHECK] No new mobile notifications');
+        }
+    })
+    .catch(error => {
+        console.error('❌ [FETCH] Mobile notification check error:', error);
+    });
+}
+
+// Initialize system
+console.log('🎬 [INIT] Initializing enhanced mobile notification system...');
+console.log('📱 [MOBILE] Device detected as:', isMobile ? 'Mobile' : 'Desktop');
+initializeAudio();
+
+// Enhanced mobile interaction handling
+let autoEnableAttempted = false;
+
+function handleMobileInteraction() {
+    if (autoEnableAttempted) return;
+    autoEnableAttempted = true;
+    
+    console.log('👆 [INTERACTION] Mobile interaction detected');
+    
+    // Check if audio was previously enabled
+    const wasEnabled = localStorage.getItem(AUDIO_STORAGE_KEY);
+    const setupComplete = localStorage.getItem(AUDIO_SETUP_KEY);
+    
+    if (wasEnabled === 'true') {
+        // Audio was previously enabled - enable it silently
+        enableAudioPermanently().then(() => {
+            console.log('✅ [INTERACTION] Mobile audio re-enabled from previous session');
+        });
+    } else if (setupComplete !== 'true' && setupComplete !== 'skipped') {
+        // First time - show setup prompt after a short delay
+        setTimeout(() => {
+            showMobileEnablePrompt();
+        }, 1500); // Longer delay for mobile
+    }
+    
+    // Request notification permission
+    requestNotificationPermission();
+}
+
+// Enhanced interaction listeners for mobile
+const mobileEvents = ['touchstart', 'touchend', 'click', 'keydown', 'scroll'];
+mobileEvents.forEach(event => {
+    document.addEventListener(event, handleMobileInteraction, { passive: true, once: true });
+});
+
+// Register enhanced service worker for mobile
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js')
+        .then(registration => {
+            console.log('✅ [SW] Enhanced service worker registered for mobile');
+            
+            // Enhanced mobile notification permission handling
+            if (Notification.permission === 'default') {
+                // Wait for user interaction before requesting permission
+                setTimeout(() => {
+                    if (isMobile) {
+                        Notification.requestPermission().then(permission => {
+                            localStorage.setItem(NOTIFICATION_PERMISSION_KEY, permission);
+                            if (permission === 'granted') {
+                                console.log('✅ [SW] Mobile background notifications enabled');
+                                
+                                // Register for background sync
+                                if ('sync' in window.ServiceWorkerRegistration.prototype) {
+                                    registration.sync.register('check-bookings');
+                                    console.log('✅ [SW] Mobile background sync registered');
+                                }
+                            }
+                        });
+                    }
+                }, 3000);
+            }
+            
+            // Listen for messages from service worker
+            navigator.serviceWorker.addEventListener('message', event => {
+                console.log('💬 [SW] Message from mobile service worker:', event.data);
+                if (event.data.type === 'NEW_BOOKING') {
+                    // Service worker found new bookings, refresh our UI
+                    setTimeout(checkTechNotifications, 1000);
+                }
+            });
+            
+        })
+        .catch(error => {
+            console.error('❌ [SW] Mobile service worker registration failed:', error);
+        });
+}
+
+// Initial check with mobile optimization
+setTimeout(() => {
+    fetch('check-technician-notifications.php', { cache: 'no-cache' })
+        .then(response => response.json())
+        .then(response => {
+            if(response && response.notification_count > 0) {
+                const dot = document.getElementById('headerNotifDot');
+                if(dot) dot.style.display = 'block';
+                const badge = document.getElementById('floatingBadge');
+                if(badge) {
+                    badge.textContent = response.notification_count;
+                    badge.style.display = 'flex';
+                }
+            }
+        })
+        .catch(e => console.error('❌ [INIT] Mobile initial check error:', e));
+}, 1000);
+
+// Start polling with mobile-optimized interval
+setInterval(checkTechNotifications, isMobile ? 6000 : 5000); // Slightly longer interval for mobile to save battery
+setTimeout(checkTechNotifications, 2000);
+
+// Add enhanced CSS animations for mobile
+if(!document.getElementById('tech-notification-mobile-styles')) {
+    const style = document.createElement('style');
+    style.id = 'tech-notification-mobile-styles';
+    style.textContent = `
+        @keyframes slideIn { 
+            from { transform: translateX(400px); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        } 
+        @keyframes slideDown { 
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; } 
+            to { transform: translateX(-50%) translateY(0); opacity: 1; } 
+        } 
+        @keyframes popIn { 
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } 
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; } 
+        } 
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+        @keyframes flashAnimation {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .tech-notification-toast { 
+            transition: all 0.5s ease; 
+        } 
+        .tech-notification-toast:hover { 
+            transform: scale(1.02); 
+        }
+        
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .tech-notification-toast {
+                right: 10px !important;
+                left: 10px !important;
+                min-width: auto !important;
+                max-width: none !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Enhanced page visibility handling for mobile
+document.addEventListener('visibilitychange', function() {
+    const isHidden = document.hidden;
+    console.log('📱 [VISIBILITY] Page visibility changed, hidden:', isHidden);
+    
+    // Notify service worker about visibility change
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'PAGE_VISIBILITY_CHANGE',
+            hidden: isHidden
+        });
+    }
+    
+    // Adjust polling frequency based on visibility
+    if (isHidden && isMobile) {
+        console.log('📱 [BACKGROUND] Entering background mode - notifications will continue via Service Worker');
+    } else if (!isHidden) {
+        console.log('📱 [FOREGROUND] Returning to foreground mode - resuming normal operation');
+        // Do an immediate check when returning to foreground
+        setTimeout(checkTechNotifications, 1000);
+    }
+});
+
+// Handle app lifecycle events for mobile
+window.addEventListener('beforeunload', function() {
+    console.log('📱 [LIFECYCLE] App is being unloaded');
+});
+
+window.addEventListener('pagehide', function() {
+    console.log('📱 [LIFECYCLE] Page is being hidden');
+});
+
+window.addEventListener('pageshow', function() {
+    console.log('📱 [LIFECYCLE] Page is being shown');
+});
+
+// Handle focus/blur events
+window.addEventListener('focus', function() {
+    console.log('📱 [FOCUS] Window gained focus');
+    if (isMobile) {
+        // Check for notifications when app regains focus
+        setTimeout(checkTechNotifications, 500);
+    }
+});
+
+window.addEventListener('blur', function() {
+    console.log('📱 [FOCUS] Window lost focus');
+});
+
+console.log('✅ Enhanced Mobile Notification System Initialized');
+console.log('📊 Technician ID:', TECH_ID);
+console.log('🔊 Audio Storage Key:', AUDIO_STORAGE_KEY);
+console.log('📱 Mobile Device:', isMobile);
+console.log('🔄 Polling every', isMobile ? '6' : '5', 'seconds');
+console.log('🔒 Enhanced mobile support for locked screens and background operation');
+console.log('👁️ Page visibility tracking enabled for background notifications');
+</script>

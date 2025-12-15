@@ -4,9 +4,10 @@
   "description": "Professional electrical and technical service booking platform. Book certified technicians, track services, and manage bookings easily.",
   "start_url": "./splash.html",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#ffffff",
   "theme_color": "#000000",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "scope": "./",
   "lang": "en-US",
   "dir": "ltr",
@@ -45,34 +46,35 @@
       "src": "vendor/img/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "vendor/img/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "vendor/img/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "vendor/img/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "vendor/img/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
   "categories": ["business", "utilities", "productivity"],
-  "screenshots": [
-    {
-      "src": "vendor/img/screenshots/screenshot1.png",
-      "sizes": "540x720",
-      "type": "image/png"
-    },
-    {
-      "src": "vendor/img/screenshots/screenshot2.png",
-      "sizes": "540x720",
-      "type": "image/png"
-    }
-  ],
+  "screenshots": [],
   "shortcuts": [
     {
       "name": "Book Service",

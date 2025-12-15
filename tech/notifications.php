@@ -44,6 +44,10 @@ $new_bookings_count = $count_data['new_count'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notifications - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('includes/favicon.php'); ?>
+    
     <link rel="stylesheet" href="../admin/vendor/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../usr/vendor/fontawesome-free/css/all.min.css">
     <style>

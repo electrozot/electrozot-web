@@ -14,6 +14,12 @@ check_login();
 <html>
 <head>
     <title>Cleanup Old Notifications</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png">
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; background: #f5f7fa; }
         .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }

@@ -1,13 +1,12 @@
 <?php
-// Get user info if not already loaded
-if (!isset($user)) {
-    $aid = $_SESSION['u_id'];
-    $query = "SELECT * FROM tms_user WHERE u_id = ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('i', $aid);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_object();
+// Get user info for navbar if not already loaded
+if (!isset($user) || !$user) {
+    $user_query = "SELECT u_fname, u_lname FROM tms_user WHERE u_id = ?";
+    $user_stmt = $mysqli->prepare($user_query);
+    $user_stmt->bind_param('i', $_SESSION['u_id']);
+    $user_stmt->execute();
+    $user_result = $user_stmt->get_result();
+    $user = $user_result->fetch_object();
 }
 ?>
 <div class="top-header">
@@ -20,6 +19,7 @@ if (!isset($user)) {
             </div>
         </a>
         <div class="user-section">
+            <div class="user-name"><?php echo htmlspecialchars($user->u_fname); ?></div>
             <div class="header-icons">
                 <a href="user-view-profile.php" class="header-icon">
                     <i class="fas fa-user"></i>

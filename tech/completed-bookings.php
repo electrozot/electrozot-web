@@ -8,6 +8,8 @@ $tech_id = $_SESSION['t_id'];
 // Get filter and search parameters
 $filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$date_filter = isset($_GET['date']) ? $_GET['date'] : 'today';
+$custom_date = isset($_GET['custom_date']) ? $_GET['custom_date'] : '';
 
 // Get today's earnings from payment collection
 $today_earnings_query = "SELECT SUM(pc.pc_amount) as total 
@@ -58,6 +60,19 @@ $base_query = "SELECT sb.*,
                LEFT JOIN tms_payment_collection pc ON sb.sb_id = pc.pc_booking_id
                WHERE sb.sb_technician_id = ? AND sb.sb_status = 'Completed'";
 
+// Add date filter conditions
+if($date_filter == 'today') {
+    $base_query .= " AND DATE(sb.sb_completed_at) = CURDATE()";
+} elseif($date_filter == 'yesterday') {
+    $base_query .= " AND DATE(sb.sb_completed_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+} elseif($date_filter == 'last7') {
+    $base_query .= " AND sb.sb_completed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+} elseif($date_filter == 'thismonth') {
+    $base_query .= " AND MONTH(sb.sb_completed_at) = MONTH(CURDATE()) AND YEAR(sb.sb_completed_at) = YEAR(CURDATE())";
+} elseif($date_filter == 'custom' && !empty($custom_date)) {
+    $base_query .= " AND DATE(sb.sb_completed_at) = ?";
+}
+
 // Add filter conditions
 if($filter == 'new') {
     // New: Completed in last 7 days
@@ -77,25 +92,111 @@ $base_query .= " ORDER BY sb.sb_updated_at DESC";
 // Prepare and execute query
 $stmt = $mysqli->prepare($base_query);
 
-if(!empty($search)) {
-    $search_param = "%$search%";
-    $stmt->bind_param('issss', $tech_id, $search_param, $search_param, $search_param, $search_param);
+// Bind parameters based on filters
+if($date_filter == 'custom' && !empty($custom_date)) {
+    if(!empty($search)) {
+        $search_param = "%$search%";
+        $stmt->bind_param('isssss', $tech_id, $custom_date, $search_param, $search_param, $search_param, $search_param);
+    } else {
+        $stmt->bind_param('is', $tech_id, $custom_date);
+    }
 } else {
-    $stmt->bind_param('i', $tech_id);
+    if(!empty($search)) {
+        $search_param = "%$search%";
+        $stmt->bind_param('issss', $tech_id, $search_param, $search_param, $search_param, $search_param);
+    } else {
+        $stmt->bind_param('i', $tech_id);
+    }
 }
 
 $stmt->execute();
 $bookings = $stmt->get_result();
+
+// Calculate earnings for selected date filter
+$filtered_earnings = 0;
+$filtered_jobs = 0;
+$filtered_commission = 0;
+
+$earnings_query = "SELECT 
+                   COUNT(*) as job_count,
+                   COALESCE(SUM(COALESCE(sb_bill_amount, sb_final_price, sb_tech_decided_price, sb_total_price, 0)), 0) as total_revenue
+                   FROM tms_service_booking
+                   WHERE sb_technician_id = ? AND sb_status = 'Completed'";
+
+if($date_filter == 'today') {
+    $earnings_query .= " AND DATE(sb_completed_at) = CURDATE()";
+} elseif($date_filter == 'yesterday') {
+    $earnings_query .= " AND DATE(sb_completed_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)";
+} elseif($date_filter == 'last7') {
+    $earnings_query .= " AND sb_completed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)";
+} elseif($date_filter == 'thismonth') {
+    $earnings_query .= " AND MONTH(sb_completed_at) = MONTH(CURDATE()) AND YEAR(sb_completed_at) = YEAR(CURDATE())";
+} elseif($date_filter == 'custom' && !empty($custom_date)) {
+    $earnings_query .= " AND DATE(sb_completed_at) = ?";
+}
+
+$stmt_earn = $mysqli->prepare($earnings_query);
+if($date_filter == 'custom' && !empty($custom_date)) {
+    $stmt_earn->bind_param('is', $tech_id, $custom_date);
+} else {
+    $stmt_earn->bind_param('i', $tech_id);
+}
+$stmt_earn->execute();
+$earn_result = $stmt_earn->get_result();
+$earn_data = $earn_result->fetch_object();
+$stmt_earn->close();
+
+$filtered_jobs = $earn_data->job_count;
+$filtered_earnings = $earn_data->total_revenue;
+$filtered_commission = round($filtered_earnings * $commission_rate, 2);
+
+// Get date label for display
+$date_label = 'All Time';
+if($date_filter == 'today') $date_label = "Today's";
+elseif($date_filter == 'yesterday') $date_label = "Yesterday's";
+elseif($date_filter == 'last7') $date_label = "Last 7 Days";
+elseif($date_filter == 'thismonth') $date_label = "This Month's";
+elseif($date_filter == 'custom' && !empty($custom_date)) $date_label = date('d M Y', strtotime($custom_date));
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Completed Bookings - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('includes/favicon.php'); ?>
+    
+    <!-- PWA Meta Tags for Fullscreen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-tap-highlight" content="no">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <style>
+        /* Hide browser loading bars in PWA */
+        ::-webkit-progress-bar,
+        ::-webkit-progress-value {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+        }
+        
+        /* Hide Android Chrome loading bar */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent !important;
+            z-index: 9999;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -110,12 +211,14 @@ $bookings = $stmt->get_result();
             padding-bottom: 100px;
             position: relative;
             overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Header */
         .header-nav {
             background: linear-gradient(135deg, #10b981 0%, #14b8a6 35%, #06b6d4 70%, #0ea5e9 100%);
             padding: 8px 20px;
+            padding-top: calc(8px + env(safe-area-inset-top));
             box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
             display: flex;
             align-items: center;
@@ -128,7 +231,8 @@ $bookings = $stmt->get_result();
             width: 100%;
             z-index: 1000;
             border-bottom: 2px solid rgba(6, 182, 212, 0.3);
-            height: 70px;
+            min-height: 70px;
+            height: auto;
         }
         
         .logo-section {
@@ -481,6 +585,60 @@ $bookings = $stmt->get_result();
             color: #10b981;
             margin-right: 5px;
         }
+        
+        /* Date Filter Buttons */
+        .date-filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #1e293b;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .date-filter-btn:hover {
+            text-decoration: none;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            color: #1e293b;
+        }
+        
+        .date-filter-btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .date-filter-btn i {
+            font-size: 0.9rem;
+        }
+        
+        /* Scrollbar for date filters */
+        .date-filter-btn::-webkit-scrollbar {
+            height: 4px;
+        }
+        
+        .date-filter-btn::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .date-filter-btn::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -524,28 +682,79 @@ $bookings = $stmt->get_result();
             </form>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 20px;">
-            <div class="stat-icon">
-                <i class="fas fa-calendar-day"></i>
+        <!-- Date Filter Buttons -->
+        <div style="background: white; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 5px;">
+                <a href="?<?php echo !empty($search) ? 'search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'today' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-day"></i> Today
+                </a>
+                <a href="?date=all<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'all' ? 'active' : ''; ?>">
+                    <i class="fas fa-infinity"></i> All
+                </a>
+                <a href="?date=yesterday<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'yesterday' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-minus"></i> Yesterday
+                </a>
+                <a href="?date=last7<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'last7' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-week"></i> Last 7 Days
+                </a>
+                <a href="?date=thismonth<?php echo !empty($search) ? '&search=' . urlencode($search) : ''; ?>" 
+                   class="date-filter-btn <?php echo $date_filter == 'thismonth' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-alt"></i> This Month
+                </a>
+                <button type="button" onclick="document.getElementById('customDatePicker').style.display='block'" 
+                        class="date-filter-btn <?php echo $date_filter == 'custom' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar"></i> Custom Date
+                </button>
             </div>
-            <div class="stat-content">
-                <div class="stat-value">₹<?php echo number_format($today_earnings, 2); ?></div>
-                <div class="stat-label">Today's Earnings</div>
+            
+            <!-- Custom Date Picker -->
+            <div id="customDatePicker" style="display: <?php echo $date_filter == 'custom' ? 'block' : 'none'; ?>; margin-top: 15px; padding-top: 15px; border-top: 2px solid #e2e8f0;">
+                <form method="GET" action="" style="display: flex; gap: 10px; align-items: center;">
+                    <input type="hidden" name="date" value="custom">
+                    <?php if(!empty($search)): ?>
+                    <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                    <?php endif; ?>
+                    <input type="date" 
+                           name="custom_date" 
+                           value="<?php echo htmlspecialchars($custom_date); ?>"
+                           max="<?php echo date('Y-m-d'); ?>"
+                           style="flex: 1; padding: 10px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem;">
+                    <button type="submit" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 700; white-space: nowrap;">
+                        <i class="fas fa-check"></i> Apply
+                    </button>
+                    <button type="button" onclick="document.getElementById('customDatePicker').style.display='none'" style="background: #ef4444; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </form>
             </div>
         </div>
 
-        <!-- Today's Commission Widget -->
-        <?php if($today_commission > 0): ?>
+        <!-- Stats Cards -->
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin-bottom: 20px;">
+            <div class="stat-icon">
+                <i class="fas fa-rupee-sign"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">₹<?php echo number_format($filtered_earnings, 2); ?></div>
+                <div class="stat-label"><?php echo $date_label; ?> Earnings</div>
+            </div>
+        </div>
+
+        <!-- Commission Widget -->
+        <?php if($filtered_commission > 0): ?>
         <div class="commission-widget">
             <div class="commission-content">
                 <div class="commission-icon">
                     <i class="fas fa-hand-holding-usd"></i>
                 </div>
                 <div class="commission-details">
-                    <div class="commission-label">Today's Electrozot Charge</div>
-                    <div class="commission-amount">₹<?php echo number_format($today_commission, 0); ?></div>
-                    <div class="commission-info"><?php echo $today_jobs; ?> job<?php echo $today_jobs != 1 ? 's' : ''; ?> completed today</div>
+                    <div class="commission-label"><?php echo $date_label; ?> Electrozot Charge</div>
+                    <div class="commission-amount">₹<?php echo number_format($filtered_commission, 0); ?></div>
+                    <div class="commission-info"><?php echo $filtered_jobs; ?> job<?php echo $filtered_jobs != 1 ? 's' : ''; ?> completed</div>
                 </div>
             </div>
         </div>

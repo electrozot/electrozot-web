@@ -20,7 +20,7 @@ echo "<style>
 
 echo "<h2>🔧 Rejection Tracking System Setup</h2>";
 
-// Create rejection tracking table
+// Create rejection tracking table (without foreign keys first to avoid errors)
 $create_table = "CREATE TABLE IF NOT EXISTS tms_technician_rejections (
     tr_id INT AUTO_INCREMENT PRIMARY KEY,
     tr_technician_id INT NOT NULL,
@@ -31,12 +31,9 @@ $create_table = "CREATE TABLE IF NOT EXISTS tms_technician_rejections (
     tr_admin_action VARCHAR(50) NULL,
     tr_admin_action_at TIMESTAMP NULL,
     tr_admin_notes TEXT NULL,
-    INDEX(tr_technician_id),
-    INDEX(tr_booking_id),
-    INDEX(tr_rejected_at),
-    INDEX(tr_admin_notified),
-    FOREIGN KEY (tr_technician_id) REFERENCES tms_technician(t_id) ON DELETE CASCADE,
-    FOREIGN KEY (tr_booking_id) REFERENCES tms_service_booking(sb_id) ON DELETE CASCADE
+    INDEX idx_tech_notified (tr_technician_id, tr_admin_notified),
+    INDEX idx_rejected_at (tr_rejected_at),
+    INDEX idx_booking (tr_booking_id)
 )";
 
 if($mysqli->query($create_table)) {

@@ -1,4 +1,9 @@
 <?php
+  // Prevent caching to ensure changes are visible immediately
+  header("Cache-Control: no-cache, no-store, must-revalidate");
+  header("Pragma: no-cache");
+  header("Expires: 0");
+  
   session_start();
   include('admin/vendor/inc/config.php');
   //include('vendor/inc/checklogin.php');
@@ -269,6 +274,80 @@
                 </div>
             </div>
         </section>
+
+
+
+        <!-- PWA Install Guide Modal -->
+        <div class="modal fade" id="pwaGuideModal" tabindex="-1" role="dialog" aria-labelledby="pwaGuideModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content" style="border-radius: 15px; overflow: hidden;">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <h5 class="modal-title font-weight-bold" id="pwaGuideModalLabel">
+                            <i class="fas fa-mobile-alt"></i> Install ElectroZot App
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" style="padding: 25px;">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="install-step">
+                                    <h6 class="font-weight-bold text-primary mb-3">
+                                        <i class="fab fa-chrome"></i> Chrome / Edge Browser
+                                    </h6>
+                                    <ol class="install-steps" style="font-size: 0.9rem; line-height: 1.6;">
+                                        <li>Look for the <strong>"Install"</strong> button in the address bar</li>
+                                        <li>Or click the <strong>menu (⋮)</strong> → "Install ElectroZot"</li>
+                                        <li>Click <strong>"Install"</strong> in the popup</li>
+                                        <li>App will be added to your home screen!</li>
+                                    </ol>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="install-step">
+                                    <h6 class="font-weight-bold text-success mb-3">
+                                        <i class="fab fa-safari"></i> Safari (iPhone/iPad)
+                                    </h6>
+                                    <ol class="install-steps" style="font-size: 0.9rem; line-height: 1.6;">
+                                        <li>Tap the <strong>Share button</strong> (□↗)</li>
+                                        <li>Scroll down and tap <strong>"Add to Home Screen"</strong></li>
+                                        <li>Tap <strong>"Add"</strong> in the top right</li>
+                                        <li>ElectroZot app will appear on your home screen!</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pwa-benefits mt-4 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                            <h6 class="font-weight-bold mb-3 text-center">
+                                <i class="fas fa-star text-warning"></i> App Benefits
+                            </h6>
+                            <div class="row text-center">
+                                <div class="col-4">
+                                    <i class="fas fa-bolt text-primary" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Faster Loading</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-wifi text-success" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Works Offline</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-bell text-warning" style="font-size: 1.5rem;"></i>
+                                    <p class="mb-0 mt-2" style="font-size: 0.8rem; font-weight: 600;">Push Notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="border: none; padding: 15px 25px;">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="tryInstallAgain">
+                            <i class="fas fa-download"></i> Try Install
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <style>
             /* Compact Form Styling - Enhanced Design */
@@ -1223,6 +1302,364 @@
             </div>
         </section>
 
+        <!-- Recent Blog Posts Section -->
+        <section style="background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%); padding: 30px 0;">
+            <div class="container">
+                <div class="row text-center mb-3">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.8rem;">Latest from Our Blog</h2>
+                        <p class="text-muted" style="font-size: 0.9rem;">Expert tips and guides from our certified technicians</p>
+                    </div>
+                </div>
+                
+                <?php
+                // Get all published blog posts for carousel
+                $blog_query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC";
+                $blog_result = $mysqli->query($blog_query);
+                $blogs = [];
+                if($blog_result && $blog_result->num_rows > 0) {
+                    while($blog = $blog_result->fetch_object()) {
+                        $blogs[] = $blog;
+                    }
+                }
+                ?>
+                
+                <?php if(!empty($blogs)) { ?>
+                <!-- Desktop View - Show 3 blogs in a row -->
+                <div class="row d-none d-md-flex" id="desktop-blogs">
+                    <?php 
+                    $desktop_blogs = array_slice($blogs, 0, 3); // Show first 3 blogs on desktop
+                    foreach($desktop_blogs as $blog) { 
+                    ?>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                            <?php if($blog->blog_image) { ?>
+                                <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
+                            <?php } else { ?>
+                                <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
+                                </div>
+                            <?php } ?>
+                            <div class="card-body p-3 d-flex flex-column">
+                                <?php if($blog->blog_category) { ?>
+                                    <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                <?php } ?>
+                                <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
+                                <p class="card-text text-muted mb-2" style="flex-grow: 1; font-size: 0.8rem; line-height: 1.3;">
+                                    <?php 
+                                    $excerpt = $blog->blog_excerpt ?: strip_tags($blog->blog_content);
+                                    echo htmlspecialchars(substr($excerpt, 0, 80)) . '...'; 
+                                    ?>
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <small class="text-muted" style="font-size: 0.7rem;">
+                                        <i class="fas fa-calendar"></i> <?php echo date('M d', strtotime($blog->blog_published_at)); ?>
+                                    </small>
+                                    <small class="text-muted" style="font-size: 0.7rem;">
+                                        <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
+                                    </small>
+                                </div>
+                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
+                                    Read More <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php } ?>
+                </div>
+
+                <!-- Mobile View - Carousel with auto-rotation -->
+                <div class="d-block d-md-none" id="mobile-blog-carousel">
+                    <div class="blog-carousel-container" style="position: relative; overflow: hidden; border-radius: 15px;">
+                        <?php foreach($blogs as $index => $blog) { ?>
+                        <div class="blog-slide <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="display: <?php echo $index === 0 ? 'block' : 'none'; ?>; animation: <?php echo $index === 0 ? 'slideInRight 0.5s ease-in-out' : 'none'; ?>;">
+                            <div class="card shadow-sm mx-2" style="border-radius: 10px; overflow: hidden;">
+                                <?php if($blog->blog_image) { ?>
+                                    <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
+                                <?php } else { ?>
+                                    <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
+                                    </div>
+                                <?php } ?>
+                                <div class="card-body p-3">
+                                    <?php if($blog->blog_category) { ?>
+                                        <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                    <?php } ?>
+                                    <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
+                                    <p class="card-text text-muted mb-2" style="font-size: 0.8rem; line-height: 1.3;">
+                                        <?php 
+                                        $excerpt = $blog->blog_excerpt ?: strip_tags($blog->blog_content);
+                                        echo htmlspecialchars(substr($excerpt, 0, 70)) . '...'; 
+                                        ?>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            <i class="fas fa-calendar"></i> <?php echo date('M d', strtotime($blog->blog_published_at)); ?>
+                                        </small>
+                                        <small class="text-muted" style="font-size: 0.7rem;">
+                                            <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
+                                        </small>
+                                    </div>
+                                    <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
+                                        Read More <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <?php } ?>
+                        
+                        <!-- Carousel indicators -->
+                        <div class="carousel-indicators" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px;">
+                            <?php foreach($blogs as $index => $blog) { ?>
+                            <button class="indicator-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="width: 8px; height: 8px; border-radius: 50%; border: none; background: <?php echo $index === 0 ? '#007bff' : '#ccc'; ?>; cursor: pointer; transition: all 0.3s ease;"></button>
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View All Button -->
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <a href="blog.php" class="btn btn-outline-primary" style="border-radius: 20px; padding: 8px 24px; font-size: 0.9rem;">
+                            View All Posts <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <?php } else { ?>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <p class="text-muted">No blog posts available yet. Check back soon!</p>
+                    </div>
+                </div>
+                <?php } ?>
+            </div>
+        </section>
+
+        <!-- Blog Carousel Styles and Script -->
+        <style>
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes slideInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            .blog-carousel-container {
+                margin-bottom: 25px;
+            }
+            
+            .blog-slide {
+                transition: all 0.5s ease-in-out;
+            }
+            
+            .indicator-dot:hover {
+                background: #007bff !important;
+                transform: scale(1.2);
+            }
+            
+            .indicator-dot.active {
+                background: #007bff !important;
+                transform: scale(1.1);
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 768px) {
+                .blog-carousel-container {
+                    margin: 0 10px;
+                }
+                
+                .card {
+                    margin: 0 !important;
+                }
+                
+                /* Compact blog images on mobile */
+                #mobile-blog-carousel .card-img-top {
+                    height: 120px !important;
+                    width: 100% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    overflow: hidden !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top img {
+                    height: 120px !important;
+                    width: 100% !important;
+                    object-fit: cover !important;
+                    object-position: center !important;
+                    border-radius: 0 !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top i {
+                    font-size: 2rem !important;
+                }
+                
+                #mobile-blog-carousel .card-body {
+                    padding: 0.75rem !important;
+                }
+                
+                #mobile-blog-carousel .card-title {
+                    font-size: 0.85rem !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-text {
+                    font-size: 0.75rem !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .badge {
+                    font-size: 0.6rem !important;
+                    padding: 0.2rem 0.4rem !important;
+                }
+                
+                #mobile-blog-carousel .btn {
+                    font-size: 0.75rem !important;
+                    padding: 4px 8px !important;
+                }
+            }
+            
+            /* Extra compact for very small screens */
+            @media (max-width: 480px) {
+                #mobile-blog-carousel .card-img-top {
+                    height: 100px !important;
+                    width: 100% !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    overflow: hidden !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top img {
+                    height: 100px !important;
+                    width: 100% !important;
+                    object-fit: cover !important;
+                    object-position: center !important;
+                    border-radius: 0 !important;
+                }
+                
+                #mobile-blog-carousel .card-img-top i {
+                    font-size: 1.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-body {
+                    padding: 0.5rem !important;
+                }
+                
+                #mobile-blog-carousel .card-title {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .card-text {
+                    font-size: 0.7rem !important;
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .d-flex {
+                    margin-bottom: 0.3rem !important;
+                }
+                
+                #mobile-blog-carousel .d-flex small {
+                    font-size: 0.6rem !important;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slides = document.querySelectorAll('.blog-slide');
+                const indicators = document.querySelectorAll('.indicator-dot');
+                
+                if (slides.length === 0) return;
+                
+                let currentSlide = 0;
+                let carouselInterval;
+                
+                function showSlide(index) {
+                    // Hide all slides
+                    slides.forEach((slide, i) => {
+                        slide.style.display = 'none';
+                        slide.style.animation = 'none';
+                    });
+                    
+                    // Update indicators
+                    indicators.forEach((indicator, i) => {
+                        indicator.classList.remove('active');
+                        indicator.style.background = '#ccc';
+                    });
+                    
+                    // Show current slide with animation
+                    if (slides[index]) {
+                        slides[index].style.display = 'block';
+                        slides[index].style.animation = 'slideInRight 0.5s ease-in-out';
+                        
+                        // Update active indicator
+                        if (indicators[index]) {
+                            indicators[index].classList.add('active');
+                            indicators[index].style.background = '#007bff';
+                        }
+                    }
+                }
+                
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                }
+                
+                function startCarousel() {
+                    if (slides.length > 1) {
+                        carouselInterval = setInterval(nextSlide, 5000); // Change every 5 seconds
+                    }
+                }
+                
+                // Indicator click handlers
+                indicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        currentSlide = index;
+                        showSlide(currentSlide);
+                        
+                        // Restart carousel
+                        clearInterval(carouselInterval);
+                        startCarousel();
+                    });
+                });
+                
+                // Start the carousel automatically
+                startCarousel();
+                
+                // Pause on hover (optional)
+                const carouselContainer = document.querySelector('.blog-carousel-container');
+                if (carouselContainer) {
+                    carouselContainer.addEventListener('mouseenter', () => {
+                        clearInterval(carouselInterval);
+                    });
+                    
+                    carouselContainer.addEventListener('mouseleave', () => {
+                        startCarousel();
+                    });
+                }
+            });
+        </script>
+
     </div>
     <!-- /.container -->
 
@@ -1230,8 +1667,54 @@
     <?php include("vendor/inc/footer.php");?>
     <!--.Footer-->
     <!-- Bootstrap core JavaScript -->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="vendor/jquery/jquery.min.js?v=<?php echo time(); ?>"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js?v=<?php echo time(); ?>"></script>
+    
+    <!-- Enhanced Mobile menu fix -->
+    <script>
+        $(document).ready(function() {
+            // Enhanced mobile menu toggle
+            $('.navbar-toggler').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                var target = $(this).attr('data-target') || $(this).attr('data-bs-target');
+                var $target = $(target);
+                
+                if ($target.length) {
+                    $target.toggleClass('show');
+                    var isExpanded = $target.hasClass('show');
+                    $(this).attr('aria-expanded', isExpanded);
+                }
+            });
+            
+            // Close menu when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.navbar').length) {
+                    $('.navbar-collapse').removeClass('show');
+                    $('.navbar-toggler').attr('aria-expanded', 'false');
+                }
+            });
+            
+            // Close menu when clicking on menu items
+            $('.navbar-nav .nav-link').on('click', function() {
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Close menu with arrow button
+            $('.mobile-menu-arrow-close').on('click', function(e) {
+                e.preventDefault();
+                $('.navbar-collapse').removeClass('show');
+                $('.navbar-toggler').attr('aria-expanded', 'false');
+            });
+            
+            // Prevent menu from closing when clicking inside it
+            $('.navbar-collapse').on('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
     
     <!-- Sliding Images Script for Booking Form -->
     <script>
@@ -1340,89 +1823,521 @@
 
     <!-- PWA Service Worker Registration -->
     <script>
-        // Register Service Worker with relative path (works for any subdirectory)
+        // Production-ready Service Worker registration
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                // Use relative path - works regardless of subdirectory
-                navigator.serviceWorker.register('./sw.js')
-                    .then((registration) => {
-                        console.log('✅ Service Worker registered successfully');
-                        console.log('📍 Scope:', registration.scope);
-                        
-                        // Check for updates
-                        registration.update();
-                    })
-                    .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
+            window.addEventListener('load', async () => {
+                try {
+                    // Register service worker with production settings
+                    const registration = await navigator.serviceWorker.register('./sw.js', {
+                        scope: './',
+                        updateViaCache: 'none' // Always check for updates in production
                     });
+                    
+                    // Wait for service worker to be ready
+                    await navigator.serviceWorker.ready;
+                    
+                    // Check for updates periodically in production
+                    registration.update();
+                    
+                    // Set up automatic update checking
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // Check every minute in production
+                    
+                } catch (error) {
+                    // Graceful fallback - try alternative registration
+                    try {
+                        await navigator.serviceWorker.register('sw.js');
+                    } catch (altError) {
+                        // PWA will still work without service worker, just no offline support
+                        console.warn('Service Worker registration failed, PWA will work without offline support');
+                    }
+                }
             });
-        } else {
-            console.log('⚠️ Service Workers not supported in this browser');
         }
 
-        // PWA Install Prompt with better debugging
+        // Enhanced PWA Installation Handler
         let deferredPrompt;
-        const installButton = document.createElement('button');
-        installButton.innerHTML = '<i class="fas fa-download"></i> Install App';
-        installButton.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            z-index: 9999;
-            display: none;
-            transition: all 0.3s ease;
-        `;
-        installButton.onmouseover = () => {
-            installButton.style.transform = 'translateY(-3px)';
-            installButton.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.6)';
-        };
-        installButton.onmouseout = () => {
-            installButton.style.transform = 'translateY(0)';
-            installButton.style.boxShadow = '0 4px 15px rgba(102, 126, 234, 0.4)';
-        };
-        document.body.appendChild(installButton);
+        let installPromptAvailable = false;
+        const mainInstallBtn = document.getElementById('pwa-main-install-btn');
+        const guideBtn = document.getElementById('pwa-guide-btn');
+        const installedMsg = document.getElementById('pwa-installed-msg');
+        const tryInstallAgainBtn = document.getElementById('tryInstallAgain');
 
-        // Debug: Check if PWA is installable
-        console.log('🔍 Checking PWA installability...');
-        console.log('- Service Worker support:', 'serviceWorker' in navigator);
-        console.log('- Manifest link:', document.querySelector('link[rel="manifest"]') ? '✅ Found' : '❌ Missing');
-        console.log('- HTTPS:', window.location.protocol === 'https:' || window.location.hostname === 'localhost');
 
+
+        // Check if app is already installed
+        function checkIfInstalled() {
+            if (window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true) {
+                console.log('✅ Running as installed PWA');
+                showInstalledState();
+                return true;
+            }
+            return false;
+        }
+
+        function showInstalledState() {
+            if (mainInstallBtn) mainInstallBtn.style.display = 'none';
+            if (guideBtn) guideBtn.style.display = 'none';
+            if (installedMsg) installedMsg.style.display = 'block';
+        }
+
+        function showInstallableState() {
+            // Always show the install button with consistent messaging
+            if (mainInstallBtn) {
+                mainInstallBtn.style.display = 'inline-block';
+                // Always show as install button, regardless of prompt availability
+                mainInstallBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+                mainInstallBtn.title = 'Click to install the ElectroZot app';
+                
+                // Make sure button is enabled
+                mainInstallBtn.disabled = false;
+                mainInstallBtn.style.opacity = '1';
+                mainInstallBtn.style.cursor = 'pointer';
+            }
+            if (guideBtn) guideBtn.style.display = 'inline-block';
+            if (installedMsg) installedMsg.style.display = 'none';
+        }
+
+        // Listen for install prompt
         window.addEventListener('beforeinstallprompt', (e) => {
-            console.log('✅ beforeinstallprompt event fired - App is installable!');
             e.preventDefault();
             deferredPrompt = e;
-            installButton.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to install prompt: ${outcome}`);
-                deferredPrompt = null;
-                installButton.style.display = 'none';
+            installPromptAvailable = true;
+            
+            if (!checkIfInstalled()) {
+                showInstallableState();
+                window.pwaInstallEvent = e;
+                
+                // Update button text for desktop
+                if (window.screen.width >= 1024 && mainInstallBtn) {
+                    mainInstallBtn.innerHTML = '<i class="fas fa-download"></i> Install Desktop App';
+                    mainInstallBtn.title = 'Install ElectroZot as a desktop application';
+                }
             }
         });
 
+        // Enhanced install function for direct installation
+        async function installPWA() {
+            console.log('🔄 Install PWA function called');
+            console.log('- Deferred prompt available:', !!deferredPrompt);
+            console.log('- Install prompt available:', installPromptAvailable);
+            
+            if (deferredPrompt && installPromptAvailable) {
+                try {
+                    // Force direct install prompt without instructions
+                    console.log('🚀 Triggering direct install...');
+                    
+                    // Immediately show the install prompt
+                    const promptResult = deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    console.log(`👤 User response: ${outcome}`);
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ PWA installed successfully');
+                        showInstalledState();
+                        showInstallSuccessNotification();
+                    } else {
+                        console.log('❌ User dismissed install prompt');
+                        // Don't show manual guide if user dismissed
+                    }
+                    
+                    // Clear the deferredPrompt
+                    deferredPrompt = null;
+                    installPromptAvailable = false;
+                } catch (error) {
+                    console.error('❌ Install error:', error);
+                    // Try alternative installation method
+                    tryAlternativeInstall();
+                }
+            } else {
+                // Try to trigger installation through other means
+                console.log('ℹ️ Trying alternative install methods...');
+                tryAlternativeInstall();
+            }
+        }
+        
+        function tryAlternativeInstall() {
+            // Try to trigger browser's native install mechanism
+            if (window.chrome && window.chrome.webstore) {
+                // Chrome extension API (if available)
+                console.log('Trying Chrome install API...');
+            } else if ('serviceWorker' in navigator && 'PushManager' in window) {
+                // Force PWA criteria check
+                console.log('PWA criteria met, waiting for browser install prompt...');
+                
+                // Show a brief message instead of full instructions
+                showBriefInstallMessage();
+            } else {
+                showBriefInstallMessage();
+            }
+        }
+        
+        function showBriefInstallMessage(customMessage = null) {
+            // Show a minimal, non-intrusive message
+            const message = customMessage || '📱 Look for the install icon in your browser\'s address bar';
+            const toast = document.createElement('div');
+            toast.innerHTML = `
+                <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                            background: #667eea; color: white; padding: 12px 20px; border-radius: 25px; 
+                            box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 10000; 
+                            animation: slideUp 0.3s ease-out; font-size: 14px; text-align: center; max-width: 90%;">
+                    ${message}
+                </div>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideDown 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+        
+        function showInstallSuccessNotification() {
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; background: #28a745; color: white; 
+                            padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+                            z-index: 10000; animation: slideInRight 0.3s ease-out;">
+                    <strong>✅ App Installed Successfully!</strong>
+                    <p style="margin: 5px 0 0 0; font-size: 14px;">You can now use ElectroZot offline</p>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        function showManualInstallGuide() {
+            if ($('#pwaGuideModal').length) {
+                $('#pwaGuideModal').modal('show');
+            } else {
+                // Use global fallback function
+                if (window.installElectroZotPWA) {
+                    window.installElectroZotPWA();
+                }
+            }
+        }
+
+        // Main install button click - Direct installation with robust attachment
+        function attachInstallButtonHandler() {
+            const installBtn = document.getElementById('pwa-main-install-btn');
+            if (installBtn) {
+                // Remove any existing listeners
+                installBtn.replaceWith(installBtn.cloneNode(true));
+                const newBtn = document.getElementById('pwa-main-install-btn');
+                
+                newBtn.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Visual feedback
+                    newBtn.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        newBtn.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    // Try multiple installation methods
+                    await attemptDirectInstall();
+                });
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to attach handler immediately and on DOM ready
+        if (!attachInstallButtonHandler()) {
+            document.addEventListener('DOMContentLoaded', attachInstallButtonHandler);
+        }
+        
+        async function attemptDirectInstall() {
+            
+            // Method 1: Use stored deferred prompt
+            if (deferredPrompt) {
+                try {
+                    await deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        showInstalledState();
+                        showInstallSuccessNotification();
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 2: Use global install event
+            if (window.pwaInstallEvent) {
+                try {
+                    await window.pwaInstallEvent.prompt();
+                    const { outcome } = await window.pwaInstallEvent.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        showInstalledState();
+                        showInstallSuccessNotification();
+                        return true;
+                    }
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 3: Try PWA installer
+            if (window.PWAInstaller && window.PWAInstaller.install) {
+                try {
+                    await window.PWAInstaller.install();
+                    return true;
+                } catch (error) {
+                    // Continue to next method
+                }
+            }
+            
+            // Method 4: Show browser-specific instructions
+            const isChrome = navigator.userAgent.includes('Chrome');
+            if (isChrome) {
+                showChromeInstallInstructions();
+            } else {
+                showBrowserSpecificInstructions();
+            }
+            return false;
+        }
+        
+        function showChromeInstallInstructions() {
+            // Create a more prominent notification for Chrome users
+            const notification = document.createElement('div');
+            notification.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                            background: white; padding: 30px; border-radius: 15px; 
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 10000; 
+                            max-width: 400px; text-align: center; border: 3px solid #667eea;">
+                    <h3 style="color: #667eea; margin-bottom: 15px;">📱 Install ElectroZot App</h3>
+                    <p style="margin-bottom: 20px; color: #333;">Look for the <strong>install icon (⊕)</strong> in your Chrome address bar and click it!</p>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0;">
+                        <p style="margin: 0; font-size: 14px; color: #666;">
+                            <strong>Alternative:</strong><br>
+                            Chrome Menu (⋮) → "Install ElectroZot"
+                        </p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: #667eea; color: white; border: none; padding: 10px 20px; 
+                                   border-radius: 25px; cursor: pointer; font-weight: bold;">
+                        Got it!
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 10000);
+        }
+        
+        function showBrowserSpecificInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '';
+            
+            if (userAgent.includes('firefox')) {
+                instructions = 'Firefox: Look for the install prompt or "Add to Home Screen" option';
+            } else if (userAgent.includes('safari')) {
+                instructions = 'Safari: Tap Share button → "Add to Home Screen"';
+            } else if (userAgent.includes('edg')) {
+                instructions = 'Edge: Look for the install icon in the address bar';
+            } else {
+                instructions = 'Look for "Install" or "Add to Home Screen" in your browser menu';
+            }
+            
+            showBriefInstallMessage(instructions);
+        }
+        }
+
+        // Guide button click
+        if (guideBtn) {
+            guideBtn.addEventListener('click', () => {
+                $('#pwaGuideModal').modal('show');
+            });
+        }
+
+        // Try install again from modal
+        if (tryInstallAgainBtn) {
+            tryInstallAgainBtn.addEventListener('click', () => {
+                $('#pwaGuideModal').modal('hide');
+                if (mainInstallBtn) {
+                    mainInstallBtn.click();
+                }
+            });
+        }
+
+        // Listen for successful installation
         window.addEventListener('appinstalled', () => {
-            console.log('✅ PWA installed successfully!');
-            installButton.style.display = 'none';
+            showInstalledState();
+            
+            // Show success message
+            const successToast = document.createElement('div');
+            successToast.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; background: #28a745; color: white; 
+                           padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+                           z-index: 10000; animation: slideInRight 0.3s ease-out;">
+                    <i class="fas fa-check-circle"></i> App installed successfully!
+                </div>
+            `;
+            document.body.appendChild(successToast);
+            
+            setTimeout(() => {
+                successToast.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => successToast.remove(), 300);
+            }, 3000);
         });
 
-        // Check if app is installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            console.log('✅ Running as installed PWA');
+        // Function to simulate user engagement and trigger install prompt
+        function simulateUserEngagement() {
+            // Dispatch various user interaction events
+            const events = ['click', 'scroll', 'keydown', 'touchstart'];
+            events.forEach(eventType => {
+                const event = new Event(eventType, { bubbles: true });
+                document.dispatchEvent(event);
+            });
+            
+            // Simulate scroll
+            window.scrollBy(0, 1);
+            window.scrollBy(0, -1);
+            
+            // Try again if prompt not available
+            setTimeout(() => {
+                if (!deferredPrompt && !window.pwaInstallEvent) {
+                    setTimeout(simulateUserEngagement, 3000);
+                }
+            }, 1000);
         }
+        
+        // Event delegation backup for install button
+        document.addEventListener('click', async (event) => {
+            if (event.target.id === 'pwa-main-install-btn' || 
+                event.target.closest('#pwa-main-install-btn')) {
+                
+                event.preventDefault();
+                event.stopPropagation();
+                
+                // Visual feedback
+                const btn = event.target.closest('#pwa-main-install-btn') || event.target;
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 150);
+                
+                await attemptDirectInstall();
+            }
+        });
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkIfInstalled()) {
+                // Always show both buttons - they handle their own logic
+                showInstallableState();
+                
+                // Ensure install button handler is attached
+                setTimeout(attachInstallButtonHandler, 500);
+                
+                // Start simulating user engagement to trigger install prompt
+                setTimeout(simulateUserEngagement, 2000);
+            }
+        });
+
+        // Add CSS animations
+        const pwaStyles = document.createElement('style');
+        pwaStyles.textContent = `
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes slideOutRight {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+            
+            .pwa-install-section .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+            }
+            
+            .install-steps li {
+                margin-bottom: 8px;
+                padding-left: 5px;
+            }
+            
+            .install-steps li strong {
+                color: #007bff;
+            }
+            
+            /* Mobile responsive adjustments */
+            @media (max-width: 768px) {
+                .pwa-install-section {
+                    padding: 15px 0 !important;
+                }
+                
+                .pwa-install-section h3 {
+                    font-size: 1.2rem !important;
+                }
+                
+                .pwa-install-section p {
+                    font-size: 0.85rem !important;
+                }
+                
+                .pwa-install-buttons .btn {
+                    padding: 10px 20px !important;
+                    font-size: 0.9rem !important;
+                    margin: 5px !important;
+                    display: block !important;
+                    width: 100% !important;
+                }
+                
+                @keyframes slideInRight {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                
+                @keyframes slideOutRight {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                
+                @keyframes slideUp {
+                    from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+                    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                }
+                
+                @keyframes slideDown {
+                    from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    to { transform: translateX(-50%) translateY(100px); opacity: 0; }
+                }
+                
+                .modal-dialog {
+                    margin: 10px !important;
+                }
+                
+                .modal-body {
+                    padding: 15px !important;
+                }
+                
+                .install-steps {
+                    font-size: 0.8rem !important;
+                }
+            }
+        `;
+        document.head.appendChild(pwaStyles);
     </script>
 
     <!-- Bottom Navigation Bar -->

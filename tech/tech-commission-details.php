@@ -261,5 +261,8 @@ $history_result = $stmt_history->get_result();
     <script src="../admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../admin/vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="../admin/js/sb-admin.min.js"></script>
+    
+    <!-- Bottom Navigation Bar -->
+    <?php include('includes/bottom-nav.php'); ?>
 </body>
 </html>

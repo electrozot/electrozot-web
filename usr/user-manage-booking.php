@@ -5,9 +5,7 @@ header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Error reporting disabled in production
 
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
@@ -65,8 +63,14 @@ if($cancel_error) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
     <title>My Bookings - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('vendor/inc/favicon.php'); ?>
+    
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -78,76 +82,7 @@ if($cancel_error) {
             padding-bottom: 55px;
         }
         
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            color: white;
-            padding: 10px 15px;
-            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
-            z-index: 1000;
-        }
-        
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-left: 0;
-            margin-left: -5px;
-        }
-        
-        .brand-section {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .logo {
-            height: 55px;
-            width: auto;
-        }
-        
-        .brand-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.2;
-        }
-        
-        .brand-text p {
-            font-size: 13px;
-            opacity: 0.85;
-            margin: 3px 0 0 0;
-            font-style: italic;
-        }
-        
-        .user-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-left: auto;
-        }
-        
-        .header-icons {
-            display: flex;
-            gap: 6px;
-        }
-        
-        .header-icon {
-            width: 32px;
-            height: 32px;
-            background: rgba(255,255,255,0.25);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
+
         
         .content {
             padding: 15px;
@@ -378,108 +313,243 @@ if($cancel_error) {
             color: #991b1b;
             border: 1px solid #ef4444;
         }
+
+        }
+
+
         
-        .bottom-nav {
-            position: fixed;
-            bottom: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 16px);
-            max-width: 450px;
-            background: linear-gradient(135deg, #f9a8a8 0%, #f59e9e 20%, #f48fb1 50%, #ec6ead 80%, #d13abd 100%);
-            box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 4px 6px;
-            z-index: 1000;
-            border-radius: 20px;
+        .content {
+            padding: 15px;
         }
         
-        .nav-item {
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.75);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 4px 2px;
-            position: relative;
+        .alert {
+            padding: 15px;
             border-radius: 12px;
-        }
-        
-        .nav-item:hover {
-            color: white;
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
-        }
-        
-        .nav-item.active { 
-            color: white;
-            background: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-item i {
-            font-size: 16px;
-            display: block;
-            margin-bottom: 1px;
-        }
-        
-        .nav-item.active i {
-            animation: bounce 0.4s ease;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .nav-item span {
-            font-size: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 600;
-            letter-spacing: 0.2px;
         }
         
-        @media (min-width: 768px) {
-            .bottom-nav {
-                max-width: 400px;
-                bottom: 10px;
-                padding: 5px 8px;
-            }
-            
-            .nav-item {
-                padding: 5px 4px;
-            }
-            
-            .nav-item i {
-                font-size: 18px;
-                margin-bottom: 2px;
-            }
-            
-            .nav-item span {
-                font-size: 9px;
-            }
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
+        
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .booking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(209, 58, 189, 0.12);
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(209, 58, 189, 0.2);
+        }
+        
+        .booking-card.status-pending {
+            border-left-color: #ffc107;
+        }
+        
+        .booking-card.status-approved {
+            border-left-color: #17a2b8;
+        }
+        
+        .booking-card.status-completed {
+            border-left-color: #28a745;
+        }
+        
+        .booking-card.status-cancelled {
+            border-left-color: #dc3545;
+        }
+        
+        .booking-card.on-hold {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe8a1 100%);
+            border-left-color: #ffa502;
+        }
+        
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+        
+        .booking-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .booking-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-on-hold {
+            background: #ffa502;
+            color: white;
+        }
+        
+        .booking-service {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .booking-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .booking-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .booking-detail i {
+            color: #d13abd;
+            width: 14px;
+        }
+        
+        .booking-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(209, 58, 189, 0.3);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e74c3c 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+            color: white;
+        }
+        
+        .no-bookings {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .no-bookings i {
+            font-size: 48px;
+            color: #d13abd;
+            margin-bottom: 15px;
+        }
+        
+        .no-bookings h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .no-bookings p {
+            margin-bottom: 20px;
+        }
+        
+        .hold-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        .hold-info i {
+            color: #ffa502;
+            margin-right: 5px;
+        }
+
+
     </style>
 </head>
 <body>
-    <div class="top-bar">
-        <div class="header-content">
-            <a href="../index.php" class="brand-section" style="text-decoration: none; color: white;">
-                <img src="../vendor/EZlogonew.png" alt="Electrozot" class="logo">
-                <div class="brand-text">
-                    <h2>Electrozot</h2>
-                    <p>We make perfect</p>
-                </div>
-            </a>
-            <div class="user-section">
-                <div class="header-icons">
-                    <a href="user-view-profile.php" class="header-icon">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include('vendor/inc/navbar.php'); ?>
 
     <div class="content">
         <?php if ($cancel_success): ?>
@@ -603,7 +673,7 @@ if($cancel_error) {
             
             <div class="action-buttons" style="grid-template-columns: <?php 
                 if($status == 'Completed') {
-                    echo '1fr 1fr 1fr'; // View, Track, Bill
+                    echo '1fr 1fr 1fr 1fr'; // View, Track, Bill, Feedback
                 } elseif($status != 'Cancelled' && $status != 'Completed' && empty($booking->sb_technician_id)) {
                     echo '1fr 1fr 1fr'; // View, Track, Cancel
                 } else {
@@ -619,6 +689,9 @@ if($cancel_error) {
                 <?php if ($status == 'Completed'): ?>
                 <a href="user-view-bill.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <i class="fas fa-file-invoice"></i> Bill
+                </a>
+                <a href="user-give-feedback.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-track" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                    <i class="fas fa-star"></i> Feedback
                 </a>
                 <?php elseif ($status != 'Cancelled' && empty($booking->sb_technician_id)): ?>
                 <a href="user-delete-booking.php?booking_id=<?php echo $booking->sb_id; ?>" class="btn btn-cancel" onclick="return confirm('Cancel this booking?');">
@@ -642,29 +715,6 @@ if($cancel_error) {
         </div>
         
         <?php } ?>
-    </div>
-
-    <div class="bottom-nav">
-        <a href="user-dashboard.php" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-        </a>
-        <a href="book-service-step1.php" class="nav-item">
-            <i class="fas fa-calendar-plus"></i>
-            <span>Book</span>
-        </a>
-        <a href="user-manage-booking.php" class="nav-item active">
-            <i class="fas fa-list-alt"></i>
-            <span>Orders</span>
-        </a>
-        <a href="user-view-profile.php" class="nav-item">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
-        <a href="../index.php" class="nav-item">
-            <i class="fas fa-store"></i>
-            <span>Main</span>
-        </a>
     </div>
 
     <script>
@@ -777,5 +827,7 @@ if($cancel_error) {
     // Check every 10 seconds
     setInterval(checkForBookingUpdates, 10000);
     </script>
+
+    <?php include('vendor/inc/bottom-nav.php'); ?>
 </body>
 </html>

@@ -8,9 +8,8 @@ let newWorker;
 // Check for service worker updates
 if ('serviceWorker' in navigator) {
     // Use relative path to work in any directory
-    const swPath = new URL('./sw.js', document.baseURI).pathname;
-    navigator.serviceWorker.register(swPath).then((registration) => {
-        console.log('✅ Service Worker registered');
+    navigator.serviceWorker.register('./sw.js').then((registration) => {
+
         
         // Check for updates every hour
         setInterval(() => {
@@ -20,12 +19,12 @@ if ('serviceWorker' in navigator) {
         // Listen for updates
         registration.addEventListener('updatefound', () => {
             newWorker = registration.installing;
-            console.log('🔄 New Service Worker installing...');
+
             
             newWorker.addEventListener('statechange', () => {
                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                     // New service worker available
-                    console.log('✨ New version available!');
+
                     showUpdateNotification();
                 }
             });
