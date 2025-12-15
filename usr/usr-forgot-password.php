@@ -10,6 +10,10 @@
     <meta name="theme-color" content="#000000">
 
     <title>Forgot Password - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('vendor/inc/favicon.php'); ?>
+    
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }

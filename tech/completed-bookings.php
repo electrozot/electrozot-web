@@ -165,6 +165,9 @@ elseif($date_filter == 'custom' && !empty($custom_date)) $date_label = date('d M
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Completed Bookings - Electrozot</title>
     
+    <!-- Favicon -->
+    <?php include('includes/favicon.php'); ?>
+    
     <!-- PWA Meta Tags for Fullscreen -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

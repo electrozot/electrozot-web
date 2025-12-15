@@ -87,6 +87,14 @@
     <meta name="theme-color" content="#000000">
 
     <title>Client Login - Electrozot</title>
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="../vendor/img/icons/favicon-96x96.png?v=<?php echo time(); ?>">
+    
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <style>
         * {

@@ -123,6 +123,13 @@ $all_bookings_result = $all_bookings_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard - Electrozot</title>
     
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" href="../vendor/img/icons/favicon.ico?v=<?php echo time(); ?>" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="../vendor/img/icons/favicon-16x16.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="../vendor/img/icons/favicon-32x32.png?v=<?php echo time(); ?>">
+    <link rel="icon" type="image/png" sizes="96x96" href="../vendor/img/icons/favicon-96x96.png?v=<?php echo time(); ?>">
+    
     <!-- PWA Meta Tags for Fullscreen -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

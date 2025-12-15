@@ -54,6 +54,10 @@ if (isset($_POST['change_password'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <title>Change Password - Electrozot</title>
+    
+    <!-- Favicon -->
+    <?php include('vendor/inc/favicon.php'); ?>
+    
     <link rel="stylesheet" href="vendor/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="vendor/inc/navbar-styles.css?v=<?php echo time(); ?>">
     <style>
