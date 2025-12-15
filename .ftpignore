@@ -1,0 +1,16 @@
+vendor/
+*/vendor/
+**/vendor/
+node_modules/
+*/node_modules/
+**/node_modules/
+.git/
+.vscode/
+.idea/
+*.log
+*.tmp
+*.zip
+*.bak
+*.backup
+.DS_Store
+Thumbs.db

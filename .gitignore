@@ -32,7 +32,11 @@ admin/vendor/img/gallery/*
 
 # Dependencies
 vendor/
+*/vendor/
+**/vendor/
 node_modules/
+*/node_modules/
+**/node_modules/
 
 # Environment
 .env
