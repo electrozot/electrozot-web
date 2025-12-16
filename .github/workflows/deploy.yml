@@ -23,7 +23,9 @@ jobs:
 
           SOURCE: ./
           TARGET: domains/electrozot.in/public_html/
-          ARGS: "-avz --delete"
+
+          ARGS: "-avz"
+
           EXCLUDE: |
             .git
             .github
