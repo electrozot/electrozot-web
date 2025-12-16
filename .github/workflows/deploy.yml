@@ -1,4 +1,4 @@
-name: Deploy PHP Site (FTP)
+name: Deploy PHP Site (SFTP)
 
 on:
   push:
@@ -10,14 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Upload to electrozot.in via FTP
+      - name: Upload to Hostinger via SFTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
+          port: 22
+          protocol: sftp
           server-dir: /public_html/
+          log-level: verbose
