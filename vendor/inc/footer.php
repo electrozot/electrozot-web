@@ -206,6 +206,12 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
       });
       
       footerInstallBtn.addEventListener('click', async () => {
+        // Check if app is already installed
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+          alert('✅ ElectroZot is already installed on your device!\n\nYou are currently using the web version. To use the app version, please open ElectroZot from your home screen or app drawer.');
+          return;
+        }
+        
         // Use the enhanced PWA installer
         if (window.PWAInstaller && window.PWAInstaller.install) {
           window.PWAInstaller.install();
@@ -215,7 +221,7 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
             const { outcome } = await window.deferredPrompt.userChoice;
             
             if (outcome === 'accepted') {
-              footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
+              footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open in App</span>';
               footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
             }
             window.deferredPrompt = null;
@@ -243,8 +249,8 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
       });
       
       // Check if already installed
-      if (window.matchMedia('(display-mode: standalone)').matches) {
-        footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open in App</span>';
         footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
       }
     }

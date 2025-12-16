@@ -498,17 +498,16 @@
                    document.referrer.includes('android-app://');
         }
         
-        // Hide buttons if already installed
+        // Update buttons if already installed
         if (isAppInstalled()) {
             if (installButtonDesktop) {
-                installButtonDesktop.innerHTML = '<i class="fas fa-check-circle"></i> Installed';
+                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
                 installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
-                installButtonDesktop.disabled = true;
+                installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
             }
             if (installButtonMobile) {
-                installButtonMobile.innerHTML = '<i class="fas fa-check-circle"></i><span>Installed</span>';
+                installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
                 installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
-                installButtonMobile.disabled = true;
             }
         }
         
@@ -533,7 +532,7 @@
         // Function to handle installation
         async function handleInstallClick() {
             if (isAppInstalled()) {
-                alert('✅ ElectroZot is already installed on your device!');
+                alert('✅ ElectroZot is already installed on your device!\n\nYou are currently using the web version. To use the app version, please open ElectroZot from your home screen or app drawer.');
                 return;
             }
             
@@ -547,9 +546,16 @@
                     
                     if (outcome === 'accepted') {
                         console.log('✅ PWA installation accepted');
-                        // Hide buttons after successful installation
-                        if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-                        if (installButtonMobile) installButtonMobile.style.display = 'none';
+                        // Update buttons after successful installation
+                        if (installButtonDesktop) {
+                            installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
+                            installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
+                            installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+                        }
+                        if (installButtonMobile) {
+                            installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
+                            installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                        }
                     } else {
                         console.log('❌ PWA installation declined');
                     }
@@ -586,30 +592,37 @@
             alert(instructions);
         }
         
-        // Attach event listeners
-        if (installButtonDesktop && !isAppInstalled()) {
+        // Attach event listeners (always attach, function handles installed state)
+        if (installButtonDesktop) {
             installButtonDesktop.addEventListener('click', handleInstallClick);
         }
         
-        if (installButtonMobile && !isAppInstalled()) {
+        if (installButtonMobile) {
             installButtonMobile.addEventListener('click', handleInstallClick);
         }
         
-        // Hide buttons if already installed
+        // Update buttons when app gets installed
         window.addEventListener('appinstalled', () => {
-            if (installButtonDesktop) installButtonDesktop.style.display = 'none';
-            if (installButtonMobile) installButtonMobile.style.display = 'none';
+            if (installButtonDesktop) {
+                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
+                installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+            }
+            if (installButtonMobile) {
+                installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
+                installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+            }
         });
         
         // Check if running as PWA
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             if (installButtonDesktop) {
-                installButtonDesktop.innerHTML = '<i class="fas fa-check-circle"></i> Installed';
+                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
                 installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
                 installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
             }
             if (installButtonMobile) {
-                installButtonMobile.innerHTML = '<i class="fas fa-check-circle"></i>';
+                installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
                 installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
                 installButtonMobile.style.borderColor = 'rgba(76, 175, 80, 0.5)';
             }
