@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Install Test - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="usr/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin: 20px;
+        }
+        .nav-button-test {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .nav-button-test:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+        .mobile-button-test {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simplified Navigation for Testing -->
+    <nav class="navbar fixed-top" style="background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%); padding: 10px 0;">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#" style="color: white; font-weight: bold;">
+                ElectroZot Test
+            </a>
+            
+            <!-- Mobile Install Button -->
+            <button id="pwa-install-mobile-btn" class="mobile-button-test d-lg-none">
+                <i class="fas fa-download" style="font-size: 0.65rem; margin-bottom: 1px;"></i>
+                <span style="font-weight: 600; font-size: 0.5rem;">App</span>
+            </button>
+            
+            <!-- Desktop Install Button -->
+            <button id="pwa-install-nav-btn" class="nav-button-test d-none d-lg-block">
+                <i class="fas fa-download"></i> Install App
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="test-container">
+            <h1>🧪 Navigation Install Button Test</h1>
+            <p>Test the PWA install buttons in the navigation bar</p>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Desktop Button</h3>
+                    <p>The desktop install button should be visible on larger screens and show a centered popup when clicked.</p>
+                    <button onclick="testDesktopButton()" class="btn btn-light">
+                        Test Desktop Button
+                    </button>
+                </div>
+                
+                <div class="col-md-6">
+                    <h3>Mobile Button</h3>
+                    <p>The mobile install button should be visible on smaller screens and show a mobile-optimized popup.</p>
+                    <button onclick="testMobileButton()" class="btn btn-light">
+                        Test Mobile Button
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h3>Test Results</h3>
+                <div id="test-results"></div>
+            </div>
+            
+            <div class="mt-4">
+                <h3>Manual Tests</h3>
+                <ul>
+                    <li>Click the install button in the navigation bar</li>
+                    <li>Verify the popup appears centered on screen</li>
+                    <li>Check that the popup is mobile-friendly</li>
+                    <li>Test on different screen sizes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load PWA Scripts -->
+    <script src="pwa-install.js"></script>
+    
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const result = document.createElement('div');
+            result.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'}`;
+            result.innerHTML = message;
+            results.appendChild(result);
+        }
+        
+        function testDesktopButton() {
+            const btn = document.getElementById('pwa-install-nav-btn');
+            if (btn) {
+                btn.click();
+                addResult('✅ Desktop button clicked - check for popup', 'success');
+            } else {
+                addResult('❌ Desktop button not found', 'error');
+            }
+        }
+        
+        function testMobileButton() {
+            const btn = document.getElementById('pwa-install-mobile-btn');
+            if (btn) {
+                btn.click();
+                addResult('✅ Mobile button clicked - check for popup', 'success');
+            } else {
+                addResult('❌ Mobile button not found', 'error');
+            }
+        }
+        
+        // Test button visibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const desktopBtn = document.getElementById('pwa-install-nav-btn');
+            const mobileBtn = document.getElementById('pwa-install-mobile-btn');
+            
+            if (desktopBtn) {
+                addResult('✅ Desktop install button found', 'success');
+            } else {
+                addResult('❌ Desktop install button not found', 'error');
+            }
+            
+            if (mobileBtn) {
+                addResult('✅ Mobile install button found', 'success');
+            } else {
+                addResult('❌ Mobile install button not found', 'error');
+            }
+            
+            // Check if PWA installer is loaded
+            if (window.PWAInstaller) {
+                addResult('✅ PWA installer loaded', 'success');
+            } else {
+                addResult('❌ PWA installer not loaded', 'error');
+            }
+        });
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            addResult('✅ Install prompt available', 'success');
+        });
+        
+        // Check if already installed
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            addResult('ℹ️ App is already installed', 'info');
+        }
+    </script>
+</body>
+</html>
