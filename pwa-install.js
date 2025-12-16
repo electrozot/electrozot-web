@@ -1,24 +1,42 @@
 /**
- * PWA Installation Handler
+ * PWA Installation Handler - Production Ready
  * Handles app installation prompt and provides user-friendly install experience
  */
 
 let deferredPrompt;
 let installButton;
+let installPromptShown = false;
 
-// Listen for the beforeinstallprompt event
+// Enhanced beforeinstallprompt listener with better production handling
 window.addEventListener('beforeinstallprompt', (e) => {
-
+    console.log('🚀 PWA Install prompt available');
     
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
     
     // Stash the event so it can be triggered later
     deferredPrompt = e;
+    window.pwaInstallEvent = e; // Global reference
     
     // Show install button/banner
     showInstallPromotion();
+    
+    // Enable footer install button
+    const footerBtn = document.getElementById('pwa-install-footer-btn');
+    if (footerBtn) {
+        footerBtn.style.display = 'inline-flex';
+        footerBtn.disabled = false;
+    }
 });
+
+// Additional check for delayed prompt availability
+setTimeout(() => {
+    if (!deferredPrompt && !installPromptShown) {
+        console.log('⏰ Checking for delayed PWA prompt...');
+        // Some browsers delay the prompt, so we check again
+        checkPWAInstallability();
+    }
+}, 5000);
 
 // Show install promotion UI - Only show if main section is not visible
 function showInstallPromotion() {
@@ -81,33 +99,37 @@ function showInstallPromotion() {
     }
 }
 
-// Install PWA - Direct installation
+// Enhanced PWA installation with better error handling
 async function installPWA() {
+    console.log('🔄 Attempting PWA installation...');
+    
     if (!deferredPrompt) {
-
+        console.log('❌ No deferred prompt available');
+        
         // Try to use global install event if available
         if (window.pwaInstallEvent) {
             deferredPrompt = window.pwaInstallEvent;
+            console.log('✅ Using global install event');
         } else {
+            console.log('📱 Showing manual install guide');
+            showManualInstallGuide();
             return;
         }
     }
     
     try {
-        // Immediately trigger the install prompt
-
+        console.log('🚀 Triggering install prompt...');
         await deferredPrompt.prompt();
         
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
-        
-
+        console.log('👤 User choice:', outcome);
         
         if (outcome === 'accepted') {
-
+            console.log('✅ PWA installation accepted');
             showInstallSuccess();
         } else {
-
+            console.log('❌ PWA installation declined');
         }
         
         // Clear the deferredPrompt
@@ -117,9 +139,63 @@ async function installPWA() {
         // Hide the install promotion
         dismissInstallPromotion();
     } catch (error) {
-        console.error('Install error:', error);
-        // Don't show manual guide, just log the error
+        console.error('❌ Install error:', error);
+        showManualInstallGuide();
     }
+}
+
+// Check PWA installability
+function checkPWAInstallability() {
+    // Check if already installed
+    if (isRunningAsPWA()) {
+        console.log('✅ PWA already installed');
+        return;
+    }
+    
+    // Check if service worker is registered
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistration().then(registration => {
+            if (registration) {
+                console.log('✅ Service Worker registered');
+            } else {
+                console.log('❌ Service Worker not registered');
+            }
+        });
+    }
+    
+    // Check manifest
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+        console.log('✅ Manifest link found:', manifestLink.href);
+    } else {
+        console.log('❌ Manifest link not found');
+    }
+}
+
+// Show manual install guide for production
+function showManualInstallGuide() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let instructions = '';
+    let browserName = '';
+    
+    if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+        browserName = 'Chrome';
+        instructions = '1. Look for the install icon (⊕) in the address bar\n2. Or go to Menu (⋮) > "Install ElectroZot"\n3. Click "Install" to add to your device';
+    } else if (userAgent.includes('firefox')) {
+        browserName = 'Firefox';
+        instructions = '1. Look for the install prompt banner\n2. Or go to Menu > "Install"\n3. Follow the installation steps';
+    } else if (userAgent.includes('safari')) {
+        browserName = 'Safari';
+        instructions = '1. Tap the Share button (□↗)\n2. Scroll down and select "Add to Home Screen"\n3. Tap "Add" to install';
+    } else if (userAgent.includes('edg')) {
+        browserName = 'Edge';
+        instructions = '1. Look for the install icon in the address bar\n2. Or go to Menu (⋯) > Apps > "Install ElectroZot"\n3. Click "Install"';
+    } else {
+        browserName = 'Your Browser';
+        instructions = '1. Look for an "Install" option in your browser menu\n2. Or look for "Add to Home Screen" option\n3. Follow your browser\'s installation steps';
+    }
+    
+    alert(`📱 Install ElectroZot App\n\nFor ${browserName}:\n${instructions}\n\n💡 Tip: Make sure you\'re using HTTPS and have browsed the site for a few minutes.`);
 }
 
 // Dismiss install promotion

@@ -1,7 +1,7 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.5.1'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v4.4.5'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.5.1';
+const APP_VERSION = '4.4.5';
 
 // Service Worker for ElectroZot PWA
 

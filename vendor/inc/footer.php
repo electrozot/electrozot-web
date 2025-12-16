@@ -178,6 +178,24 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
       });
     }
     
+    // Manual install guide function
+    function showManualInstallGuide() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      let instructions = '';
+      
+      if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+        instructions = 'Chrome:\n1. Look for install icon (⊕) in address bar\n2. Or Menu (⋮) > Install ElectroZot\n3. Click Install';
+      } else if (userAgent.includes('safari')) {
+        instructions = 'Safari:\n1. Tap Share button (□↗)\n2. Select "Add to Home Screen"\n3. Tap Add';
+      } else if (userAgent.includes('firefox')) {
+        instructions = 'Firefox:\n1. Look for install banner\n2. Or Menu > Install\n3. Follow prompts';
+      } else {
+        instructions = 'Look for "Install" or "Add to Home Screen" option in your browser menu';
+      }
+      
+      alert('📱 Install ElectroZot App\n\n' + instructions + '\n\n💡 Tip: Use HTTPS and browse site for 2-3 minutes first');
+    }
+    
     // Footer PWA Install Button Handler
     var footerInstallBtn = document.getElementById('pwa-install-footer-btn');
     if (footerInstallBtn) {
@@ -189,20 +207,40 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
       });
       
       footerInstallBtn.addEventListener('click', async () => {
-        if (!window.deferredPrompt) {
-          alert('📱 Install ElectroZot App\n\n' +
-                'Browse the site for 30 seconds, then the install option will appear!\n\n' +
-                'Or check your browser menu for "Install ElectroZot"');
-          return;
+        // Use the enhanced PWA installer
+        if (window.PWAInstaller && window.PWAInstaller.install) {
+          window.PWAInstaller.install();
+        } else if (window.deferredPrompt) {
+          try {
+            await window.deferredPrompt.prompt();
+            const { outcome } = await window.deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+              footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
+              footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            }
+            window.deferredPrompt = null;
+          } catch (error) {
+            console.error('Footer install error:', error);
+            showManualInstallGuide();
+          }
+        } else {
+          // Show enhanced manual guide
+          const userAgent = navigator.userAgent.toLowerCase();
+          let instructions = '';
+          
+          if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+            instructions = 'Chrome: Look for install icon (⊕) in address bar or Menu > Install ElectroZot';
+          } else if (userAgent.includes('safari')) {
+            instructions = 'Safari: Tap Share button (□↗) > Add to Home Screen';
+          } else if (userAgent.includes('firefox')) {
+            instructions = 'Firefox: Look for install prompt or Menu > Install';
+          } else {
+            instructions = 'Look for "Install" or "Add to Home Screen" in your browser menu';
+          }
+          
+          alert('📱 Install ElectroZot App\n\n' + instructions + '\n\n💡 Make sure you\'re using HTTPS and browse for a few minutes first.');
         }
-        window.deferredPrompt.prompt();
-        const { outcome } = await window.deferredPrompt.userChoice;
-        
-        if (outcome === 'accepted') {
-          footerInstallBtn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Installed</span>';
-          footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-        }
-        window.deferredPrompt = null;
       });
       
       // Check if already installed
