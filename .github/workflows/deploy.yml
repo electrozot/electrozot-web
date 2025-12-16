@@ -1,4 +1,4 @@
-name: 🚀 Deploy PHP Site via SFTP
+name: 🚀 Deploy PHP Site via SSH/rsync
 
 on:
   push:
@@ -10,20 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1 — Checkout repository
-      - name: Checkout code
+      # Checkout the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2 — Deploy directly to Hostinger via SFTP
-      - name: Deploy via SFTP
-        uses: appleboy/sftp-action@v0.1.3
+      # Deploy with rsync over SSH
+      - name: Deploy via SSH (rsync)
+        uses: matsuu/ssh-deploy@v4
         with:
+          # Hostinger server
           host: 217.21.84.50
           port: 65002
           username: u848820288
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./"               # upload all files in repo root
-          target: "/public_html/"    # Hostinger web root
-          strip_components: 0        # keep repo structure
-          rm: false                  # do not delete files on server
-          overwrite: true
+
+          # Paths
+          local-dir: "./"
+          remote-dir: "/public_html/"
+
+          # Rsync options
+          exclude: |
+            .git
+            .github
+            node_modules
+          rsync-options: "-avz --delete"
