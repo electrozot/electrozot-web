@@ -1,4 +1,4 @@
-name: Deploy PHP Site (FTP)
+name: 🚀 Deploy PHP Site via SSH/rsync
 
 on:
   push:
@@ -10,14 +10,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Upload to electrozot.in via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT }}
-          server-dir: /public_html/
+      - name: Deploy to Hostinger (rsync over SSH)
+        uses: easingthemes/ssh-deploy@v4.1.10
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: 217.21.84.50
+          REMOTE_USER: u848820288
+          REMOTE_PORT: 65002
+
+          SOURCE: ./
+          TARGET: domains/electrozot.in/public_html/
+
+          ARGS: "-avz"
+
+          EXCLUDE: ".git,.github,node_modules,DO_NOT_UPLOAD_HERE,config.php,uploads/,usr/sessions/,admin/vendor/,usr/vendor/,tech/vendor/,DATABASE\ FILE/,*.log"
