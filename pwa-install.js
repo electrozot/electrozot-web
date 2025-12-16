@@ -5,19 +5,28 @@
 
 let deferredPrompt;
 let installButton;
+let installPromptShown = false;
 
 // Listen for the beforeinstallprompt event
 window.addEventListener('beforeinstallprompt', (e) => {
-
+    console.log('PWA: beforeinstallprompt event fired');
     
     // Prevent the mini-infobar from appearing on mobile
     e.preventDefault();
     
     // Stash the event so it can be triggered later
     deferredPrompt = e;
+    window.pwaInstallEvent = e; // Store globally for access
     
     // Show install button/banner
     showInstallPromotion();
+    
+    // Notify any waiting install buttons
+    const installButtons = document.querySelectorAll('[data-pwa-install]');
+    installButtons.forEach(btn => {
+        btn.style.display = 'inline-block';
+        btn.disabled = false;
+    });
 });
 
 // Show install promotion UI - Only show if main section is not visible
@@ -83,31 +92,33 @@ function showInstallPromotion() {
 
 // Install PWA - Direct installation
 async function installPWA() {
+    console.log('PWA: Install function called');
+    
     if (!deferredPrompt) {
-
+        console.log('PWA: No deferred prompt available');
         // Try to use global install event if available
         if (window.pwaInstallEvent) {
             deferredPrompt = window.pwaInstallEvent;
         } else {
+            console.log('PWA: No install event available, showing manual instructions');
+            showManualInstallGuide();
             return;
         }
     }
     
     try {
-        // Immediately trigger the install prompt
-
+        console.log('PWA: Triggering install prompt');
         await deferredPrompt.prompt();
         
         // Wait for the user to respond to the prompt
         const { outcome } = await deferredPrompt.userChoice;
-        
-
+        console.log('PWA: User choice:', outcome);
         
         if (outcome === 'accepted') {
-
+            console.log('PWA: Installation accepted');
             showInstallSuccess();
         } else {
-
+            console.log('PWA: Installation dismissed');
         }
         
         // Clear the deferredPrompt
@@ -117,9 +128,47 @@ async function installPWA() {
         // Hide the install promotion
         dismissInstallPromotion();
     } catch (error) {
-        console.error('Install error:', error);
-        // Don't show manual guide, just log the error
+        console.error('PWA: Install error:', error);
+        showManualInstallGuide();
     }
+}
+
+// Show manual install guide when automatic install fails
+function showManualInstallGuide() {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let instructions = '';
+    
+    if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+        instructions = '1. Look for the install icon (⊕) in the address bar\n2. Or go to Menu (⋮) > Install ElectroZot\n3. Click "Install" to add to your device';
+    } else if (userAgent.includes('firefox')) {
+        instructions = '1. Look for the install prompt notification\n2. Or go to Menu > Install this site as an app\n3. Follow the installation steps';
+    } else if (userAgent.includes('safari')) {
+        instructions = '1. Tap the Share button (□↗)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" to install the app';
+    } else if (userAgent.includes('edg')) {
+        instructions = '1. Look for the install icon in the address bar\n2. Or go to Menu (⋯) > Apps > Install ElectroZot\n3. Click "Install" to add to your device';
+    } else {
+        instructions = '1. Look for an "Install" or "Add to Home Screen" option in your browser menu\n2. Follow your browser\'s installation process';
+    }
+    
+    // Create a better modal-style guide
+    const guideModal = document.createElement('div');
+    guideModal.innerHTML = `
+        <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.8); z-index: 99999; display: flex; 
+                    align-items: center; justify-content: center; padding: 20px;">
+            <div style="background: white; border-radius: 15px; padding: 30px; 
+                        max-width: 400px; width: 100%; text-align: center; 
+                        box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                <h3 style="color: #333; margin-bottom: 20px;">📱 Install ElectroZot App</h3>
+                <p style="color: #666; margin-bottom: 20px; white-space: pre-line; text-align: left;">${instructions}</p>
+                <button onclick="this.closest('div').parentElement.remove()" 
+                        style="background: #667eea; color: white; border: none; 
+                               padding: 12px 24px; border-radius: 25px; cursor: pointer; 
+                               font-weight: bold;">Got it!</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(guideModal);
 }
 
 // Dismiss install promotion

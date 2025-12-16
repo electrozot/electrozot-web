@@ -1,7 +1,7 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.5.1'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.6.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.5.1';
+const APP_VERSION = '3.6.0';
 
 // Service Worker for ElectroZot PWA
 
@@ -23,15 +23,15 @@ const DEV_MODE = false; // Change to false for production
 const CACHE_URLS = [
   './offline.html',
   './splash.html',
-  './splash-icon.png',
+  './vendor/img/icons/icon-192x192.png',
+  './vendor/img/icons/icon-512x512.png',
   './manifest.json',
   './vendor/bootstrap/css/bootstrap.min.css',
   './vendor/jquery/jquery.min.js',
   './vendor/bootstrap/js/bootstrap.bundle.min.js',
   './css/modern-business.css',
   './vendor/css/custom.css',
-  './usr/vendor/fontawesome-free/css/all.min.css',
-  './splash-icon.png'
+  './usr/vendor/fontawesome-free/css/all.min.css'
 ];
 
 // URLs that should NEVER be cached (always fetch fresh from network)
@@ -202,8 +202,8 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New notification from ElectroZot',
-    icon: './splash-icon.png',
-    badge: './splash-icon.png',
+    icon: './vendor/img/icons/icon-192x192.png',
+    badge: './vendor/img/icons/icon-192x192.png',
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
@@ -213,12 +213,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'view',
         title: 'View',
-        icon: './splash-icon.png'
+        icon: './vendor/img/icons/icon-192x192.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: './splash-icon.png'
+        icon: './vendor/img/icons/icon-192x192.png'
       }
     ]
   };

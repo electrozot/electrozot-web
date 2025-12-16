@@ -382,8 +382,8 @@
         })();
     </script>
     
-    <!-- PWA Scripts -->
-    <script defer src="pwa-install.js?v=<?php echo time(); ?>"></script>
+    <!-- PWA Scripts - Load immediately for install prompt -->
+    <script src="pwa-install.js?v=<?php echo time(); ?>"></script>
     <script defer src="pwa-update-notification.js?v=<?php echo time(); ?>"></script>
     <script defer src="js/orientation-lock.js?v=<?php echo time(); ?>"></script>
     

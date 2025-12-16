@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Install Test - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-container {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .status {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .success { background: rgba(16, 185, 129, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔧 PWA Install Test</h1>
+        <p>Test the PWA installation functionality for ElectroZot</p>
+        
+        <div id="status" class="status">
+            <strong>Status:</strong> <span id="statusText">Initializing...</span>
+        </div>
+        
+        <div>
+            <button id="installBtn" onclick="testInstall()" disabled>📱 Install PWA</button>
+            <button onclick="testServiceWorker()">🔄 Test Service Worker</button>
+            <button onclick="testManifest()">📋 Test Manifest</button>
+            <button onclick="runAllTests()">🧪 Run All Tests</button>
+            <button onclick="checkPWAInstallability()">🔍 Check Installability</button>
+        </div>
+        
+        <div id="pwa-check-results"></div>
+        <div id="results"></div>
+    </div>
+
+    <script src="pwa-install.js"></script>
+    <script src="check-pwa-installability.js"></script>
+    <script>
+        let installPromptEvent = null;
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installPromptEvent = e;
+            document.getElementById('installBtn').disabled = false;
+            updateStatus('Install prompt available!', 'success');
+        });
+        
+        // Check if already installed
+        window.addEventListener('appinstalled', () => {
+            updateStatus('PWA installed successfully!', 'success');
+        });
+        
+        function updateStatus(message, type = '') {
+            const statusEl = document.getElementById('statusText');
+            const statusContainer = document.getElementById('status');
+            statusEl.textContent = message;
+            statusContainer.className = 'status ' + type;
+            console.log('PWA Test:', message);
+        }
+        
+        function addResult(test, result, details = '') {
+            const resultsEl = document.getElementById('results');
+            const resultEl = document.createElement('div');
+            resultEl.className = 'status ' + (result ? 'success' : 'error');
+            resultEl.innerHTML = `<strong>${test}:</strong> ${result ? '✅ Pass' : '❌ Fail'} ${details}`;
+            resultsEl.appendChild(resultEl);
+        }
+        
+        async function testInstall() {
+            if (installPromptEvent) {
+                try {
+                    await installPromptEvent.prompt();
+                    const { outcome } = await installPromptEvent.userChoice;
+                    updateStatus(`Install ${outcome}`, outcome === 'accepted' ? 'success' : 'warning');
+                } catch (error) {
+                    updateStatus('Install failed: ' + error.message, 'error');
+                }
+            } else if (window.PWAInstaller) {
+                window.PWAInstaller.install();
+            } else {
+                updateStatus('No install method available', 'error');
+            }
+        }
+        
+        async function testServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js');
+                    addResult('Service Worker', true, '- Registered successfully');
+                    
+                    // Test if SW is active
+                    if (registration.active) {
+                        addResult('SW Active', true, '- Service worker is running');
+                    } else {
+                        addResult('SW Active', false, '- Service worker not active');
+                    }
+                } catch (error) {
+                    addResult('Service Worker', false, '- ' + error.message);
+                }
+            } else {
+                addResult('Service Worker', false, '- Not supported');
+            }
+        }
+        
+        async function testManifest() {
+            try {
+                const response = await fetch('./manifest.json');
+                const manifest = await response.json();
+                addResult('Manifest', true, `- Name: ${manifest.name}`);
+                
+                // Test icons
+                if (manifest.icons && manifest.icons.length > 0) {
+                    addResult('Manifest Icons', true, `- ${manifest.icons.length} icons defined`);
+                    
+                    // Test if first icon loads
+                    const img = new Image();
+                    img.onload = () => addResult('Icon Loading', true, '- First icon loads successfully');
+                    img.onerror = () => addResult('Icon Loading', false, '- First icon failed to load');
+                    img.src = manifest.icons[0].src;
+                } else {
+                    addResult('Manifest Icons', false, '- No icons defined');
+                }
+            } catch (error) {
+                addResult('Manifest', false, '- ' + error.message);
+            }
+        }
+        
+        async function runAllTests() {
+            document.getElementById('results').innerHTML = '';
+            updateStatus('Running tests...', 'warning');
+            
+            await testServiceWorker();
+            await testManifest();
+            
+            // Test PWA criteria
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            addResult('HTTPS', isHTTPS, isHTTPS ? '- Secure connection' : '- Requires HTTPS');
+            
+            const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
+            addResult('Manifest Link', hasManifest, hasManifest ? '- Manifest linked' : '- No manifest link');
+            
+            const hasSW = 'serviceWorker' in navigator;
+            addResult('SW Support', hasSW, hasSW ? '- Browser supports SW' : '- No SW support');
+            
+            updateStatus('Tests completed', 'success');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('Ready for testing', 'success');
+            
+            // Check if running as PWA
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                updateStatus('Running as installed PWA!', 'success');
+            }
+        });
+    </script>
+</body>
+</html>
