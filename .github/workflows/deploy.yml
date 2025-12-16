@@ -20,8 +20,8 @@ jobs:
           REMOTE_HOST: 217.21.84.50
           REMOTE_USER: u848820288
           REMOTE_PORT: 65002
-          TARGET: /public_html/
           SOURCE: ./
+          TARGET: public_html/
           EXCLUDE: |
             .git
             .github
