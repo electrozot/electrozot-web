@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Deploy via SFTP
+      - name: Deploy via SFTP with SSH key
         uses: appleboy/scp-action@master
         with:
           host: 217.21.84.50
           username: u848820288
-          password: ${{ secrets.FTP_PASSWORD }}
           port: 65002
           source: "./"
           target: "/public_html/"
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
