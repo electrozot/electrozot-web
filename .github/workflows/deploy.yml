@@ -1,9 +1,9 @@
-name: 🚀 Deploy PHP Site via SFTP
+name: 🚀 Direct Deploy PHP Site via SFTP
 
 on:
   push:
     branches:
-      - main  # change if your main branch is different
+      - main
 
 jobs:
   deploy:
@@ -14,19 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2 — Prepare deployment folder
-      - name: Prepare deployment files
-        run: |
-          mkdir -p temp_deploy
-          # Copy all files except .git, .github, node_modules, temp_deploy
-          rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' --exclude='temp_deploy' ./ temp_deploy/
-
-      # Step 3 — Confirm files exist
-      - name: Check temp_deploy contents
-        run: |
-          ls -la temp_deploy
-
-      # Step 4 — Direct SFTP upload
+      # Step 2 — Direct SFTP upload
       - name: Deploy via SFTP
         uses: appleboy/scp-action@master
         with:
@@ -34,8 +22,8 @@ jobs:
           port: 65002
           username: u848820288
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "temp_deploy/*"
-          target: "/public_html/"
+          source: "./*"               # all files/folders in repo root
+          target: "/public_html/"     # Hostinger web root
           overwrite: true
-          strip_components: 1
+          strip_components: 0         # keep the folder structure as-is
           tar_exec: false
