@@ -1,4 +1,4 @@
-name: 🚀 Deploy Plain PHP to Hostinger
+name: 🚀 Deploy Plain PHP (Hostinger – Stable)
 
 on:
   push:
@@ -8,25 +8,21 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --dns-result-order=ipv4first
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SFTP (Hostinger stable)
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: Deploy via FTPS (Hostinger safe mode)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-
-          local_path: ./
-          remote_path: /public_html/
-
-          exclude: |
-            **/.git*
-            **/.github/**
-            README.md
-            node_modules/**
-            vendor/**/.git
+          port: 21
+          protocol: ftps-legacy
+          passive: true
+          server-dir: /public_html/
+          log-level: minimal
