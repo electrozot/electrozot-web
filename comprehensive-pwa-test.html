@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comprehensive PWA Test - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: rgba(16, 185, 129, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.3); }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Comprehensive PWA Test</h1>
+    <p>Step-by-step PWA testing for ElectroZot</p>
+    
+    <div class="test-section">
+        <h2>Step 1: Basic Requirements</h2>
+        <button onclick="testBasicRequirements()">Test Basic Requirements</button>
+        <div id="basic-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 2: Icon Loading</h2>
+        <button onclick="testIconLoading()">Test Icon Loading</button>
+        <div id="icon-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 3: Service Worker</h2>
+        <button onclick="testServiceWorker()">Test Main Service Worker</button>
+        <button onclick="testMinimalServiceWorker()">Test Minimal Service Worker</button>
+        <div id="sw-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 4: Manifest</h2>
+        <button onclick="testManifest()">Test Manifest</button>
+        <div id="manifest-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 5: Install Prompt</h2>
+        <button id="install-btn" onclick="testInstallPrompt()" disabled>Test Install Prompt</button>
+        <div id="install-results"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Step 6: Run All Tests</h2>
+        <button onclick="runAllTests()">🧪 Run All Tests</button>
+        <button onclick="clearResults()">🗑️ Clear Results</button>
+    </div>
+
+    <script>
+        let installPromptEvent = null;
+        
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            installPromptEvent = e;
+            document.getElementById('install-btn').disabled = false;
+            addResult('install-results', 'Install prompt received!', 'success');
+        });
+        
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const result = document.createElement('div');
+            result.className = `result ${type}`;
+            result.innerHTML = message;
+            container.appendChild(result);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function testBasicRequirements() {
+            const container = document.getElementById('basic-results');
+            container.innerHTML = '';
+            
+            // HTTPS check
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            addResult('basic-results', 
+                `HTTPS: ${isHTTPS ? '✅ Pass' : '❌ Fail'} - ${location.protocol}`, 
+                isHTTPS ? 'success' : 'error'
+            );
+            
+            // Service Worker support
+            const hasSW = 'serviceWorker' in navigator;
+            addResult('basic-results', 
+                `Service Worker Support: ${hasSW ? '✅ Pass' : '❌ Fail'}`, 
+                hasSW ? 'success' : 'error'
+            );
+            
+            // Manifest link
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            addResult('basic-results', 
+                `Manifest Link: ${manifestLink ? '✅ Pass' : '❌ Fail'} - ${manifestLink ? manifestLink.href : 'Not found'}`, 
+                manifestLink ? 'success' : 'error'
+            );
+        }
+        
+        async function testIconLoading() {
+            const container = document.getElementById('icon-results');
+            container.innerHTML = '';
+            
+            const iconPaths = [
+                'vendor/img/icons/icon-192x192.png',
+                'vendor/img/icons/icon-512x512.png',
+                '/vendor/img/icons/icon-192x192.png',
+                '/vendor/img/icons/icon-512x512.png',
+                'splash-icon.png'
+            ];
+            
+            for (const path of iconPaths) {
+                try {
+                    const img = new Image();
+                    const loadPromise = new Promise((resolve, reject) => {
+                        img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                        img.onerror = reject;
+                        setTimeout(reject, 5000); // 5 second timeout
+                    });
+                    
+                    img.src = path;
+                    const dimensions = await loadPromise;
+                    addResult('icon-results', 
+                        `✅ ${path}: Loaded (${dimensions.width}x${dimensions.height})`, 
+                        'success'
+                    );
+                } catch (error) {
+                    addResult('icon-results', 
+                        `❌ ${path}: Failed to load`, 
+                        'error'
+                    );
+                }
+            }
+        }
+        
+        async function testServiceWorker() {
+            const container = document.getElementById('sw-results');
+            container.innerHTML = '';
+            
+            if (!('serviceWorker' in navigator)) {
+                addResult('sw-results', '❌ Service Worker not supported', 'error');
+                return;
+            }
+            
+            try {
+                // Register service worker
+                addResult('sw-results', '🔄 Registering service worker...', 'info');
+                const registration = await navigator.serviceWorker.register('./sw.js');
+                addResult('sw-results', '✅ Service Worker registered', 'success');
+                
+                // Wait for it to be ready
+                await navigator.serviceWorker.ready;
+                addResult('sw-results', '✅ Service Worker ready', 'success');
+                
+                // Check if active
+                if (registration.active) {
+                    addResult('sw-results', '✅ Service Worker is active', 'success');
+                } else {
+                    addResult('sw-results', '⚠️ Service Worker not active yet', 'warning');
+                }
+                
+                // Test messaging
+                if (registration.active) {
+                    const messageChannel = new MessageChannel();
+                    messageChannel.port1.onmessage = (event) => {
+                        if (event.data.type === 'SW_TEST_RESPONSE') {
+                            addResult('sw-results', `✅ Service Worker communication: ${event.data.status}`, 'success');
+                        }
+                    };
+                    
+                    registration.active.postMessage({ type: 'SW_TEST' }, [messageChannel.port2]);
+                }
+                
+            } catch (error) {
+                addResult('sw-results', `❌ Service Worker error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testMinimalServiceWorker() {
+            const container = document.getElementById('sw-results');
+            
+            try {
+                addResult('sw-results', '🔄 Testing minimal service worker...', 'info');
+                const registration = await navigator.serviceWorker.register('./minimal-sw-test.js');
+                await navigator.serviceWorker.ready;
+                
+                if (registration.active) {
+                    addResult('sw-results', '✅ Minimal Service Worker is active', 'success');
+                } else {
+                    addResult('sw-results', '⚠️ Minimal Service Worker not active', 'warning');
+                }
+            } catch (error) {
+                addResult('sw-results', `❌ Minimal SW error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testManifest() {
+            const container = document.getElementById('manifest-results');
+            container.innerHTML = '';
+            
+            try {
+                const response = await fetch('./manifest.json');
+                const manifest = await response.json();
+                
+                addResult('manifest-results', `✅ Manifest loaded: ${manifest.name}`, 'success');
+                
+                // Check required fields
+                const requiredFields = ['name', 'short_name', 'start_url', 'display', 'icons'];
+                const missingFields = requiredFields.filter(field => !manifest[field]);
+                
+                if (missingFields.length === 0) {
+                    addResult('manifest-results', '✅ All required fields present', 'success');
+                } else {
+                    addResult('manifest-results', `❌ Missing fields: ${missingFields.join(', ')}`, 'error');
+                }
+                
+                // Test icons in manifest
+                addResult('manifest-results', `📋 Testing ${manifest.icons.length} icons from manifest...`, 'info');
+                
+                for (let i = 0; i < manifest.icons.length; i++) {
+                    const icon = manifest.icons[i];
+                    try {
+                        const img = new Image();
+                        await new Promise((resolve, reject) => {
+                            img.onload = resolve;
+                            img.onerror = reject;
+                            setTimeout(reject, 3000);
+                        });
+                        img.src = icon.src;
+                        
+                        addResult('manifest-results', 
+                            `✅ Icon ${i + 1} (${icon.sizes}): Loaded from ${icon.src}`, 
+                            'success'
+                        );
+                    } catch (error) {
+                        addResult('manifest-results', 
+                            `❌ Icon ${i + 1} (${icon.sizes}): Failed to load from ${icon.src}`, 
+                            'error'
+                        );
+                    }
+                }
+                
+            } catch (error) {
+                addResult('manifest-results', `❌ Manifest error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testInstallPrompt() {
+            const container = document.getElementById('install-results');
+            
+            if (!installPromptEvent) {
+                addResult('install-results', '❌ No install prompt available', 'error');
+                addResult('install-results', 'ℹ️ This usually means PWA criteria are not met', 'info');
+                return;
+            }
+            
+            try {
+                addResult('install-results', '🔄 Triggering install prompt...', 'info');
+                await installPromptEvent.prompt();
+                
+                const { outcome } = await installPromptEvent.userChoice;
+                addResult('install-results', 
+                    `Install prompt result: ${outcome}`, 
+                    outcome === 'accepted' ? 'success' : 'warning'
+                );
+                
+                installPromptEvent = null;
+                document.getElementById('install-btn').disabled = true;
+                
+            } catch (error) {
+                addResult('install-results', `❌ Install prompt error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            addResult('basic-results', '🧪 Running comprehensive PWA test...', 'info');
+            
+            testBasicRequirements();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testIconLoading();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testServiceWorker();
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            await testManifest();
+            
+            addResult('basic-results', '✅ All tests completed!', 'success');
+        }
+        
+        function clearResults() {
+            ['basic-results', 'icon-results', 'sw-results', 'manifest-results', 'install-results'].forEach(id => {
+                document.getElementById(id).innerHTML = '';
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            addResult('basic-results', '🚀 PWA Test Suite Ready', 'info');
+        });
+    </script>
+</body>
+</html>

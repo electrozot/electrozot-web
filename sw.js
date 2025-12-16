@@ -1,7 +1,7 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.6.0'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.7.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.6.0';
+const APP_VERSION = '3.7.0';
 
 // Service Worker for ElectroZot PWA
 
@@ -22,16 +22,9 @@ const DEV_MODE = false; // Change to false for production
 // Files to cache for offline functionality (using relative paths)
 const CACHE_URLS = [
   './offline.html',
-  './splash.html',
   './vendor/img/icons/icon-192x192.png',
   './vendor/img/icons/icon-512x512.png',
-  './manifest.json',
-  './vendor/bootstrap/css/bootstrap.min.css',
-  './vendor/jquery/jquery.min.js',
-  './vendor/bootstrap/js/bootstrap.bundle.min.js',
-  './css/modern-business.css',
-  './vendor/css/custom.css',
-  './usr/vendor/fontawesome-free/css/all.min.css'
+  './manifest.json'
 ];
 
 // URLs that should NEVER be cached (always fetch fresh from network)
@@ -56,17 +49,25 @@ self.addEventListener('install', (event) => {
   console.log('SW: Install event triggered');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
+      .then(async (cache) => {
         console.log('SW: Caching files...');
-        return cache.addAll(CACHE_URLS);
-      })
-      .then(() => {
-        console.log('SW: Files cached successfully');
+        // Cache files individually to avoid failing on missing files
+        const cachePromises = CACHE_URLS.map(async (url) => {
+          try {
+            await cache.add(url);
+            console.log('SW: Cached:', url);
+          } catch (error) {
+            console.warn('SW: Failed to cache:', url, error);
+          }
+        });
+        await Promise.allSettled(cachePromises);
+        console.log('SW: Caching completed');
         return self.skipWaiting();
       })
       .catch((error) => {
         console.error('SW: Install failed:', error);
-        throw error;
+        // Don't throw error, allow SW to install even if caching fails
+        return self.skipWaiting();
       })
   );
 });

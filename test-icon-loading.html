@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Loading Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        img {
+            max-width: 100px;
+            margin: 10px;
+            border: 2px solid #ddd;
+        }
+        .success { border-color: green; }
+        .error { border-color: red; }
+    </style>
+</head>
+<body>
+    <h1>Icon Loading Test</h1>
+    
+    <div class="test-container">
+        <h3>Testing Icon Paths</h3>
+        
+        <div>
+            <h4>Absolute Path (with /)</h4>
+            <img id="icon1" src="/vendor/img/icons/icon-192x192.png" alt="Icon 192x192 (absolute)">
+            <img id="icon2" src="/vendor/img/icons/icon-512x512.png" alt="Icon 512x512 (absolute)">
+        </div>
+        
+        <div>
+            <h4>Relative Path (without /)</h4>
+            <img id="icon3" src="vendor/img/icons/icon-192x192.png" alt="Icon 192x192 (relative)">
+            <img id="icon4" src="vendor/img/icons/icon-512x512.png" alt="Icon 512x512 (relative)">
+        </div>
+        
+        <div>
+            <h4>Splash Icon (for comparison)</h4>
+            <img id="icon5" src="splash-icon.png" alt="Splash Icon">
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>Test Results</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const icons = [
+            { id: 'icon1', path: '/vendor/img/icons/icon-192x192.png', name: 'Icon 192x192 (absolute)' },
+            { id: 'icon2', path: '/vendor/img/icons/icon-512x512.png', name: 'Icon 512x512 (absolute)' },
+            { id: 'icon3', path: 'vendor/img/icons/icon-192x192.png', name: 'Icon 192x192 (relative)' },
+            { id: 'icon4', path: 'vendor/img/icons/icon-512x512.png', name: 'Icon 512x512 (relative)' },
+            { id: 'icon5', path: 'splash-icon.png', name: 'Splash Icon' }
+        ];
+        
+        const results = document.getElementById('results');
+        
+        icons.forEach(icon => {
+            const img = document.getElementById(icon.id);
+            
+            img.onload = function() {
+                this.classList.add('success');
+                results.innerHTML += `<p style="color: green;">✅ ${icon.name}: Loaded successfully (${this.naturalWidth}x${this.naturalHeight})</p>`;
+            };
+            
+            img.onerror = function() {
+                this.classList.add('error');
+                results.innerHTML += `<p style="color: red;">❌ ${icon.name}: Failed to load</p>`;
+            };
+        });
+        
+        // Test manifest loading
+        fetch('manifest.json')
+            .then(response => response.json())
+            .then(manifest => {
+                results.innerHTML += `<p style="color: blue;">📋 Manifest loaded: ${manifest.name}</p>`;
+                
+                // Test each icon in manifest
+                manifest.icons.forEach((icon, index) => {
+                    const testImg = new Image();
+                    testImg.onload = () => {
+                        results.innerHTML += `<p style="color: green;">✅ Manifest Icon ${index + 1} (${icon.sizes}): Loaded successfully</p>`;
+                    };
+                    testImg.onerror = () => {
+                        results.innerHTML += `<p style="color: red;">❌ Manifest Icon ${index + 1} (${icon.sizes}): Failed to load from ${icon.src}</p>`;
+                    };
+                    testImg.src = icon.src;
+                });
+            })
+            .catch(error => {
+                results.innerHTML += `<p style="color: red;">❌ Manifest loading failed: ${error.message}</p>`;
+            });
+    </script>
+</body>
+</html>
