@@ -3,16 +3,26 @@ name: 🚀 Deploy PHP Site via SFTP
 on:
   push:
     branches:
-      - main
+      - main   # change if your main branch is different
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1 — checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2 — prepare deployment folder
+      - name: Prepare deployment files
+        run: |
+          # Create temp folder
+          mkdir temp_deploy
+          # Copy everything except .git, .github, node_modules
+          rsync -av --exclude='.git' --exclude='.github' --exclude='node_modules' ./ temp_deploy/
+
+      # Step 3 — deploy via SFTP using SSH key
       - name: Deploy via SFTP
         uses: appleboy/scp-action@master
         with:
@@ -20,10 +30,7 @@ jobs:
           port: 65002
           username: u848820288
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./"
+          source: "temp_deploy/"
           target: "/public_html/"
           overwrite: true
-          exclude: |
-            **/.git*
-            node_modules/**
-            .github/**
+          strip_components: 1
