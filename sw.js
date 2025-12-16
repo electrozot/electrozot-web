@@ -31,8 +31,7 @@ const CACHE_URLS = [
   './css/modern-business.css',
   './vendor/css/custom.css',
   './usr/vendor/fontawesome-free/css/all.min.css',
-  './vendor/img/icons/icon-192x192.png',
-  './vendor/img/icons/icon-512x512.png'
+  './splash-icon.png'
 ];
 
 // URLs that should NEVER be cached (always fetch fresh from network)
@@ -54,13 +53,20 @@ const NEVER_CACHE = [
 
 // Install event - cache essential files
 self.addEventListener('install', (event) => {
+  console.log('SW: Install event triggered');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
+        console.log('SW: Caching files...');
         return cache.addAll(CACHE_URLS);
       })
       .then(() => {
+        console.log('SW: Files cached successfully');
         return self.skipWaiting();
+      })
+      .catch((error) => {
+        console.error('SW: Install failed:', error);
+        throw error;
       })
   );
 });
@@ -86,18 +92,25 @@ self.addEventListener('message', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-
+  console.log('SW: Activate event triggered');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      console.log('SW: Cleaning old caches...');
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-
+            console.log('SW: Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim())
+    }).then(() => {
+      console.log('SW: Taking control of all clients');
+      return self.clients.claim();
+    }).catch((error) => {
+      console.error('SW: Activate failed:', error);
+      throw error;
+    })
   );
 });
 
@@ -189,8 +202,8 @@ self.addEventListener('sync', (event) => {
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'New notification from ElectroZot',
-    icon: '/vendor/img/icons/icon-192x192.png',
-    badge: '/vendor/img/icons/icon-72x72.png',
+    icon: './splash-icon.png',
+    badge: './splash-icon.png',
     vibrate: [200, 100, 200],
     data: {
       dateOfArrival: Date.now(),
@@ -200,12 +213,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'view',
         title: 'View',
-        icon: '/vendor/img/icons/icon-96x96.png'
+        icon: './splash-icon.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/vendor/img/icons/icon-96x96.png'
+        icon: './splash-icon.png'
       }
     ]
   };

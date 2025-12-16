@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ElectroZot">
+    <title>PWA Test - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success { background: rgba(0,255,0,0.2); }
+        .error { background: rgba(255,0,0,0.2); }
+        .warning { background: rgba(255,255,0,0.2); }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        #installBtn {
+            background: #dc2626;
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+        #installBtn:hover {
+            background: #b91c1c;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🔧 ElectroZot PWA Installation Test</h1>
+    
+    <div class="test-section">
+        <h2>PWA Installation Status</h2>
+        <div id="pwaStatus"></div>
+        <button id="installBtn" class="hidden">📱 Install ElectroZot App</button>
+        <button onclick="testManifest()">🔍 Test Manifest</button>
+        <button onclick="testServiceWorker()">⚙️ Test Service Worker</button>
+        <button onclick="testIcons()">🖼️ Test Icons</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Browser Compatibility</h2>
+        <div id="browserTests"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Installation Instructions</h2>
+        <div id="installInstructions"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        let testResults = [];
+
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+            addResult('✅ Install prompt available', 'success');
+        });
+
+        // Install button click
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                addResult(`Install outcome: ${outcome}`, outcome === 'accepted' ? 'success' : 'warning');
+                deferredPrompt = null;
+                document.getElementById('installBtn').classList.add('hidden');
+            }
+        });
+
+        // Check if already installed
+        window.addEventListener('appinstalled', () => {
+            addResult('✅ App installed successfully!', 'success');
+        });
+
+        function addResult(message, type = 'info') {
+            testResults.push({ message, type, time: new Date().toLocaleTimeString() });
+            updateResults();
+        }
+
+        function updateResults() {
+            const container = document.getElementById('testResults');
+            container.innerHTML = testResults.map(result => 
+                `<div class="status ${result.type}">[${result.time}] ${result.message}</div>`
+            ).join('');
+        }
+
+        async function testManifest() {
+            try {
+                const response = await fetch('manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    addResult('✅ Manifest loaded successfully', 'success');
+                    addResult(`App name: ${manifest.name}`, 'success');
+                    addResult(`Icons: ${manifest.icons.length} defined`, 'success');
+                    
+                    // Test icon accessibility
+                    for (const icon of manifest.icons) {
+                        try {
+                            const iconResponse = await fetch(icon.src);
+                            if (iconResponse.ok) {
+                                addResult(`✅ Icon ${icon.sizes} accessible`, 'success');
+                            } else {
+                                addResult(`❌ Icon ${icon.sizes} not found (${icon.src})`, 'error');
+                            }
+                        } catch (e) {
+                            addResult(`❌ Icon ${icon.sizes} error: ${e.message}`, 'error');
+                        }
+                    }
+                } else {
+                    addResult('❌ Manifest not accessible', 'error');
+                }
+            } catch (error) {
+                addResult(`❌ Manifest error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    addResult('✅ Service Worker registered', 'success');
+                    
+                    await navigator.serviceWorker.ready;
+                    addResult('✅ Service Worker ready', 'success');
+                    
+                    // Test service worker communication
+                    if (navigator.serviceWorker.controller) {
+                        addResult('✅ Service Worker controlling page', 'success');
+                    } else {
+                        addResult('⚠️ Service Worker not controlling page yet', 'warning');
+                    }
+                } catch (error) {
+                    addResult(`❌ Service Worker error: ${error.message}`, 'error');
+                }
+            } else {
+                addResult('❌ Service Workers not supported', 'error');
+            }
+        }
+
+        async function testIcons() {
+            const iconPaths = [
+                'splash-icon.png',
+                'vendor/img/icons/icon-192x192.png',
+                'vendor/img/icons/icon-512x512.png'
+            ];
+
+            for (const path of iconPaths) {
+                try {
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        addResult(`✅ Icon found: ${path}`, 'success');
+                    } else {
+                        addResult(`❌ Icon missing: ${path}`, 'error');
+                    }
+                } catch (error) {
+                    addResult(`❌ Icon error ${path}: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        function checkBrowserCompatibility() {
+            const tests = [
+                { name: 'Service Workers', test: 'serviceWorker' in navigator },
+                { name: 'Web App Manifest', test: 'onbeforeinstallprompt' in window },
+                { name: 'Push Notifications', test: 'PushManager' in window },
+                { name: 'Background Sync', test: 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype },
+                { name: 'Fetch API', test: 'fetch' in window },
+                { name: 'Cache API', test: 'caches' in window }
+            ];
+
+            const container = document.getElementById('browserTests');
+            container.innerHTML = tests.map(test => 
+                `<div class="status ${test.test ? 'success' : 'error'}">
+                    ${test.test ? '✅' : '❌'} ${test.name}
+                </div>`
+            ).join('');
+        }
+
+        function showInstallInstructions() {
+            const userAgent = navigator.userAgent.toLowerCase();
+            let instructions = '';
+
+            if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
+                instructions = `
+                    <h3>Chrome Installation:</h3>
+                    <ol>
+                        <li>Look for the install icon (⊕) in the address bar</li>
+                        <li>Or click Menu (⋮) → "Install ElectroZot"</li>
+                        <li>Click "Install" in the popup</li>
+                    </ol>
+                `;
+            } else if (userAgent.includes('safari')) {
+                instructions = `
+                    <h3>Safari Installation:</h3>
+                    <ol>
+                        <li>Tap the Share button (□↗)</li>
+                        <li>Scroll down and tap "Add to Home Screen"</li>
+                        <li>Tap "Add" in the top right</li>
+                    </ol>
+                `;
+            } else if (userAgent.includes('firefox')) {
+                instructions = `
+                    <h3>Firefox Installation:</h3>
+                    <ol>
+                        <li>Look for the install prompt</li>
+                        <li>Or use "Add to Home Screen" option</li>
+                    </ol>
+                `;
+            } else if (userAgent.includes('edg')) {
+                instructions = `
+                    <h3>Edge Installation:</h3>
+                    <ol>
+                        <li>Look for the install icon in the address bar</li>
+                        <li>Or go to Menu → Apps → "Install ElectroZot"</li>
+                    </ol>
+                `;
+            } else {
+                instructions = `
+                    <h3>General Installation:</h3>
+                    <p>Look for "Install", "Add to Home Screen", or similar option in your browser menu.</p>
+                `;
+            }
+
+            document.getElementById('installInstructions').innerHTML = instructions;
+        }
+
+        function checkPWAStatus() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.navigator.standalone === true;
+            
+            const container = document.getElementById('pwaStatus');
+            if (isStandalone) {
+                container.innerHTML = '<div class="status success">✅ Running as installed PWA</div>';
+            } else {
+                container.innerHTML = '<div class="status warning">⚠️ Running in browser (not installed)</div>';
+            }
+        }
+
+        // Initialize tests
+        document.addEventListener('DOMContentLoaded', () => {
+            checkPWAStatus();
+            checkBrowserCompatibility();
+            showInstallInstructions();
+            addResult('PWA test page loaded', 'success');
+        });
+
+        // Auto-run basic tests
+        setTimeout(() => {
+            testManifest();
+            testServiceWorker();
+            testIcons();
+        }, 1000);
+    </script>
+</body>
+</html>

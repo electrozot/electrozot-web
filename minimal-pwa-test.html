@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Minimal PWA Test</title>
+    <link rel="manifest" href="minimal-manifest.json">
+</head>
+<body>
+    <h1>Minimal PWA Test</h1>
+    <button id="install" style="display:none; padding:20px; font-size:18px; background:#ff0000; color:white; border:none;">
+        📱 INSTALL APP
+    </button>
+    <div id="status"></div>
+
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('Install prompt available!');
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install').style.display = 'block';
+            document.getElementById('status').innerHTML = '<p style="color:green;">✅ Install prompt available!</p>';
+        });
+
+        document.getElementById('install').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log('Install outcome:', outcome);
+                deferredPrompt = null;
+                document.getElementById('install').style.display = 'none';
+            }
+        });
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('minimal-sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed'));
+        }
+    </script>
+</body>
+</html>

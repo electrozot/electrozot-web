@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ElectroZot">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Mobile PWA Test - ElectroZot</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .test-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .status {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+        .success { background: rgba(34, 197, 94, 0.3); }
+        .error { background: rgba(239, 68, 68, 0.3); }
+        .warning { background: rgba(245, 158, 11, 0.3); }
+        .info { background: rgba(59, 130, 246, 0.3); }
+        
+        button {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            max-width: 300px;
+            touch-action: manipulation;
+        }
+        
+        #installBtn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            font-size: 18px;
+            padding: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .hidden { display: none !important; }
+        
+        .icon-test {
+            display: inline-block;
+            margin: 10px;
+            text-align: center;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+        }
+        
+        .icon-test img {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: block;
+            margin: 0 auto 5px;
+        }
+        
+        .debug-info {
+            font-family: monospace;
+            font-size: 12px;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
+        
+        h1 { font-size: 24px; margin-bottom: 20px; text-align: center; }
+        h2 { font-size: 18px; margin-bottom: 15px; }
+        h3 { font-size: 16px; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Mobile PWA Test</h1>
+        
+        <div class="test-card">
+            <h2>🚀 Installation</h2>
+            <button id="installBtn" class="hidden">📱 Install ElectroZot App</button>
+            <button onclick="runMobileTests()">🔍 Run Mobile Tests</button>
+            <button onclick="testManifestMobile()">📄 Test Manifest</button>
+            <button onclick="forceRefresh()">🔄 Force Refresh</button>
+        </div>
+
+        <div class="test-card">
+            <h2>📊 Test Results</h2>
+            <div id="testResults"></div>
+        </div>
+
+        <div class="test-card">
+            <h2>🌐 Device Info</h2>
+            <div id="deviceInfo"></div>
+        </div>
+
+        <div class="test-card">
+            <h2>🖼️ Icon Tests</h2>
+            <div id="iconTests"></div>
+        </div>
+
+        <div class="test-card">
+            <h2>🔧 Debug Info</h2>
+            <div id="debugInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        let testResults = [];
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            testResults.push(`<div class="status ${type}">[${timestamp}] ${message}</div>`);
+            document.getElementById('testResults').innerHTML = testResults.join('');
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('🎉 beforeinstallprompt event fired!');
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+            log('✅ Install prompt available!', 'success');
+        });
+
+        // Install button handler
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                try {
+                    log('🚀 Triggering install prompt...', 'info');
+                    await deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    log(`Install outcome: ${outcome}`, outcome === 'accepted' ? 'success' : 'warning');
+                    deferredPrompt = null;
+                    document.getElementById('installBtn').classList.add('hidden');
+                } catch (error) {
+                    log(`❌ Install error: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ No install prompt available', 'error');
+            }
+        });
+
+        // App installed handler
+        window.addEventListener('appinstalled', () => {
+            log('🎉 App installed successfully!', 'success');
+        });
+
+        function showDeviceInfo() {
+            const info = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                language: navigator.language,
+                cookieEnabled: navigator.cookieEnabled,
+                onLine: navigator.onLine,
+                protocol: location.protocol,
+                hostname: location.hostname,
+                screenWidth: screen.width,
+                screenHeight: screen.height,
+                windowWidth: window.innerWidth,
+                windowHeight: window.innerHeight,
+                devicePixelRatio: window.devicePixelRatio || 1,
+                touchSupport: 'ontouchstart' in window,
+                standalone: window.navigator.standalone,
+                displayMode: window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser'
+            };
+
+            let html = '';
+            Object.entries(info).forEach(([key, value]) => {
+                html += `<div class="status info"><strong>${key}:</strong> ${value}</div>`;
+            });
+
+            document.getElementById('deviceInfo').innerHTML = html;
+        }
+
+        async function testManifestMobile() {
+            log('📄 Testing manifest...', 'info');
+            
+            try {
+                const manifestLink = document.querySelector('link[rel="manifest"]');
+                if (!manifestLink) {
+                    log('❌ No manifest link found', 'error');
+                    return;
+                }
+
+                log(`📍 Manifest URL: ${manifestLink.href}`, 'info');
+
+                const response = await fetch(manifestLink.href);
+                if (!response.ok) {
+                    log(`❌ Manifest fetch failed: ${response.status}`, 'error');
+                    return;
+                }
+
+                const manifest = await response.json();
+                log('✅ Manifest loaded successfully', 'success');
+                
+                // Check critical fields
+                const checks = [
+                    { field: 'name', value: manifest.name, required: true },
+                    { field: 'short_name', value: manifest.short_name, required: true },
+                    { field: 'start_url', value: manifest.start_url, required: true },
+                    { field: 'display', value: manifest.display, required: true },
+                    { field: 'theme_color', value: manifest.theme_color, required: false },
+                    { field: 'background_color', value: manifest.background_color, required: false },
+                    { field: 'icons', value: manifest.icons, required: true }
+                ];
+
+                checks.forEach(check => {
+                    const exists = check.value !== undefined && check.value !== null;
+                    const status = exists ? 'success' : (check.required ? 'error' : 'warning');
+                    const icon = exists ? '✅' : (check.required ? '❌' : '⚠️');
+                    log(`${icon} ${check.field}: ${exists ? check.value : 'Missing'}`, status);
+                });
+
+                // Test icons specifically
+                if (manifest.icons && manifest.icons.length > 0) {
+                    log(`📱 Found ${manifest.icons.length} icons`, 'info');
+                    
+                    const requiredSizes = ['192x192', '512x512'];
+                    requiredSizes.forEach(size => {
+                        const hasSize = manifest.icons.some(icon => icon.sizes.includes(size));
+                        log(`${hasSize ? '✅' : '❌'} ${size} icon: ${hasSize ? 'Found' : 'Missing'}`, 
+                            hasSize ? 'success' : 'error');
+                    });
+
+                    // Test icon accessibility
+                    await testIconAccessibility(manifest.icons);
+                } else {
+                    log('❌ No icons defined', 'error');
+                }
+
+                // Show raw manifest in debug
+                document.getElementById('debugInfo').innerHTML = 
+                    `<div class="debug-info">${JSON.stringify(manifest, null, 2)}</div>`;
+
+            } catch (error) {
+                log(`❌ Manifest test error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testIconAccessibility(icons) {
+            log('🖼️ Testing icon accessibility...', 'info');
+            
+            let iconHtml = '';
+            
+            for (const icon of icons) {
+                try {
+                    const response = await fetch(icon.src);
+                    const accessible = response.ok;
+                    
+                    log(`${accessible ? '✅' : '❌'} Icon ${icon.sizes}: ${icon.src}`, 
+                        accessible ? 'success' : 'error');
+
+                    if (accessible) {
+                        iconHtml += `
+                            <div class="icon-test">
+                                <img src="${icon.src}" alt="${icon.sizes}" onerror="this.style.display='none'">
+                                <div>${icon.sizes}</div>
+                                <div style="font-size:10px;">${icon.purpose || 'any'}</div>
+                            </div>`;
+                    }
+                } catch (error) {
+                    log(`❌ Icon ${icon.sizes} error: ${error.message}`, 'error');
+                }
+            }
+
+            document.getElementById('iconTests').innerHTML = iconHtml || '<div class="status error">No accessible icons found</div>';
+        }
+
+        async function runMobileTests() {
+            testResults = [];
+            log('🔍 Starting mobile PWA tests...', 'info');
+
+            // Basic PWA requirements
+            const isHTTPS = location.protocol === 'https:' || location.hostname === 'localhost';
+            log(`🔒 HTTPS: ${isHTTPS ? '✅' : '❌'}`, isHTTPS ? 'success' : 'error');
+
+            const hasSW = 'serviceWorker' in navigator;
+            log(`⚙️ Service Worker support: ${hasSW ? '✅' : '❌'}`, hasSW ? 'success' : 'error');
+
+            const hasManifest = document.querySelector('link[rel="manifest"]') !== null;
+            log(`📄 Manifest link: ${hasManifest ? '✅' : '❌'}`, hasManifest ? 'success' : 'error');
+
+            const hasInstallPrompt = 'onbeforeinstallprompt' in window;
+            log(`📱 Install prompt support: ${hasInstallPrompt ? '✅' : '⚠️'}`, hasInstallPrompt ? 'success' : 'warning');
+
+            // Check if already installed
+            const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.navigator.standalone === true;
+            log(`📲 Already installed: ${isInstalled ? '✅ Yes' : '❌ No'}`, isInstalled ? 'success' : 'info');
+
+            // Test service worker
+            if (hasSW) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    log('✅ Service Worker registered', 'success');
+                    
+                    await navigator.serviceWorker.ready;
+                    log('✅ Service Worker ready', 'success');
+                } catch (error) {
+                    log(`❌ Service Worker error: ${error.message}`, 'error');
+                }
+            }
+
+            // Test manifest
+            await testManifestMobile();
+
+            // Show device info
+            showDeviceInfo();
+
+            // Check for install prompt after a delay
+            setTimeout(() => {
+                if (!deferredPrompt && !isInstalled) {
+                    log('⚠️ Install prompt not available after tests', 'warning');
+                    log('💡 This is normal on some mobile browsers - use "Add to Home Screen" instead', 'info');
+                }
+            }, 3000);
+        }
+
+        function forceRefresh() {
+            log('🔄 Clearing cache and refreshing...', 'info');
+            
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            
+            setTimeout(() => {
+                location.reload(true);
+            }, 1000);
+        }
+
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', () => {
+            log('📱 Mobile PWA test loaded', 'success');
+            setTimeout(runMobileTests, 1000);
+        });
+
+        // Monitor for delayed install prompt
+        let promptCheckCount = 0;
+        const promptChecker = setInterval(() => {
+            promptCheckCount++;
+            if (deferredPrompt) {
+                log('🎉 Install prompt became available!', 'success');
+                document.getElementById('installBtn').classList.remove('hidden');
+                clearInterval(promptChecker);
+            } else if (promptCheckCount > 10) {
+                log('⏰ Install prompt check timeout - may not be available on this browser/device', 'warning');
+                clearInterval(promptChecker);
+            }
+        }, 2000);
+    </script>
+</body>
+</html>

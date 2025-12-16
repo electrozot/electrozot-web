@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Simple PWA Test</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        #installBtn {
+            background: #dc3545;
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Simple PWA Installation Test</h1>
+    
+    <button id="installBtn" class="hidden">📱 Install App</button>
+    <button onclick="checkEverything()">🔍 Check PWA Status</button>
+    
+    <div id="results"></div>
+
+    <script>
+        let deferredPrompt;
+        let results = [];
+
+        function log(message, type = 'info') {
+            results.push(`<div class="status ${type}">${message}</div>`);
+            document.getElementById('results').innerHTML = results.join('');
+            console.log(message);
+        }
+
+        // Listen for install prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('🎉 beforeinstallprompt fired!');
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').classList.remove('hidden');
+            log('✅ Install prompt is available!', 'success');
+        });
+
+        // Install button
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                log(`Install outcome: ${outcome}`, outcome === 'accepted' ? 'success' : 'warning');
+                deferredPrompt = null;
+                document.getElementById('installBtn').classList.add('hidden');
+            }
+        });
+
+        // Check if already installed
+        window.addEventListener('appinstalled', () => {
+            log('🎉 App installed!', 'success');
+        });
+
+        async function checkEverything() {
+            results = [];
+            log('🔍 Starting PWA checks...', 'info');
+
+            // 1. Basic checks
+            log(`Protocol: ${location.protocol} ${location.protocol === 'https:' || location.hostname === 'localhost' ? '✅' : '❌'}`, 
+                location.protocol === 'https:' || location.hostname === 'localhost' ? 'success' : 'error');
+
+            log(`Service Worker support: ${'serviceWorker' in navigator ? '✅' : '❌'}`, 
+                'serviceWorker' in navigator ? 'success' : 'error');
+
+            log(`Manifest link: ${document.querySelector('link[rel="manifest"]') ? '✅' : '❌'}`, 
+                document.querySelector('link[rel="manifest"]') ? 'success' : 'error');
+
+            // 2. Test manifest
+            try {
+                const response = await fetch('manifest.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    log('✅ Manifest loaded successfully', 'success');
+                    log(`App name: ${manifest.name}`, 'info');
+                    log(`Start URL: ${manifest.start_url}`, 'info');
+                    log(`Display: ${manifest.display}`, 'info');
+                    log(`Icons: ${manifest.icons ? manifest.icons.length : 0}`, 'info');
+                    
+                    // Check required icons
+                    if (manifest.icons) {
+                        const has192 = manifest.icons.some(icon => icon.sizes.includes('192x192'));
+                        const has512 = manifest.icons.some(icon => icon.sizes.includes('512x512'));
+                        log(`192x192 icon: ${has192 ? '✅' : '❌'}`, has192 ? 'success' : 'error');
+                        log(`512x512 icon: ${has512 ? '✅' : '❌'}`, has512 ? 'success' : 'error');
+                    }
+                } else {
+                    log('❌ Manifest not accessible', 'error');
+                }
+            } catch (error) {
+                log(`❌ Manifest error: ${error.message}`, 'error');
+            }
+
+            // 3. Test service worker
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    log('✅ Service Worker registered', 'success');
+                    
+                    const existingReg = await navigator.serviceWorker.getRegistration();
+                    if (existingReg) {
+                        log(`SW scope: ${existingReg.scope}`, 'info');
+                        log(`SW state: ${existingReg.active ? existingReg.active.state : 'not active'}`, 
+                            existingReg.active ? 'success' : 'warning');
+                    }
+                } catch (error) {
+                    log(`❌ Service Worker error: ${error.message}`, 'error');
+                }
+            }
+
+            // 4. Check if already installed
+            const isInstalled = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.navigator.standalone === true;
+            log(`Already installed: ${isInstalled ? '✅ Yes' : '❌ No'}`, isInstalled ? 'success' : 'info');
+
+            // 5. Check install prompt availability
+            log(`Install prompt available: ${deferredPrompt ? '✅ Yes' : '❌ No'}`, 
+                deferredPrompt ? 'success' : 'error');
+
+            // 6. Browser info
+            const ua = navigator.userAgent.toLowerCase();
+            let browser = 'Unknown';
+            if (ua.includes('chrome') && !ua.includes('edg')) browser = 'Chrome';
+            else if (ua.includes('safari') && !ua.includes('chrome')) browser = 'Safari';
+            else if (ua.includes('firefox')) browser = 'Firefox';
+            else if (ua.includes('edg')) browser = 'Edge';
+            
+            log(`Browser: ${browser}`, 'info');
+
+            // 7. Wait a bit and check again for install prompt
+            setTimeout(() => {
+                if (!deferredPrompt && !isInstalled) {
+                    log('⚠️ Install prompt still not available after checks', 'warning');
+                    log('💡 Try: Clear browser data, check console for errors, ensure all PWA criteria are met', 'info');
+                }
+            }, 2000);
+        }
+
+        // Auto-run checks
+        setTimeout(checkEverything, 1000);
+    </script>
+</body>
+</html>
