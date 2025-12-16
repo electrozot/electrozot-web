@@ -1,4 +1,4 @@
-name: 🚀 Deploy Plain PHP (Hostinger – Stable)
+name: 🚀 Deploy Plain PHP (Hostinger)
 
 on:
   push:
@@ -15,14 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via FTPS (Hostinger safe mode)
+      - name: Deploy via FTPS (Hostinger correct)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
+
+          protocol: ftps
           port: 21
-          protocol: ftps-legacy
-          passive: true
           server-dir: /public_html/
+
           log-level: minimal
