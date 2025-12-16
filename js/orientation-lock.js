@@ -37,41 +37,80 @@
         }
     }
 
-    // Handle orientation change events
+    // Handle orientation change events - prevent any rotation
     function handleOrientationChange() {
         if (!isMobileDevice()) {
             return;
         }
 
-        const orientation = window.orientation || screen.orientation?.angle || 0;
-        
-        // If device is in landscape mode on mobile, show warning
-        if (Math.abs(orientation) === 90) {
-            document.body.classList.add('landscape-warning');
-        } else {
-            document.body.classList.remove('landscape-warning');
+        // Force viewport back to portrait dimensions
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no');
         }
+        
+        // Force body dimensions
+        document.body.style.width = '100vw';
+        document.body.style.height = '100vh';
+        document.body.style.maxWidth = '100vw';
+        document.body.style.maxHeight = '100vh';
+        document.body.style.transform = 'none';
+        document.body.style.overflow = 'hidden auto';
+        
+        // Force html dimensions
+        document.documentElement.style.width = '100vw';
+        document.documentElement.style.height = '100vh';
+        document.documentElement.style.maxWidth = '100vw';
+        document.documentElement.style.maxHeight = '100vh';
+        document.documentElement.style.transform = 'none';
     }
 
     // Initialize orientation lock
     function init() {
+        if (!isMobileDevice()) {
+            return;
+        }
+        
         // Lock orientation on page load
         lockOrientation();
-
-        // Listen for orientation changes
-        window.addEventListener('orientationchange', function() {
-            handleOrientationChange();
-            // Try to lock again after orientation change
-            setTimeout(lockOrientation, 100);
-        });
-
-        // Also listen to resize events
-        window.addEventListener('resize', function() {
-            handleOrientationChange();
-        });
-
-        // Initial check
         handleOrientationChange();
+
+        // Prevent orientation change completely
+        window.addEventListener('orientationchange', function(e) {
+            e.preventDefault();
+            handleOrientationChange();
+            lockOrientation();
+        });
+
+        // Prevent resize that might indicate rotation
+        window.addEventListener('resize', function(e) {
+            if (isMobileDevice()) {
+                handleOrientationChange();
+                lockOrientation();
+            }
+        });
+
+        // Monitor screen changes more aggressively
+        if (screen.orientation) {
+            screen.orientation.addEventListener('change', function(e) {
+                e.preventDefault();
+                handleOrientationChange();
+                lockOrientation();
+            });
+        }
+
+        // Force dimensions on any window focus
+        window.addEventListener('focus', function() {
+            handleOrientationChange();
+            lockOrientation();
+        });
+        
+        // Set up continuous monitoring for mobile
+        setInterval(function() {
+            if (isMobileDevice()) {
+                handleOrientationChange();
+            }
+        }, 100);
     }
 
     // Run when DOM is ready

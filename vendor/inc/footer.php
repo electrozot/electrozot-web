@@ -134,8 +134,7 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
             </div>
             <p style="margin: 0; color: #cbd5e0; font-size: 0.9rem; font-weight: 500;">
                 &copy; <?php echo date('Y');?> <span style="color: #ffffff; font-weight: 700;">Electrozot</span> - All rights reserved
-<span style="margin-left: 10px; color: #a0aec0; font-size: 0.8rem;">v4.4.5</span>
-                <span style="margin-left: 10px; color: #a0aec0; font-size: 0.8rem;">v4.4.3</span>
+                <span style="margin-left: 10px; color: #a0aec0; font-size: 0.8rem;">v4.4.5</span>
             </p>
         </div>
     </div>
