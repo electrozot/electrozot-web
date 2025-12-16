@@ -10,27 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Deploy with rsync over SSH
       - name: Deploy via SSH (rsync)
-        uses: matsuu/ssh-deploy@v4
-        with:
-          # Hostinger server
-          host: 217.21.84.50
-          port: 65002
-          username: u848820288
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-          # Paths
-          local-dir: "./"
-          remote-dir: "/public_html/"
-
-          # Rsync options
-          exclude: |
+        uses: easingthemes/ssh-deploy@v4.1.10
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: 217.21.84.50
+          REMOTE_USER: u848820288
+          REMOTE_PORT: 65002
+          TARGET: /public_html/
+          SOURCE: ./
+          EXCLUDE: |
             .git
             .github
             node_modules
-          rsync-options: "-avz --delete"
