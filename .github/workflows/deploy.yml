@@ -31,3 +31,15 @@ jobs:
             .github
             node_modules
             DO_NOT_UPLOAD_HERE
+
+            config.php
+            uploads/
+            usr/sessions/
+
+            vendor/
+            admin/vendor/
+            usr/vendor/
+            tech/vendor/
+
+            DATABASE FILE/
+            *.log
