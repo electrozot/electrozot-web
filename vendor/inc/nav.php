@@ -498,16 +498,26 @@
                    document.referrer.includes('android-app://');
         }
         
-        // Update buttons if already installed
+        // Hide buttons by default
+        if (installButtonDesktop) {
+            installButtonDesktop.style.display = 'none';
+        }
+        if (installButtonMobile) {
+            installButtonMobile.style.display = 'none';
+        }
+        
+        // Show "Open App" if already installed
         if (isAppInstalled()) {
             if (installButtonDesktop) {
-                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
+                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open App';
                 installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
                 installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+                installButtonDesktop.style.display = 'inline-block';
             }
             if (installButtonMobile) {
                 installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
                 installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonMobile.style.display = 'flex';
             }
         }
         
@@ -521,10 +531,11 @@
             if (!isAppInstalled()) {
                 if (installButtonDesktop) {
                     installButtonDesktop.style.display = 'inline-block';
-                    installButtonDesktop.innerHTML = '<i class="fas fa-download"></i> Install App';
+                    installButtonDesktop.innerHTML = '<i class="fas fa-plus"></i> Install App';
                 }
                 if (installButtonMobile) {
                     installButtonMobile.style.display = 'flex';
+                    installButtonMobile.innerHTML = '<i class="fas fa-plus"></i><span>Install</span>';
                 }
             }
         });
@@ -532,7 +543,8 @@
         // Function to handle installation
         async function handleInstallClick() {
             if (isAppInstalled()) {
-                alert('✅ ElectroZot is already installed on your device!\n\nYou are currently using the web version. To use the app version, please open ElectroZot from your home screen or app drawer.');
+                // Open app if already installed (this will try to switch to the app)
+                window.location.href = window.location.href;
                 return;
             }
             
@@ -548,7 +560,7 @@
                         console.log('✅ PWA installation accepted');
                         // Update buttons after successful installation
                         if (installButtonDesktop) {
-                            installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
+                            installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open App';
                             installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
                             installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
                         }
@@ -558,39 +570,21 @@
                         }
                     } else {
                         console.log('❌ PWA installation declined');
+                        // Hide buttons if user declines
+                        if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                        if (installButtonMobile) installButtonMobile.style.display = 'none';
                     }
                 } catch (error) {
                     console.error('Installation error:', error);
-                    showManualInstallInstructions();
+                    // Hide buttons on error
+                    if (installButtonDesktop) installButtonDesktop.style.display = 'none';
+                    if (installButtonMobile) installButtonMobile.style.display = 'none';
                 }
                 deferredPrompt = null;
-            } else {
-                showManualInstallInstructions();
             }
         }
         
-        // Function to show manual installation instructions
-        function showManualInstallInstructions() {
-            const userAgent = navigator.userAgent.toLowerCase();
-            let instructions = '📱 Install ElectroZot App\n\n';
-            
-            if (userAgent.includes('chrome') && userAgent.includes('mobile')) {
-                instructions += '1. Tap the menu (⋮) in the top right\n2. Select "Add to Home screen"\n3. Tap "Add"';
-            } else if (userAgent.includes('chrome')) {
-                instructions += '1. Click the menu (⋮) in the top right\n2. Select "Install ElectroZot"\n3. Click "Install"';
-            } else if (userAgent.includes('firefox')) {
-                instructions += '1. Tap the menu (☰)\n2. Select "Install"\n3. Tap "Add to Home Screen"';
-            } else if (userAgent.includes('safari')) {
-                instructions += '1. Tap the Share button (□↗)\n2. Select "Add to Home Screen"\n3. Tap "Add"';
-            } else if (userAgent.includes('edge')) {
-                instructions += '1. Click the menu (...)\n2. Select "Apps"\n3. Click "Install this site as an app"';
-            } else {
-                instructions += 'Look for "Install app", "Add to Home screen", or similar option in your browser menu.';
-            }
-            
-            instructions += '\n\n💡 Tip: Make sure you\'re using HTTPS and have browsed the site for a few minutes.';
-            alert(instructions);
-        }
+
         
         // Attach event listeners (always attach, function handles installed state)
         if (installButtonDesktop) {
@@ -604,29 +598,17 @@
         // Update buttons when app gets installed
         window.addEventListener('appinstalled', () => {
             if (installButtonDesktop) {
-                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
+                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open App';
                 installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
                 installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
+                installButtonDesktop.style.display = 'inline-block';
             }
             if (installButtonMobile) {
                 installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
                 installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
+                installButtonMobile.style.display = 'flex';
             }
         });
-        
-        // Check if running as PWA
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-            if (installButtonDesktop) {
-                installButtonDesktop.innerHTML = '<i class="fas fa-external-link-alt"></i> Open in App';
-                installButtonDesktop.style.background = 'rgba(76, 175, 80, 0.3)';
-                installButtonDesktop.style.borderColor = 'rgba(76, 175, 80, 0.5)';
-            }
-            if (installButtonMobile) {
-                installButtonMobile.innerHTML = '<i class="fas fa-external-link-alt"></i><span>Open</span>';
-                installButtonMobile.style.background = 'rgba(76, 175, 80, 0.3)';
-                installButtonMobile.style.borderColor = 'rgba(76, 175, 80, 0.5)';
-            }
-        }
     </script>
     
     <style>

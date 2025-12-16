@@ -134,7 +134,16 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
             </div>
             <p style="margin: 0; color: #cbd5e0; font-size: 0.9rem; font-weight: 500;">
                 &copy; <?php echo date('Y');?> <span style="color: #ffffff; font-weight: 700;">Electrozot</span> - All rights reserved
-                <span style="margin-left: 10px; color: #a0aec0; font-size: 0.8rem;">v4.4.1</span>
+                <?php 
+                $version = 'v4.4.1'; // Default fallback
+                if (file_exists('version.txt')) {
+                    $version_content = trim(file_get_contents('version.txt'));
+                    if (!empty($version_content)) {
+                        $version = 'v' . $version_content;
+                    }
+                }
+                ?>
+                <span style="margin-left: 10px; color: #a0aec0; font-size: 0.8rem;"><?php echo htmlspecialchars($version); ?></span>
             </p>
         </div>
     </div>
@@ -177,82 +186,60 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
       });
     }
     
-    // Manual install guide function
-    function showManualInstallGuide() {
-      const userAgent = navigator.userAgent.toLowerCase();
-      let instructions = '';
-      
-      if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
-        instructions = 'Chrome:\n1. Look for install icon (⊕) in address bar\n2. Or Menu (⋮) > Install ElectroZot\n3. Click Install';
-      } else if (userAgent.includes('safari')) {
-        instructions = 'Safari:\n1. Tap Share button (□↗)\n2. Select "Add to Home Screen"\n3. Tap Add';
-      } else if (userAgent.includes('firefox')) {
-        instructions = 'Firefox:\n1. Look for install banner\n2. Or Menu > Install\n3. Follow prompts';
-      } else {
-        instructions = 'Look for "Install" or "Add to Home Screen" option in your browser menu';
-      }
-      
-      alert('📱 Install ElectroZot App\n\n' + instructions + '\n\n💡 Tip: Use HTTPS and browse site for 2-3 minutes first');
-    }
+
     
     // Footer PWA Install Button Handler
     var footerInstallBtn = document.getElementById('pwa-install-footer-btn');
     if (footerInstallBtn) {
-      // Check if deferredPrompt exists (set in index.php)
+      // Hide button by default
+      footerInstallBtn.style.display = 'none';
+      
+      // Check if already installed - show "Open App"
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+        footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open App</span>';
+        footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        footerInstallBtn.style.display = 'inline-flex';
+      }
+      
+      // Listen for install prompt - show "Install App"
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         window.deferredPrompt = e;
-        footerInstallBtn.style.display = 'inline-flex';
+        
+        // Only show if not already installed
+        if (!(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true)) {
+          footerInstallBtn.innerHTML = '<i class="fas fa-plus"></i> <span>Install App</span>';
+          footerInstallBtn.style.display = 'inline-flex';
+        }
       });
       
       footerInstallBtn.addEventListener('click', async () => {
-        // Check if app is already installed
+        // If already installed, try to open app
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-          alert('✅ ElectroZot is already installed on your device!\n\nYou are currently using the web version. To use the app version, please open ElectroZot from your home screen or app drawer.');
+          window.location.href = window.location.href;
           return;
         }
         
-        // Use the enhanced PWA installer
-        if (window.PWAInstaller && window.PWAInstaller.install) {
-          window.PWAInstaller.install();
-        } else if (window.deferredPrompt) {
+        // Try to install
+        if (window.deferredPrompt) {
           try {
             await window.deferredPrompt.prompt();
             const { outcome } = await window.deferredPrompt.userChoice;
             
             if (outcome === 'accepted') {
-              footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open in App</span>';
+              footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open App</span>';
               footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            } else {
+              // Hide button if user declines
+              footerInstallBtn.style.display = 'none';
             }
             window.deferredPrompt = null;
           } catch (error) {
             console.error('Footer install error:', error);
-            showManualInstallGuide();
+            footerInstallBtn.style.display = 'none';
           }
-        } else {
-          // Show enhanced manual guide
-          const userAgent = navigator.userAgent.toLowerCase();
-          let instructions = '';
-          
-          if (userAgent.includes('chrome') && !userAgent.includes('edg')) {
-            instructions = 'Chrome: Look for install icon (⊕) in address bar or Menu > Install ElectroZot';
-          } else if (userAgent.includes('safari')) {
-            instructions = 'Safari: Tap Share button (□↗) > Add to Home Screen';
-          } else if (userAgent.includes('firefox')) {
-            instructions = 'Firefox: Look for install prompt or Menu > Install';
-          } else {
-            instructions = 'Look for "Install" or "Add to Home Screen" in your browser menu';
-          }
-          
-          alert('📱 Install ElectroZot App\n\n' + instructions + '\n\n💡 Make sure you\'re using HTTPS and browse for a few minutes first.');
         }
       });
-      
-      // Check if already installed
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-        footerInstallBtn.innerHTML = '<i class="fas fa-external-link-alt"></i> <span>Open in App</span>';
-        footerInstallBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-      }
     }
   });
 </script>
