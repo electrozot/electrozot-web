@@ -22,6 +22,7 @@
     <!--End Navigation-->
 
     <!-- Page Content -->
+    <main id="main-content" role="main">
     <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
@@ -1662,6 +1663,8 @@
 
     </div>
     <!-- /.container -->
+    </main>
+    <!-- End Main Content -->
 
     <!-- Footer -->
     <?php include("vendor/inc/footer.php");?>

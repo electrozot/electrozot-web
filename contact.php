@@ -7,6 +7,7 @@
 <body>
     <?php include("vendor/inc/nav.php");?>
     
+    <main id="main-content" role="main">
     <!-- Hero Section -->
     <section class="contact-hero" style="background: linear-gradient(135deg, #F0FBFF 0%, #FFE5EE 25%, #E5FFE5 50%, #ff6b9d 75%, #ff4757 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px; position: relative; overflow: hidden;">
         <div class="contact-hero-overlay"></div>
@@ -160,6 +161,8 @@
             </div>
         </div>
     </div>
+    </main>
+    <!-- End Main Content -->
 
     <?php include("vendor/inc/footer.php");?>
     

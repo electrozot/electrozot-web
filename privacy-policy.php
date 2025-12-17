@@ -14,6 +14,7 @@
     <!--End Navigation-->
 
     <!-- Page Content -->
+    <main id="main-content" role="main">
     <div class="container-fluid px-0" style="margin-top: 0px;">
         
         <!-- Header Section -->
@@ -314,6 +315,8 @@
 
     </div>
     <!-- /.container -->
+    </main>
+    <!-- End Main Content -->
 
     <!-- Footer -->
     <?php include("vendor/inc/footer.php");?>

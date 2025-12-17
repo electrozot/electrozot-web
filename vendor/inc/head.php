@@ -27,6 +27,21 @@
             $seo_description = 'Complete electrical services including wiring, repairs, appliance service, home automation, and emergency electrical work. Professional technicians available 24/7.';
             $seo_keywords = 'electrical services, wiring services, appliance repair, home automation, electrical installation, emergency electrician';
             break;
+        case 'installation-services':
+            $seo_title = 'Installation Services - TV, AC, WiFi, Appliance Installation | Electrozot';
+            $seo_description = 'Professional installation services for TV, AC, WiFi, washing machine, water geyser, fans, lights, electric chimney, and CCTV cameras. Expert technicians with warranty.';
+            $seo_keywords = 'tv installation, ac installation, wifi installation, washing machine installation, geyser installation, camera installation, appliance installation';
+            break;
+        case 'electronic-appliance-repair':
+            $seo_title = 'Electronic & Appliance Repair - AC, TV, Refrigerator Repair | Electrozot';
+            $seo_description = 'Expert repair services for AC, TV, refrigerator, washing machine, induction cooktop, and all home appliances. Certified technicians with 1-month warranty.';
+            $seo_keywords = 'ac repair, tv repair, refrigerator repair, washing machine repair, appliance repair, electronic repair, home appliance service';
+            break;
+        case 'plumbing-solutions':
+            $seo_title = 'Plumbing Solutions - Leak Repair, Water Filter & Tank Cleaning | Electrozot';
+            $seo_description = 'Professional plumbing services including leak repairs, water filter servicing, tank cleaning, and fixture repairs. 24/7 emergency plumbing available.';
+            $seo_keywords = 'plumbing services, leak repair, water filter service, tank cleaning, plumber, emergency plumbing, fixture repair';
+            break;
         case 'contact':
             $seo_title = 'Contact Electrozot - Book Electrical Services | Call 7559606925';
             $seo_description = 'Contact Electrozot for professional electrical services. Call 7559606925 or book online. Available 24/7 for emergency electrical repairs and installations.';
@@ -138,6 +153,306 @@
         ]
     }
     </script>
+    
+    <?php
+    // Page-specific Schema.org structured data
+    if ($current_page == 'installation-services') {
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Installation Services",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Electrozot",
+            "telephone": "+917559606925",
+            "url": "https://electrozot.in"
+        },
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Installation Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "TV Installation",
+                        "description": "Professional TV wall mounting and setup services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "AC Installation",
+                        "description": "Split AC installation with copper piping and gas charging"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "WiFi Installation",
+                        "description": "Router setup and network configuration services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Washing Machine Installation",
+                        "description": "Complete washing machine installation with plumbing connections"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Water Geyser Installation",
+                        "description": "Water heater installation with electrical and plumbing connections"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Camera Installation",
+                        "description": "CCTV camera installation with DVR/NVR setup"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    <?php
+    } elseif ($current_page == 'electronic-appliance-repair') {
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Electronic & Appliance Repair",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Electrozot",
+            "telephone": "+917559606925",
+            "url": "https://electrozot.in"
+        },
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "warranty": {
+            "@type": "WarrantyPromise",
+            "durationOfWarranty": {
+                "@type": "QuantitativeValue",
+                "value": "1",
+                "unitCode": "MON"
+            }
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Repair Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "AC Repair",
+                        "description": "Air conditioner repair and servicing with gas refilling"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "TV Repair",
+                        "description": "Television display and sound repair services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Refrigerator Repair",
+                        "description": "Fridge cooling and compressor repair services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Washing Machine Repair",
+                        "description": "Washing machine motor, belt, and control panel repair"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Motherboard Repair",
+                        "description": "Expert PCB and electronics circuit repair"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    <?php
+    } elseif ($current_page == 'plumbing-solutions') {
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "serviceType": "Plumbing Services",
+        "provider": {
+            "@type": "LocalBusiness",
+            "name": "Electrozot",
+            "telephone": "+917559606925",
+            "url": "https://electrozot.in"
+        },
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableChannel": {
+            "@type": "ServiceChannel",
+            "serviceType": "Emergency Service",
+            "availableLanguage": ["English", "Hindi"]
+        },
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Plumbing Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Leak Repair",
+                        "description": "Pipe leak detection and repair services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Water Filter Servicing",
+                        "description": "RO, UV, and UF water filter maintenance and repair"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Water Tank Cleaning",
+                        "description": "Overhead and underground water tank cleaning and sanitization"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Fixture Repair",
+                        "description": "Sink, faucet, and toilet fixture repair services"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+    <?php
+    } elseif ($current_page == 'blog') {
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Electrozot Blog",
+        "description": "Expert electrical tips, safety guides, and home maintenance articles",
+        "url": "https://electrozot.in/blog.php",
+        "publisher": {
+            "@type": "Organization",
+            "name": "Electrozot",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://electrozot.in/vendor/EZlogonew.png"
+            }
+        }
+    }
+    </script>
+    <?php
+    } elseif ($current_page == 'contact') {
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ContactPage",
+        "name": "Contact Electrozot",
+        "description": "Contact Electrozot for professional electrical and technical services",
+        "url": "https://electrozot.in/contact.php",
+        "mainEntity": {
+            "@type": "LocalBusiness",
+            "name": "Electrozot",
+            "telephone": "+917559606925",
+            "email": "electrozot@outlook.com"
+        }
+    }
+    </script>
+    <?php
+    }
+    ?>
+    
+    <!-- Breadcrumb Schema for Service Pages -->
+    <?php
+    if (in_array($current_page, ['installation-services', 'electronic-appliance-repair', 'plumbing-solutions'])) {
+        $breadcrumb_name = '';
+        switch($current_page) {
+            case 'installation-services':
+                $breadcrumb_name = 'Installation Services';
+                break;
+            case 'electronic-appliance-repair':
+                $breadcrumb_name = 'Electronic & Appliance Repair';
+                break;
+            case 'plumbing-solutions':
+                $breadcrumb_name = 'Plumbing Solutions';
+                break;
+        }
+    ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://electrozot.in/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Services",
+                "item": "https://electrozot.in/services.php"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "<?php echo $breadcrumb_name; ?>",
+                "item": "<?php echo $canonical_url; ?>"
+            }
+        ]
+    }
+    </script>
+    <?php
+    }
+    ?>
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#000000">

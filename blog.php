@@ -16,6 +16,7 @@ $seo_keywords = "electrical tips, home maintenance, DIY guides, safety tips, ele
 <body>
     <?php include("vendor/inc/nav.php"); ?>
     
+    <main id="main-content" role="main">
     <div class="container" style="margin-top: 100px; margin-bottom: 60px;">
         <h1 class="text-center mb-4">Our Blog</h1>
         <p class="text-center text-muted mb-5">Expert tips and guides from our certified technicians</p>
@@ -67,6 +68,8 @@ $seo_keywords = "electrical tips, home maintenance, DIY guides, safety tips, ele
             ?>
         </div>
     </div>
+    </main>
+    <!-- End Main Content -->
     
     <?php include("vendor/inc/footer.php"); ?>
     

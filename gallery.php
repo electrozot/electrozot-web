@@ -16,6 +16,7 @@
      <!-- Navigation -->
      <?php include("vendor/inc/nav.php");?>
 
+    <main id="main-content" role="main">
     <!-- Hero Section -->
     <section class="gallery-hero" style="background: linear-gradient(135deg, #ffe5e8 0%, #fff0f2 50%, #ffe5e8 100%); padding: 116px 0 40px 0; margin-top: -56px;">
      <div class="container">
@@ -94,6 +95,8 @@
 
      </div>
      <!-- End Page Content -->
+     </main>
+     <!-- End Main Content -->
 
      <!-- Footer -->
      <?php include("vendor/inc/footer.php");?>

@@ -16,6 +16,7 @@ include('admin/vendor/inc/config.php');
 
     <?php include("vendor/inc/nav.php");?>
 
+    <main id="main-content" role="main">
     <!-- Hero Section -->
     <section class="about-hero" style="background: linear-gradient(135deg, #E9D5FF 0%, #FDF2F8 50%, #FEF3C7 100%); padding: 140px 0 60px 0; margin-top: -56px; position: relative; overflow: hidden;">
         
@@ -349,6 +350,8 @@ include('admin/vendor/inc/config.php');
             </div>
         </div>
     </div>
+    </main>
+    <!-- End Main Content -->
 
     <?php include("vendor/inc/footer.php");?>
 
