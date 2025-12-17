@@ -1,0 +1,15 @@
+Splash screen images directory.
+
+To generate splash screens:
+1. Open generate-splash-screens.html
+2. Click "Generate" for each required size
+3. Save the downloaded images to this folder
+
+Required files:
+- splash-1125x2436.png (iPhone X/11/12/13)
+- splash-1242x2208.png (iPhone 6/7/8 Plus)
+- splash-750x1334.png (iPhone 6/7/8)
+- splash-640x1136.png (iPhone 5/SE)
+- splash-2048x2732.png (iPad Pro 12.9")
+- splash-1668x2224.png (iPad Pro 11")
+- splash-1536x2048.png (iPad)

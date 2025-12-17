@@ -1,0 +1,2 @@
+Screenshots directory created for PWA manifest.
+Add actual screenshot images here if needed.

@@ -1,0 +1,292 @@
+/* Shared Navbar Styles - Extracted from user-dashboard.php */
+
+/* Search Bar Styles - Separate from navbar */
+.search-bar-container {
+    position: fixed;
+    top: 45px; /* Below the slim navbar */
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 8px 15px;
+    z-index: 999;
+    border-bottom: 1px solid rgba(209, 58, 189, 0.1);
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    color: #d13abd;
+    font-size: 16px;
+    z-index: 1;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 45px 12px 40px;
+    border: 2px solid rgba(209, 58, 189, 0.2);
+    border-radius: 25px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.3s;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #d13abd;
+    box-shadow: 0 0 0 3px rgba(209, 58, 189, 0.1);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+.search-clear {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s;
+}
+
+.search-clear:hover {
+    color: #d13abd;
+    background: rgba(209, 58, 189, 0.1);
+}
+
+/* Adjust body padding to account for search bar */
+body.with-search-bar {
+    padding-top: 95px !important; /* navbar (45px) + search bar (50px) */
+}
+
+@media (max-width: 767px) {
+    .search-bar-container {
+        top: 50px; /* Adjust for mobile navbar height */
+    }
+    
+    body.with-search-bar {
+        padding-top: 100px !important;
+    }
+}
+.top-header,
+.header {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%) !important;
+    color: white;
+    padding: 3px 15px;
+    padding-top: calc(3px + env(safe-area-inset-top));
+    box-shadow: 0 4px 20px rgba(209, 58, 189, 0.3);
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 0;
+    margin-left: -10px; /* Move logo more to the left */
+    min-height: 35px;
+}
+
+.brand-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important; /* Reduced gap between logo and brand name */
+    text-decoration: none !important;
+    color: white !important;
+    margin-left: -5px; /* Additional left positioning for logo */
+}
+
+.logo {
+    height: 32px !important;
+    width: auto !important;
+    max-width: none !important;
+    object-fit: contain !important;
+    margin-right: -2px; /* Reduce space after logo */
+}
+
+.top-header .brand-text h2,
+.header .brand-text h2 {
+    font-size: 20px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    line-height: 1.1 !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    color: white !important;
+}
+
+.top-header .brand-text p,
+.header .brand-text p {
+    font-size: 11px !important;
+    opacity: 0.85 !important;
+    margin: -2px 0 0 0 !important;
+    font-style: italic !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    color: white !important;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.user-name {
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.header-icons {
+    display: flex;
+    gap: 6px;
+}
+
+.header-icon {
+    width: 32px;
+    height: 32px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s;
+}
+
+.header-icon:hover {
+    background: rgba(255,255,255,0.35);
+    transform: scale(1.05);
+}
+
+/* Bottom Navigation Styles */
+.bottom-nav {
+    position: fixed;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 12px);
+    max-width: 450px;
+    background: linear-gradient(135deg, #d13abd 0%, #ec6ead 20%, #f48fb1 50%, #f59e9e 80%, #f9a8a8 100%) !important;
+    box-shadow: 0 3px 20px rgba(209, 58, 189, 0.35), 0 1px 5px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 2px 4px;
+    z-index: 1000;
+    border-radius: 15px;
+}
+
+.nav-item {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.75);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 3px 1px;
+    position: relative;
+    border-radius: 10px;
+}
+
+.nav-item:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.nav-item.active { 
+    color: white;
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-item i {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 0px;
+}
+
+.nav-item.active i {
+    animation: bounce 0.4s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+.nav-item span {
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+/* Mobile Specific - Larger Logo */
+@media (max-width: 767px) {
+    .logo {
+        height: 55px !important;
+    }
+    
+    .header-content {
+        margin-left: -15px; /* Move logo even more to the left on mobile */
+    }
+    
+    .brand-section {
+        gap: 1px !important; /* Even smaller gap on mobile */
+        margin-left: -8px; /* Additional left positioning for mobile */
+    }
+    
+    .top-header .brand-text h2,
+    .header .brand-text h2 {
+        font-size: 22px !important;
+    }
+    
+    .top-header .brand-text p,
+    .header .brand-text p {
+        font-size: 12px !important;
+    }
+}
+
+/* Tablet & Desktop Responsive */
+@media (min-width: 768px) {
+    .bottom-nav {
+        max-width: 400px;
+        bottom: 8px;
+        padding: 3px 6px;
+    }
+    
+    .nav-item {
+        padding: 4px 3px;
+    }
+    
+    .nav-item i {
+        font-size: 16px;
+        margin-bottom: 1px;
+    }
+    
+    .nav-item span {
+        font-size: 8px;
+    }
+}
