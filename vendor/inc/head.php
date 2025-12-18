@@ -13,7 +13,12 @@
     $seo_description = 'Book certified electricians and technicians in your area. Expert electrical repairs, appliance services, wiring, and home automation. Available 24/7 with 30-day warranty.';
     $seo_keywords = 'electrician, electrical services, appliance repair, home automation, wiring, electrical repair, technician booking, emergency electrician';
     $seo_image = $base_url . '/vendor/EZlogonew.png';
-    $canonical_url = $base_url . '/' . ($current_page == 'index' ? '' : $current_page . '.php');
+    // Generate canonical URL properly
+    if ($current_page == 'index') {
+        $canonical_url = $base_url . '/';
+    } else {
+        $canonical_url = $base_url . '/' . $current_page . '.php';
+    }
     
     // Page-specific SEO
     switch($current_page) {
@@ -76,6 +81,15 @@
     <meta name="author" content="Electrozot">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="<?php echo $canonical_url; ?>">
+    
+    <!-- Prevent duplicate content issues -->
+    <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+    
+    <!-- Hreflang for language/region targeting -->
+    <link rel="alternate" hreflang="en-in" href="<?php echo $canonical_url; ?>">
+    <link rel="alternate" hreflang="en" href="<?php echo $canonical_url; ?>">
+    <link rel="alternate" hreflang="x-default" href="<?php echo $canonical_url; ?>">
     
     <!-- Open Graph Meta Tags (Facebook, LinkedIn) -->
     <meta property="og:type" content="website">

@@ -1,17 +1,19 @@
 User-agent: *
 Allow: /
 
-# Allow important pages for SEO
+# Allow all important pages for SEO
 Allow: /index.php
 Allow: /about.php
 Allow: /services.php
+Allow: /installation-services.php
+Allow: /electronic-appliance-repair.php
+Allow: /plumbing-solutions.php
 Allow: /contact.php
 Allow: /gallery.php
 Allow: /blog.php
 Allow: /blog-post.php
 Allow: /faq.php
 Allow: /privacy-policy.php
-Allow: /process-guest-booking.php
 
 # Allow CSS, JS, and images for proper rendering
 Allow: /css/
@@ -29,12 +31,33 @@ Disallow: /config.php
 Disallow: /DATABASE FILE/
 Disallow: /*.sql
 Disallow: /sessions/
+Disallow: /*.log
+Disallow: /.git/
+Disallow: /.kiro/
+Disallow: /.vscode/
 
-# Allow sitemap
+# Disallow test and development files
+Disallow: /*test*
+Disallow: /*debug*
+Disallow: /*minimal*
+Disallow: /pwa-debug.html
+Disallow: /pwa-install-test.html
+Disallow: /check-pwa-*
+Disallow: /comprehensive-pwa-test.html
+Disallow: /fix-pwa-*
+Disallow: /mobile-pwa-test.html
+Disallow: /simple-pwa-test.html
+Disallow: /test-*
+Disallow: /minimal-*
+
+# Allow sitemap and error pages
 Allow: /sitemap.xml
+Allow: /404.php
+Allow: /500.php
 
-# Sitemap location
+# Sitemap locations
 Sitemap: https://electrozot.in/sitemap.xml
+Sitemap: https://electrozot.in/sitemap-index.xml
 
 # Crawl delay (optional - helps prevent server overload)
 Crawl-delay: 1

@@ -79,6 +79,7 @@ RewriteEngine On
     # Cache HTML and PHP for 2 hours
     <FilesMatch "\.(html|htm|php)$">
         Header set Cache-Control "max-age=7200, private, must-revalidate"
+        Header append Vary "Accept-Encoding"
     </FilesMatch>
     
     # Don't cache dynamic booking and admin pages
@@ -86,6 +87,11 @@ RewriteEngine On
         Header set Cache-Control "no-cache, no-store, must-revalidate"
         Header set Pragma "no-cache"
         Header set Expires "0"
+    </FilesMatch>
+    
+    # Sitemap and robots.txt caching
+    <FilesMatch "(sitemap\.xml|sitemap-index\.xml|robots\.txt)$">
+        Header set Cache-Control "max-age=86400, public"
     </FilesMatch>
 </IfModule>
 
@@ -119,24 +125,130 @@ FileETag None
 </IfModule>
 
 # ============================================
-# SEO FRIENDLY URLS
+# SEO FRIENDLY URLS & CANONICAL FIXES
 # ============================================
 
-# SEO Friendly URLs
+# Force HTTPS (redirect HTTP to HTTPS)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [L,R=301]
+
+# Force non-WWW (redirect www to non-www for canonical URLs)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+
+# Remove trailing slashes for canonical URLs (except for directories)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Remove index.php from URL for canonical consistency
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.php[?\s] [NC]
+RewriteRule ^index\.php$ / [R=301,L]
+
+# Handle old URLs and redirects to prevent 404s
+RewriteRule ^electrical-services/?$ /services.php [R=301,L]
+RewriteRule ^appliance-repair/?$ /electronic-appliance-repair.php [R=301,L]
+RewriteRule ^home-automation/?$ /installation-services.php [R=301,L]
+RewriteRule ^emergency-electrical-service/?$ /services.php [R=301,L]
+RewriteRule ^electrician-near-me/?$ /contact.php [R=301,L]
+RewriteRule ^electrical-repair-services/?$ /electronic-appliance-repair.php [R=301,L]
+
+# Redirect duplicate service URLs to canonical versions
+RewriteRule ^services/installation/?$ /installation-services.php [R=301,L]
+RewriteRule ^services/repair/?$ /electronic-appliance-repair.php [R=301,L]
+RewriteRule ^services/plumbing/?$ /plumbing-solutions.php [R=301,L]
+RewriteRule ^installation/?$ /installation-services.php [R=301,L]
+RewriteRule ^repair/?$ /electronic-appliance-repair.php [R=301,L]
+RewriteRule ^plumbing/?$ /plumbing-solutions.php [R=301,L]
+
+# Clean URLs and canonical redirects
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 
-# Blog URLs
-RewriteRule ^blog/?$ blog.php [L]
-RewriteRule ^blog/([0-9]+)/([a-zA-Z0-9-]+)/?$ blog-post.php?id=$1&slug=$2 [L]
+# Blog URLs (clean URLs)
+RewriteRule ^blog/?$ /blog.php [L]
+RewriteRule ^blog/([0-9]+)/([a-zA-Z0-9-]+)/?$ /blog-post.php?id=$1&slug=$2 [L]
 
-# Remove .php extension
+# Remove .php extension for clean URLs (but keep internal .php files working)
 RewriteCond %{REQUEST_FILENAME}.php -f
-RewriteRule ^([^\.]+)$ $1.php [NC,L]
+RewriteRule ^([^\.]+)$ /$1.php [NC,L]
 
-# Force HTTPS (uncomment for production)
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Redirect .php extensions to clean URLs for canonical consistency
+RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+([^?\s]*?)\.php[?\s] [NC]
+RewriteRule ^(.*)\.php$ /$1 [R=301,L]
+
+# Handle query parameters - redirect to clean URLs
+RewriteCond %{QUERY_STRING} ^(.+)$
+RewriteCond %{REQUEST_URI} ^/(index|about|services|contact|gallery|blog|faq|privacy-policy|installation-services|electronic-appliance-repair|plumbing-solutions)\.php$
+RewriteRule ^(.*)\.php$ /$1? [R=301,L]
+
+# Additional SEO redirects for common variations
+RewriteRule ^home/?$ / [R=301,L]
+RewriteRule ^index/?$ / [R=301,L]
+RewriteRule ^main/?$ / [R=301,L]
+
+# Service variations redirects
+RewriteRule ^electrical/?$ /services.php [R=301,L]
+RewriteRule ^electric/?$ /services.php [R=301,L]
+RewriteRule ^technician/?$ /services.php [R=301,L]
+RewriteRule ^repair-service/?$ /electronic-appliance-repair.php [R=301,L]
+RewriteRule ^installation-service/?$ /installation-services.php [R=301,L]
+RewriteRule ^plumber/?$ /plumbing-solutions.php [R=301,L]
+
+# Contact variations
+RewriteRule ^contact-us/?$ /contact.php [R=301,L]
+RewriteRule ^get-in-touch/?$ /contact.php [R=301,L]
+RewriteRule ^book-now/?$ /contact.php [R=301,L]
+
+# About variations
+RewriteRule ^about-us/?$ /about.php [R=301,L]
+RewriteRule ^company/?$ /about.php [R=301,L]
+RewriteRule ^team/?$ /about.php [R=301,L]
+
+# Gallery variations
+RewriteRule ^portfolio/?$ /gallery.php [R=301,L]
+RewriteRule ^work/?$ /gallery.php [R=301,L]
+RewriteRule ^projects/?$ /gallery.php [R=301,L]
+
+# FAQ variations
+RewriteRule ^help/?$ /faq.php [R=301,L]
+RewriteRule ^support/?$ /faq.php [R=301,L]
+RewriteRule ^questions/?$ /faq.php [R=301,L]
+
+# Blog variations
+RewriteRule ^news/?$ /blog.php [R=301,L]
+RewriteRule ^articles/?$ /blog.php [R=301,L]
+RewriteRule ^tips/?$ /blog.php [R=301,L]
+
+# Privacy variations
+RewriteRule ^privacy/?$ /privacy-policy.php [R=301,L]
+RewriteRule ^terms/?$ /privacy-policy.php [R=301,L]
+
+# Remove common tracking parameters to prevent duplicate content
+RewriteCond %{QUERY_STRING} ^(.*)&?utm_[^&]+(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+RewriteCond %{QUERY_STRING} ^(.*)&?fbclid=[^&]+(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+RewriteCond %{QUERY_STRING} ^(.*)&?gclid=[^&]+(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+RewriteCond %{QUERY_STRING} ^(.*)&?ref=[^&]+(.*)$ [NC]
+RewriteRule ^(.*)$ /$1?%1%2 [R=301,L]
+
+# Custom error pages
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+
+# Handle common 404 patterns - redirect to relevant pages
+RewriteRule ^wp-admin/?.*$ /admin/ [R=301,L]
+RewriteRule ^wp-content/?.*$ / [R=301,L]
+RewriteRule ^wp-includes/?.*$ / [R=301,L]
+RewriteRule ^wordpress/?.*$ / [R=301,L]
+RewriteRule ^admin\.php$ /admin/ [R=301,L]
+RewriteRule ^login\.php$ /usr/ [R=301,L]
+RewriteRule ^user/?$ /usr/ [R=301,L]
 
 # ============================================
 # SECURITY MEASURES
