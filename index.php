@@ -25,7 +25,7 @@
     <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #95e3f3ff 0%, #FECDD3 25%, #a9f6ceff 50%, #f783c5ff 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 100px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #e6f7ff 0%, #d1fae5 20%, #e5e7eb 40%, #bbf7d0 60%, #d1d5db 80%, #e9d5ff 100%); padding: 100px 0 80px 0; position: relative; overflow: hidden;">
             
             <style>
                 @keyframes gradientShift {
@@ -141,7 +141,7 @@
                             <span class="electrozot-animated">Electrozot</span>
                         </h1>
                         <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.6; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700; text-align: center; padding: 0 15px;">
-                            Your Trusted Partner for electrical & plumbing services,<br> Quality Service & Certified Technicians.<br>We Deliver Perfection in Every Job.
+                            Your Trusted Partner for Electrical & Plumbing Services,<br> Quality Service & Certified Technicians.<br>We Deliver Perfection in Every Job.
                         </p>
                         <div class="hero-buttons-wrapper d-flex flex-wrap justify-content-center" style="gap: 12px;">
                             <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; min-width: 160px; text-align: center; border: none;">
@@ -960,10 +960,10 @@
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem;">
-                            <span class="gradient-text-2">Why Choose Electrozot?</span>
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #16a34a;">
+                            Why Choose Electrozot?
                         </h2>
-                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Professional service you can trust</p>
+                        <p class="d-none d-md-block" style="color: #000000; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Professional service you can trust</p>
                     </div>
                 </div>
                 <div class="row">
@@ -1013,10 +1013,10 @@
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem;">
-                            <span class="gradient-text-2">Our Popular Services</span>
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #16a34a;">
+                            Our Popular Services
                         </h2>
-                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Expert technicians for all your needs</p>
+                        <p class="d-none d-md-block" style="color: #000000; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Expert technicians for all your needs</p>
                     </div>
                 </div>
                 <div class="row">
