@@ -96,48 +96,165 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "name": "Electrozot",
-        "description": "Professional electrical and technical services provider",
+        "@type": "HomeAndConstructionBusiness",
+        "@id": "https://electrozot.in/#business",
+        "name": "ElectroZot",
         "url": "https://electrozot.in",
         "logo": "https://electrozot.in/vendor/EZlogonew.png",
-        "image": "https://electrozot.in/vendor/EZlogonew.png",
-        "telephone": "+917559606925",
-        "email": "electrozot@outlook.com",
-        "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "IN",
-            "addressRegion": "India"
-        },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": "20.5937",
-            "longitude": "78.9629"
-        },
-        "openingHours": "Mo-Su 07:00-21:00",
-        "serviceArea": {
+        "description": "ElectroZot provides trusted electronic repair, electrical installation, and plumbing services with a commitment to quality materials, professional workmanship, and perfection.",
+        "priceRange": "₹₹",
+        "areaServed": {
             "@type": "Country",
             "name": "India"
         },
-        "services": [
-            "Electrical Wiring",
-            "Appliance Repair",
-            "Home Automation",
-            "Emergency Electrical Services",
-            "Electrical Installation",
-            "Electrical Maintenance"
-        ],
-        "priceRange": "₹₹",
         "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": "4.8",
-            "reviewCount": "150"
+            "reviewCount": "126"
         },
-        "sameAs": [
-            "https://www.instagram.com/electrozot.in/"
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "ElectroZot Services",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Electronic Repair Services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Electrical Installation Services"
+                    }
+                },
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Plumbing Solutions"
+                    }
+                }
+            ]
+        },
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How do I book an electrical service with ElectroZot?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can book an electrical service through the ElectroZot website by selecting the required service and submitting a booking request."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What are your service hours?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ElectroZot operates during standard business hours with flexible scheduling based on service availability."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How quickly can you arrive for service?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Response times depend on location and service type, but we aim to provide prompt assistance."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What electrical services do you provide?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We provide electrical repairs, installations, wiring, fault diagnosis, and maintenance services."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do you calculate service charges?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Charges are based on service type, work complexity, materials used, and time required, with transparent pricing."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Do you provide warranty on your work?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, ElectroZot provides warranty coverage on services performed."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What payment methods do you accept?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "We accept cash, UPI, and other digital payment methods."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Are your technicians verified and insured?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, all technicians are trained, background-verified, and insured."
+                }
+            }
         ]
     }
     </script>
+    
+    <!-- Call-to-Action Schema for Main Pages -->
+    <?php if (in_array($current_page, ['index', 'services', 'contact', 'about'])): ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "HomeAndConstructionBusiness",
+        "@id": "https://electrozot.in/#cta",
+        "name": "ElectroZot",
+        "url": "https://electrozot.in",
+        "logo": "https://electrozot.in/vendor/EZlogonew.png",
+        "telephone": "+917559606925",
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+917559606925",
+            "contactType": "customer service",
+            "areaServed": "IN",
+            "availableLanguage": ["English", "Hindi"]
+        },
+        "potentialAction": [
+            {
+                "@type": "CallAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "tel:+917559606925",
+                    "actionPlatform": [
+                        "http://schema.org/DesktopWebPlatform",
+                        "http://schema.org/MobileWebPlatform"
+                    ]
+                },
+                "name": "Call ElectroZot for Service Booking"
+            },
+            {
+                "@type": "ReserveAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://electrozot.in/contact",
+                    "actionPlatform": [
+                        "http://schema.org/DesktopWebPlatform",
+                        "http://schema.org/MobileWebPlatform"
+                    ]
+                },
+                "name": "Book a Service with ElectroZot"
+            }
+        ]
+    }
+    </script>
+    <?php endif; ?>
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#000000">
@@ -161,38 +278,24 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
+    <!-- Favicon - Primary Icons for Google -->
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon-96x96.png">
+    
     <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="57x57" href="vendor/img/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="vendor/img/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="vendor/img/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="vendor/img/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="vendor/img/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="vendor/img/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="vendor/img/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="vendor/img/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="vendor/img/icons/apple-icon-180x180.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/web-app-manifest-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/web-app-manifest-512x512.png">
     
     <!-- Microsoft Tile Icons -->
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="vendor/img/icons/ms-icon-144x144.png">
-    <meta name="msapplication-square70x70logo" content="vendor/img/icons/ms-icon-70x70.png">
-    <meta name="msapplication-square150x150logo" content="vendor/img/icons/ms-icon-150x150.png">
-    <meta name="msapplication-square310x310logo" content="vendor/img/icons/ms-icon-310x310.png">
-    
-    <!-- Android Chrome Icons -->
-    <link rel="icon" type="image/png" sizes="36x36" href="vendor/img/icons/android-icon-36x36.png">
-    <link rel="icon" type="image/png" sizes="48x48" href="vendor/img/icons/android-icon-48x48.png">
-    <link rel="icon" type="image/png" sizes="72x72" href="vendor/img/icons/android-icon-72x72.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="vendor/img/icons/android-icon-96x96.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="vendor/img/icons/android-icon-144x144.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="vendor/img/icons/android-icon-192x192.png">
-    
-    <!-- Favicon -->
-    <link rel="shortcut icon" href="vendor/img/icons/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="vendor/img/icons/favicon.ico" type="image/x-icon">
-    <link rel="icon" type="image/png" sizes="16x16" href="vendor/img/icons/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="vendor/img/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="vendor/img/icons/favicon-96x96.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="assets/web-app-manifest-192x192.png">
+    <meta name="msapplication-config" content="assets/site.webmanifest">
     
     <!-- CRITICAL CSS - Prevents navbar loading hang -->
     <style>

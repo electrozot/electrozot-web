@@ -13,28 +13,40 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "vendor/img/icons/icon-192x192.png",
+      "src": "assets/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "vendor/img/icons/icon-192x192.png",
+      "src": "assets/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "vendor/img/icons/icon-512x512.png",
+      "src": "assets/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "vendor/img/icons/icon-512x512.png",
+      "src": "assets/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    },
+    {
+      "src": "assets/favicon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ],
   "categories": ["business", "utilities", "productivity"],
@@ -47,7 +59,7 @@
       "url": "/#booking-form",
       "icons": [
         {
-          "src": "vendor/img/icons/icon-192x192.png",
+          "src": "assets/favicon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -60,7 +72,7 @@
       "url": "/usr/user-view-booking.php",
       "icons": [
         {
-          "src": "vendor/img/icons/icon-192x192.png",
+          "src": "assets/favicon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -73,7 +85,7 @@
       "url": "/admin/admin-dashboard.php",
       "icons": [
         {
-          "src": "vendor/img/icons/icon-192x192.png",
+          "src": "assets/favicon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }
@@ -86,7 +98,7 @@
       "url": "/contact.php",
       "icons": [
         {
-          "src": "vendor/img/icons/icon-192x192.png",
+          "src": "assets/favicon-96x96.png",
           "sizes": "96x96",
           "type": "image/png"
         }

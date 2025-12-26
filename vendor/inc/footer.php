@@ -1,4 +1,9 @@
 <?php
+// Detect if we're in a subdirectory and adjust paths accordingly
+$currentDir = dirname($_SERVER['PHP_SELF']);
+$isSubdirectory = (strpos($currentDir, '/service') !== false || strpos($currentDir, '/admin') !== false || strpos($currentDir, '/usr') !== false || strpos($currentDir, '/tech') !== false);
+$basePath = $isSubdirectory ? '../' : '';
+
 // Load site settings for footer
 $settings = [];
 $settings_query = "SELECT setting_key, setting_value FROM tms_site_settings";
@@ -95,7 +100,7 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
                         <?php
                         // Check if technician is logged in (session already started in main file)
                         $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
-                        $tech_link = $tech_logged_in ? 'tech/dashboard.php' : 'tech/index.php';
+                        $tech_link = $tech_logged_in ? $basePath . 'tech/dashboard.php' : $basePath . 'tech/index.php';
                         $tech_text = $tech_logged_in ? 'Dashboard' : 'Technician';
                         ?>
                         <a href="<?php echo $tech_link; ?>" style="background: #1a1a1a; color: white; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; transition: all 0.3s; font-weight: 600; font-size: 0.9rem; border: 2px solid #FF6B35; box-shadow: 0 0 10px rgba(255, 107, 53, 0.3), inset 0 0 10px rgba(255, 107, 53, 0.1);" onmouseover="this.style.background='rgba(255, 107, 53, 0.1)'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 0 20px rgba(255, 107, 53, 0.6), inset 0 0 15px rgba(255, 107, 53, 0.2)'; this.style.borderColor='#FF8C42'" onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)'; this.style.boxShadow='0 0 10px rgba(255, 107, 53, 0.3), inset 0 0 10px rgba(255, 107, 53, 0.1)'; this.style.borderColor='#FF6B35'">
@@ -122,13 +127,13 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
         <!-- Bottom Bar -->
         <div style="border-top: 1px solid #1a1a1a; margin-top: 25px; padding-top: 20px; text-align: center;">
             <div style="margin-bottom: 10px;">
-                <a href="privacy-policy.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                <a href="<?php echo $basePath; ?>privacy-policy.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
                     <i class="fas fa-shield-alt" style="margin-right: 5px; color: #FF6B35;"></i>Privacy Policy
                 </a>
-                <a href="contact.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                <a href="<?php echo $basePath; ?>contact.php" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
                     <i class="fas fa-envelope" style="margin-right: 5px; color: #FF6B35;"></i>Contact Us
                 </a>
-                <a href="sitemap.xml" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
+                <a href="<?php echo $basePath; ?>sitemap.xml" style="color: #cbd5e0; text-decoration: none; font-size: 0.85rem; margin: 0 15px; transition: color 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#cbd5e0'">
                     <i class="fas fa-sitemap" style="margin-right: 5px; color: #FF6B35;"></i>Sitemap
                 </a>
             </div>
@@ -153,7 +158,7 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
 <!-- Floating Book Service Button -->
 <?php if (basename($_SERVER['SCRIPT_NAME']) !== 'index.php'): ?>
 <a
-  href="index.php#booking-form"
+  href="<?php echo $basePath; ?>index.php#booking-form"
   class="book-service-fab"
   aria-label="Book Service"
   title="Book Service"

@@ -106,58 +106,47 @@ include('admin/vendor/inc/config.php');
             </div>
         </div>
 
-        <!-- Complete Service Categories with ALL Services -->
+        <!-- Complete Service Categories with Enhanced Cards -->
         <div class="row">
             <!-- ELECTRICAL SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-bolt" style="color: #EC4899; margin-right: 8px;"></i>⚡ ELECTRICAL SERVICES
-                        </h5>
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%); padding: 20px; border: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-bolt" style="color: #EC4899; margin-right: 10px;"></i>Electrical Services
+                                </h5>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Wiring, fixtures, and power systems</p>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: #EC4899; font-size: 1.2rem;"></i>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #EC4899; margin-bottom: 10px;">Wiring & Fixtures</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
-                                    <li class="service-item" data-service="home-wiring" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Home Wiring (New installation and repair)
-                                    </li>
-                                    <li class="service-item" data-service="switch-socket" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Switch/Socket Installation and Replacement
-                                    </li>
-                                    <li class="service-item" data-service="light-fixture" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Light Fixture Installation (Tube lights, LED panels, chandeliers)
-                                    </li>
-                                    <li class="service-item" data-service="festive-lighting" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Light Decoration/Festive Lighting Setup
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #EC4899; margin-bottom: 10px;">Safety & Power</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                                    <li class="service-item" data-service="circuit-breaker" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Circuit Breaker and Fuse Box troubleshooting
-                                    </li>
-                                    <li class="service-item" data-service="inverter-ups" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Inverter, UPS, and Voltage Stabilizer installation
-                                    </li>
-                                    <li class="service-item" data-service="grounding-earthing" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Grounding and Earthing system installation
-                                    </li>
-                                    <li class="service-item" data-service="electrical-outlet" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>New Electrical Outlet/Point installation
-                                    </li>
-                                    <li class="service-item" data-service="fan-regulator" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Ceiling Fan Regulator repair/replacement
-                                    </li>
-                                    <li class="service-item" data-service="electrical-fault" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Electrical fault finding and short-circuit repair
-                                    </li>
-                                </ul>
-                            </div>
+                    <div class="card-body d-flex flex-column" style="padding: 20px;">
+                        <div class="flex-grow-1">
+                            <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Home Wiring & Installation
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Switch & Socket Services
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Light Fixtures & LED Installation
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #EC4899;">+6 more services</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="service/electrical-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-eye"></i> View All Electrical Services
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -165,69 +154,43 @@ include('admin/vendor/inc/config.php');
 
             <!-- REPAIR SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-wrench" style="color: #EC4899; margin-right: 8px;"></i>🔧 REPAIR SERVICES
-                        </h5>
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 20px; border: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-wrench" style="color: #EC4899; margin-right: 10px;"></i>Repair Services
+                                </h5>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">All appliance repairs with warranty</p>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: #EC4899; font-size: 1.2rem;"></i>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #EC4899; margin-bottom: 10px;">Major Appliances</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
-                                    <li class="service-item" data-service="ac-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Air Conditioner (AC) Repair (Split, Window, Central)
-                                    </li>
-                                    <li class="service-item" data-service="refrigerator-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Refrigerator Repair and Gas Charging
-                                    </li>
-                                    <li class="service-item" data-service="washing-machine-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Washing Machine Repair (Semi/Fully automatic, Front/Top Load)
-                                    </li>
-                                    <li class="service-item" data-service="microwave-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Microwave Oven Repair
-                                    </li>
-                                    <li class="service-item" data-service="geyser-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Geyser (Water Heater) Repair
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #EC4899; margin-bottom: 10px;">Other Gadgets</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                                    <li class="service-item" data-service="fan-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Fan Repair (Ceiling, Table, Exhaust)
-                                    </li>
-                                    <li class="service-item" data-service="tv-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Television (TV) Repair and Troubleshooting
-                                    </li>
-                                    <li class="service-item" data-service="iron-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Electric Iron/Press Repair
-                                    </li>
-                                    <li class="service-item" data-service="music-system-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Music System/Home Theatre Repair
-                                    </li>
-                                    <li class="service-item" data-service="heater-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Electric Heater Repair (Room Heaters, Rods)
-                                    </li>
-                                    <li class="service-item" data-service="induction-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Induction Cooktop and Electric Stove Repair
-                                    </li>
-                                    <li class="service-item" data-service="cooler-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Air Cooler Repair
-                                    </li>
-                                    <li class="service-item" data-service="power-tools-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Power Tools Repair (Drills, Cutters, Grinders, etc.)
-                                    </li>
-                                    <li class="service-item" data-service="water-filter-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Water Filter/Purifier Repair
-                                    </li>
-                                    <li class="service-item" data-service="mixer-grinder-repair" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Mixer Grinder / Juicer Repair and Clean
-                                    </li>
-                                </ul>
-                            </div>
+                    <div class="card-body d-flex flex-column" style="padding: 20px;">
+                        <div class="flex-grow-1">
+                            <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    AC & Refrigerator Repair
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Washing Machine Service
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    TV & Electronics Repair
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #EC4899;">+12 more services</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="service/repair-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-eye"></i> View All Repair Services
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -235,57 +198,43 @@ include('admin/vendor/inc/config.php');
 
             <!-- INSTALLATION SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-cog" style="color: #10B981; margin-right: 8px;"></i>🔌 INSTALLATION SERVICES
-                        </h5>
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%); padding: 20px; border: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-cog" style="color: #10B981; margin-right: 10px;"></i>Installation Services
+                                </h5>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Professional setup & mounting</p>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: #10B981; font-size: 1.2rem;"></i>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #10B981; margin-bottom: 10px;">Appliance Setup</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0 0 15px 0;">
-                                    <li class="service-item" data-service="tv-dish-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>TV/DTH Dish Installation and Tuning
-                                    </li>
-                                    <li class="service-item" data-service="chimney-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Electric Chimney Installation
-                                    </li>
-                                    <li class="service-item" data-service="fan-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Ceiling and Wall Fan Installation
-                                    </li>
-                                    <li class="service-item" data-service="washing-machine-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Washing Machine Installation and Uninstallation
-                                    </li>
-                                    <li class="service-item" data-service="cooler-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Air Cooler Installation
-                                    </li>
-                                    <li class="service-item" data-service="water-filter-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Water Filter/Purifier Installation
-                                    </li>
-                                    <li class="service-item" data-service="geyser-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Geyser/Water Heater Installation
-                                    </li>
-                                    <li class="service-item" data-service="light-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Light Fixture Installation
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col-md-6">
-                                <h6 style="font-size: 0.9rem; font-weight: 600; color: #10B981; margin-bottom: 10px;">Tech & Security</h6>
-                                <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                                    <li class="service-item" data-service="cctv-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>CCTV and Security Camera Installation
-                                    </li>
-                                    <li class="service-item" data-service="wifi-setup" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Wi-Fi Router and Modem Setup/Troubleshooting
-                                    </li>
-                                    <li class="service-item" data-service="smart-home-installation" style="font-size: 0.75rem; color: #495057; padding: 2px 0; cursor: pointer; transition: all 0.3s ease;">
-                                        <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Smart Home Device Installation (Smart switches, smart lights)
-                                    </li>
-                                </ul>
-                            </div>
+                    <div class="card-body d-flex flex-column" style="padding: 20px;">
+                        <div class="flex-grow-1">
+                            <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    TV & DTH Installation
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    CCTV & Security Setup
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Smart Home Devices
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #10B981;">+8 more services</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="service/installation-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-eye"></i> View All Installation Services
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -293,55 +242,93 @@ include('admin/vendor/inc/config.php');
 
             <!-- MAINTENANCE SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FDF5FF 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-tools" style="color: #8B5CF6; margin-right: 8px;"></i>🛠️ MAINTENANCE SERVICES
-                        </h5>
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FDF5FF 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%); padding: 20px; border: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-tools" style="color: #8B5CF6; margin-right: 10px;"></i>Maintenance Services
+                                </h5>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Regular care & servicing</p>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: #8B5CF6; font-size: 1.2rem;"></i>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <h6 style="font-size: 0.9rem; font-weight: 600; color: #8B5CF6; margin-bottom: 15px;">Routine Care</h6>
-                        <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                            <li class="service-item" data-service="ac-servicing" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>AC Wet and Dry Servicing
-                            </li>
-                            <li class="service-item" data-service="washing-machine-maintenance" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Washing Machine General Maintenance and Cleaning
-                            </li>
-                            <li class="service-item" data-service="geyser-servicing" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Geyser Descaling and Service
-                            </li>
-                            <li class="service-item" data-service="water-filter-servicing" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Water Filter Cartridge Replacement and General Service
-                            </li>
-                            <li class="service-item" data-service="water-tank-cleaning" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Water Tank Cleaning (Manual and Motorized)
-                            </li>
-                        </ul>
+                    <div class="card-body d-flex flex-column" style="padding: 20px;">
+                        <div class="flex-grow-1">
+                            <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    AC Deep Cleaning
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Geyser Descaling
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Water Tank Cleaning
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #8B5CF6;">+2 more services</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="service/maintenance-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-eye"></i> View All Maintenance Services
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PLUMBING SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 15px; overflow: hidden; cursor: pointer;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-tint" style="color: #10B981; margin-right: 8px;"></i>💧 PLUMBING SERVICES
-                        </h5>
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0F9FF 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #BFDBFE 0%, #93C5FD 100%); padding: 20px; border: none;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
+                                    <i class="fas fa-tint" style="color: #3B82F6; margin-right: 10px;"></i>Plumbing Services
+                                </h5>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Fixtures, taps & installations</p>
+                            </div>
+                            <i class="fas fa-arrow-right" style="color: #3B82F6; font-size: 1.2rem;"></i>
+                        </div>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <h6 style="font-size: 0.9rem; font-weight: 600; color: #10B981; margin-bottom: 15px;">Fixtures & Taps</h6>
-                        <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                            <li class="service-item" data-service="tap-repair" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Tap, Faucet, and Shower Installation/Repair
-                            </li>
-                            <li class="service-item" data-service="basin-installation" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Washbasin and Sink Installation/Repair
-                            </li>
-                            <li class="service-item" data-service="toilet-installation" style="font-size: 0.8rem; color: #495057; padding: 3px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #ff4757; font-size: 0.7rem; margin-right: 6px;"></i>Toilet, Commode, and Flush Tank Installation
-                            </li>
+                    <div class="card-body d-flex flex-column" style="padding: 20px;">
+                        <div class="flex-grow-1">
+                            <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Tap & Faucet Repair
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Basin & Sink Installation
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    Toilet Installation
+                                </li>
+                                <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #EF4444; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #EF4444;">Emergency Service Available</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mt-auto">
+                            <a href="service/plumbing-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                                <i class="fas fa-eye"></i> View All Plumbing Services
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+                            
                         </ul>
                     </div>
                 </div>
@@ -493,30 +480,98 @@ include('admin/vendor/inc/config.php');
             box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
         }
 
-        .service-card-compact {
+        /* Enhanced Service Category Cards */
+        .service-category-card {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            cursor: pointer;
         }
 
-        .service-card-compact:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(255, 71, 87, 0.2) !important;
+        .service-category-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
+            border: 2px solid rgba(236, 72, 153, 0.3);
+            cursor: pointer;
         }
 
-        .service-card-header {
+        .service-category-card:hover .card-header {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        .service-category-card:hover .fas.fa-arrow-right {
+            transform: translateX(5px);
+            transition: transform 0.3s ease;
+        }
+
+        .service-preview-list li {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .service-preview-list li:hover {
+            padding-left: 5px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* View All Button Styles */
+        .btn {
             transition: all 0.3s ease;
         }
 
-        .service-card-compact:hover .service-card-header {
-            background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%) !important;
-            color: white !important;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2) !important;
+            text-decoration: none !important;
         }
 
-        .service-card-compact:hover .service-card-header h5 {
-            color: white !important;
+        .btn:hover i {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
         }
 
-        .service-card-compact:hover .service-card-header i {
-            color: white !important;
+        /* Remove text decoration from links and ensure pointer cursor */
+        a.text-decoration-none {
+            cursor: pointer;
+        }
+        
+        a.text-decoration-none:hover {
+            text-decoration: none !important;
+            cursor: pointer;
+        }
+
+        /* Ensure all card elements show pointer cursor */
+        .service-category-card * {
+            cursor: pointer;
+        }
+
+        /* Flexbox for card body to push button to bottom */
+        .card-body.d-flex.flex-column {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .flex-grow-1 {
+            flex-grow: 1 !important;
+        }
+
+        .mt-auto {
+            margin-top: auto !important;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .service-category-card:hover {
+                transform: translateY(-5px) scale(1.01);
+                cursor: pointer;
+            }
+            
+            .btn {
+                font-size: 0.85rem !important;
+                padding: 8px 15px !important;
+            }
         }
 
         .service-list li {

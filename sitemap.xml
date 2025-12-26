@@ -4,126 +4,168 @@
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
+    <!-- ============================================ -->
+    <!-- MAIN PAGES (HIGH PRIORITY) -->
+    <!-- ============================================ -->
+    
     <!-- Homepage - Main landing page -->
     <url>
         <loc>https://electrozot.in/</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     
-    <!-- About Us - Company information and team -->
-    <url>
-        <loc>https://electrozot.in/about.php</loc>
-        <lastmod>2024-12-10</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-    
     <!-- Services - Main service offerings (HIGH SEO VALUE) -->
     <url>
-        <loc>https://electrozot.in/services.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/services</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.9</priority>
     </url>
     
-    <!-- FAQ - Frequently Asked Questions (HIGH SEO VALUE) -->
+    <!-- About Us - Company information and team -->
     <url>
-        <loc>https://electrozot.in/faq.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/about</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <!-- Contact - Contact information and inquiry form -->
     <url>
-        <loc>https://electrozot.in/contact.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/contact</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
+        <priority>0.8</priority>
     </url>
+    
+    <!-- FAQ - Frequently Asked Questions (HIGH SEO VALUE) -->
+    <url>
+        <loc>https://electrozot.in/faq</loc>
+        <lastmod>2024-12-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- ============================================ -->
+    <!-- CONTENT PAGES -->
+    <!-- ============================================ -->
     
     <!-- Gallery - Work showcase and portfolio -->
     <url>
-        <loc>https://electrozot.in/gallery.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/gallery</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
+        <priority>0.7</priority>
     </url>
     
     <!-- Blog - Articles, tips, and company updates (HIGH SEO VALUE) -->
     <url>
-        <loc>https://electrozot.in/blog.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/blog</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <!-- Blog Posts - Individual blog articles -->
     <url>
-        <loc>https://electrozot.in/blog-post.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/blog-post</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
     </url>
-    
-    <!-- Privacy Policy - Legal compliance (SEO IMPORTANT) -->
-    <url>
-        <loc>https://electrozot.in/privacy-policy.php</loc>
-        <lastmod>2024-12-10</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.4</priority>
-    </url>
+
+    <!-- ============================================ -->
+    <!-- BOOKING & CONVERSION PAGES -->
+    <!-- ============================================ -->
     
     <!-- Guest Booking - Public service booking (HIGH CONVERSION VALUE) -->
     <url>
-        <loc>https://electrozot.in/process-guest-booking.php</loc>
-        <lastmod>2024-12-10</lastmod>
+        <loc>https://electrozot.in/process-guest-booking</loc>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
 
-    <!-- Service Category Pages (SEO LANDING PAGES) -->
+    <!-- ============================================ -->
+    <!-- PWA & UTILITY PAGES -->
+    <!-- ============================================ -->
+    
+    <!-- Offline Page - PWA offline functionality -->
+    <url>
+        <loc>https://electrozot.in/offline</loc>
+        <lastmod>2024-12-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.3</priority>
+    </url>
+    
+    <!-- Splash Page - PWA splash screen -->
+    <url>
+        <loc>https://electrozot.in/splash</loc>
+        <lastmod>2024-12-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <!-- ============================================ -->
+    <!-- LEGAL & COMPLIANCE PAGES -->
+    <!-- ============================================ -->
+    
+    <!-- Privacy Policy - Legal compliance (SEO IMPORTANT) -->
+    <url>
+        <loc>https://electrozot.in/privacy-policy</loc>
+        <lastmod>2024-12-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- ============================================ -->
+    <!-- SERVICE CATEGORY PAGES (SEO LANDING PAGES) -->
+    <!-- ============================================ -->
+    
     <url>
         <loc>https://electrozot.in/electrical-services</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
         <loc>https://electrozot.in/appliance-repair</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
         <loc>https://electrozot.in/home-automation</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
     
     <url>
         <loc>https://electrozot.in/emergency-electrical-service</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
-    <!-- Location-based SEO Pages -->
+    <!-- ============================================ -->
+    <!-- LOCATION-BASED SEO PAGES -->
+    <!-- ============================================ -->
+    
     <url>
         <loc>https://electrozot.in/electrician-near-me</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
     
     <url>
         <loc>https://electrozot.in/electrical-repair-services</loc>
-        <lastmod>2024-12-10</lastmod>
+        <lastmod>2024-12-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>

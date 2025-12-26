@@ -78,8 +78,17 @@
     <!-- Glossy overlay effect - removed to fix white line -->
     <div style="position: absolute; top: 0; left: 0; right: 0; height: 50%; background: transparent; pointer-events: none; z-index: 1; display: none;"></div>
     <div class="container-fluid" style="max-width: 1400px; padding: 0 10px; position: relative; z-index: 2;">
-        <a class="navbar-brand d-flex align-items-center" href="index.php" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;">
-            <img src="vendor/EZlogonew.png" alt="Electrozot Logo" class="navbar-logo" style="height: 95px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+        <?php
+        // Detect if we're in a subdirectory and adjust paths accordingly
+        $currentDir = dirname($_SERVER['PHP_SELF']);
+        $isSubdirectory = (strpos($currentDir, '/service') !== false || strpos($currentDir, '/admin') !== false || strpos($currentDir, '/usr') !== false);
+        $basePath = $isSubdirectory ? '../' : '';
+        $homeLink = $isSubdirectory ? '../index.php' : 'index.php';
+        $logoPath = $basePath . 'vendor/EZlogonew.png';
+        $loginPath = $basePath . 'usr/';
+        ?>
+        <a class="navbar-brand d-flex align-items-center" href="<?php echo $homeLink; ?>" style="font-weight: 700; color: #fff !important; text-decoration: none; padding: 0; margin-left: 0; gap: 0px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation;">
+            <img src="<?php echo $logoPath; ?>" alt="Electrozot - Best Electrical & Plumbing Service in Kangra District" class="navbar-logo" style="height: 95px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i class="fas fa-bolt logo-fallback" style="font-size: 3rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
             <div class="d-flex flex-column" style="margin-left: -10px;">
                 <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
@@ -92,7 +101,7 @@
         </button>
         <!-- Mobile Buttons (visible only on mobile) -->
         <div class="d-lg-none ml-auto" style="display: flex; align-items: center; gap: 3px; margin-right: 10px;">
-            <a href="usr/" class="btn mobile-login-btn" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 5px; border-radius: 4px; box-shadow: none; text-decoration: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px;">
+            <a href="<?php echo $loginPath; ?>" class="btn mobile-login-btn" style="background: transparent; border: none; color: #ffffff; font-weight: 600; padding: 2px 5px; border-radius: 4px; box-shadow: none; text-decoration: none; font-size: 0.5rem; transition: all 0.3s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1; white-space: nowrap; min-height: 32px;">
                 <i class="fas fa-user" style="font-size: 0.65rem; margin-bottom: 1px;"></i><span style="font-weight: 600; font-size: 0.5rem; white-space: nowrap;">Login</span>
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation" style="border: none; padding: 2px 4px; background: transparent; box-shadow: none; border-radius: 4px; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; min-height: 32px; width: 26px;">
@@ -434,25 +443,25 @@
             </button>
             <ul class="navbar-nav ml-auto" style="align-items: center;">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Home</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>index.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Home</a>
                 </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="about.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">About</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>about.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">About</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="services.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Services</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>services.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Services</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="contact.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Contact</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>contact.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Contact</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="gallery.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Gallery</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>gallery.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Gallery</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="blog.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Blog</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>blog.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Blog</a>
                  </li>
                  <li class="nav-item">
-                    <a class="nav-link" href="faq.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">FAQ</a>
+                    <a class="nav-link" href="<?php echo $basePath; ?>faq.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">FAQ</a>
                  </li>
                  <li class="nav-item d-none d-lg-block">
                     <button id="pwa-install-nav-btn" class="btn nav-link" style="color: #fff !important; font-weight: 600; font-size: 0.75rem; padding: 5px 10px !important; background: rgba(255, 255, 255, 0.25); border: 1.5px solid rgba(255, 255, 255, 0.5); border-radius: 5px; transition: all 0.3s ease; display: inline-block !important; z-index: 1000; position: relative;">

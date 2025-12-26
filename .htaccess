@@ -1,4 +1,26 @@
 # ============================================
+# FAVICON AND ICON OPTIMIZATION
+# ============================================
+
+# Proper MIME types for favicon files
+<IfModule mod_mime.c>
+    AddType image/x-icon .ico
+    AddType image/svg+xml .svg
+    AddType image/png .png
+    AddType application/manifest+json .webmanifest
+    AddType application/json .json
+</IfModule>
+
+# Cache favicon files for 1 year (they rarely change)
+<FilesMatch "\.(ico|svg)$">
+    Header set Cache-Control "max-age=31536000, public, immutable"
+    Header set Expires "Thu, 31 Dec 2025 20:00:00 GMT"
+</FilesMatch>
+
+# Ensure favicon.ico is accessible from root
+RewriteRule ^favicon\.ico$ assets/favicon.ico [L]
+
+# ============================================
 # ELECTROZOT PERFORMANCE OPTIMIZATION
 # ============================================
 

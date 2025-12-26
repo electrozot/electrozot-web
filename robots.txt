@@ -18,6 +18,18 @@ Allow: /css/
 Allow: /js/
 Allow: /vendor/
 Allow: /uploads/
+Allow: /assets/
+
+# Allow favicon and manifest files
+Allow: /favicon.ico
+Allow: /manifest.json
+Allow: /assets/favicon.ico
+Allow: /assets/favicon.svg
+Allow: /assets/favicon-96x96.png
+Allow: /assets/apple-touch-icon.png
+Allow: /assets/web-app-manifest-192x192.png
+Allow: /assets/web-app-manifest-512x512.png
+Allow: /assets/site.webmanifest
 
 # Disallow admin and user areas (not for public indexing)
 Disallow: /admin/
