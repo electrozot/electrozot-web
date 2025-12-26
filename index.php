@@ -955,6 +955,232 @@
             });
         </script>
 
+        <!-- About Section -->
+        <section id="about-section" class="about-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
+                            <i class="fas fa-info-circle" style="color: #EC4899; margin-right: 10px;"></i>About ElectroZot
+                        </h2>
+                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
+                            Your trusted partner for professional electrical, repair, and plumbing services
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row align-items-stretch">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="about-content h-100 d-flex flex-column">
+                            <h3 class="font-weight-bold mb-4" style="color: #2d3748; font-size: 1.8rem;">
+                                We Make Perfect - Every Time
+                            </h3>
+                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
+                                ElectroZot is your reliable partner for all <a href="service/electrical-services.php" style="color: #EC4899; text-decoration: none; font-weight: 600;">electrical services</a>, 
+                                <a href="service/repair-services.php" style="color: #EF4444; text-decoration: none; font-weight: 600;">appliance repair</a>, 
+                                <a href="service/installation-services.php" style="color: #10B981; text-decoration: none; font-weight: 600;">installation</a>, 
+                                <a href="service/maintenance-services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 600;">maintenance</a>, and 
+                                <a href="service/plumbing-services.php" style="color: #3B82F6; text-decoration: none; font-weight: 600;">plumbing services</a>. 
+                                With years of experience and a team of certified professionals, we deliver quality workmanship that you can trust.
+                            </p>
+                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 30px;">
+                                Our commitment to excellence, transparent pricing, and customer satisfaction has made us the preferred choice 
+                                for thousands of customers across <strong>Himachal Pradesh</strong>, with specialized services in the Kangra District.
+                            </p>
+                            
+                            <div class="row flex-grow-1">
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-certificate" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Certified Technicians</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Licensed & experienced professionals</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-shield-alt" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">1-Month Warranty</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Guaranteed service quality</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-clock" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">24/7 Support</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Emergency services available</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-rupee-sign" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Transparent Pricing</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">No hidden charges</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="about-stats-card h-100 d-flex flex-column justify-content-center" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                            <div class="row text-center">
+                                <div class="col-6 mb-4">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #EC4899; font-size: 2.5rem;">1000+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Happy Customers</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-4">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #10B981; font-size: 2.5rem;">5+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Years Experience</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #8B5CF6; font-size: 2.5rem;">50+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Services Offered</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #F59E0B; font-size: 2.5rem;">24/7</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Support Available</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Service Areas Section - Full Width -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="service-areas-section" style="background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%); border-radius: 15px; padding: 25px; border-left: 4px solid #EC4899;">
+                            <h5 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">
+                                <i class="fas fa-map-marker-alt" style="color: #EC4899; margin-right: 8px;"></i>Cities We Serve
+                            </h5>
+                            <p style="color: #6c757d; font-size: 1rem; line-height: 1.6; margin-bottom: 15px;">
+                                We provide professional electrical and plumbing services across Kangra District and surrounding areas:
+                            </p>
+                            <div class="cities-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 15px;">
+                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #EC4899;">
+                                    <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
+                                        <i class="fas fa-city" style="color: #EC4899; margin-right: 8px;"></i>Major Cities
+                                    </strong>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Dharamshala</a>
+                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Kangra</a>
+                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Palampur</a>
+                                    </div>
+                                </div>
+                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #10B981;">
+                                    <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
+                                        <i class="fas fa-map-marker-alt" style="color: #10B981; margin-right: 8px;"></i>Local Areas
+                                    </strong>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Gaggal</a>
+                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Shahpur</a>
+                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Rait</a>
+                                    </div>
+                                </div>
+                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #8B5CF6;">
+                                    <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
+                                        <i class="fas fa-home" style="color: #8B5CF6; margin-right: 8px;"></i>Nearby Villages
+                                    </strong>
+                                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">Mataur</a>
+                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">Kachiyari</a>
+                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">53 Mile</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <p style="color: #6c757d; font-size: 0.9rem; margin-top: 15px; margin-bottom: 0; font-style: italic;">
+                                <i class="fas fa-phone" style="color: #EC4899; margin-right: 5px;"></i>
+                                Call <a href="tel:7559606925" style="color: #EC4899; text-decoration: none; font-weight: 600;">7559606925</a> for same-day service in your area
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cities Grid Styles -->
+            <style>
+                .cities-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                    margin-top: 15px;
+                }
+                
+                .city-group {
+                    transition: all 0.3s ease;
+                }
+                
+                .city-group:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+                }
+                
+                .city-group a:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+                }
+                
+                /* Mobile responsive adjustments */
+                @media (max-width: 768px) {
+                    .cities-grid {
+                        grid-template-columns: 1fr;
+                        gap: 15px;
+                    }
+                    
+                    .city-group {
+                        padding: 12px !important;
+                    }
+                    
+                    .city-group strong {
+                        font-size: 0.9rem !important;
+                        margin-bottom: 8px !important;
+                    }
+                    
+                    .city-group a {
+                        font-size: 0.8rem !important;
+                        padding: 3px 6px !important;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .service-areas-section {
+                        padding: 20px 15px !important;
+                    }
+                    
+                    .cities-grid {
+                        gap: 10px;
+                    }
+                    
+                    .city-group {
+                        padding: 10px !important;
+                    }
+                }
+            </style>
+        </section>
+
         <!-- Features Section -->
         <section class="features-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative; padding: 20px 0 15px 0;">
             <div class="container">
@@ -1660,109 +1886,127 @@
             });
         </script>
 
-        <!-- About Section -->
-        <section id="about-section" class="about-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
-            <div class="container">
+
+
+        <!-- How to Book Service Section -->
+        <section id="how-to-book-section" class="how-to-book-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; color: white; position: relative; overflow: hidden;">
+            <!-- Background Pattern -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"2\" fill=\"white\"/></svg>'); background-size: 30px 30px;"></div>
+            
+            <div class="container" style="position: relative; z-index: 2;">
                 <div class="row text-center mb-5">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
-                            <i class="fas fa-info-circle" style="color: #EC4899; margin-right: 10px;"></i>About ElectroZot
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: white;">
+                            <i class="fas fa-clipboard-list" style="color: #FFD700; margin-right: 10px;"></i>How to Book Service
                         </h2>
-                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
-                            Your trusted partner for professional electrical, repair, and plumbing services
+                        <p class="lead" style="color: rgba(255,255,255,0.9); max-width: 800px; margin: 0 auto;">
+                            Follow these simple steps to get professional service at your doorstep
                         </p>
                     </div>
                 </div>
                 
-                <div class="row align-items-center">
-                    <div class="col-lg-6 mb-4 mb-lg-0">
-                        <div class="about-content">
-                            <h3 class="font-weight-bold mb-4" style="color: #2d3748; font-size: 1.8rem;">
-                                We Make Perfect - Every Time
-                            </h3>
-                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
-                                ElectroZot is your reliable partner for all electrical, repair, installation, maintenance, and plumbing services. 
-                                With years of experience and a team of certified professionals, we deliver quality workmanship that you can trust.
-                            </p>
-                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 30px;">
-                                Our commitment to excellence, transparent pricing, and customer satisfaction has made us the preferred choice 
-                                for thousands of customers across India.
-                            </p>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                                            <i class="fas fa-certificate" style="color: white; font-size: 1.2rem;"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Certified Technicians</h6>
-                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Licensed & experienced professionals</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                                            <i class="fas fa-shield-alt" style="color: white; font-size: 1.2rem;"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">1-Month Warranty</h6>
-                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Guaranteed service quality</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                                            <i class="fas fa-clock" style="color: white; font-size: 1.2rem;"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">24/7 Support</h6>
-                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Emergency services available</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
-                                            <i class="fas fa-rupee-sign" style="color: white; font-size: 1.2rem;"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Transparent Pricing</h6>
-                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">No hidden charges</p>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="row">
+                    <!-- Step 1 -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: #2d3748; box-shadow: 0 5px 15px rgba(255,215,0,0.4);">
+                                1
                             </div>
+                            <div class="step-icon mb-3">
+                                <i class="fas fa-mouse-pointer" style="font-size: 2rem; color: #FFD700;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Choose Service</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                                Select the service you need from our <a href="#booking-form" style="color: #FFD700; text-decoration: none; font-weight: 600;">booking form</a> or browse our <a href="services.php" style="color: #FFD700; text-decoration: none; font-weight: 600;">services page</a>
+                            </p>
                         </div>
                     </div>
-                    
-                    <div class="col-lg-6">
-                        <div class="about-stats-card" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
-                            <div class="row text-center">
-                                <div class="col-6 mb-4">
-                                    <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #EC4899; font-size: 2.5rem;">1000+</h3>
-                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Happy Customers</p>
+
+                    <!-- Step 2 -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white; box-shadow: 0 5px 15px rgba(255,107,107,0.4);">
+                                2
+                            </div>
+                            <div class="step-icon mb-3">
+                                <i class="fas fa-edit" style="font-size: 2rem; color: #FF6B6B;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Fill Details</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                                Provide your contact information, address, and service requirements. Our system will auto-fill details for returning customers
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white; box-shadow: 0 5px 15px rgba(78,205,196,0.4);">
+                                3
+                            </div>
+                            <div class="step-icon mb-3">
+                                <i class="fas fa-phone-alt" style="font-size: 2rem; color: #4ECDC4;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Get Confirmation</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                                Our team will call you within 30 minutes to confirm your booking and schedule the service at your convenient time
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #A8E6CF 0%, #88D8A3 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: #2d3748; box-shadow: 0 5px 15px rgba(168,230,207,0.4);">
+                                4
+                            </div>
+                            <div class="step-icon mb-3">
+                                <i class="fas fa-tools" style="font-size: 2rem; color: #A8E6CF;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Expert Service</h4>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                                Our certified technician arrives at your location with all necessary tools and provides professional service with 1-month warranty
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Booking Options -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="quick-booking-section text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <h3 class="font-weight-bold mb-4" style="color: white; font-size: 1.8rem;">
+                                <i class="fas fa-rocket" style="color: #FFD700; margin-right: 10px;"></i>Quick Booking Options
+                            </h3>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                                        <i class="fas fa-globe" style="font-size: 2rem; color: #FFD700; margin-bottom: 15px;"></i>
+                                        <h5 style="color: white; margin-bottom: 10px;">Online Booking</h5>
+                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">Fill the form above and get instant confirmation</p>
+                                        <a href="#booking-form" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #FFD700; color: #FFD700;">
+                                            Book Now
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-6 mb-4">
-                                    <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #10B981; font-size: 2.5rem;">5+</h3>
-                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Years Experience</p>
+                                <div class="col-md-4 mb-3">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                                        <i class="fas fa-phone" style="font-size: 2rem; color: #4ECDC4; margin-bottom: 15px;"></i>
+                                        <h5 style="color: white; margin-bottom: 10px;">Call Direct</h5>
+                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">Speak directly with our booking team</p>
+                                        <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #4ECDC4; color: #4ECDC4;">
+                                            Call 7559606925
+                                        </a>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #8B5CF6; font-size: 2.5rem;">50+</h3>
-                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Services Offered</p>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #F59E0B; font-size: 2.5rem;">24/7</h3>
-                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Support Available</p>
+                                <div class="col-md-4 mb-3">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
+                                        <i class="fas fa-bolt" style="font-size: 2rem; color: #FF6B6B; margin-bottom: 15px;"></i>
+                                        <h5 style="color: white; margin-bottom: 10px;">Emergency Service</h5>
+                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">24/7 emergency support available</p>
+                                        <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #FF6B6B; color: #FF6B6B;">
+                                            Emergency Call
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -1770,6 +2014,63 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Hover Effects -->
+            <style>
+                .booking-step-card:hover {
+                    transform: translateY(-10px);
+                    background: rgba(255,255,255,0.25) !important;
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+                }
+                
+                .quick-option:hover {
+                    transform: translateY(-5px);
+                    background: rgba(255,255,255,0.2) !important;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                }
+                
+                .step-number {
+                    animation: pulse 2s ease-in-out infinite;
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                }
+                
+                /* Mobile responsive adjustments */
+                @media (max-width: 768px) {
+                    .booking-step-card {
+                        padding: 20px 15px !important;
+                    }
+                    
+                    .step-number {
+                        width: 50px !important;
+                        height: 50px !important;
+                        font-size: 1.2rem !important;
+                    }
+                    
+                    .step-icon i {
+                        font-size: 1.5rem !important;
+                    }
+                    
+                    .booking-step-card h4 {
+                        font-size: 1rem !important;
+                    }
+                    
+                    .booking-step-card p {
+                        font-size: 0.85rem !important;
+                    }
+                    
+                    .quick-booking-section {
+                        padding: 25px 15px !important;
+                    }
+                    
+                    .quick-option {
+                        padding: 15px !important;
+                    }
+                }
+            </style>
         </section>
 
         <!-- FAQ Section -->

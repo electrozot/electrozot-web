@@ -161,6 +161,13 @@
         </div>
     </div>
 
+    <?php 
+    // Set base URL for links in components
+    $base_url = '';
+    include("vendor/inc/how-to-book.php");
+    include("vendor/inc/contact-us.php");
+    ?>
+
     <?php include("vendor/inc/footer.php");?>
     
     <script src="vendor/jquery/jquery.min.js"></script>
