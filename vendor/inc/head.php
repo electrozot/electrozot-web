@@ -9,7 +9,7 @@
     $base_url = 'https://electrozot.in';
     
     // Default SEO values
-    $seo_title = 'Electrozot - Professional Electrical & Technical Services | We Make Perfect';
+    $seo_title = 'Best Electrical and Plumbing Service | Electrozot';
     $seo_description = 'Book certified electricians and technicians in your area. Expert electrical repairs, appliance services, wiring, and home automation. Available 24/7 with 30-day warranty.';
     $seo_keywords = 'electrician, electrical services, appliance repair, home automation, wiring, electrical repair, technician booking, emergency electrician';
     $seo_image = $base_url . '/vendor/EZlogonew.png';

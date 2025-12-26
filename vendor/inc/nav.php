@@ -448,8 +448,31 @@
                  <li class="nav-item">
                     <a class="nav-link" href="<?php echo $basePath; ?>about.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">About</a>
                  </li>
-                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $basePath; ?>services.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Services</a>
+                 <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="<?php echo $basePath; ?>services.php" id="servicesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">
+                        Services
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="servicesDropdown" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); border: none; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); padding: 10px 0; min-width: 220px;">
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-th-large" style="color: #EC4899; margin-right: 10px; width: 16px;"></i>All Services
+                        </a>
+                        <div class="dropdown-divider" style="border-color: rgba(255,255,255,0.2); margin: 5px 0;"></div>
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>service/electrical-services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-bolt" style="color: #EC4899; margin-right: 10px; width: 16px;"></i>Electrical Services
+                        </a>
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>service/repair-services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-wrench" style="color: #EF4444; margin-right: 10px; width: 16px;"></i>Repair Services
+                        </a>
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>service/installation-services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-cog" style="color: #10B981; margin-right: 10px; width: 16px;"></i>Installation Services
+                        </a>
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>service/maintenance-services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-tools" style="color: #8B5CF6; margin-right: 10px; width: 16px;"></i>Maintenance Services
+                        </a>
+                        <a class="dropdown-item" href="<?php echo $basePath; ?>service/plumbing-services.php" style="color: #fff; padding: 8px 20px; font-size: 0.9rem; transition: all 0.3s ease;">
+                            <i class="fas fa-tint" style="color: #3B82F6; margin-right: 10px; width: 16px;"></i>Plumbing Services
+                        </a>
+                    </div>
                  </li>
                  <li class="nav-item">
                     <a class="nav-link" href="<?php echo $basePath; ?>contact.php" style="color: #fff !important; font-weight: 500; font-size: 0.92rem; padding: 7px 15px !important;">Contact</a>
@@ -497,6 +520,39 @@
         // PWA Install Button Handler - Handled by pwa-install.js
         // The install functionality is now managed by the pwa-install.js file
         // which provides better mobile popups and centralized handling
+        
+        // Enhanced Dropdown Menu Control
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownMenu = document.querySelector('.dropdown-menu');
+            let hideTimeout;
+            
+            if (dropdown && dropdownMenu && window.innerWidth >= 992) {
+                // Show dropdown on hover
+                dropdown.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                    dropdownMenu.classList.add('show');
+                });
+                
+                // Hide dropdown with delay when mouse leaves
+                dropdown.addEventListener('mouseleave', function() {
+                    hideTimeout = setTimeout(function() {
+                        dropdownMenu.classList.remove('show');
+                    }, 500); // 500ms delay before hiding
+                });
+                
+                // Keep dropdown open when hovering over the menu itself
+                dropdownMenu.addEventListener('mouseenter', function() {
+                    clearTimeout(hideTimeout);
+                });
+                
+                dropdownMenu.addEventListener('mouseleave', function() {
+                    hideTimeout = setTimeout(function() {
+                        dropdownMenu.classList.remove('show');
+                    }, 300); // Shorter delay when leaving the menu
+                });
+            }
+        });
     </script>
     
     <style>
@@ -523,6 +579,107 @@
         
         #pwa-install-nav-btn:active {
             transform: translateY(0);
+        }
+        
+        /* Dropdown Menu Styles */
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            border: none !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
+        }
+        
+        .dropdown:hover .dropdown-menu,
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            transition: all 0.3s ease !important;
+            border-radius: 6px !important;
+            margin: 2px 10px !important;
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(255,255,255,0.15) !important;
+            color: #fff !important;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-item:active {
+            background: rgba(255,255,255,0.25) !important;
+            color: #fff !important;
+        }
+        
+        /* Mobile dropdown adjustments */
+        @media (max-width: 991px) {
+            .navbar-collapse .dropdown-menu {
+                position: static !important;
+                float: none !important;
+                width: auto !important;
+                margin-top: 0 !important;
+                background: rgba(255,255,255,0.1) !important;
+                border: 1px solid rgba(255,255,255,0.2) !important;
+                border-radius: 8px !important;
+                box-shadow: inset 0 2px 10px rgba(0,0,0,0.2) !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                margin-left: 10px !important;
+                margin-right: 10px !important;
+                margin-bottom: 10px !important;
+            }
+            
+            .navbar-collapse .dropdown-item {
+                color: #fff !important;
+                padding: 6px 15px !important;
+                font-size: 0.8rem !important;
+                margin: 1px 5px !important;
+            }
+            
+            .navbar-collapse .dropdown-item:hover {
+                background: rgba(255,255,255,0.2) !important;
+                transform: translateX(3px);
+            }
+            
+            .navbar-collapse .dropdown-toggle::after {
+                display: none;
+            }
+        }
+        
+        /* Desktop hover behavior */
+        @media (min-width: 992px) {
+            .dropdown {
+                position: relative;
+            }
+            
+            .dropdown:hover .dropdown-menu {
+                display: block;
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            
+            .dropdown-toggle::after {
+                transition: transform 0.3s ease;
+            }
+            
+            .dropdown:hover .dropdown-toggle::after {
+                transform: rotate(180deg);
+            }
+            
+            /* Add delay before closing dropdown */
+            .dropdown-menu {
+                transition: all 0.3s ease 0.2s; /* 0.2s delay before hiding */
+            }
+            
+            .dropdown:hover .dropdown-menu {
+                transition: all 0.3s ease 0s; /* No delay when showing */
+            }
         }
     </style>
  </nav>

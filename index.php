@@ -1660,6 +1660,313 @@
             });
         </script>
 
+        <!-- About Section -->
+        <section id="about-section" class="about-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
+                            <i class="fas fa-info-circle" style="color: #EC4899; margin-right: 10px;"></i>About ElectroZot
+                        </h2>
+                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
+                            Your trusted partner for professional electrical, repair, and plumbing services
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row align-items-center">
+                    <div class="col-lg-6 mb-4 mb-lg-0">
+                        <div class="about-content">
+                            <h3 class="font-weight-bold mb-4" style="color: #2d3748; font-size: 1.8rem;">
+                                We Make Perfect - Every Time
+                            </h3>
+                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
+                                ElectroZot is your reliable partner for all electrical, repair, installation, maintenance, and plumbing services. 
+                                With years of experience and a team of certified professionals, we deliver quality workmanship that you can trust.
+                            </p>
+                            <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 30px;">
+                                Our commitment to excellence, transparent pricing, and customer satisfaction has made us the preferred choice 
+                                for thousands of customers across India.
+                            </p>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-certificate" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Certified Technicians</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Licensed & experienced professionals</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-shield-alt" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">1-Month Warranty</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Guaranteed service quality</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-clock" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">24/7 Support</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">Emergency services available</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="about-feature d-flex align-items-center">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                            <i class="fas fa-rupee-sign" style="color: white; font-size: 1.2rem;"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="font-weight-bold mb-1" style="color: #2d3748;">Transparent Pricing</h6>
+                                            <p class="mb-0" style="color: #6c757d; font-size: 0.9rem;">No hidden charges</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="about-stats-card" style="background: white; border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,0.1);">
+                            <div class="row text-center">
+                                <div class="col-6 mb-4">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #EC4899; font-size: 2.5rem;">1000+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Happy Customers</p>
+                                    </div>
+                                </div>
+                                <div class="col-6 mb-4">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #10B981; font-size: 2.5rem;">5+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Years Experience</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #8B5CF6; font-size: 2.5rem;">50+</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Services Offered</p>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="stat-item">
+                                        <h3 class="font-weight-bold mb-2" style="color: #F59E0B; font-size: 2.5rem;">24/7</h3>
+                                        <p class="mb-0" style="color: #6c757d; font-weight: 600;">Support Available</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq-section" class="faq-section" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); padding: 60px 0;">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
+                            <i class="fas fa-question-circle" style="color: #EC4899; margin-right: 10px;"></i>Frequently Asked Questions
+                        </h2>
+                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
+                            Get answers to common questions about our services
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <div class="accordion" id="faqAccordion">
+                            <!-- FAQ 1 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq1" style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #EC4899; margin-right: 10px;"></i>
+                                            How do I book an electrical service with ElectroZot?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse1" class="collapse show" aria-labelledby="faq1" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        You can book an electrical service through the ElectroZot website by selecting the required service and submitting a booking request. Simply fill out the booking form on our homepage or call us directly at <strong>7559606925</strong>.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 2 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq2" style="background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #10B981; margin-right: 10px;"></i>
+                                            What are your service hours?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse2" class="collapse" aria-labelledby="faq2" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        ElectroZot operates during standard business hours with flexible scheduling based on service availability. We also provide <strong>24/7 emergency services</strong> for urgent electrical and plumbing issues.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 3 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq3" style="background: linear-gradient(135deg, #FDF5FF 0%, #F3E8FF 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #8B5CF6; margin-right: 10px;"></i>
+                                            Do you provide warranty on your work?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse3" class="collapse" aria-labelledby="faq3" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        Yes, ElectroZot provides <strong>1-month warranty coverage</strong> on all repair services performed. This warranty covers the quality of workmanship and parts used during the service.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 4 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq4" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #F59E0B; margin-right: 10px;"></i>
+                                            What payment methods do you accept?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse4" class="collapse" aria-labelledby="faq4" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        We accept <strong>cash, UPI, and other digital payment methods</strong> for your convenience. Payment is typically collected after the service is completed to your satisfaction.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 5 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq5" style="background: linear-gradient(135deg, #FEF2F2 0%, #FECACA 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #EF4444; margin-right: 10px;"></i>
+                                            Are your technicians verified and insured?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse5" class="collapse" aria-labelledby="faq5" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        Yes, all our technicians are <strong>trained, background-verified, and insured</strong>. We ensure that only qualified and trustworthy professionals work on your property.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 6 -->
+                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
+                                <div class="card-header" id="faq6" style="background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 100%); border: none; border-radius: 15px 15px 0 0;">
+                                    <h5 class="mb-0">
+                                        <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse6" aria-expanded="false" aria-controls="collapse6" style="color: #2d3748; text-decoration: none; padding: 20px;">
+                                            <i class="fas fa-plus-circle" style="color: #3B82F6; margin-right: 10px;"></i>
+                                            How do you calculate service charges?
+                                        </button>
+                                    </h5>
+                                </div>
+                                <div id="collapse6" class="collapse" aria-labelledby="faq6" data-parent="#faqAccordion">
+                                    <div class="card-body" style="padding: 20px; color: #6c757d; line-height: 1.6;">
+                                        Charges are based on service type, work complexity, materials used, and time required, with <strong>transparent pricing</strong>. We provide upfront cost estimates before starting any work, with no hidden charges.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="contact-section" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); padding: 60px 0; color: white;">
+            <div class="container">
+                <div class="row text-center mb-5">
+                    <div class="col-12">
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: white;">
+                            <i class="fas fa-phone" style="color: #EC4899; margin-right: 10px;"></i>Contact Us
+                        </h2>
+                        <p class="lead" style="color: #cbd5e0; max-width: 800px; margin: 0 auto;">
+                            Get in touch with our expert team for all your service needs
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <i class="fas fa-phone" style="color: white; font-size: 1.8rem;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white;">Call Us</h4>
+                            <p style="color: #cbd5e0; margin-bottom: 20px;">Available 24/7 for emergency services</p>
+                            <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #EC4899; color: #EC4899;">
+                                <i class="fas fa-phone"></i> 7559606925
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 mb-4">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <i class="fas fa-envelope" style="color: white; font-size: 1.8rem;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white;">Email Us</h4>
+                            <p style="color: #cbd5e0; margin-bottom: 20px;">Send us your service requirements</p>
+                            <a href="mailto:electrozot@outlook.com" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #10B981; color: #10B981;">
+                                <i class="fas fa-envelope"></i> Email Now
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-4 mb-4">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                <i class="fas fa-calendar-check" style="color: white; font-size: 1.8rem;"></i>
+                            </div>
+                            <h4 class="font-weight-bold mb-3" style="color: white;">Book Online</h4>
+                            <p style="color: #cbd5e0; margin-bottom: 20px;">Quick and easy online booking</p>
+                            <a href="#booking-form" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #8B5CF6; color: #8B5CF6;">
+                                <i class="fas fa-calendar-check"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-5">
+                    <div class="col-12 text-center">
+                        <div class="service-areas" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                            <h4 class="font-weight-bold mb-3" style="color: white;">
+                                <i class="fas fa-map-marker-alt" style="color: #F59E0B; margin-right: 10px;"></i>Service Areas
+                            </h4>
+                            <p style="color: #cbd5e0; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                                We provide services across <strong>Himachal Pradesh</strong> with special focus on 
+                                <strong>Kangra District</strong> including Kangra, Dharamshala, Palampur, Baijnath, Nurpur, Dehra, and nearby areas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
     <!-- /.container -->
 
