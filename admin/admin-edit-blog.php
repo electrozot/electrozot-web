@@ -200,7 +200,7 @@ $categories_result = $mysqli->query($categories_query);
 </body>
 
 <!-- TinyMCE Rich Text Editor -->
-<script src="https://cdn.tiny.cloud/1/p06fobmdfwb9p9piooby6kip531y3o8cmmmvidr9cg8rdd09/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.tiny.cloud/1/<?php echo $tinymce_api_key; ?>/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
 tinymce.init({
     selector: '#blog_content',

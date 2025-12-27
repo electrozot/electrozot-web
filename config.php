@@ -8,6 +8,13 @@
 date_default_timezone_set('Asia/Kolkata');
 
 // ============================================
+// TINYMCE CONFIGURATION
+// ============================================
+
+// TinyMCE API Key for rich text editor
+$tinymce_api_key = "p06fobmdfwb9p9piooby6kip531y3o8cmmmvidr9cg8rdd09";
+
+// ============================================
 // DATABASE CONFIGURATION
 // ============================================
 
