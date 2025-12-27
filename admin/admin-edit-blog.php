@@ -288,12 +288,12 @@ tinymce.init({
         {
             title: 'Electrical Safety Tip',
             description: 'Template for safety tips',
-            content: '<h3>🔌 Electrical Safety Tip</h3><p><strong>Important:</strong> </p><blockquote><p>💡 <strong>Pro Tip:</strong> </p></blockquote><p><strong>Remember:</strong> Always consult a certified electrician for complex electrical work.</p>'
+            content: '<h3>🔌 Safety Tip: [Title]</h3><div style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 10px 0;"><p><strong>⚠️ Important:</strong> [Your safety tip here]</p><p><strong>Why it matters:</strong> [Explanation]</p><p><strong>What to do:</strong> [Action steps]</p></div>'
         },
         {
-            title: 'Service Guide',
-            description: 'Template for service guides',
-            content: '<h2>📋 Service Guide</h2><h3>What You\'ll Need:</h3><ul><li>Item 1</li><li>Item 2</li></ul><h3>Steps:</h3><ol><li>Step 1</li><li>Step 2</li></ol><h3>Safety Precautions:</h3><p>⚠️ <strong>Warning:</strong> </p>'
+            title: 'Service Highlight',
+            description: 'Template for highlighting services',
+            content: '<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; margin: 15px 0;"><h4 style="color: white; margin-top: 0;">🔧 [Service Name]</h4><p>[Service description]</p><p><strong>Benefits:</strong></p><ul><li>[Benefit 1]</li><li>[Benefit 2]</li><li>[Benefit 3]</li></ul><p style="margin-bottom: 0;"><a href="tel:7559606925" style="color: #FFD700; font-weight: bold;">📞 Call 7559606925 to book this service</a></p></div>'
         }
     ],
     
@@ -302,11 +302,13 @@ tinymce.init({
             editor.save();
         });
         
-        // Auto-save functionality
-        editor.on('keyup', function () {
-            setTimeout(function() {
-                editor.save();
-            }, 1000);
+        // Custom button for ElectroZot branding
+        editor.ui.registry.addButton('electrozot_cta', {
+            text: 'Add CTA',
+            tooltip: 'Insert ElectroZot Call-to-Action',
+            onAction: function () {
+                editor.insertContent('<div style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); color: white; padding: 20px; border-radius: 15px; text-align: center; margin: 20px 0;"><h4 style="color: white; margin-top: 0;">Need Professional Help?</h4><p style="margin-bottom: 15px;">Get expert electrical and plumbing services from certified technicians</p><a href="tel:7559606925" style="background: white; color: #EC4899; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block;">📞 Call 7559606925</a></div>');
+            }
         });
     },
     
@@ -315,7 +317,6 @@ tinymce.init({
     images_upload_base_path: '../uploads/blog/',
     images_upload_credentials: true,
     automatic_uploads: true,
-    
     file_picker_types: 'image',
     file_picker_callback: function (callback, value, meta) {
         if (meta.filetype === 'image') {
@@ -337,24 +338,6 @@ tinymce.init({
             };
             input.click();
         }
-    },
-    
-    // Paste options
-    paste_as_text: false,
-    paste_auto_cleanup_on_paste: true,
-    paste_remove_styles_if_webkit: true,
-    
-    // Word count
-    wordcount_countregex: /[\w\u2019\'-]+/g,
-    
-    // Accessibility
-    a11y_advanced_options: true,
-    
-    // Mobile responsive
-    mobile: {
-        theme: 'mobile',
-        plugins: ['autosave', 'lists', 'autolink'],
-        toolbar: ['undo', 'bold', 'italic', 'styleselect']
     }
 });
 </script>

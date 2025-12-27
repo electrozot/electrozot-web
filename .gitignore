@@ -25,15 +25,13 @@ debug-*.php
 # Upload Directories (keep structure, ignore content)
 uploads/*
 !uploads/.gitkeep
-admin/vendor/img/slider/*
-!admin/vendor/img/slider/.gitkeep
-admin/vendor/img/gallery/*
-!admin/vendor/img/gallery/.gitkeep
+# admin/vendor/img/slider/*
+# !admin/vendor/img/slider/.gitkeep
+# admin/vendor/img/gallery/*
+# !admin/vendor/img/gallery/.gitkeep
 
 # Dependencies
-vendor/
-*/vendor/
-**/vendor/
+
 node_modules/
 */node_modules/
 **/node_modules/
