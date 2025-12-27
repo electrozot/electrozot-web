@@ -50,20 +50,6 @@ $og_article_tag = $post->blog_tags;
             font-size: 1.1rem;
         }
         
-        /* Handle both HTML and plain text content */
-        .blog-content p:first-child {
-            margin-top: 0;
-        }
-        
-        .blog-content p:last-child {
-            margin-bottom: 0;
-        }
-        
-        /* Plain text content styling */
-        .blog-content:not(:has(h1, h2, h3, h4, h5, h6, ul, ol, table, blockquote)) {
-            white-space: pre-line;
-        }
-        
         .blog-content h1, .blog-content h2, .blog-content h3, 
         .blog-content h4, .blog-content h5, .blog-content h6 {
             margin-top: 2rem;
@@ -254,7 +240,7 @@ $og_article_tag = $post->blog_tags;
                     
                     <div class="blog-content" style="line-height: 1.8; font-size: 1.1rem;">
                         <?php 
-                        // Handle both HTML and plain text content
+                        // Sanitize and display HTML content safely
                         echo sanitize_blog_content($post->blog_content);
                         ?>
                     </div>
