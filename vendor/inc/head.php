@@ -1,5 +1,9 @@
 <head>
-    <!-- Google tag (gtag.js) -->
+    <?php
+    // Only load Google Analytics on production domain (electrozot.in)
+    $is_production = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'electrozot.in');
+    if ($is_production): ?>
+    <!-- Google tag (gtag.js) - Production Only -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4XXBCBDYPF"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -8,6 +12,9 @@
         
         gtag('config', 'G-4XXBCBDYPF');
     </script>
+    <?php else: ?>
+    <!-- Google Analytics disabled on local/development environment -->
+    <?php endif; ?>
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no">
