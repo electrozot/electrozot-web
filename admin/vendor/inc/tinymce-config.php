@@ -4,14 +4,31 @@
  * Centralized configuration to avoid duplication
  */
 
-// Ensure config is loaded
-if (!isset($tinymce_api_key)) {
-    include_once('config.php');
+// Ensure config is loaded and API key is available
+if (!isset($tinymce_api_key) || empty($tinymce_api_key)) {
+    // Try to load config from different possible paths
+    $config_paths = [
+        __DIR__ . '/../../../config.php',
+        __DIR__ . '/../../config.php',
+        __DIR__ . '/../config.php'
+    ];
+    
+    foreach ($config_paths as $config_path) {
+        if (file_exists($config_path)) {
+            include_once($config_path);
+            break;
+        }
+    }
+    
+    // If still not found, use the direct API key
+    if (!isset($tinymce_api_key) || empty($tinymce_api_key)) {
+        $tinymce_api_key = 'p06fobmdfwb9p9piooby6kip531y3o8cmmmvidr9cg8rdd09';
+    }
 }
 ?>
 
 <!-- TinyMCE Rich Text Editor -->
-<script src="https://cdn.tiny.cloud/1/<?php echo $tinymce_api_key; ?>/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="https://cdn.tiny.cloud/1/<?php echo htmlspecialchars($tinymce_api_key); ?>/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
 tinymce.init({
     selector: '#blog_content',
@@ -21,11 +38,11 @@ tinymce.init({
         'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
         'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
         'insertdatetime', 'media', 'table', 'help', 'wordcount', 'emoticons',
-        'template', 'codesample', 'hr', 'pagebreak', 'nonbreaking', 'toc'
+        'template', 'codesample'
     ],
     toolbar1: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor',
     toolbar2: 'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link image media table',
-    toolbar3: 'hr pagebreak | codesample | emoticons charmap | code preview fullscreen | help',
+    toolbar3: 'codesample | emoticons charmap | code preview fullscreen | help',
     content_style: `
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
