@@ -23,8 +23,26 @@ $seo_keywords = "electrical tips, home maintenance, DIY guides, safety tips, ele
         
         <div class="row">
             <?php
-            $query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC";
-            $result = $mysqli->query($query);
+            // Handle category filtering
+            $category_filter = isset($_GET['category']) ? $_GET['category'] : '';
+            
+            if($category_filter) {
+                $query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' AND blog_category = ? ORDER BY blog_published_at DESC";
+                $stmt = $mysqli->prepare($query);
+                $stmt->bind_param('s', $category_filter);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                
+                echo '<div class="col-12 mb-4">';
+                echo '<div class="alert alert-info">';
+                echo '<i class="fas fa-filter"></i> Showing articles in category: <strong>' . htmlspecialchars($category_filter) . '</strong> ';
+                echo '<a href="blog.php" class="btn btn-sm btn-outline-primary ml-2">Show All</a>';
+                echo '</div>';
+                echo '</div>';
+            } else {
+                $query = "SELECT * FROM tms_blog_posts WHERE blog_status = 'Published' ORDER BY blog_published_at DESC";
+                $result = $mysqli->query($query);
+            }
             
             if($result->num_rows > 0) {
                 while($post = $result->fetch_object()) {

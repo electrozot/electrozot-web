@@ -2,6 +2,7 @@
 session_start();
 include('vendor/inc/config.php');
 include('vendor/inc/checklogin.php');
+include('vendor/inc/html-sanitizer.php');
 check_login();
 $aid = $_SESSION['a_id'];
 
@@ -110,7 +111,15 @@ $categories_result = $mysqli->query($categories_query);
                                     
                                     <div class="form-group">
                                         <label>Content *</label>
-                                        <textarea name="blog_content" id="blog_content" class="form-control" rows="15" required><?php echo htmlspecialchars($blog->blog_content); ?></textarea>
+                                        <textarea name="blog_content" id="blog_content" class="form-control" rows="15" required><?php 
+                                        // Check if content is HTML or plain text
+                                        if(is_html_content($blog->blog_content)) {
+                                            echo htmlspecialchars($blog->blog_content);
+                                        } else {
+                                            // Convert plain text to HTML for the editor
+                                            echo htmlspecialchars(nl2br($blog->blog_content));
+                                        }
+                                        ?></textarea>
                                     </div>
                                     
                                     <div class="form-group">
