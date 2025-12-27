@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('admin/vendor/inc/config.php');
+include('admin/vendor/inc/html-sanitizer.php');
 
 $blog_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $slug = isset($_GET['slug']) ? $_GET['slug'] : '';
@@ -41,6 +42,142 @@ $og_article_tag = $post->blog_tags;
 <?php include("vendor/inc/head.php"); ?>
 <head>
     <?php include("vendor/inc/seo-meta.php"); ?>
+    
+    <!-- Blog Content Styling -->
+    <style>
+        .blog-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        .blog-content h1, .blog-content h2, .blog-content h3, 
+        .blog-content h4, .blog-content h5, .blog-content h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .blog-content h1 { font-size: 2.5rem; }
+        .blog-content h2 { font-size: 2rem; }
+        .blog-content h3 { font-size: 1.75rem; }
+        .blog-content h4 { font-size: 1.5rem; }
+        .blog-content h5 { font-size: 1.25rem; }
+        .blog-content h6 { font-size: 1.1rem; }
+        
+        .blog-content p {
+            margin-bottom: 1.5rem;
+            color: #4a5568;
+        }
+        
+        .blog-content ul, .blog-content ol {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+        }
+        
+        .blog-content li {
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+        }
+        
+        .blog-content a {
+            color: #EC4899;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .blog-content a:hover {
+            color: #BE185D;
+            text-decoration: underline;
+        }
+        
+        .blog-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .blog-content blockquote {
+            border-left: 4px solid #EC4899;
+            padding-left: 1.5rem;
+            margin: 2rem 0;
+            font-style: italic;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .blog-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .blog-content th, .blog-content td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .blog-content th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .blog-content tr:hover {
+            background: #f9fafb;
+        }
+        
+        .blog-content pre {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+        
+        .blog-content code {
+            background: #f3f4f6;
+            color: #dc2626;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .blog-content pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .blog-content {
+                font-size: 1rem;
+            }
+            
+            .blog-content h1 { font-size: 2rem; }
+            .blog-content h2 { font-size: 1.75rem; }
+            .blog-content h3 { font-size: 1.5rem; }
+            .blog-content h4 { font-size: 1.25rem; }
+            
+            .blog-content table {
+                font-size: 0.9rem;
+            }
+            
+            .blog-content th, .blog-content td {
+                padding: 8px 10px;
+            }
+        }
+    </style>
     
     <!-- Article Schema -->
     <script type="application/ld+json">
@@ -102,7 +239,10 @@ $og_article_tag = $post->blog_tags;
                     <?php } ?>
                     
                     <div class="blog-content" style="line-height: 1.8; font-size: 1.1rem;">
-                        <?php echo nl2br(htmlspecialchars($post->blog_content)); ?>
+                        <?php 
+                        // Sanitize and display HTML content safely
+                        echo sanitize_blog_content($post->blog_content);
+                        ?>
                     </div>
                     
                     <hr class="my-5">

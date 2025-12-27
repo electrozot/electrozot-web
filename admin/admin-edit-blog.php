@@ -110,7 +110,7 @@ $categories_result = $mysqli->query($categories_query);
                                     
                                     <div class="form-group">
                                         <label>Content *</label>
-                                        <textarea name="blog_content" class="form-control" rows="15" required><?php echo htmlspecialchars($blog->blog_content); ?></textarea>
+                                        <textarea name="blog_content" id="blog_content" class="form-control" rows="15" required><?php echo htmlspecialchars($blog->blog_content); ?></textarea>
                                     </div>
                                     
                                     <div class="form-group">
@@ -198,4 +198,165 @@ $categories_result = $mysqli->query($categories_query);
         </div>
     </div>
 </body>
+
+<!-- TinyMCE Rich Text Editor -->
+<script src="https://cdn.tiny.cloud/1/p06fobmdfwb9p9piooby6kip531y3o8cmmmvidr9cg8rdd09/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+    selector: '#blog_content',
+    height: 500,
+    menubar: true,
+    plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount', 'emoticons',
+        'template', 'codesample', 'hr', 'pagebreak', 'nonbreaking', 'toc'
+    ],
+    toolbar1: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor',
+    toolbar2: 'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link image media table',
+    toolbar3: 'hr pagebreak | codesample | emoticons charmap | code preview fullscreen | help',
+    content_style: `
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; 
+            font-size: 16px; 
+            line-height: 1.6; 
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3, h4, h5, h6 { 
+            color: #2d3748; 
+            margin-top: 2rem; 
+            margin-bottom: 1rem; 
+        }
+        p { margin-bottom: 1rem; }
+        img { max-width: 100%; height: auto; border-radius: 8px; }
+        blockquote { 
+            border-left: 4px solid #EC4899; 
+            padding-left: 1rem; 
+            margin: 1rem 0; 
+            font-style: italic; 
+            background: #f9fafb; 
+            padding: 1rem; 
+        }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        code { background: #f4f4f4; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 5px; overflow-x: auto; }
+    `,
+    branding: false,
+    promotion: false,
+    resize: true,
+    elementpath: true,
+    statusbar: true,
+    
+    // Enhanced image handling
+    image_advtab: true,
+    image_caption: true,
+    image_title: true,
+    
+    // Link options
+    link_title: true,
+    link_target_list: [
+        {title: 'Same window', value: ''},
+        {title: 'New window', value: '_blank'}
+    ],
+    
+    // Table options
+    table_responsive_width: true,
+    table_default_attributes: {
+        'class': 'table table-striped'
+    },
+    
+    // Code sample languages
+    codesample_languages: [
+        {text: 'HTML/XML', value: 'markup'},
+        {text: 'JavaScript', value: 'javascript'},
+        {text: 'CSS', value: 'css'},
+        {text: 'PHP', value: 'php'},
+        {text: 'Python', value: 'python'},
+        {text: 'Java', value: 'java'},
+        {text: 'C', value: 'c'},
+        {text: 'C++', value: 'cpp'},
+        {text: 'SQL', value: 'sql'}
+    ],
+    
+    // Templates for common content
+    templates: [
+        {
+            title: 'Electrical Safety Tip',
+            description: 'Template for safety tips',
+            content: '<h3>🔌 Electrical Safety Tip</h3><p><strong>Important:</strong> </p><blockquote><p>💡 <strong>Pro Tip:</strong> </p></blockquote><p><strong>Remember:</strong> Always consult a certified electrician for complex electrical work.</p>'
+        },
+        {
+            title: 'Service Guide',
+            description: 'Template for service guides',
+            content: '<h2>📋 Service Guide</h2><h3>What You\'ll Need:</h3><ul><li>Item 1</li><li>Item 2</li></ul><h3>Steps:</h3><ol><li>Step 1</li><li>Step 2</li></ol><h3>Safety Precautions:</h3><p>⚠️ <strong>Warning:</strong> </p>'
+        }
+    ],
+    
+    setup: function (editor) {
+        editor.on('change', function () {
+            editor.save();
+        });
+        
+        // Auto-save functionality
+        editor.on('keyup', function () {
+            setTimeout(function() {
+                editor.save();
+            }, 1000);
+        });
+    },
+    
+    // Image upload settings
+    images_upload_url: 'vendor/inc/tinymce-upload.php',
+    images_upload_base_path: '../uploads/blog/',
+    images_upload_credentials: true,
+    automatic_uploads: true,
+    
+    file_picker_types: 'image',
+    file_picker_callback: function (callback, value, meta) {
+        if (meta.filetype === 'image') {
+            var input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.onchange = function () {
+                var file = this.files[0];
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var id = 'blobid' + (new Date()).getTime();
+                    var blobCache = tinymce.activeEditor.editorUpload.blobCache;
+                    var base64 = reader.result.split(',')[1];
+                    var blobInfo = blobCache.create(id, file, base64);
+                    blobCache.add(blobInfo);
+                    callback(blobInfo.blobUri(), { title: file.name });
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+    },
+    
+    // Paste options
+    paste_as_text: false,
+    paste_auto_cleanup_on_paste: true,
+    paste_remove_styles_if_webkit: true,
+    
+    // Word count
+    wordcount_countregex: /[\w\u2019\'-]+/g,
+    
+    // Accessibility
+    a11y_advanced_options: true,
+    
+    // Mobile responsive
+    mobile: {
+        theme: 'mobile',
+        plugins: ['autosave', 'lists', 'autolink'],
+        toolbar: ['undo', 'bold', 'italic', 'styleselect']
+    }
+});
+</script>
+
 </html>

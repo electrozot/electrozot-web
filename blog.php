@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('admin/vendor/inc/config.php');
+include('admin/vendor/inc/html-sanitizer.php');
 
 // SEO Meta
 $seo_title = "Blog - Electrical Tips & Home Maintenance Guides | Electrozot";
@@ -38,7 +39,10 @@ $seo_keywords = "electrical tips, home maintenance, DIY guides, safety tips, ele
                     <div class="card-body">
                         <h5 class="card-title"><?php echo htmlspecialchars($post->blog_title); ?></h5>
                         <p class="card-text text-muted">
-                            <?php echo htmlspecialchars(substr($post->blog_excerpt ?: $post->blog_content, 0, 120)) . '...'; ?>
+                            <?php 
+                            $excerpt_content = $post->blog_excerpt ?: $post->blog_content;
+                            echo htmlspecialchars(get_blog_excerpt($excerpt_content, 120));
+                            ?>
                         </p>
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">
