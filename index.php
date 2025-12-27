@@ -956,7 +956,7 @@
         </script>
 
         <!-- About Section -->
-        <section id="about-section" class="about-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
+        <section id="about-section" class="about-section lazy-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
             <div class="container">
                 <div class="row text-center mb-5">
                     <div class="col-12">
@@ -1182,7 +1182,7 @@
         </section>
 
         <!-- Features Section -->
-        <section class="features-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative; padding: 20px 0 15px 0;">
+        <section class="features-section lazy-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative; padding: 20px 0 15px 0;">
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">

@@ -317,8 +317,6 @@
             backface-visibility: hidden !important;
         }
         
-        /* Navbar color animation is defined in nav.php to avoid conflicts */
-        
         /* CRITICAL: Logo and brand immediate sizing */
         .navbar-logo {
             height: 70px !important;
@@ -418,34 +416,66 @@
             .navbar-collapse.show {
                 right: 0 !important;
             }
-            
-            /* Mobile navbar animation is handled in nav.php */
         }
         
-        /* CRITICAL: Loaded state for smooth transitions */
-        .navbar.loaded {
-            opacity: 1 !important;
-            visibility: visible !important;
+        /* CRITICAL: Basic body and container styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
         
-        .navbar.loaded .navbar-logo,
-        .navbar.loaded .navbar-brand {
-            opacity: 1 !important;
-            visibility: visible !important;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        /* CRITICAL: Button styles */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: #EC4899;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #BE185D;
+        }
+        
+        /* CRITICAL: Lazy loading */
+        .lazy {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .loaded {
+            opacity: 1;
         }
     </style>
 
     <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="css/modern-business.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/modern-business.css" rel="stylesheet">
     <!--Font Awesome--->
-    <link href="usr/vendor/fontawesome-free/css/all.min.css?v=<?php echo time(); ?>" rel="stylesheet" type="text/css">
+    <link href="usr/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <!-- Compact UI overrides -->
-    <link href="vendor/css/custom.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="vendor/css/custom.css" rel="stylesheet">
     <!-- PWA Orientation Lock -->
-    <link href="css/pwa-orientation-lock.css?v=<?php echo time(); ?>" rel="stylesheet">
+    <link href="css/pwa-orientation-lock.css" rel="stylesheet">
     <!-- CRITICAL: Immediate navbar loading script - prevents hang -->
     <script>
         // Immediate execution to prevent navbar loading hang
@@ -485,10 +515,13 @@
         })();
     </script>
     
-    <!-- PWA Scripts - Load immediately for install prompt -->
-    <script src="pwa-install.js?v=<?php echo time(); ?>"></script>
-    <script defer src="pwa-update-notification.js?v=<?php echo time(); ?>"></script>
-    <script defer src="js/orientation-lock.js?v=<?php echo time(); ?>"></script>
+    <!-- PWA Scripts - Load deferred for better performance -->
+    <script defer src="pwa-install.js"></script>
+    <script defer src="pwa-update-notification.js"></script>
+    <script defer src="js/orientation-lock.js"></script>
+    
+    <!-- Performance Optimizer - Load immediately for better UX -->
+    <script src="js/performance-optimizer.js"></script>
     
 
     

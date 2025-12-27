@@ -1,7 +1,7 @@
-<!-- How to Book Service Section -->
+<!-- How to Book Service Section - Optimized Loading -->
 <section id="how-to-book-section" class="how-to-book-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; color: white; position: relative; overflow: hidden;">
-    <!-- Background Pattern -->
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"2\" fill=\"white\"/></svg>'); background-size: 30px 30px;"></div>
+    <!-- Background Pattern - Lazy loaded -->
+    <div class="bg-pattern" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1;"></div>
     
     <div class="container" style="position: relative; z-index: 2;">
         <div class="row text-center mb-5">
@@ -108,27 +108,32 @@
         </div>
     </div>
     
-    <!-- Hover Effects -->
+    <!-- Optimized Hover Effects - Reduced complexity -->
     <style>
         .booking-step-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            background: rgba(255,255,255,0.25) !important;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.2) !important;
         }
         
         .step-number {
-            animation: pulse 2s infinite;
+            animation: pulse 3s infinite;
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
         }
         
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        /* Lazy load background pattern */
+        .bg-pattern {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white"/></svg>');
+            background-size: 30px 30px;
         }
     </style>
 </section>
