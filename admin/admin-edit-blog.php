@@ -53,6 +53,10 @@ if(isset($_POST['update_blog'])) {
     $stmt->bind_param('ssssssssssssi', $title, $slug, $content, $excerpt, $blog_image, $category, $tags, $status, $seo_title, $seo_description, $seo_keywords, $published_at, $blog_id);
     
     if($stmt->execute()) {
+        // Auto-regenerate sitemap after updating blog post
+        include_once('vendor/inc/sitemap-hooks.php');
+        update_sitemap_after_blog_change('update', $blog_id);
+        
         $_SESSION['success'] = "Blog post updated successfully!";
         header("location: admin-manage-blog.php");
         exit();

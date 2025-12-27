@@ -39,6 +39,10 @@ if(isset($_POST['add_blog'])) {
     $stmt->bind_param('sssssssssssss', $title, $slug, $content, $excerpt, $blog_image, $aid, $category, $tags, $status, $seo_title, $seo_description, $seo_keywords, $published_at);
     
     if($stmt->execute()) {
+        // Auto-regenerate sitemap after adding blog post
+        include_once('vendor/inc/sitemap-hooks.php');
+        update_sitemap_after_blog_change('add', $mysqli->insert_id);
+        
         $_SESSION['success'] = "Blog post added successfully!";
         header("location: admin-manage-blog.php");
         exit();

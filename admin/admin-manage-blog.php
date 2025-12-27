@@ -20,9 +20,14 @@ $aid = $_SESSION['a_id'];
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-blog"></i> All Blog Posts
-                        <a href="admin-add-blog.php" class="btn btn-primary btn-sm float-right">
-                            <i class="fas fa-plus"></i> Add New Post
-                        </a>
+                        <div class="float-right">
+                            <button id="regenerate-sitemap-btn" class="btn btn-secondary btn-sm mr-2" title="Regenerate sitemap with current blog posts">
+                                <i class="fas fa-sitemap"></i> Update Sitemap
+                            </button>
+                            <a href="admin-add-blog.php" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> Add New Post
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -75,5 +80,67 @@ $aid = $_SESSION['a_id'];
             <?php include('vendor/inc/footer.php'); ?>
         </div>
     </div>
+
+    <!-- Sitemap Regeneration Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const regenBtn = document.getElementById('regenerate-sitemap-btn');
+        
+        if (regenBtn) {
+            regenBtn.addEventListener('click', function() {
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+                this.disabled = true;
+                
+                fetch('vendor/inc/sitemap-hooks.php?action=regenerate_sitemap')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.innerHTML = '<i class="fas fa-check"></i> Updated!';
+                            this.className = 'btn btn-success btn-sm mr-2';
+                            
+                            // Show success message
+                            const alertDiv = document.createElement('div');
+                            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+                            alertDiv.innerHTML = `
+                                <strong>Success!</strong> Sitemap regenerated successfully at ${data.timestamp}
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                            `;
+                            document.querySelector('.container-fluid').insertBefore(alertDiv, document.querySelector('h1').nextSibling);
+                            
+                            // Reset button after 3 seconds
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.className = 'btn btn-secondary btn-sm mr-2';
+                                this.disabled = false;
+                            }, 3000);
+                        } else {
+                            this.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed';
+                            this.className = 'btn btn-danger btn-sm mr-2';
+                            
+                            setTimeout(() => {
+                                this.innerHTML = originalText;
+                                this.className = 'btn btn-secondary btn-sm mr-2';
+                                this.disabled = false;
+                            }, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Sitemap regeneration error:', error);
+                        this.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                        this.className = 'btn btn-danger btn-sm mr-2';
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.className = 'btn btn-secondary btn-sm mr-2';
+                            this.disabled = false;
+                        }, 3000);
+                    });
+            });
+        }
+    });
+    </script>
 </body>
 </html>
