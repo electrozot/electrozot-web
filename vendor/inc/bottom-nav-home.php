@@ -29,17 +29,16 @@
         bottom: 0;
         left: 4px;
         right: 4px;
-        background: linear-gradient(135deg, #A78BFA 0%, #F9A8D4 60%, #FDE68A 100%);
+        background: #ffffff !important;
         display: flex;
         justify-content: space-around;
         align-items: center;
         padding: 2px 0 3px 0;
         box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
-        z-index: 9999;
-        border: 1px solid rgba(255,255,255,0.3);
-        border-bottom: none;
+        z-index: 99999 !important;
+        border: 2px solid #dc143c !important;
         border-radius: 20px;
-        height: 50px;
+        height: 42px;
     }
 
     .bottom-nav-item {
@@ -47,7 +46,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #ffffff;
+        color: #6c757d !important;
         text-decoration: none;
         padding: 2px 6px;
         border-radius: 6px;
@@ -57,29 +56,64 @@
     .bottom-nav-item i {
         font-size: 0.95rem;
         margin-bottom: 1px;
+        color: inherit !important;
     }
 
     .bottom-nav-item span {
         font-size: 0.52rem;
         font-weight: 600;
         letter-spacing: 0.2px;
+        color: inherit !important;
     }
 
     .bottom-nav-item:hover {
-        color: #ffffff;
-        background: rgba(255,255,255,0.2);
+        color: #495057 !important;
+        background: rgba(108, 117, 125, 0.1);
         text-decoration: none;
     }
 
     .bottom-nav-item.active {
-        color: #000000;
-        background: rgba(255,255,255,0.6);
-        border: 1px solid rgba(255,255,255,0.4);
+        color: #212529 !important;
+        background: rgba(33, 37, 41, 0.1);
+    }
+
+    /* Prevent any red colors from other CSS - More specific selectors */
+    .bottom-nav-home .bottom-nav-item:visited,
+    .bottom-nav-home .bottom-nav-item:focus,
+    .bottom-nav-home .bottom-nav-item:active:not(.active),
+    .bottom-nav-home .bottom-nav-item:link {
+        color: #6c757d !important;
+        text-decoration: none !important;
+    }
+
+    .bottom-nav-home .bottom-nav-item.active:visited,
+    .bottom-nav-home .bottom-nav-item.active:focus,
+    .bottom-nav-home .bottom-nav-item.active:link {
+        color: #212529 !important;
+        text-decoration: none !important;
+    }
+
+    /* Override any Bootstrap or other framework link colors */
+    .bottom-nav-home a,
+    .bottom-nav-home a:hover,
+    .bottom-nav-home a:focus,
+    .bottom-nav-home a:active,
+    .bottom-nav-home a:visited {
+        color: #6c757d !important;
+        text-decoration: none !important;
+    }
+
+    .bottom-nav-home a.active,
+    .bottom-nav-home a.active:hover,
+    .bottom-nav-home a.active:focus,
+    .bottom-nav-home a.active:visited {
+        color: #212529 !important;
+        text-decoration: none !important;
     }
 
     /* Add padding to body to prevent content from being hidden behind bottom nav */
     body {
-        padding-bottom: 50px;
+        padding-bottom: 42px;
     }
 
     /* Responsive adjustments */
@@ -98,7 +132,7 @@
         }
         
         .bottom-nav-home {
-            height: 48px;
+            height: 40px;
         }
     }
 

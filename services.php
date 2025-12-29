@@ -12,12 +12,12 @@ include('admin/vendor/inc/config.php');
     <?php include("vendor/inc/head.php");?>
 </head>
 
-<body style="background: linear-gradient(180deg, #f8f9fa 0%, #fff5f7 100%); min-height: 100vh; padding-bottom: 70px;">
+<body style="background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%); min-height: 100vh; padding-bottom: 70px;">
 
     <?php include("vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="services-hero" style="background: linear-gradient(135deg, #E0F2FE 0%, #FECDD3 25%, #D1FAE5 50%, #FBCFE8 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px;">
+    <section class="services-hero" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 25%, #ffffff 50%, #faf5ff 75%, #f3e8ff 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px;">
         <style>
             @keyframes gradientShift {
                 0% { background-position: 0% 50%; }
@@ -27,10 +27,10 @@ include('admin/vendor/inc/config.php');
         </style>
         <div class="container">
             <div class="text-center">
-                <h1 class="services-title" style="font-size: 2.5rem; font-weight: 800; color: #2d3748; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
-                    <i class="fas fa-tools" style="color: #EC4899;"></i> Our Services
+                <h1 class="services-title" style="font-size: 2.5rem; font-weight: 800; color: #000000; margin-bottom: 15px;">
+                    <i class="fas fa-tools" style="color: #dc143c;"></i> Our Services
                 </h1>
-                <p class="services-subtitle" style="font-size: 1.1rem; color: #6B7280; max-width: 650px; margin: 0 auto; font-weight: 500;">
+                <p class="services-subtitle" style="font-size: 1.1rem; color: #000000; max-width: 650px; margin: 0 auto; font-weight: 500;">
                     Expert installation, maintenance, and repair services for your home and office appliances
                 </p>
             </div>
@@ -40,13 +40,13 @@ include('admin/vendor/inc/config.php');
     <div class="container" style="padding-top: 40px; padding-bottom: 80px;">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; display: flex; flex-wrap: nowrap; align-items: center;">
+            <ol class="breadcrumb services-breadcrumb" style="background: #faf5ff; border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; display: flex; flex-wrap: nowrap; align-items: center;">
                 <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
-                    <a href="index.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
+                    <a href="index.php" style="color: #dc143c; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Services</li>
+                <li class="breadcrumb-item active" style="color: #000000; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Services</li>
             </ol>
         </nav>
 
@@ -110,41 +110,41 @@ include('admin/vendor/inc/config.php');
         <div class="row">
             <!-- ELECTRICAL SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #FBCFE8 0%, #F9A8D4 100%); padding: 20px; border: none;">
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: #f3e8ff; padding: 20px; border: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-bolt" style="color: #EC4899; margin-right: 10px;"></i>Electrical Services
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #000000;">
+                                    <i class="fas fa-bolt" style="color: #dc143c; margin-right: 10px;"></i>Electrical Services
                                 </h5>
-                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Wiring, fixtures, and power systems</p>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #000000;">Wiring, fixtures, and power systems</p>
                             </div>
-                            <i class="fas fa-arrow-right" style="color: #EC4899; font-size: 1.2rem;"></i>
+                            <i class="fas fa-arrow-right" style="color: #dc143c; font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column" style="padding: 20px;">
                         <div class="flex-grow-1">
                             <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Home Wiring & Installation
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Switch & Socket Services
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Light Fixtures & LED Installation
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
                                     <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
-                                    <span style="font-weight: 600; color: #EC4899;">+6 more services</span>
+                                    <span style="font-weight: 600; color: #dc143c;">+6 more services</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="mt-auto">
-                            <a href="service/electrical-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                            <a href="service/electrical-services.php" class="btn" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; text-decoration: none; transition: all 0.3s ease; width: 80%; display: block; margin: 0 auto;">
                                 <i class="fas fa-eye"></i> View All Electrical Services
                             </a>
                         </div>
@@ -154,41 +154,41 @@ include('admin/vendor/inc/config.php');
 
             <!-- REPAIR SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 20px; border: none;">
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: #f3e8ff; padding: 20px; border: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-wrench" style="color: #EC4899; margin-right: 10px;"></i>Repair Services
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #000000;">
+                                    <i class="fas fa-wrench" style="color: #dc143c; margin-right: 10px;"></i>Repair Services
                                 </h5>
-                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">All appliance repairs with warranty</p>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #000000;">All appliance repairs with warranty</p>
                             </div>
-                            <i class="fas fa-arrow-right" style="color: #EC4899; font-size: 1.2rem;"></i>
+                            <i class="fas fa-arrow-right" style="color: #dc143c; font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column" style="padding: 20px;">
                         <div class="flex-grow-1">
                             <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     AC & Refrigerator Repair
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Washing Machine Service
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     TV & Electronics Repair
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
                                     <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
-                                    <span style="font-weight: 600; color: #EC4899;">+12 more services</span>
+                                    <span style="font-weight: 600; color: #dc143c;">+12 more services</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="mt-auto">
-                            <a href="service/repair-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                            <a href="service/repair-services.php" class="btn" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; text-decoration: none; transition: all 0.3s ease; width: 80%; display: block; margin: 0 auto;">
                                 <i class="fas fa-eye"></i> View All Repair Services
                             </a>
                         </div>
@@ -198,41 +198,41 @@ include('admin/vendor/inc/config.php');
 
             <!-- INSTALLATION SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #A7F3D0 0%, #6EE7B7 100%); padding: 20px; border: none;">
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #ffffff 0%, #faf5ff 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: #f3e8ff; padding: 20px; border: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-cog" style="color: #10B981; margin-right: 10px;"></i>Installation Services
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #000000;">
+                                    <i class="fas fa-cog" style="color: #dc143c; margin-right: 10px;"></i>Installation Services
                                 </h5>
-                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Professional setup & mounting</p>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #000000;">Professional setup & mounting</p>
                             </div>
-                            <i class="fas fa-arrow-right" style="color: #10B981; font-size: 1.2rem;"></i>
+                            <i class="fas fa-arrow-right" style="color: #dc143c; font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column" style="padding: 20px;">
                         <div class="flex-grow-1">
                             <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     TV & DTH Installation
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     CCTV & Security Setup
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #10B981; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Smart Home Devices
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
                                     <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
-                                    <span style="font-weight: 600; color: #10B981;">+8 more services</span>
+                                    <span style="font-weight: 600; color: #dc143c;">+8 more services</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="mt-auto">
-                            <a href="service/installation-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                            <a href="service/installation-services.php" class="btn" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; text-decoration: none; transition: all 0.3s ease; width: 80%; display: block; margin: 0 auto;">
                                 <i class="fas fa-eye"></i> View All Installation Services
                             </a>
                         </div>
@@ -242,41 +242,41 @@ include('admin/vendor/inc/config.php');
 
             <!-- MAINTENANCE SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FDF5FF 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%); padding: 20px; border: none;">
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: #f3e8ff; padding: 20px; border: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-tools" style="color: #8B5CF6; margin-right: 10px;"></i>Maintenance Services
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #000000;">
+                                    <i class="fas fa-tools" style="color: #dc143c; margin-right: 10px;"></i>Maintenance Services
                                 </h5>
-                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Regular care & servicing</p>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #000000;">Regular care & servicing</p>
                             </div>
-                            <i class="fas fa-arrow-right" style="color: #8B5CF6; font-size: 1.2rem;"></i>
+                            <i class="fas fa-arrow-right" style="color: #dc143c; font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column" style="padding: 20px;">
                         <div class="flex-grow-1">
                             <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     AC Deep Cleaning
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Geyser Descaling
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #8B5CF6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Water Tank Cleaning
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
                                     <i class="fas fa-plus-circle" style="color: #6c757d; font-size: 0.8rem; margin-right: 10px;"></i>
-                                    <span style="font-weight: 600; color: #8B5CF6;">+2 more services</span>
+                                    <span style="font-weight: 600; color: #dc143c;">+2 more services</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="mt-auto">
-                            <a href="service/maintenance-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                            <a href="service/maintenance-services.php" class="btn" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; text-decoration: none; transition: all 0.3s ease; width: 80%; display: block; margin: 0 auto;">
                                 <i class="fas fa-eye"></i> View All Maintenance Services
                             </a>
                         </div>
@@ -286,41 +286,41 @@ include('admin/vendor/inc/config.php');
 
             <!-- PLUMBING SERVICES -->
             <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0F9FF 100%); border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
-                    <div class="card-header" style="background: linear-gradient(135deg, #BFDBFE 0%, #93C5FD 100%); padding: 20px; border: none;">
+                <div class="card h-100 service-category-card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s ease;">
+                    <div class="card-header" style="background: #f3e8ff; padding: 20px; border: none;">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #2d3748;">
-                                    <i class="fas fa-tint" style="color: #3B82F6; margin-right: 10px;"></i>Plumbing Services
+                                <h5 class="mb-1" style="font-size: 1.2rem; font-weight: 700; color: #000000;">
+                                    <i class="fas fa-tint" style="color: #dc143c; margin-right: 10px;"></i>Plumbing Services
                                 </h5>
-                                <p class="mb-0" style="font-size: 0.85rem; color: #6c757d;">Fixtures, taps & installations</p>
+                                <p class="mb-0" style="font-size: 0.85rem; color: #000000;">Fixtures, taps & installations</p>
                             </div>
-                            <i class="fas fa-arrow-right" style="color: #3B82F6; font-size: 1.2rem;"></i>
+                            <i class="fas fa-arrow-right" style="color: #dc143c; font-size: 1.2rem;"></i>
                         </div>
                     </div>
                     <div class="card-body d-flex flex-column" style="padding: 20px;">
                         <div class="flex-grow-1">
                             <ul class="service-preview-list" style="list-style: none; padding: 0; margin: 0 0 20px 0;">
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Tap & Faucet Repair
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Basin & Sink Installation
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-check-circle" style="color: #3B82F6; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
                                     Toilet Installation
                                 </li>
                                 <li style="font-size: 0.85rem; color: #495057; padding: 5px 0; display: flex; align-items: center;">
-                                    <i class="fas fa-exclamation-triangle" style="color: #EF4444; font-size: 0.8rem; margin-right: 10px;"></i>
-                                    <span style="font-weight: 600; color: #EF4444;">Emergency Service Available</span>
+                                    <i class="fas fa-exclamation-triangle" style="color: #dc143c; font-size: 0.8rem; margin-right: 10px;"></i>
+                                    <span style="font-weight: 600; color: #dc143c;">Emergency Service Available</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="mt-auto">
-                            <a href="service/plumbing-services.php" class="btn btn-block" style="background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: white; text-decoration: none; transition: all 0.3s ease;">
+                            <a href="service/plumbing-services.php" class="btn" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; text-decoration: none; transition: all 0.3s ease; width: 80%; display: block; margin: 0 auto;">
                                 <i class="fas fa-eye"></i> View All Plumbing Services
                             </a>
                         </div>
@@ -338,15 +338,15 @@ include('admin/vendor/inc/config.php');
         <!-- Feature Cards -->
         <div class="row mt-4">
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FDF5FF 100%); border-radius: 12px; overflow: hidden;">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: #faf5ff; border-radius: 12px; overflow: hidden;">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-bolt" style="font-size: 2rem; color: #A855F7;"></i>
+                            <i class="fas fa-bolt" style="font-size: 2rem; color: #dc143c;"></i>
                         </div>
-                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
+                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #000000; margin-bottom: 10px;">
                             Faster And Safe Service
                         </h5>
-                        <p class="card-text" style="font-size: 0.8rem; color: #6c757d; line-height: 1.6; margin: 0;">
+                        <p class="card-text" style="font-size: 0.8rem; color: #000000; line-height: 1.6; margin: 0;">
                             We provide professional technician services with accountability, reliability and ease of booking skilled technicians for all your needs.
                         </p>
                     </div>
@@ -354,15 +354,15 @@ include('admin/vendor/inc/config.php');
             </div>
 
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm warranty-card" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 12px; overflow: hidden; cursor: pointer;" role="button" data-toggle="modal" data-target="#warrantyModal" aria-label="View warranty terms">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm warranty-card" style="background: #faf5ff; border-radius: 12px; overflow: hidden; cursor: pointer;" role="button" data-toggle="modal" data-target="#warrantyModal" aria-label="View warranty terms">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #EC4899;"></i>
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #dc143c;"></i>
                         </div>
-                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
+                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #000000; margin-bottom: 10px;">
                             1‑Month Warranty on Repair Services
                         </h5>
-                        <p class="card-text" style="font-size: 0.8rem; color: #6c757d; line-height: 1.6; margin: 0;">
+                        <p class="card-text" style="font-size: 0.8rem; color: #000000; line-height: 1.6; margin: 0;">
                             Click to view warranty terms & conditions
                         </p>
                     </div>
@@ -370,15 +370,15 @@ include('admin/vendor/inc/config.php');
             </div>
 
             <div class="col-lg-4 col-md-6 mb-3">
-                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #F0FDFA 100%); border-radius: 12px; overflow: hidden;">
+                <div class="card h-100 feature-card-compact border-0 shadow-sm" style="background: #faf5ff; border-radius: 12px; overflow: hidden;">
                     <div class="card-body text-center" style="padding: 20px;">
                         <div class="feature-icon-wrapper mb-3">
-                            <i class="fas fa-star" style="font-size: 2rem; color: #10B981;"></i>
+                            <i class="fas fa-star" style="font-size: 2rem; color: #dc143c;"></i>
                         </div>
-                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #2d3748; margin-bottom: 10px;">
+                        <h5 class="card-title" style="font-size: 0.9rem; font-weight: 600; color: #000000; margin-bottom: 10px;">
                             Our Commitment
                         </h5>
-                        <p class="card-text" style="font-size: 0.8rem; color: #6c757d; line-height: 1.6; margin: 0;">
+                        <p class="card-text" style="font-size: 0.8rem; color: #000000; line-height: 1.6; margin: 0;">
                             Your satisfaction is our priority. We are committed to quality workmanship, transparent pricing, and timely service for every project.
                         </p>
                     </div>
@@ -406,7 +406,7 @@ include('admin/vendor/inc/config.php');
             </ul>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-sm" style="background: #e9d5ff; border: 2px solid #dc143c; color: #000000; border-radius: 8px; padding: 6px 12px; font-weight: 600;" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -613,7 +613,7 @@ include('admin/vendor/inc/config.php');
 
         .feature-card-compact:hover .feature-icon-wrapper {
             transform: scale(1.15) rotate(5deg);
-            background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%);
+            background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%);
         }
 
         .feature-card-compact:hover .feature-icon-wrapper i {
@@ -633,7 +633,7 @@ include('admin/vendor/inc/config.php');
         }
         
         .services-breadcrumb a:hover {
-            color: #F472B6 !important;
+            color: #dc143c !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
         }
@@ -667,7 +667,7 @@ include('admin/vendor/inc/config.php');
     <div class="modal fade" id="serviceDetailsModal" tabindex="-1" role="dialog" aria-labelledby="serviceDetailsModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content" style="border-radius: 15px; overflow: hidden; max-width: 500px; margin: 0 auto;">
-                <div class="modal-header" id="modalHeader" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); color: white; border: none; padding: 12px 20px;">
+                <div class="modal-header" id="modalHeader" style="background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); color: white; border: none; padding: 12px 20px;">
                     <h6 class="modal-title font-weight-bold" id="serviceDetailsModalLabel" style="font-size: 1rem; margin: 0;">
                         <i class="fas fa-tools"></i> Service Details
                     </h6>
@@ -680,7 +680,7 @@ include('admin/vendor/inc/config.php');
                         <!-- Service details will be loaded here -->
                     </div>
                     <div class="text-center mt-3">
-                        <a href="index.php#booking-form" class="btn btn-primary btn-block" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem;">
+                        <a href="index.php#booking-form" class="btn btn-primary" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 20px; padding: 10px 20px; font-weight: 600; font-size: 0.9rem; color: #000000; width: 80%; display: block; margin: 0 auto;">
                             <i class="fas fa-calendar-check"></i> Book This Service Now
                         </a>
                     </div>

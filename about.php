@@ -102,28 +102,28 @@ include('admin/vendor/inc/config.php');
         <div class="row mb-5 mt-5">
             <div class="col-lg-12">
                 <div class="text-center mb-5">
-                    <div class="mb-3" style="display: inline-block; background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 8px 20px; border-radius: 50px;">
+                    <div class="mb-3" style="display: inline-block; background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); padding: 8px 20px; border-radius: 50px;">
                         <span style="color: white; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">WHAT WE OFFER</span>
                     </div>
                     <h3 class="section-heading" style="font-size: 2.5rem; font-weight: 800; color: #2d3748; margin-bottom: 15px;">
-                        Our Expert <span style="color: #5EBBAA;">Solutions</span>
+                        Our Expert <span style="color: #dc143c;">Solutions</span>
                     </h3>
-                    <p style="font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto;">Comprehensive services tailored to your needs</p>
+                    <p style="font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto;">Comprehensive services tailored to your needs with perfection</p>
                 </div>
                 
                 <div class="row">
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                            <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
-                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: #6c757d;"></i>
+                            <div class="solution-card-header" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); padding: 30px; text-align: center;">
+                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(220, 20, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #dc143c;">
+                                    <i class="fas fa-microchip" style="font-size: 2.5rem; color: #dc143c;"></i>
                                 </div>
-                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Electronic Repair</h4>
-                                <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Diagnosis & Restoration</small>
+                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: #000000;">Electronic Repair</h4>
+                                <small style="color: #6c757d; font-weight: 500; font-size: 0.95rem;">Diagnosis & Restoration</small>
                             </div>
                             <div class="solution-card-body" style="padding: 30px;">
                                 <p style="font-size: 1rem; color: #4a5568; line-height: 1.8; margin: 0;">
-                                    Professional service for diagnosing and fixing faults in your electronic devices, using reliable components and expert techniques.
+                                    Professional service for diagnosing and fixing faults in your electronic devices, using reliable components and expert techniques with precision and care.
                                 </p>
                             </div>
                         </div>
@@ -131,16 +131,16 @@ include('admin/vendor/inc/config.php');
 
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                            <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
-                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: #6c757d;"></i>
+                            <div class="solution-card-header" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); padding: 30px; text-align: center;">
+                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(220, 20, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #dc143c;">
+                                    <i class="fas fa-bolt" style="font-size: 2.5rem; color: #dc143c;"></i>
                                 </div>
-                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Electrical Installation</h4>
-                                <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Safety & Upgrade Specialists</small>
+                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: #000000;">Electrical Installation</h4>
+                                <small style="color: #6c757d; font-weight: 500; font-size: 0.95rem;">Safety & Upgrade Specialists</small>
                             </div>
                             <div class="solution-card-body" style="padding: 30px;">
                                 <p style="font-size: 1rem; color: #4a5568; line-height: 1.8; margin: 0;">
-                                    Safe, code-compliant, and professional electrical installations and upgrades designed for peak performance and safety.
+                                    Safe, code-compliant, and professional electrical installations and upgrades designed for peak performance, safety, and long-lasting reliability.
                                 </p>
                             </div>
                         </div>
@@ -148,16 +148,16 @@ include('admin/vendor/inc/config.php');
 
                     <div class="col-lg-4 col-md-6 mb-4">
                         <div class="solution-card border-0 shadow-lg h-100" style="border-radius: 20px; overflow: hidden; background: white; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                            <div class="solution-card-header" style="background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 30px; text-align: center;">
-                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
-                                    <i class="fas fa-tint" style="font-size: 2.5rem; color: #6c757d;"></i>
+                            <div class="solution-card-header" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%); padding: 30px; text-align: center;">
+                                <div class="solution-icon-wrapper mb-3" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(220, 20, 60, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #dc143c;">
+                                    <i class="fas fa-tint" style="font-size: 2.5rem; color: #dc143c;"></i>
                                 </div>
-                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: white;">Plumbing Solutions</h4>
-                                <small style="color: rgba(255,255,255,0.9); font-weight: 500; font-size: 0.95rem;">Leak Repair & System Maintenance</small>
+                                <h4 class="mb-2" style="font-size: 1.3rem; font-weight: 700; color: #000000;">Plumbing Solutions</h4>
+                                <small style="color: #6c757d; font-weight: 500; font-size: 0.95rem;">Leak Repair & System Maintenance</small>
                             </div>
                             <div class="solution-card-body" style="padding: 30px;">
                                 <p style="font-size: 1rem; color: #4a5568; line-height: 1.8; margin: 0;">
-                                    Comprehensive plumbing services focused on durable fixes and precise installations for all your water system needs.
+                                    Comprehensive plumbing services focused on durable fixes and precise installations for all your water system needs with guaranteed quality.
                                 </p>
                             </div>
                         </div>
@@ -170,40 +170,40 @@ include('admin/vendor/inc/config.php');
         <div class="row mt-5 pt-5">
             <div class="col-lg-12">
                 <div class="text-center mb-5">
-                    <div class="mb-3" style="display: inline-block; background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); padding: 8px 20px; border-radius: 50px;">
+                    <div class="mb-3" style="display: inline-block; background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); padding: 8px 20px; border-radius: 50px;">
                         <span style="color: white; font-weight: 700; font-size: 0.85rem; letter-spacing: 1px;">OUR VALUES</span>
                     </div>
                     <h3 class="section-heading" style="font-size: 2.5rem; font-weight: 800; color: #2d3748; margin-bottom: 15px;">
-                        Our Core <span style="color: #5EBBAA;">Values</span>
+                        Our Core <span style="color: #dc143c;">Values</span>
                     </h3>
-                    <p style="font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto;">The principles that guide everything we do</p>
+                    <p style="font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto;">The principles that guide everything we do with perfection</p>
                 </div>
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #7DD3C0;">
-                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(125, 211, 192, 0.3);">
+                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #dc143c;">
+                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);">
                                 <i class="fas fa-handshake" style="font-size: 2.5rem; color: white;"></i>
                             </div>
                             <h5 style="font-size: 1.4rem; font-weight: 700; color: #2d3748; margin-bottom: 15px;">Trust</h5>
-                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Building lasting relationships through reliability and transparency</p>
+                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Building lasting relationships through reliability, transparency, and unwavering commitment to excellence</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #7DD3C0;">
-                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(125, 211, 192, 0.3);">
+                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #dc143c;">
+                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);">
                                 <i class="fas fa-award" style="font-size: 2.5rem; color: white;"></i>
                             </div>
                             <h5 style="font-size: 1.4rem; font-weight: 700; color: #2d3748; margin-bottom: 15px;">Quality</h5>
-                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Uncompromising standards in every service we provide</p>
+                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Uncompromising standards in every service we provide with premium materials and expert craftsmanship</p>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 mb-4">
-                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #7DD3C0;">
-                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #7DD3C0 0%, #A7E9F5 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(125, 211, 192, 0.3);">
+                        <div class="value-card border-0 shadow-lg text-center" style="border-radius: 20px; padding: 40px 30px; background: white; transition: all 0.3s ease; border-top: 5px solid #dc143c;">
+                            <div class="value-icon mb-4" style="width: 90px; height: 90px; margin: 0 auto; background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(220, 20, 60, 0.3);">
                                 <i class="fas fa-check-circle" style="font-size: 2.5rem; color: white;"></i>
                             </div>
                             <h5 style="font-size: 1.4rem; font-weight: 700; color: #2d3748; margin-bottom: 15px;">Perfection</h5>
-                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Meticulous attention to detail in every project</p>
+                            <p style="font-size: 1rem; color: #6c757d; margin: 0; line-height: 1.7;">Meticulous attention to detail in every project, ensuring flawless execution and complete satisfaction</p>
                         </div>
                     </div>
                 </div>
@@ -416,7 +416,7 @@ include('admin/vendor/inc/config.php');
 
         .about-image-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(255, 71, 87, 0.2) !important;
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.2) !important;
         }
 
         .about-image-card:hover .about-image {
@@ -428,7 +428,7 @@ include('admin/vendor/inc/config.php');
         }
 
         .about-content-card:hover {
-            box-shadow: 0 15px 35px rgba(255, 71, 87, 0.15) !important;
+            box-shadow: 0 15px 35px rgba(220, 20, 60, 0.15) !important;
         }
 
         .warranty-card {
@@ -437,7 +437,7 @@ include('admin/vendor/inc/config.php');
 
         .warranty-card:hover {
             transform: translateX(5px);
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.2);
+            box-shadow: 0 8px 20px rgba(220, 20, 60, 0.2);
         }
 
         .warranty-icon {
@@ -454,7 +454,7 @@ include('admin/vendor/inc/config.php');
 
         .solution-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(255, 71, 87, 0.25) !important;
+            box-shadow: 0 20px 40px rgba(220, 20, 60, 0.25) !important;
         }
 
         .solution-card-header {
@@ -475,7 +475,7 @@ include('admin/vendor/inc/config.php');
 
         .value-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 30px rgba(255, 71, 87, 0.2) !important;
+            box-shadow: 0 15px 30px rgba(220, 20, 60, 0.2) !important;
         }
 
         .value-icon {
@@ -487,7 +487,7 @@ include('admin/vendor/inc/config.php');
         }
 
         .value-card:hover h5 {
-            color: #11998e;
+            color: #dc143c;
         }
 
         .about-breadcrumb {
@@ -503,7 +503,7 @@ include('admin/vendor/inc/config.php');
         }
         
         .about-breadcrumb a:hover {
-            color: #38ef7d !important;
+            color: #dc143c !important;
             transform: translateX(3px);
             transition: all 0.3s ease;
         }

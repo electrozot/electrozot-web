@@ -60,7 +60,7 @@
     position: fixed;
     bottom: 130px;
     right: 20px;
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 50%, #ff006e 100%);
+    background: linear-gradient(135deg, #dc143c 0%, #8b1538 50%, #4a0e0e 100%);
     color: #FFF;
     width: 50px;
     height: 50px;
@@ -69,7 +69,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 3px 15px rgba(255, 107, 107, 0.4);
+    box-shadow: 0 3px 15px rgba(220, 20, 60, 0.4);
     z-index: 10000;
     transition: all 0.3s ease;
     text-decoration: none;
@@ -78,10 +78,10 @@
 }
 
 .book-service-fab:hover {
-    background: linear-gradient(135deg, #ff006e 0%, #ee5a6f 50%, #ff6b6b 100%);
+    background: linear-gradient(135deg, #4a0e0e 0%, #8b1538 50%, #dc143c 100%);
     color: #FFF;
     transform: scale(1.15) translateY(-5px);
-    box-shadow: 0 8px 30px rgba(255, 107, 107, 0.7);
+    box-shadow: 0 8px 30px rgba(220, 20, 60, 0.7);
     text-decoration: none;
     animation: float-book 3s ease-in-out infinite;
 }
@@ -106,11 +106,11 @@
 /* Book Button Blinking Animation */
 @keyframes blink-book {
     0%, 100% {
-        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.5);
+        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.5);
         opacity: 1;
     }
     50% {
-        box-shadow: 0 4px 30px rgba(255, 107, 107, 0.9), 0 0 0 15px rgba(255, 107, 107, 0);
+        box-shadow: 0 4px 30px rgba(220, 20, 60, 0.9), 0 0 0 15px rgba(220, 20, 60, 0);
         opacity: 0.9;
     }
 }
@@ -145,17 +145,17 @@
     display: inline-block;
     background: linear-gradient(
         90deg,
-        #FF6B35 0%,
-        #0066CC 10%,
-        #FF8C00 20%,
-        #E91E63 30%,
-        #7B2CBF 40%,
-        #00A86B 50%,
-        #FF6B35 60%,
-        #0066CC 70%,
-        #FF8C00 80%,
-        #E91E63 90%,
-        #FF6B35 100%
+        #dc143c 0%,
+        #4a0e0e 10%,
+        #8b1538 20%,
+        #e91e63 30%,
+        #c2185b 40%,
+        #6d1b2b 50%,
+        #dc143c 60%,
+        #4a0e0e 70%,
+        #8b1538 80%,
+        #e91e63 90%,
+        #dc143c 100%
     );
     background-size: 200% auto;
     -webkit-background-clip: text;
@@ -169,7 +169,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 15px rgba(255, 107, 53, 0.4));
+    filter: none;
     /* Use GPU acceleration for smoother animation */
     will-change: background-position, transform;
     transform: scale(1) translateZ(0);

@@ -25,7 +25,10 @@
     <div class="container-fluid px-0" style="margin-top: -56px;">
         
         <!-- Enhanced Hero Section with Background Elements -->
-        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #e6f7ff 0%, #d1fae5 20%, #e5e7eb 40%, #bbf7d0 60%, #d1d5db 80%, #e9d5ff 100%); padding: 100px 0 80px 0; position: relative; overflow: hidden;">
+        <section class="hero-section-enhanced" style="background: linear-gradient(135deg, #E9D5FF 0%, #FDF2F8 50%, #FEF3C7 100%); padding: 100px 0 80px 0; position: relative; overflow: hidden; box-shadow: inset 0 0 100px rgba(148, 163, 184, 0.1);">
+            
+            <!-- Subtle Pattern Overlay -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.03; background-image: radial-gradient(circle at 25% 25%, #8b5cf6 0%, transparent 50%), radial-gradient(circle at 75% 75%, #64748b 0%, transparent 50%); background-size: 100px 100px; z-index: 1;"></div>
             
             <style>
                 @keyframes gradientShift {
@@ -137,32 +140,34 @@
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row align-items-center">
                     <div class="col-lg-6 mb-5 mb-lg-0 hero-content" style="padding-right: 30px;">
-                        <h1 class="display-1 mb-4 hero-title" style="color: #2d3748; font-size: 4.5rem; text-align: center; font-weight: 400;">
+                        <h1 class="display-1 mb-4 hero-title" style="color: #2d3748; font-size: 4.5rem; text-align: center; font-weight: 700;">
                             <span class="electrozot-animated">Electrozot</span>
                         </h1>
-                        <p class="lead mb-4 hero-description" style="font-size: 0.95rem; line-height: 1.6; color: #5B4A7D; text-shadow: 1px 1px 3px rgba(255,255,255,0.6); font-weight: 700; text-align: center; padding: 0 15px;">
-                            Your Trusted Partner for Electrical & Plumbing Services,<br> Quality Service & Certified Technicians.<br>We Deliver Perfection in Every Job.
+                        <p class="lead mb-4 hero-description" style="font-size: 1.1rem; line-height: 1.7; color: #2d3748; font-weight: 600; text-align: center; padding: 0 15px; margin-bottom: 2rem;">
+                            Your Trusted Partner for <span style="color: #2d3748; font-weight: 700;">Electrical & Plumbing Services</span><br> 
+                            <span style="color: #2d3748; font-weight: 700;">Quality Service & Certified Technicians</span><br>
+                            <span style="color: #2d3748; font-weight: 700;">We Deliver Perfection in Every Job.</span>
                         </p>
                         <div class="hero-buttons-wrapper d-flex flex-wrap justify-content-center" style="gap: 12px;">
-                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; min-width: 160px; text-align: center; border: none;">
-                                <i class="fas fa-bolt" style="color: #000000;"></i> Book Service
+                            <a href="#booking-form" id="book-service-btn" class="feature-badge hero-btn" role="button" aria-label="Book service now" style="text-decoration: none; background: transparent; color: #dc143c; padding: 14px 32px; border-radius: 30px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease; min-width: 180px; text-align: center; border: 2px solid #dc143c;">
+                                <i class="fas fa-bolt" style="color: #dc143c; margin-right: 8px;"></i> Book Service
                             </a>
-                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); color: #2d3748; padding: 12px 28px; border-radius: 30px; font-weight: 700; font-size: 1rem; transition: all 0.3s ease; min-width: 190px; text-align: center; border: none;">
-                                <i class="fas fa-phone" style="color: #000000;"></i> 7559606925
+                            <a href="tel:7559606925" class="feature-badge hero-btn" style="text-decoration: none; background: transparent; color: #dc143c; padding: 14px 32px; border-radius: 30px; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease; min-width: 200px; text-align: center; border: 2px solid #dc143c;">
+                                <i class="fas fa-phone" style="color: #dc143c; margin-right: 8px;"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="booking-card" id="booking-form">
-                            <div class="card shadow-lg border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 3px solid #E88A77;">
+                            <div class="card border-0 booking-form-card" style="border-radius: 20px; overflow: hidden; position: relative; border: 2px solid rgba(147, 51, 234, 0.3); box-shadow: 0 0 20px rgba(147, 51, 234, 0.2), 0 0 40px rgba(147, 51, 234, 0.1), 0 8px 30px rgba(233, 213, 255, 0.4); background: linear-gradient(145deg, rgba(147, 51, 234, 0.05), rgba(233, 213, 255, 0.1)); backdrop-filter: blur(10px);">
                                 
-                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #E88A77 0%, #E89BB8 50%, #A876D3 100%); position: relative; z-index: 3; border-bottom: 3px solid #E88A77; overflow: hidden; box-shadow: 0 4px 15px rgba(232, 138, 119, 0.4);">
-                                    <h3 class="mb-0 font-weight-bold" style="color: white; font-size: 1.5rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2; text-shadow: 2px 2px 6px rgba(0,0,0,0.3);">
-                                        <i class="fas fa-calendar-check" style="color: white; margin-right: 8px;"></i>
+                                <div class="card-header text-center py-3 booking-header" style="background: linear-gradient(135deg, #E9D5FF 0%, #FDF2F8 50%, #FEF3C7 100%); position: relative; z-index: 3; border-bottom: 3px solid #E9D5FF; overflow: hidden;">
+                                    <h3 class="mb-0 font-weight-bold" style="color: #2d3748; font-size: 1.6rem; font-family: 'Segoe UI', sans-serif; position: relative; z-index: 2;">
+                                        <i class="fas fa-calendar-check" style="color: #2d3748; margin-right: 10px;"></i>
                                         Book Service Now
                                     </h3>
                                 </div>
-                                <div class="card-body p-3" style="position: relative; z-index: 2; background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(10px);">
+                                <div class="card-body p-3" style="position: relative; z-index: 2; background: linear-gradient(135deg, rgba(233, 213, 255, 0.1) 0%, rgba(253, 242, 248, 0.1) 50%, rgba(254, 243, 199, 0.1) 100%); backdrop-filter: blur(10px);">
                                     <?php if(isset($_SESSION['booking_success'])) { ?>
                                         <div class="alert alert-success alert-dismissible fade show py-2" role="alert" style="font-size: 0.9rem;">
                                             <i class="fas fa-check-circle"></i> <?php echo $_SESSION['booking_success']; unset($_SESSION['booking_success']); ?>
@@ -262,8 +267,8 @@
                                         <!-- Hidden field to store selected subcategory -->
                                         <input type="hidden" name="sb_subcategory" id="guestSubcategoryHidden" value="">
                                         <div class="text-center mt-2">
-                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: #10b981; border: none; font-weight: 600; padding: 8px 30px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white;">
-                                                <i class="fas fa-paper-plane" id="submitIcon"></i> <span id="submitText">Submit Booking</span>
+                                            <button type="submit" name="book_service_guest" class="btn btn-primary btn-sm px-4 booking-submit-btn" id="submitBookingBtn" style="background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); border: none; font-weight: 700; padding: 12px 40px; transition: all 0.3s ease; position: relative; overflow: hidden; color: white; border-radius: 25px; font-size: 1rem; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                                                <i class="fas fa-paper-plane" id="submitIcon" style="margin-right: 8px;"></i> <span id="submitText">Submit Booking</span>
                                             </button>
                                         </div>
                                     </form>
@@ -376,18 +381,15 @@
                 width: 100% !important;
                 box-sizing: border-box !important;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
             }
             
             .booking-form-compact .form-control:hover {
                 border-color: #9ca3af !important;
-                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08) !important;
             }
             
             .booking-form-compact .form-control:focus {
                 border-color: #dc143c !important;
                 background: #ffffff !important;
-                box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.15), 0 4px 10px rgba(220, 20, 60, 0.1) !important;
                 outline: none !important;
                 transform: translateY(-1px) !important;
             }
@@ -452,7 +454,6 @@
             
             /* Enhanced card styling */
             .booking-form-card {
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15) !important;
                 border-radius: 20px !important;
             }
             
@@ -478,7 +479,7 @@
                 appearance: auto !important;
                 -webkit-appearance: menulist !important;
                 -moz-appearance: menulist !important;
-                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+                transition: border-color 0.2s ease !important;
             }
             
             .service-dropdown option {
@@ -500,8 +501,7 @@
             .service-dropdown:focus {
                 outline: none !important;
                 border-color: #dc143c !important;
-                box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.15) !important;
-                transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+                transition: border-color 0.2s ease !important;
             }
             
             /* Smooth hover effect */
@@ -533,14 +533,12 @@
             
             #otherServiceInput:focus {
                 border-color: #ff9800 !important;
-                box-shadow: 0 0 0 4px rgba(255, 152, 0, 0.2) !important;
             }
             
             /* Submit button hover effect */
             .booking-submit-btn:hover {
                 background: #059669 !important;
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6) !important;
             }
             
             .booking-submit-btn:active {
@@ -550,7 +548,7 @@
             /* Click success animation */
             @keyframes successPulse {
                 0% { transform: scale(1); }
-                50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(30, 41, 59, 0.8); }
+                50% { transform: scale(1.05); }
                 100% { transform: scale(1); }
             }
             
@@ -655,6 +653,244 @@
                 }
                 
                 /* Ensure all form controls are full width and aligned on mobile */
+                .booking-form-compact .form-control,
+                .booking-form-compact select.form-control,
+                .booking-form-compact textarea.form-control,
+                .service-dropdown {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    font-size: 0.85rem !important;
+                    padding: 5px 8px !important;
+                    min-height: 32px !important;
+                }
+                
+                .booking-form-compact textarea.form-control {
+                    font-size: 0.85rem !important;
+                    padding: 5px 8px !important;
+                }
+                
+                /* Hide duplicate dropdown error by ensuring proper spacing */
+                .booking-form-compact .form-group + .form-group {
+                    margin-top: 0.5rem !important;
+                }
+                
+                /* Submit button mobile */
+                .booking-submit-btn {
+                    padding: 8px 20px !important;
+                    font-size: 0.85rem !important;
+                }
+                
+                /* COMPACT SECTIONS FOR MOBILE */
+                
+                /* Contact Us Section - Compact */
+                #contact-section {
+                    padding: 30px 0 !important;
+                }
+                
+                #contact-section h2 {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                #contact-section .lead {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                .contact-card {
+                    padding: 20px 15px !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .contact-icon {
+                    width: 50px !important;
+                    height: 50px !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .contact-icon i {
+                    font-size: 1.3rem !important;
+                }
+                
+                .contact-card h4 {
+                    font-size: 1rem !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .contact-card p {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .contact-card .btn {
+                    padding: 8px 20px !important;
+                    font-size: 0.8rem !important;
+                }
+                
+                .service-areas {
+                    padding: 20px !important;
+                }
+                
+                .service-areas h4 {
+                    font-size: 1rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .service-areas p {
+                    font-size: 0.9rem !important;
+                }
+                
+                /* FAQ Section - Compact */
+                #faq-section {
+                    padding: 30px 0 !important;
+                }
+                
+                #faq-section h2 {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                #faq-section .lead {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                .accordion .card {
+                    margin-bottom: 10px !important;
+                }
+                
+                .card-header {
+                    padding: 0 !important;
+                }
+                
+                .card-header .btn {
+                    padding: 15px !important;
+                    font-size: 0.9rem !important;
+                }
+                
+                .card-body {
+                    padding: 15px !important;
+                    font-size: 0.85rem !important;
+                }
+                
+                /* How to Book Service Section - Compact */
+                #how-to-book-section {
+                    padding: 30px 0 !important;
+                }
+                
+                #how-to-book-section h2 {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                #how-to-book-section .lead {
+                    font-size: 0.8rem !important;
+                    margin-bottom: 20px !important;
+                }
+                
+                .booking-step-card {
+                    padding: 20px 15px !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .step-number {
+                    width: 40px !important;
+                    height: 40px !important;
+                    font-size: 1.2rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .step-icon {
+                    margin-bottom: 15px !important;
+                }
+                
+                .step-icon i {
+                    font-size: 1.5rem !important;
+                }
+                
+                .booking-step-card h4 {
+                    font-size: 1rem !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .booking-step-card p {
+                    font-size: 0.8rem !important;
+                    line-height: 1.4 !important;
+                }
+                
+                .quick-booking-section {
+                    padding: 20px !important;
+                    margin-top: 20px !important;
+                }
+                
+                .quick-booking-section h3 {
+                    font-size: 1.2rem !important;
+                    margin-bottom: 15px !important;
+                }
+                
+                .quick-option {
+                    padding: 15px !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .quick-option i {
+                    font-size: 1.5rem !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .quick-option h5 {
+                    font-size: 0.9rem !important;
+                    margin-bottom: 8px !important;
+                }
+                
+                .quick-option p {
+                    font-size: 0.75rem !important;
+                    margin-bottom: 10px !important;
+                }
+                
+                .quick-option .btn {
+                    padding: 6px 15px !important;
+                    font-size: 0.75rem !important;
+                }
+            }
+            
+            /* Compact styling for tablets and small screens */
+            @media (max-width: 768px) {
+                /* Contact Us Section - Medium Compact */
+                #contact-section {
+                    padding: 40px 0 !important;
+                }
+                
+                #contact-section h2 {
+                    font-size: 1.8rem !important;
+                }
+                
+                .contact-card {
+                    padding: 25px 20px !important;
+                }
+                
+                /* FAQ Section - Medium Compact */
+                #faq-section {
+                    padding: 40px 0 !important;
+                }
+                
+                #faq-section h2 {
+                    font-size: 1.8rem !important;
+                }
+                
+                /* How to Book Service Section - Medium Compact */
+                #how-to-book-section {
+                    padding: 40px 0 !important;
+                }
+                
+                #how-to-book-section h2 {
+                    font-size: 1.8rem !important;
+                }
+                
+                .booking-step-card {
+                    padding: 25px 20px !important;
+                }
+            }
                 .booking-form-compact .form-control,
                 .booking-form-compact select.form-control,
                 .booking-form-compact textarea.form-control,
@@ -956,12 +1192,12 @@
         </script>
 
         <!-- About Section -->
-        <section id="about-section" class="about-section lazy-section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 60px 0;">
+        <section id="about-section" class="about-section lazy-section" style="background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 60px 0;">
             <div class="container">
                 <div class="row text-center mb-5">
                     <div class="col-12">
                         <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
-                            <i class="fas fa-info-circle" style="color: #EC4899; margin-right: 10px;"></i>About ElectroZot
+                            <i class="fas fa-info-circle" style="color: #900613ff; margin-right: 10px;"></i>About Electrozot
                         </h2>
                         <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
                             Your trusted partner for professional electrical, repair, and plumbing services
@@ -973,14 +1209,14 @@
                     <div class="col-lg-6 mb-4 mb-lg-0">
                         <div class="about-content h-100 d-flex flex-column">
                             <h3 class="font-weight-bold mb-4" style="color: #2d3748; font-size: 1.8rem;">
-                                We Make Perfect - Every Time
+                                We Make Perfect
                             </h3>
                             <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 20px;">
-                                ElectroZot is your reliable partner for all <a href="service/electrical-services.php" style="color: #EC4899; text-decoration: none; font-weight: 600;">electrical services</a>, 
-                                <a href="service/repair-services.php" style="color: #EF4444; text-decoration: none; font-weight: 600;">appliance repair</a>, 
-                                <a href="service/installation-services.php" style="color: #10B981; text-decoration: none; font-weight: 600;">installation</a>, 
-                                <a href="service/maintenance-services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 600;">maintenance</a>, and 
-                                <a href="service/plumbing-services.php" style="color: #3B82F6; text-decoration: none; font-weight: 600;">plumbing services</a>. 
+                                Electrozot is your reliable partner for all <a href="service/electrical-services.php" style="color: #800000; text-decoration: none; font-weight: 600;">electrical services</a>, 
+                                <a href="service/repair-services.php" style="color: #800000; text-decoration: none; font-weight: 600;">appliance repair</a>, 
+                                <a href="service/installation-services.php" style="color: #800000; text-decoration: none; font-weight: 600;">installation</a>, 
+                                <a href="service/maintenance-services.php" style="color: #800000; text-decoration: none; font-weight: 600;">maintenance</a>, and 
+                                <a href="service/plumbing-services.php" style="color: #800000; text-decoration: none; font-weight: 600;">plumbing services</a>. 
                                 With years of experience and a team of certified professionals, we deliver quality workmanship that you can trust.
                             </p>
                             <p style="color: #6c757d; line-height: 1.8; font-size: 1.1rem; margin-bottom: 30px;">
@@ -991,7 +1227,7 @@
                             <div class="row flex-grow-1">
                                 <div class="col-md-6 mb-3">
                                     <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
                                             <i class="fas fa-certificate" style="color: white; font-size: 1.2rem;"></i>
                                         </div>
                                         <div>
@@ -1002,7 +1238,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #8b1538 0%, #e91e63 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
                                             <i class="fas fa-shield-alt" style="color: white; font-size: 1.2rem;"></i>
                                         </div>
                                         <div>
@@ -1013,7 +1249,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
                                             <i class="fas fa-clock" style="color: white; font-size: 1.2rem;"></i>
                                         </div>
                                         <div>
@@ -1024,7 +1260,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <div class="about-feature d-flex align-items-center">
-                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
+                                        <div class="feature-icon-small" style="background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px;">
                                             <i class="fas fa-rupee-sign" style="color: white; font-size: 1.2rem;"></i>
                                         </div>
                                         <div>
@@ -1042,25 +1278,25 @@
                             <div class="row text-center">
                                 <div class="col-6 mb-4">
                                     <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #EC4899; font-size: 2.5rem;">1000+</h3>
+                                        <h3 class="font-weight-bold mb-2" style="color: #dc143c; font-size: 2.5rem;">1000+</h3>
                                         <p class="mb-0" style="color: #6c757d; font-weight: 600;">Happy Customers</p>
                                     </div>
                                 </div>
                                 <div class="col-6 mb-4">
                                     <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #10B981; font-size: 2.5rem;">5+</h3>
+                                        <h3 class="font-weight-bold mb-2" style="color: #e91e63; font-size: 2.5rem;">5+</h3>
                                         <p class="mb-0" style="color: #6c757d; font-weight: 600;">Years Experience</p>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #8B5CF6; font-size: 2.5rem;">50+</h3>
+                                        <h3 class="font-weight-bold mb-2" style="color: #c2185b; font-size: 2.5rem;">50+</h3>
                                         <p class="mb-0" style="color: #6c757d; font-weight: 600;">Services Offered</p>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="stat-item">
-                                        <h3 class="font-weight-bold mb-2" style="color: #F59E0B; font-size: 2.5rem;">24/7</h3>
+                                        <h3 class="font-weight-bold mb-2" style="color: #8b1538; font-size: 2.5rem;">24/7</h3>
                                         <p class="mb-0" style="color: #6c757d; font-weight: 600;">Support Available</p>
                                     </div>
                                 </div>
@@ -1072,48 +1308,48 @@
                 <!-- Service Areas Section - Full Width -->
                 <div class="row mt-5">
                     <div class="col-12">
-                        <div class="service-areas-section" style="background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%); border-radius: 15px; padding: 25px; border-left: 4px solid #EC4899;">
+                        <div class="service-areas-section" style="background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%); border-radius: 15px; padding: 25px; border: 2px solid #dc143c;">
                             <h5 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">
-                                <i class="fas fa-map-marker-alt" style="color: #EC4899; margin-right: 8px;"></i>Cities We Serve
+                                <i class="fas fa-map-marker-alt" style="color: #dc143c; margin-right: 8px;"></i>Cities We Serve
                             </h5>
                             <p style="color: #6c757d; font-size: 1rem; line-height: 1.6; margin-bottom: 15px;">
                                 We provide professional electrical and plumbing services across Kangra District and surrounding areas:
                             </p>
                             <div class="cities-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 15px;">
-                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #EC4899;">
+                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border: 2px solid #dc143c;">
                                     <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
-                                        <i class="fas fa-city" style="color: #EC4899; margin-right: 8px;"></i>Major Cities
+                                        <i class="fas fa-city" style="color: #dc143c; margin-right: 8px;"></i>Major Cities
                                     </strong>
                                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Dharamshala</a>
-                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Kangra</a>
-                                        <a href="services.php" style="color: #EC4899; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(236,72,153,0.1); border-radius: 15px; transition: all 0.3s ease;">Palampur</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Dharamshala</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Kangra</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Palampur</a>
                                     </div>
                                 </div>
-                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #10B981;">
+                                <div class="city-group" style="background: rgba(255, 255, 255, 0.7); padding: 15px; border-radius: 10px; border: 2px solid #dc143c;">
                                     <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
-                                        <i class="fas fa-map-marker-alt" style="color: #10B981; margin-right: 8px;"></i>Local Areas
+                                        <i class="fas fa-map-marker-alt" style="color: #dc143c; margin-right: 8px;"></i>Local Areas
                                     </strong>
                                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Gaggal</a>
-                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Shahpur</a>
-                                        <a href="services.php" style="color: #10B981; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(16,185,129,0.1); border-radius: 15px; transition: all 0.3s ease;">Rait</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Gaggal</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Shahpur</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Rait</a>
                                     </div>
                                 </div>
-                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border-left: 3px solid #8B5CF6;">
+                                <div class="city-group" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 10px; border: 2px solid #dc143c;">
                                     <strong style="color: #2d3748; font-size: 1rem; display: block; margin-bottom: 10px;">
-                                        <i class="fas fa-home" style="color: #8B5CF6; margin-right: 8px;"></i>Nearby Villages
+                                        <i class="fas fa-home" style="color: #dc143c; margin-right: 8px;"></i>Nearby Villages
                                     </strong>
                                     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">Mataur</a>
-                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">Kachiyari</a>
-                                        <a href="services.php" style="color: #8B5CF6; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(139,92,246,0.1); border-radius: 15px; transition: all 0.3s ease;">53 Mile</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Mataur</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">Kachiyari</a>
+                                        <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 4px 8px; background: rgba(220,20,60,0.1); border-radius: 15px; transition: all 0.3s ease;">53 Mile</a>
                                     </div>
                                 </div>
                             </div>
                             <p style="color: #6c757d; font-size: 0.9rem; margin-top: 15px; margin-bottom: 0; font-style: italic;">
-                                <i class="fas fa-phone" style="color: #EC4899; margin-right: 5px;"></i>
-                                Call <a href="tel:7559606925" style="color: #EC4899; text-decoration: none; font-weight: 600;">7559606925</a> for same-day service in your area
+                                <i class="fas fa-phone" style="color: #dc143c; margin-right: 5px;"></i>
+                                Call <a href="tel:7559606925" style="color: #dc143c; text-decoration: none; font-weight: 600;">7559606925</a> for same-day service in your area
                             </p>
                         </div>
                     </div>
@@ -1182,49 +1418,49 @@
         </section>
 
         <!-- Features Section -->
-        <section class="features-section lazy-section" style="background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%); position: relative; padding: 20px 0 15px 0;">
+        <section class="features-section lazy-section" style="background: linear-gradient(180deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); position: relative; padding: 20px 0 15px 0;">
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #16a34a;">
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #2d3748;">
                             Why Choose Electrozot?
                         </h2>
-                        <p class="d-none d-md-block" style="color: #000000; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Professional service you can trust</p>
+                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Professional service you can trust</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-4 mb-3">
-                        <div class="feature-card card h-100 border-0 feature-card-1" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FDF5FF 0%, #FAE8FF 100%);">
+                        <div class="feature-card card h-100 border-0 feature-card-1" style="border-radius: 15px; overflow: hidden; position: relative; background: rgba(255,255,255,0.8); border: 1px solid rgba(220, 20, 60, 0.2);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-2 icon-bounce" style="font-size: 1.5rem; color: #A855F7; background: linear-gradient(135deg, #FAE8FF 0%, #F3E8FF 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                <div class="feature-icon mb-2 icon-bounce" style="font-size: 1.5rem; color: white; background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-user-cog"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #7C3AED; font-size: 1rem;">Professional Trained Teams</h5>
-                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">We have professional trained teams and experts for every service. Our skilled technicians are certified and experienced.</p>
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #ffffffff; font-size: 1rem;">Professional Trained Teams</h5>
+                                <p class="card-text" style="color: #6c757d; line-height: 1.5; font-size: 0.85rem;">We have professional trained teams and experts for every service. Our skilled technicians are certified and experienced.</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 mb-3">
-                        <div class="feature-card card h-100 border-0 feature-card-2" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FFF5F7 0%, #FFE4E9 100%);">
+                        <div class="feature-card card h-100 border-0 feature-card-2" style="border-radius: 15px; overflow: hidden; position: relative; background: rgba(255,255,255,0.8); border: 1px solid rgba(220, 20, 60, 0.2);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.2s; font-size: 1.5rem; color: #EC4899; background: linear-gradient(135deg, #FFE4E9 0%, #FECDD6 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.2s; font-size: 1.5rem; color: white; background: linear-gradient(135deg, #8b1538 0%, #e91e63 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-handshake"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #DB2777; font-size: 1rem;">On-Time & Affordable Service</h5>
-                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 1rem;">On-Time & Affordable Service</h5>
+                                <p class="card-text" style="color: #6c757d; line-height: 1.5; font-size: 0.85rem;">
                                     We commit our service on time with affordable and transparent prices. No hidden charges, just honest pricing and punctual delivery.
                                 </p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 mb-3">
-                        <div class="feature-card card h-100 border-0 feature-card-3" style="border-radius: 15px; overflow: hidden; position: relative; background: linear-gradient(135deg, #FCF5FF 0%, #F5E8FF 100%);">
+                        <div class="feature-card card h-100 border-0 feature-card-3" style="border-radius: 15px; overflow: hidden; position: relative; background: rgba(255,255,255,0.8); border: 1px solid rgba(220, 20, 60, 0.2);">
                             <div class="card-body p-3" style="position: relative; z-index: 2; text-align: left;">
-                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.4s; font-size: 1.5rem; color: #9333EA; background: linear-gradient(135deg, #F5E8FF 0%, #EDD5FF 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
+                                <div class="feature-icon mb-2 icon-bounce" style="animation-delay: 0.4s; font-size: 1.5rem; color: white; background: linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px;">
                                     <i class="fas fa-shield-alt"></i>
                                 </div>
-                                <h5 class="card-title font-weight-bold mb-2" style="color: #7E22CE; font-size: 1rem;">1 Month Warranty & Trust</h5>
-                                <p class="card-text" style="color: #475569; line-height: 1.5; font-size: 0.85rem;">
+                                <h5 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 1rem;">1 Month Warranty & Trust</h5>
+                                <p class="card-text" style="color: #6c757d; line-height: 1.5; font-size: 0.85rem;">
                                     We provide 1 month warranty on all repairs and parts. Your satisfaction is guaranteed with comprehensive warranty coverage.
                                 </p>
                             </div>
@@ -1235,14 +1471,14 @@
         </section>
 
         <!-- Services Portfolio Section -->
-        <section class="services-section" style="background: linear-gradient(180deg, #f0f4ff 0%, #ffffff 100%); padding: 20px 0 15px 0;">
+        <section class="services-section" style="background: linear-gradient(180deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 20px 0 15px 0;">
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #16a34a;">
+                        <h2 class="font-weight-bold mb-2 section-title" style="font-size: 1.5rem; color: #2d3748;">
                             Our Popular Services
                         </h2>
-                        <p class="d-none d-md-block" style="color: #000000; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Expert technicians for all your needs</p>
+                        <p class="d-none d-md-block" style="color: #6c757d; font-weight: 500; font-size: 0.9rem; margin-bottom: 0;">Expert technicians for all your needs</p>
                     </div>
                 </div>
                 <div class="row">
@@ -1262,31 +1498,31 @@
                     }
                     $cnt=1;
                     $gradients = [
-                        'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                        'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                        'linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%)',
+                        'linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%)',
+                        'linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%)'
                     ];
                     while($row=$res->fetch_object()) {
                         $gradient = $gradients[($cnt-1) % count($gradients)];
                     ?>
                     <div class="col-lg-4 col-md-6 mb-3">
                         <a href="#booking-form" class="service-card-link" style="text-decoration: none; display: block;">
-                        <div class="service-card card h-100 border-0 service-card-hover" style="border-radius: 15px; overflow: hidden; position: relative; cursor: pointer;">
+                        <div class="service-card card h-100 border-0 service-card-hover" style="border-radius: 15px; overflow: hidden; position: relative; cursor: pointer; border: 1px solid rgba(220, 20, 60, 0.1);">
                             <div class="service-gradient-overlay" style="background: <?php echo $gradient; ?>;"></div>
                             <div class="card-img-wrapper service-img-wrapper" style="height: 150px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-tools text-white service-icon" style="font-size: 3.5rem; position: relative; z-index: 2; transition: all 0.4s ease;"></i>
                                 <div class="service-shine"></div>
                             </div>
-                            <div class="card-body p-3" style="background: white; position: relative; z-index: 2;">
+                            <div class="card-body p-3" style="background: rgba(255,255,255,0.95); position: relative; z-index: 2;">
                                 <h4 class="card-title font-weight-bold mb-2 service-title" style="color: #2d3748; transition: color 0.3s ease; font-size: 1.1rem;">
                                     <?php echo $row->s_name; ?>
                                 </h4>
-                                <p class="text-muted mb-3" style="line-height: 1.5; font-size: 0.85rem;"><?php echo substr($row->s_description, 0, 80); ?>...</p>
+                                <p class="text-muted mb-3" style="line-height: 1.5; font-size: 0.85rem; color: #6c757d;"><?php echo substr($row->s_description, 0, 80); ?>...</p>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="price-badge px-3 py-1" style="background: <?php echo $gradient; ?>; color: white; font-size: 0.95rem; font-weight: 700; border-radius: 20px; box-shadow: 0 3px 10px rgba(0,0,0,0.15);">
+                                    <span class="price-badge px-3 py-1" style="background: <?php echo $gradient; ?>; color: white; font-size: 0.95rem; font-weight: 700; border-radius: 20px;">
                                         ₹<?php echo number_format($row->s_price, 0); ?>
                                     </span>
-                                    <span class="text-muted" style="font-weight: 500; font-size: 0.8rem;">
+                                    <span class="text-muted" style="font-weight: 500; font-size: 0.8rem; color: #6c757d;">
                                         <i class="fas fa-clock"></i> <?php echo $row->s_duration; ?>
                                     </span>
                                 </div>
@@ -1300,14 +1536,14 @@
         </section>
 
         <!-- Our Work Showcase Section -->
-        <section id="portfolioSection" style="background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%); padding: 15px 0 0 0; margin-bottom: 0;">
+        <section id="portfolioSection" style="background: linear-gradient(to bottom, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 15px 0 0 0; margin-bottom: 0;">
             <div class="container" style="padding-bottom: 0; margin-bottom: 0;">
                 <div class="row text-center" style="margin-bottom: 10px;">
                     <div class="col-12">
                         <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.3rem; margin-bottom: 5px;">
-                            <span class="gradient-text-2">Our Work</span> Portfolio
+                            <span style="color: #dc143c;">Our Work</span> Portfolio
                         </h2>
-                        <p class="text-muted d-none d-md-block" style="font-size: 0.9rem; margin-bottom: 0;">See the quality of our completed projects</p>
+                        <p class="text-muted d-none d-md-block" style="font-size: 0.9rem; margin-bottom: 0; color: #6c757d;">See the quality of our completed projects</p>
                     </div>
                 </div>
 
@@ -1321,7 +1557,7 @@
                         ?>
                         
                         <?php if($slider_count > 0): ?>
-                            <div id="workCarousel" class="carousel slide shadow" data-ride="carousel" style="border-radius: 10px; overflow: hidden; margin: 0; padding: 0; height: 250px;">
+                            <div id="workCarousel" class="carousel slide" data-ride="carousel" style="border-radius: 10px; overflow: hidden; margin: 0; padding: 0; height: 250px; border: 1px solid rgba(220, 20, 60, 0.2);">
                                 <!-- Indicators -->
                                 <ol class="carousel-indicators d-none d-md-flex">
                                     <?php 
@@ -1469,12 +1705,11 @@
         </section>
 
         <!-- Testimonials Section with Auto-Sliding -->
-        <section class="testimonials-section" style="background: linear-gradient(135deg, #89c9c6 0%, #e8b4c0 100%); background-size: 200% 200%; animation: gradientShift 15s ease infinite; position: relative; overflow: hidden; padding: 15px 0;">
-            <div class="testimonial-overlay"></div>
+        <section class="testimonials-section" style="background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); position: relative; overflow: hidden; padding: 15px 0;">
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row text-center mb-2">
                     <div class="col-12">
-                        <h2 class="font-weight-bold" style="color: #2d3748; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); font-size: 1.3rem; margin-bottom: 0;">
+                        <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.3rem; margin-bottom: 0;">
                             Client Testimonials
                         </h2>
                     </div>
@@ -1490,15 +1725,15 @@
                         $res=$stmt->get_result();
                         $cnt=1;
                         $testimonialGradients = [
-                            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'
+                            'linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%)',
+                            'linear-gradient(135deg, #8b1538 0%, #e91e63 100%)',
+                            'linear-gradient(135deg, #6d1b2b 0%, #c2185b 100%)'
                         ];
                         while($row=$res->fetch_object()) {
                             $testGradient = $testimonialGradients[($cnt-1) % count($testimonialGradients)];
                         ?>
                         <div class="testimonial-slide" style="display: inline-block; width: 220px; margin: 0 8px; vertical-align: top;">
-                            <div class="testimonial-card card border-0" style="border-radius: 10px; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.08); height: 100%;">
+                            <div class="testimonial-card card border-0" style="border-radius: 10px; background: rgba(255,255,255,0.9); border: 1px solid rgba(220, 20, 60, 0.1); height: 100%;">
                                 <div class="card-body" style="padding: 10px;">
                                     <div style="margin-bottom: 6px;">
                                         <i class="fas fa-quote-left testimonial-quote" style="font-size: 1rem; background: <?php echo $testGradient; ?>; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; opacity: 0.4;"></i>
@@ -1508,9 +1743,9 @@
                                     </p>
                                     <div class="d-flex align-items-center">
                                         <?php if(isset($row->f_photo) && $row->f_photo) { ?>
-                                            <img src="<?php echo $row->f_photo; ?>" alt="<?php echo $row->f_uname; ?>" class="mr-2" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                                            <img src="<?php echo $row->f_photo; ?>" alt="<?php echo $row->f_uname; ?>" class="mr-2" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
                                         <?php } else { ?>
-                                            <div class="avatar-circle mr-2" style="width: 30px; height: 30px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.75rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                                            <div class="avatar-circle mr-2" style="width: 30px; height: 30px; border-radius: 50%; background: <?php echo $testGradient; ?>; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.75rem;">
                                                 <?php echo strtoupper(substr($row->f_uname, 0, 1)); ?>
                                             </div>
                                         <?php } ?>
@@ -1529,12 +1764,12 @@
         </section>
 
         <!-- Recent Blog Posts Section -->
-        <section style="background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%); padding: 30px 0;">
+        <section style="background: linear-gradient(to bottom, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 30px 0;">
             <div class="container">
                 <div class="row text-center mb-3">
                     <div class="col-12">
                         <h2 class="font-weight-bold" style="color: #2d3748; font-size: 1.8rem;">Latest from Our Blog</h2>
-                        <p class="text-muted" style="font-size: 0.9rem;">Expert tips and guides from our certified technicians</p>
+                        <p class="text-muted" style="font-size: 0.9rem; color: #6c757d;">Expert tips and guides from our certified technicians</p>
                     </div>
                 </div>
                 
@@ -1558,17 +1793,17 @@
                     foreach($desktop_blogs as $blog) { 
                     ?>
                     <div class="col-md-4 mb-3">
-                        <div class="card h-100 shadow-sm" style="border-radius: 10px; overflow: hidden;">
+                        <div class="card h-100" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(220, 20, 60, 0.2);">
                             <?php if($blog->blog_image) { ?>
                                 <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
                             <?php } else { ?>
-                                <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%); display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
                                 </div>
                             <?php } ?>
                             <div class="card-body p-3 d-flex flex-column">
                                 <?php if($blog->blog_category) { ?>
-                                    <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                    <span class="badge mb-1" style="width: fit-content; font-size: 0.7rem; background: #dc143c; color: white;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
                                 <?php } ?>
                                 <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
                                 <p class="card-text text-muted mb-2" style="flex-grow: 1; font-size: 0.8rem; line-height: 1.3;">
@@ -1585,7 +1820,7 @@
                                         <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
                                     </small>
                                 </div>
-                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
+                                <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px; background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); color: white; border: none;">
                                     Read More <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
@@ -1599,17 +1834,17 @@
                     <div class="blog-carousel-container" style="position: relative; overflow: hidden; border-radius: 15px;">
                         <?php foreach($blogs as $index => $blog) { ?>
                         <div class="blog-slide <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="display: <?php echo $index === 0 ? 'block' : 'none'; ?>; animation: <?php echo $index === 0 ? 'slideInRight 0.5s ease-in-out' : 'none'; ?>;">
-                            <div class="card shadow-sm mx-2" style="border-radius: 10px; overflow: hidden;">
+                            <div class="card mx-2" style="border-radius: 10px; overflow: hidden; border: 1px solid rgba(220, 20, 60, 0.2);">
                                 <?php if($blog->blog_image) { ?>
                                     <img src="<?php echo $blog->blog_image; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($blog->blog_title); ?>" style="height: 140px; object-fit: cover;">
                                 <?php } else { ?>
-                                    <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                    <div class="card-img-top" style="height: 140px; background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%); display: flex; align-items: center; justify-content: center;">
                                         <i class="fas fa-blog" style="font-size: 2.5rem; color: rgba(255,255,255,0.8);"></i>
                                     </div>
                                 <?php } ?>
                                 <div class="card-body p-3">
                                     <?php if($blog->blog_category) { ?>
-                                        <span class="badge badge-primary mb-1" style="width: fit-content; font-size: 0.7rem;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
+                                        <span class="badge mb-1" style="width: fit-content; font-size: 0.7rem; background: #dc143c; color: white;"><?php echo htmlspecialchars($blog->blog_category); ?></span>
                                     <?php } ?>
                                     <h6 class="card-title font-weight-bold mb-2" style="color: #2d3748; font-size: 0.95rem;"><?php echo htmlspecialchars($blog->blog_title); ?></h6>
                                     <p class="card-text text-muted mb-2" style="font-size: 0.8rem; line-height: 1.3;">
@@ -1626,7 +1861,7 @@
                                             <i class="fas fa-eye"></i> <?php echo $blog->blog_views; ?>
                                         </small>
                                     </div>
-                                    <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-primary btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px;">
+                                    <a href="blog-post.php?id=<?php echo $blog->blog_id; ?>&slug=<?php echo $blog->blog_slug; ?>" class="btn btn-sm btn-block" style="border-radius: 15px; font-size: 0.8rem; padding: 6px 12px; background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%); color: white; border: none;">
                                         Read More <i class="fas fa-arrow-right"></i>
                                     </a>
                                 </div>
@@ -1637,7 +1872,7 @@
                         <!-- Carousel indicators -->
                         <div class="carousel-indicators" style="position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px;">
                             <?php foreach($blogs as $index => $blog) { ?>
-                            <button class="indicator-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="width: 8px; height: 8px; border-radius: 50%; border: none; background: <?php echo $index === 0 ? '#007bff' : '#ccc'; ?>; cursor: pointer; transition: all 0.3s ease;"></button>
+                            <button class="indicator-dot <?php echo $index === 0 ? 'active' : ''; ?>" data-slide="<?php echo $index; ?>" style="width: 8px; height: 8px; border-radius: 50%; border: none; background: <?php echo $index === 0 ? '#dc143c' : '#ccc'; ?>; cursor: pointer; transition: all 0.3s ease;"></button>
                             <?php } ?>
                         </div>
                     </div>
@@ -1646,7 +1881,7 @@
                 <!-- View All Button -->
                 <div class="row mt-3">
                     <div class="col-12 text-center">
-                        <a href="blog.php" class="btn btn-outline-primary" style="border-radius: 20px; padding: 8px 24px; font-size: 0.9rem;">
+                        <a href="blog.php" class="btn" style="border-radius: 20px; padding: 8px 24px; font-size: 0.9rem; background: transparent; color: #dc143c; border: 2px solid #dc143c;">
                             View All Posts <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -1695,12 +1930,12 @@
             }
             
             .indicator-dot:hover {
-                background: #007bff !important;
+                background: #dc143c !important;
                 transform: scale(1.2);
             }
             
             .indicator-dot.active {
-                background: #007bff !important;
+                background: #dc143c !important;
                 transform: scale(1.1);
             }
             
@@ -1889,17 +2124,17 @@
 
 
         <!-- How to Book Service Section -->
-        <section id="how-to-book-section" class="how-to-book-section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 0; color: white; position: relative; overflow: hidden;">
+        <section id="how-to-book-section" class="how-to-book-section" style="background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 60px 0; color: #2d3748; position: relative; overflow: hidden;">
             <!-- Background Pattern -->
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.1; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"2\" fill=\"white\"/></svg>'); background-size: 30px 30px;"></div>
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.05; background-image: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><circle cx=\"50\" cy=\"50\" r=\"2\" fill=\"%23dc143c\"/></svg>'); background-size: 30px 30px;"></div>
             
             <div class="container" style="position: relative; z-index: 2;">
                 <div class="row text-center mb-5">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: white;">
-                            <i class="fas fa-clipboard-list" style="color: #FFD700; margin-right: 10px;"></i>How to Book Service
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
+                            <i class="fas fa-clipboard-list" style="color: #dc143c; margin-right: 10px;"></i>How to Book Service
                         </h2>
-                        <p class="lead" style="color: rgba(255,255,255,0.9); max-width: 800px; margin: 0 auto;">
+                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
                             Follow these simple steps to get professional service at your doorstep
                         </p>
                     </div>
@@ -1908,31 +2143,31 @@
                 <div class="row">
                     <!-- Step 1 -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
-                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: #2d3748; box-shadow: 0 5px 15px rgba(255,215,0,0.4);">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 30px 20px; border: 1px solid rgba(220, 20, 60, 0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white;">
                                 1
                             </div>
                             <div class="step-icon mb-3">
-                                <i class="fas fa-mouse-pointer" style="font-size: 2rem; color: #FFD700;"></i>
+                                <i class="fas fa-mouse-pointer" style="font-size: 2rem; color: #dc143c;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Choose Service</h4>
-                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
-                                Select the service you need from our <a href="#booking-form" style="color: #FFD700; text-decoration: none; font-weight: 600;">booking form</a> or browse our <a href="services.php" style="color: #FFD700; text-decoration: none; font-weight: 600;">services page</a>
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">Choose Service</h4>
+                            <p style="color: #6c757d; font-size: 0.95rem; line-height: 1.6;">
+                                Select the service you need from our <a href="#booking-form" style="color: #dc143c; text-decoration: none; font-weight: 600;">booking form</a> or browse our <a href="services.php" style="color: #dc143c; text-decoration: none; font-weight: 600;">services page</a>
                             </p>
                         </div>
                     </div>
 
                     <!-- Step 2 -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
-                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white; box-shadow: 0 5px 15px rgba(255,107,107,0.4);">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 30px 20px; border: 1px solid rgba(220, 20, 60, 0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white;">
                                 2
                             </div>
                             <div class="step-icon mb-3">
-                                <i class="fas fa-edit" style="font-size: 2rem; color: #FF6B6B;"></i>
+                                <i class="fas fa-edit" style="font-size: 2rem; color: #dc143c;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Fill Details</h4>
-                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">Fill Details</h4>
+                            <p style="color: #6c757d; font-size: 0.95rem; line-height: 1.6;">
                                 Provide your contact information, address, and service requirements. Our system will auto-fill details for returning customers
                             </p>
                         </div>
@@ -1940,15 +2175,15 @@
 
                     <!-- Step 3 -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
-                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white; box-shadow: 0 5px 15px rgba(78,205,196,0.4);">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 30px 20px; border: 1px solid rgba(220, 20, 60, 0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white;">
                                 3
                             </div>
                             <div class="step-icon mb-3">
-                                <i class="fas fa-phone-alt" style="font-size: 2rem; color: #4ECDC4;"></i>
+                                <i class="fas fa-phone-alt" style="font-size: 2rem; color: #dc143c;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Get Confirmation</h4>
-                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">Get Confirmation</h4>
+                            <p style="color: #6c757d; font-size: 0.95rem; line-height: 1.6;">
                                 Our team will call you within 30 minutes to confirm your booking and schedule the service at your convenient time
                             </p>
                         </div>
@@ -1956,15 +2191,15 @@
 
                     <!-- Step 4 -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 30px 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); height: 100%; transition: all 0.3s ease;">
-                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #A8E6CF 0%, #88D8A3 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: #2d3748; box-shadow: 0 5px 15px rgba(168,230,207,0.4);">
+                        <div class="booking-step-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 30px 20px; border: 1px solid rgba(220, 20, 60, 0.2); height: 100%; transition: all 0.3s ease;">
+                            <div class="step-number mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #8b1538 100%); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; font-size: 1.5rem; font-weight: bold; color: white;">
                                 4
                             </div>
                             <div class="step-icon mb-3">
-                                <i class="fas fa-tools" style="font-size: 2rem; color: #A8E6CF;"></i>
+                                <i class="fas fa-tools" style="font-size: 2rem; color: #dc143c;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white; font-size: 1.2rem;">Expert Service</h4>
-                            <p style="color: rgba(255,255,255,0.9); font-size: 0.95rem; line-height: 1.6;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748; font-size: 1.2rem;">Expert Service</h4>
+                            <p style="color: #6c757d; font-size: 0.95rem; line-height: 1.6;">
                                 Our certified technician arrives at your location with all necessary tools and provides professional service with 1-month warranty
                             </p>
                         </div>
@@ -1974,37 +2209,37 @@
                 <!-- Quick Booking Options -->
                 <div class="row mt-5">
                     <div class="col-12">
-                        <div class="quick-booking-section text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                            <h3 class="font-weight-bold mb-4" style="color: white; font-size: 1.8rem;">
-                                <i class="fas fa-rocket" style="color: #FFD700; margin-right: 10px;"></i>Quick Booking Options
+                        <div class="quick-booking-section text-center" style="background: rgba(255,255,255,0.6); border-radius: 20px; padding: 40px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                            <h3 class="font-weight-bold mb-4" style="color: #2d3748; font-size: 1.8rem;">
+                                <i class="fas fa-rocket" style="color: #dc143c; margin-right: 10px;"></i>Quick Booking Options
                             </h3>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                                        <i class="fas fa-globe" style="font-size: 2rem; color: #FFD700; margin-bottom: 15px;"></i>
-                                        <h5 style="color: white; margin-bottom: 10px;">Online Booking</h5>
-                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">Fill the form above and get instant confirmation</p>
-                                        <a href="#booking-form" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #FFD700; color: #FFD700;">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.6); transition: all 0.3s ease;">
+                                        <i class="fas fa-calendar-alt" style="font-size: 2rem; color: #dc143c; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #2d3748; margin-bottom: 10px;">Online Booking</h5>
+                                        <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 15px;">Fill the form above and get instant confirmation</p>
+                                        <a href="#booking-form" class="btn btn-outline-danger" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c;">
                                             Book Now
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                                        <i class="fas fa-phone" style="font-size: 2rem; color: #4ECDC4; margin-bottom: 15px;"></i>
-                                        <h5 style="color: white; margin-bottom: 10px;">Call Direct</h5>
-                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">Speak directly with our booking team</p>
-                                        <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #4ECDC4; color: #4ECDC4;">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.6); transition: all 0.3s ease;">
+                                        <i class="fas fa-phone" style="font-size: 2rem; color: #dc143c; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #2d3748; margin-bottom: 10px;">Call Direct</h5>
+                                        <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 15px;">Speak directly with our booking team</p>
+                                        <a href="tel:7559606925" class="btn btn-outline-danger" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c;">
                                             Call 7559606925
                                         </a>
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.1); transition: all 0.3s ease;">
-                                        <i class="fas fa-bolt" style="font-size: 2rem; color: #FF6B6B; margin-bottom: 15px;"></i>
-                                        <h5 style="color: white; margin-bottom: 10px;">Emergency Service</h5>
-                                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; margin-bottom: 15px;">24/7 emergency support available</p>
-                                        <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #FF6B6B; color: #FF6B6B;">
+                                    <div class="quick-option" style="padding: 20px; border-radius: 15px; background: rgba(255,255,255,0.6); transition: all 0.3s ease;">
+                                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #dc143c; margin-bottom: 15px;"></i>
+                                        <h5 style="color: #2d3748; margin-bottom: 10px;">Emergency Service</h5>
+                                        <p style="color: #6c757d; font-size: 0.9rem; margin-bottom: 15px;">24/7 emergency support available</p>
+                                        <a href="tel:7559606925" class="btn btn-outline-danger" style="border-radius: 25px; padding: 8px 20px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c;">
                                             Emergency Call
                                         </a>
                                     </div>
@@ -2074,12 +2309,12 @@
         </section>
 
         <!-- FAQ Section -->
-        <section id="faq-section" class="faq-section" style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); padding: 60px 0;">
+        <section id="faq-section" class="faq-section" style="background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 30%, #faf5ff 60%, #fdf2f8 100%); padding: 60px 0;">
             <div class="container">
                 <div class="row text-center mb-5">
                     <div class="col-12">
                         <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
-                            <i class="fas fa-question-circle" style="color: #EC4899; margin-right: 10px;"></i>Frequently Asked Questions
+                            <i class="fas fa-question-circle" style="color: #dc143c; margin-right: 10px;"></i>Frequently Asked Questions
                         </h2>
                         <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
                             Get answers to common questions about our services
@@ -2091,8 +2326,8 @@
                     <div class="col-lg-8 mx-auto">
                         <div class="accordion" id="faqAccordion">
                             <!-- FAQ 1 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq1" style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq1" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100" type="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #EC4899; margin-right: 10px;"></i>
@@ -2108,8 +2343,8 @@
                             </div>
 
                             <!-- FAQ 2 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq2" style="background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq2" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false" aria-controls="collapse2" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #10B981; margin-right: 10px;"></i>
@@ -2125,8 +2360,8 @@
                             </div>
 
                             <!-- FAQ 3 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq3" style="background: linear-gradient(135deg, #FDF5FF 0%, #F3E8FF 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq3" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #8B5CF6; margin-right: 10px;"></i>
@@ -2142,8 +2377,8 @@
                             </div>
 
                             <!-- FAQ 4 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq4" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq4" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse4" aria-expanded="false" aria-controls="collapse4" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #F59E0B; margin-right: 10px;"></i>
@@ -2159,8 +2394,8 @@
                             </div>
 
                             <!-- FAQ 5 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq5" style="background: linear-gradient(135deg, #FEF2F2 0%, #FECACA 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq5" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse5" aria-expanded="false" aria-controls="collapse5" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #EF4444; margin-right: 10px;"></i>
@@ -2176,8 +2411,8 @@
                             </div>
 
                             <!-- FAQ 6 -->
-                            <div class="card border-0 mb-3" style="border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08);">
-                                <div class="card-header" id="faq6" style="background: linear-gradient(135deg, #F0F9FF 0%, #DBEAFE 100%); border: none; border-radius: 15px 15px 0 0;">
+                            <div class="card border-0 mb-3" style="border-radius: 15px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                                <div class="card-header" id="faq6" style="background: rgba(255,255,255,0.8); border: none; border-radius: 15px 15px 0 0;">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link font-weight-bold text-left w-100 collapsed" type="button" data-toggle="collapse" data-target="#collapse6" aria-expanded="false" aria-controls="collapse6" style="color: #2d3748; text-decoration: none; padding: 20px;">
                                             <i class="fas fa-plus-circle" style="color: #3B82F6; margin-right: 10px;"></i>
@@ -2198,14 +2433,14 @@
         </section>
 
         <!-- Contact Section -->
-        <section id="contact-section" class="contact-section" style="background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%); padding: 60px 0; color: white;">
+        <section id="contact-section" class="contact-section" style="background: linear-gradient(135deg, #faf5ff 0%, #ffffff 30%, #fdf2f8 60%, #f3e8ff 100%); padding: 60px 0; color: #2d3748;">
             <div class="container">
                 <div class="row text-center mb-5">
                     <div class="col-12">
-                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: white;">
-                            <i class="fas fa-phone" style="color: #EC4899; margin-right: 10px;"></i>Contact Us
+                        <h2 class="font-weight-bold mb-3" style="font-size: 2.5rem; color: #2d3748;">
+                            <i class="fas fa-phone" style="color: #dc143c; margin-right: 10px;"></i>Contact Us
                         </h2>
-                        <p class="lead" style="color: #cbd5e0; max-width: 800px; margin: 0 auto;">
+                        <p class="lead" style="color: #6c757d; max-width: 800px; margin: 0 auto;">
                             Get in touch with our expert team for all your service needs
                         </p>
                     </div>
@@ -2213,39 +2448,39 @@
                 
                 <div class="row">
                     <div class="col-lg-4 mb-4">
-                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 40px 30px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #e91e63 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                                 <i class="fas fa-phone" style="color: white; font-size: 1.8rem;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white;">Call Us</h4>
-                            <p style="color: #cbd5e0; margin-bottom: 20px;">Available 24/7 for emergency services</p>
-                            <a href="tel:7559606925" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #EC4899; color: #EC4899;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748;">Call Us</h4>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Available 24/7 for emergency services</p>
+                            <a href="tel:7559606925" class="btn" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c; background: transparent;">
                                 <i class="fas fa-phone"></i> 7559606925
                             </a>
                         </div>
                     </div>
                     
                     <div class="col-lg-4 mb-4">
-                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 40px 30px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #e91e63 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                                 <i class="fas fa-envelope" style="color: white; font-size: 1.8rem;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white;">Email Us</h4>
-                            <p style="color: #cbd5e0; margin-bottom: 20px;">Send us your service requirements</p>
-                            <a href="mailto:electrozot@outlook.com" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #10B981; color: #10B981;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748;">Email Us</h4>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Send us your service requirements</p>
+                            <a href="mailto:electrozot@outlook.com" class="btn" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c; background: transparent;">
                                 <i class="fas fa-envelope"></i> Email Now
                             </a>
                         </div>
                     </div>
                     
                     <div class="col-lg-4 mb-4">
-                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                        <div class="contact-card text-center" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 40px 30px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                            <div class="contact-icon mb-3" style="background: linear-gradient(135deg, #dc143c 0%, #e91e63 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
                                 <i class="fas fa-calendar-check" style="color: white; font-size: 1.8rem;"></i>
                             </div>
-                            <h4 class="font-weight-bold mb-3" style="color: white;">Book Online</h4>
-                            <p style="color: #cbd5e0; margin-bottom: 20px;">Quick and easy online booking</p>
-                            <a href="#booking-form" class="btn btn-outline-light" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #8B5CF6; color: #8B5CF6;">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748;">Book Online</h4>
+                            <p style="color: #6c757d; margin-bottom: 20px;">Quick and easy online booking</p>
+                            <a href="#booking-form" class="btn" style="border-radius: 25px; padding: 12px 30px; font-weight: 600; border: 2px solid #dc143c; color: #dc143c; background: transparent;">
                                 <i class="fas fa-calendar-check"></i> Book Now
                             </a>
                         </div>
@@ -2254,11 +2489,11 @@
                 
                 <div class="row mt-5">
                     <div class="col-12 text-center">
-                        <div class="service-areas" style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                            <h4 class="font-weight-bold mb-3" style="color: white;">
-                                <i class="fas fa-map-marker-alt" style="color: #F59E0B; margin-right: 10px;"></i>Service Areas
+                        <div class="service-areas" style="background: rgba(255,255,255,0.8); border-radius: 20px; padding: 30px; border: 1px solid rgba(220, 20, 60, 0.2);">
+                            <h4 class="font-weight-bold mb-3" style="color: #2d3748;">
+                                <i class="fas fa-map-marker-alt" style="color: #dc143c; margin-right: 10px;"></i>Service Areas
                             </h4>
-                            <p style="color: #cbd5e0; font-size: 1.1rem; line-height: 1.6; margin: 0;">
+                            <p style="color: #6c757d; font-size: 1.1rem; line-height: 1.6; margin: 0;">
                                 We provide services across <strong>Himachal Pradesh</strong> with special focus on 
                                 <strong>Kangra District</strong> including Kangra, Dharamshala, Palampur, Baijnath, Nurpur, Dehra, and nearby areas.
                             </p>

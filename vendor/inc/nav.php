@@ -22,7 +22,6 @@
                 border: none !important;
                 border-top: none !important;
                 border-bottom: none !important;
-                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4) !important;
                 padding: 4px 0 2px 0 !important;
             }
             
@@ -44,35 +43,29 @@
         
         @keyframes navbarColorChange {
             0% {
-                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
             25% {
-                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
             37.5% {
-                background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
-                box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
             62.5% {
-                background: linear-gradient(135deg, #155e75 0%, #0891b2 50%, #06b6d4 100%);
-                box-shadow: 0 6px 25px rgba(21, 94, 117, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
             75% {
-                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
             100% {
-                background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-                box-shadow: 0 6px 25px rgba(139, 0, 0, 0.5), 0 2px 10px rgba(0,0,0,0.4);
+                background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
             }
         }
         
         /* Enable animation on both desktop and mobile */
         .navbar-color-transition {
-            background: linear-gradient(135deg, #8b0000 0%, #dc143c 100%);
-            animation: navbarColorChange 8s ease-in-out infinite !important;
+            background: linear-gradient(135deg, #4a0e0e 0%, #dc143c 100%);
+            animation: none !important;
         }
     </style>
     <!-- Glossy overlay effect - removed to fix white line -->
@@ -91,8 +84,8 @@
             <img src="<?php echo $logoPath; ?>" alt="Electrozot - Best Electrical & Plumbing Service in Kangra District" class="navbar-logo" style="height: 95px; width: auto; transition: transform 0.3s ease; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
             <i class="fas fa-bolt logo-fallback" style="font-size: 3rem; display: none; animation: pulse 2s ease-in-out infinite; color: #ffd700;"></i>
             <div class="d-flex flex-column" style="margin-left: -10px;">
-                <span style="font-size: 2rem; line-height: 1.1; font-weight: 600; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Electrozot</span>
-                <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">We Make Perfect</small>
+                <span style="font-size: 2rem; line-height: 1.1; font-weight: 600;">Electrozot</span>
+                <small class="navbar-tagline" style="font-size: 0.9rem; font-weight: 500; font-style: italic; line-height: 1; color: rgba(255, 255, 255, 0.95); letter-spacing: 0.5px;">We Make Perfect</small>
             </div>
         </a>
         <!-- PWA Install Button - Mobile Left Side -->
@@ -114,7 +107,6 @@
             .mobile-login-btn:hover {
                 background: rgba(255, 255, 255, 0.4) !important;
                 transform: translateY(-2px);
-                box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3) !important;
                 color: #ffffff !important;
                 border-color: rgba(255, 255, 255, 0.6) !important;
             }
@@ -127,7 +119,6 @@
             /* Hamburger menu button hover effect */
             .navbar-toggler:hover {
                 background: rgba(255, 255, 255, 0.4) !important;
-                box-shadow: 0 6px 16px rgba(255, 255, 255, 0.3) !important;
                 transform: scale(1.05);
                 border-color: rgba(255, 255, 255, 0.6) !important;
             }
@@ -298,12 +289,12 @@
                     background: #4a5568 !important;
                     padding: 10px !important;
                     padding-top: 50px !important;
-                    box-shadow: -3px 3px 12px rgba(0,0,0,0.25) !important;
                     transition: right 0.3s ease-in-out !important;
                     z-index: 99999 !important;
                     overflow-y: auto !important;
                     overflow-x: hidden !important;
                     margin-top: 0 !important;
+                    border-radius: 8px 0 0 8px !important;
                     border-radius: 8px 0 0 8px !important;
                 }
                 
@@ -562,10 +553,10 @@
         
         @keyframes pulseGlow {
             0%, 100% {
-                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+                opacity: 1;
             }
             50% {
-                box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+                opacity: 0.8;
             }
         }
         
@@ -588,7 +579,6 @@
             transform: translateY(-10px);
             transition: all 0.3s ease;
             border: none !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important;
         }
         
         .dropdown:hover .dropdown-menu,
@@ -625,7 +615,6 @@
                 background: rgba(255,255,255,0.1) !important;
                 border: 1px solid rgba(255,255,255,0.2) !important;
                 border-radius: 8px !important;
-                box-shadow: inset 0 2px 10px rgba(0,0,0,0.2) !important;
                 opacity: 1 !important;
                 visibility: visible !important;
                 transform: none !important;

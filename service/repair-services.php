@@ -264,12 +264,12 @@ include('../admin/vendor/inc/config.php');
     </style>
 </head>
 
-<body style="background: linear-gradient(180deg, #f8f9fa 0%, #fff5f7 100%); min-height: 100vh; padding-bottom: 70px;">
+<body style="background: linear-gradient(180deg, #faf5ff 0%, #ffffff 100%); min-height: 100vh; padding-bottom: 70px;">
 
     <?php include("../vendor/inc/nav.php");?>
 
     <!-- Hero Section -->
-    <section class="services-hero" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 25%, #F9A8D4 50%, #FBCFE8 75%, #FED7D7 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px;">
+    <section class="services-hero" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 25%, #ffffff 50%, #faf5ff 75%, #f3e8ff 100%); background-size: 200% 200%; animation: gradientShift 10s ease infinite; padding: 140px 0 50px 0; margin-top: -56px;">
         <style>
             @keyframes gradientShift {
                 0% { background-position: 0% 50%; }
@@ -279,10 +279,10 @@ include('../admin/vendor/inc/config.php');
         </style>
         <div class="container">
             <div class="text-center">
-                <h1 class="services-title" style="font-size: 2.5rem; font-weight: 800; color: #2d3748; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(255,255,255,0.5);">
-                    <i class="fas fa-wrench" style="color: #EC4899;"></i> Repair Services
+                <h1 class="services-title" style="font-size: 2.5rem; font-weight: 800; color: #000000; margin-bottom: 15px;">
+                    <i class="fas fa-wrench" style="color: #dc143c;"></i> Repair Services
                 </h1>
-                <p class="services-subtitle" style="font-size: 1.1rem; color: #6B7280; max-width: 650px; margin: 0 auto; font-weight: 500;">
+                <p class="services-subtitle" style="font-size: 1.1rem; color: #000000; max-width: 650px; margin: 0 auto; font-weight: 500;">
                     Expert repair services for all your home and office appliances with warranty
                 </p>
             </div>
@@ -292,93 +292,51 @@ include('../admin/vendor/inc/config.php');
     <div class="container" style="padding-top: 40px; padding-bottom: 80px;">
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
-            <ol class="breadcrumb services-breadcrumb" style="background: rgba(255,255,255,0.95); border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; display: flex; flex-wrap: nowrap; align-items: center;">
+            <ol class="breadcrumb services-breadcrumb" style="background: #faf5ff; border-radius: 12px; padding: 12px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; display: flex; flex-wrap: nowrap; align-items: center;">
                 <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
-                    <a href="../index.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
+                    <a href="../index.php" style="color: #dc143c; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
                         <i class="fas fa-home"></i> Home
                     </a>
                 </li>
                 <li class="breadcrumb-item" style="display: inline-flex; align-items: center;">
-                    <a href="../services.php" style="color: #EC4899; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
+                    <a href="../services.php" style="color: #dc143c; text-decoration: none; font-size: 0.95rem; font-weight: 600; white-space: nowrap;">
                         Services
                     </a>
                 </li>
-                <li class="breadcrumb-item active" style="color: #6c757d; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Repair Services</li>
+                <li class="breadcrumb-item active" style="color: #000000; font-size: 0.95rem; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap;">Repair Services</li>
             </ol>
         </nav>
 
         <!-- Service Categories -->
         <div class="row">
-            <!-- Major Appliances -->
-            <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-tv" style="color: #EC4899; margin-right: 8px;"></i>Major Appliances Repair
+            <!-- Professional Repair Services -->
+            <div class="col-lg-8 col-md-8 mb-4 mx-auto">
+                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px; overflow: hidden;">
+                    <div class="card-header service-card-header" style="background: #f3e8ff; padding: 20px 25px; border: none;">
+                        <h5 class="mb-0 text-center" style="font-size: 1.2rem; font-weight: 600; color: #000000;">
+                            <i class="fas fa-wrench" style="color: #dc143c; margin-right: 10px;"></i>Professional Repair Services
                         </h5>
                     </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 15px; line-height: 1.6;">
-                            Expert repair services for all major home appliances by certified technicians. We fix AC, refrigerator, washing machine, and more with genuine spare parts and 1-month warranty.
+                    <div class="card-body" style="padding: 25px;">
+                        <p style="font-size: 1rem; color: #000000; margin-bottom: 20px; line-height: 1.6; text-align: center;">
+                            Expert repair services for all home and office appliances by certified technicians. We fix AC, refrigerator, washing machine, TV, and more with genuine spare parts and 1-month warranty.
                         </p>
                         <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                            <li class="service-item" data-service="ac-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>AC Repair:</strong> Split, window, and central AC repair with gas charging, compressor repair, and cooling issues.
+                            <li class="service-item" data-service="major-appliances-repair" style="font-size: 0.9rem; color: #495057; padding: 12px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
+                                <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.85rem; margin-right: 12px;"></i>
+                                <strong>Major Appliances Repair:</strong> AC, refrigerator, washing machine, microwave, and geyser repair with gas charging, compressor repair, and component replacement.
                             </li>
-                            <li class="service-item" data-service="refrigerator-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Refrigerator Service:</strong> Single/double door fridge repair, gas charging, thermostat, and compressor issues.
+                            <li class="service-item" data-service="tv-electronics-repair" style="font-size: 0.9rem; color: #495057; padding: 12px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
+                                <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.85rem; margin-right: 12px;"></i>
+                                <strong>TV & Electronics Repair:</strong> LED, LCD, Smart TV repair with display, audio issues, and small appliances like mixer grinder, iron, and induction cooktop.
                             </li>
-                            <li class="service-item" data-service="washing-machine-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Washing Machine:</strong> Front load, top load, semi-automatic repair with motor, belt, and drainage issues.
+                            <li class="service-item" data-service="fan-motor-repair" style="font-size: 0.9rem; color: #495057; padding: 12px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
+                                <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.85rem; margin-right: 12px;"></i>
+                                <strong>Fan & Motor Repair:</strong> Ceiling, table, exhaust fan repair with motor, capacitor, speed control issues, and electrical motor rewinding services.
                             </li>
-                            <li class="service-item" data-service="microwave-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Microwave Oven:</strong> Heating problems, turntable issues, control panel, and magnetron repair.
-                            </li>
-                            <li class="service-item" data-service="geyser-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Geyser Repair:</strong> Electric and gas geyser repair, heating element, thermostat, and tank leakage issues.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Other Gadgets -->
-            <div class="col-lg-6 col-md-6 mb-4">
-                <div class="card h-100 service-card-compact border-0 shadow-sm" style="background: linear-gradient(180deg, #fff 0%, #FFF5F7 100%); border-radius: 15px; overflow: hidden;">
-                    <div class="card-header service-card-header" style="background: linear-gradient(135deg, #FECDD3 0%, #FDA4AF 100%); padding: 15px 20px; border: none;">
-                        <h5 class="mb-0" style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">
-                            <i class="fas fa-tools" style="color: #EC4899; margin-right: 8px;"></i>Electronics & Small Appliances
-                        </h5>
-                    </div>
-                    <div class="card-body" style="padding: 20px;">
-                        <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 15px; line-height: 1.6;">
-                            Professional repair services for all electronic gadgets and small appliances. Our skilled technicians handle TV, music systems, kitchen appliances, and more with precision.
-                        </p>
-                        <ul class="service-list" style="list-style: none; padding: 0; margin: 0;">
-                            <li class="service-item" data-service="tv-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>TV Repair:</strong> LED, LCD, Smart TV repair with display, audio, and connectivity issues.
-                            </li>
-                            <li class="service-item" data-service="fan-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Fan Service:</strong> Ceiling, table, exhaust fan repair with motor, capacitor, and speed issues.
-                            </li>
-                            <li class="service-item" data-service="mixer-grinder-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Mixer Grinder:</strong> Motor repair, jar replacement, blade sharpening, and coupling issues.
-                            </li>
-                            <li class="service-item" data-service="iron-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease; border-bottom: 1px solid #f1f3f4;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Electric Iron:</strong> Steam iron, dry iron repair with heating element and temperature control.
-                            </li>
-                            <li class="service-item" data-service="induction-repair" style="font-size: 0.85rem; color: #495057; padding: 8px 0; cursor: pointer; transition: all 0.3s ease;">
-                                <i class="fas fa-check-circle" style="color: #EC4899; font-size: 0.8rem; margin-right: 10px;"></i>
-                                <strong>Induction Cooktop:</strong> Heating coil, control panel, and power supply issues repair.
+                            <li class="service-item" data-service="warranty-service" style="font-size: 0.9rem; color: #495057; padding: 12px 0; cursor: pointer; transition: all 0.3s ease;">
+                                <i class="fas fa-check-circle" style="color: #dc143c; font-size: 0.85rem; margin-right: 12px;"></i>
+                                <strong>Warranty & Support:</strong> 1-month service warranty on all repairs, genuine spare parts, same-day service, and support for all major brands.
                             </li>
                         </ul>
                     </div>
@@ -389,15 +347,15 @@ include('../admin/vendor/inc/config.php');
         <!-- Why Choose Electrozot for Repair Services -->
         <div class="row mt-5">
             <div class="col-12">
-                <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-radius: 15px;">
+                <div class="card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px;">
                     <div class="card-body" style="padding: 30px;">
-                        <h3 class="text-center mb-4" style="color: #EC4899; font-weight: 700;">
+                        <h3 class="text-center mb-4" style="color: #dc143c; font-weight: 700;">
                             <i class="fas fa-award"></i> Best Appliance Repair Service in Kangra District
                         </h3>
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 style="color: #2d3748; font-weight: 600; margin-bottom: 15px;">🔧 Expert Technicians Near You</h5>
-                                <ul style="color: #6c757d; font-size: 0.9rem; line-height: 1.8;">
+                                <h5 style="color: #000000; font-weight: 600; margin-bottom: 15px;">🔧 Expert Technicians Near You</h5>
+                                <ul style="color: #000000; font-size: 0.9rem; line-height: 1.8;">
                                     <li><strong>Skilled Professionals:</strong> 10+ years experienced technicians for all brands</li>
                                     <li><strong>Genuine Parts:</strong> Original spare parts with manufacturer warranty</li>
                                     <li><strong>Quick Diagnosis:</strong> Advanced tools for accurate problem identification</li>
@@ -405,8 +363,8 @@ include('../admin/vendor/inc/config.php');
                                 </ul>
                             </div>
                             <div class="col-md-6">
-                                <h5 style="color: #2d3748; font-weight: 600; margin-bottom: 15px;">⭐ Top-Rated Repair Service</h5>
-                                <ul style="color: #6c757d; font-size: 0.9rem; line-height: 1.8;">
+                                <h5 style="color: #000000; font-weight: 600; margin-bottom: 15px;">⭐ Top-Rated Repair Service</h5>
+                                <ul style="color: #000000; font-size: 0.9rem; line-height: 1.8;">
                                     <li><strong>1-Month Warranty:</strong> Service warranty on all repair work</li>
                                     <li><strong>Same Day Service:</strong> Most repairs completed within 24 hours</li>
                                     <li><strong>Transparent Pricing:</strong> No hidden charges, upfront cost estimation</li>
@@ -427,12 +385,12 @@ include('../admin/vendor/inc/config.php');
         <!-- Warranty Information -->
         <div class="row mt-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-radius: 15px;">
+                <div class="card border-0 shadow-sm" style="background: #faf5ff; border-radius: 15px;">
                     <div class="card-body text-center" style="padding: 30px;">
-                        <h4 style="color: #EC4899; font-weight: 700; margin-bottom: 20px;">
+                        <h4 style="color: #dc143c; font-weight: 700; margin-bottom: 20px;">
                             <i class="fas fa-shield-alt"></i> 1-Month Warranty on All Repairs
                         </h4>
-                        <p style="color: #6c757d; font-size: 1rem; margin-bottom: 0;">
+                        <p style="color: #000000; font-size: 1rem; margin-bottom: 0;">
                             All our repair services come with a comprehensive 1-month warranty. Your satisfaction and peace of mind are our top priorities.
                         </p>
                     </div>
@@ -442,7 +400,7 @@ include('../admin/vendor/inc/config.php');
 
         <!-- Call to Action -->
         <div class="text-center mt-5">
-            <a href="../index.php#booking-form" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #EC4899 0%, #F472B6 100%); border: none; border-radius: 25px; padding: 15px 40px; font-weight: 600; font-size: 1.1rem; box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);">
+            <a href="../index.php#booking-form" class="btn btn-primary btn-lg" style="background: #e9d5ff; border: 2px solid #dc143c; border-radius: 25px; padding: 15px 40px; font-weight: 600; font-size: 1.1rem; color: #000000; text-decoration: none;">
                 <i class="fas fa-calendar-check"></i> Book Repair Service Now
             </a>
         </div>
@@ -467,13 +425,13 @@ include('../admin/vendor/inc/config.php');
 
         .service-card-compact:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(255, 71, 87, 0.2) !important;
+            box-shadow: 0 15px 35px rgba(220, 20, 60, 0.2) !important;
         }
 
         .service-list li:hover {
-            color: #EC4899 !important;
+            color: #dc143c !important;
             padding-left: 15px;
-            background: rgba(236, 72, 153, 0.1);
+            background: rgba(220, 20, 60, 0.1);
             border-radius: 8px;
         }
     </style>
