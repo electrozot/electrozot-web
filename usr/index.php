@@ -41,10 +41,11 @@
           }
       }
       
-      $_SESSION['u_id']=$u_id;//assign session to user id
-      
       if($rs && $password_valid)
       {//if its sucessfull
+        // Set session variables AFTER successful authentication
+        $_SESSION['u_id']=$u_id;//assign session to user id
+        
         // Regenerate session ID for security
         session_regenerate_id(true);
         
