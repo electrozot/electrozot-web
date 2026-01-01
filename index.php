@@ -4,6 +4,11 @@
   header("Pragma: no-cache");
   header("Expires: 0");
   
+  // Include PWA session fix for proper authentication
+  if (file_exists('tech/pwa-session-fix.php')) {
+      include_once('tech/pwa-session-fix.php');
+      configure_pwa_session();
+  }
   session_start();
   include('admin/vendor/inc/config.php');
   //include('vendor/inc/checklogin.php');

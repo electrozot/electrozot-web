@@ -18,17 +18,22 @@ $tinymce_api_key = "p06fobmdfwb9p9piooby6kip531y3o8cmmmvidr9cg8rdd09";
 // DATABASE CONFIGURATION
 // ============================================
 
-// LOCAL DEVELOPMENT SETTINGS
-$dbuser = "root";
-$dbpass = "";
-$host = "localhost";
-$db = "electrozot_db";
+// Detect environment and use appropriate settings
+$is_localhost = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'localhost');
 
-// PRODUCTION SETTINGS (Uncomment when deploying to production)
-// $dbuser = "u848820288_Mohit";
-// $dbpass = "Moh2020@#@";
-// $host = "localhost";
-// $db = "u848820288_electrozot";
+if ($is_localhost) {
+    // LOCAL DEVELOPMENT SETTINGS
+    $dbuser = "root";
+    $dbpass = "";
+    $host = "localhost";
+    $db = "electrozot_db";
+} else {
+    // PRODUCTION SETTINGS
+    $dbuser = "u848820288_Mohit";
+    $dbpass = "Moh2020@#@";
+    $host = "localhost";
+    $db = "u848820288_electrozot";
+}
 
 // ============================================
 // DATABASE CONNECTION

@@ -1,8 +1,11 @@
 <?php
-  // Configure persistent session (30 days) BEFORE starting session
-  include('../admin/vendor/inc/session-config.php');
-  session_start();
+  // Include PWA session fix for production compatibility
+  include('pwa-session-fix.php');
   include('../admin/vendor/inc/config.php');
+  
+  // Configure PWA-compatible session
+  configure_pwa_session();
+  session_start();
 
   // Check if technician is already logged in - redirect to last page or dashboard
   if(isset($_SESSION['t_id']) && strlen($_SESSION['t_id']) > 0) {
@@ -103,15 +106,25 @@
   $_SESSION['t_id'] = $row->t_id;
   $_SESSION['t_name'] = $row->t_name;
   $_SESSION['t_id_no'] = $row->t_id_no;
+  $_SESSION['login_time'] = time();
   
   // Regenerate session ID for security
   session_regenerate_id(true);
   
-  // Set remember me cookie if checked (extends session permanently - 10 years)
+  // Detect if production PWA environment
+  $is_production_pwa = $_SERVER['HTTP_HOST'] !== 'localhost';
+  
+  // Set permanent cookie for production PWA or when remember me is checked
   $remember_me = isset($_POST['remember_me']) ? true : false;
-  if($remember_me) {
-      // Cookie will last 10 years (effectively permanent)
-      setcookie(session_name(), session_id(), time() + 315360000, '/');
+  if($remember_me || $is_production_pwa) {
+      // Cookie will last 10 years (effectively permanent until logout)
+      $cookie_lifetime = time() + 315360000; // 10 years
+      $is_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
+                  $_SERVER['SERVER_PORT'] == 443 ||
+                  (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ||
+                  $is_production_pwa; // Assume production uses HTTPS
+      
+      setcookie(session_name(), session_id(), $cookie_lifetime, '/', '', $is_https, true);
   }
   
   // Redirect to last visited page or dashboard
