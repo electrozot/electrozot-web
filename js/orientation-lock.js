@@ -22,7 +22,7 @@
         // Try to lock orientation using Screen Orientation API
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('portrait').catch(function(error) {
-                // Silently handle error
+
             });
         } 
         // Fallback for older browsers
@@ -37,23 +37,41 @@
         }
     }
 
+    // Handle orientation change events
+    function handleOrientationChange() {
+        if (!isMobileDevice()) {
+            return;
+        }
+
+        const orientation = window.orientation || screen.orientation?.angle || 0;
+        
+        // If device is in landscape mode on mobile, show warning
+        if (Math.abs(orientation) === 90) {
+            document.body.classList.add('landscape-warning');
+        } else {
+            document.body.classList.remove('landscape-warning');
+        }
+    }
+
     // Initialize orientation lock
     function init() {
         // Lock orientation on page load
         lockOrientation();
 
-        // Listen for orientation changes and re-lock
+        // Listen for orientation changes
         window.addEventListener('orientationchange', function() {
+            handleOrientationChange();
             // Try to lock again after orientation change
             setTimeout(lockOrientation, 100);
         });
 
         // Also listen to resize events
         window.addEventListener('resize', function() {
-            if (isMobileDevice()) {
-                lockOrientation();
-            }
+            handleOrientationChange();
         });
+
+        // Initial check
+        handleOrientationChange();
     }
 
     // Run when DOM is ready

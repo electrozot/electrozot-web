@@ -1,7 +1,4 @@
 <?php
-// Include PWA session fix for production compatibility
-include('pwa-session-fix.php');
-configure_pwa_session();
 session_start();
 include('../admin/vendor/inc/config.php');
 include('includes/checklogin.php');

@@ -98,14 +98,8 @@ $primary_email = !empty($settings['primary_email']) ? $settings['primary_email']
                     <div class="col-6 col-md-6">
                         <h5 style="font-weight: 700; margin-bottom: 15px; color: #ffffff; font-size: 1rem; letter-spacing: 0.5px; text-transform: uppercase;">Electrozot</h5>
                         <?php
-                        // Include PWA session fix for proper authentication check
-                        if (file_exists($basePath . 'tech/pwa-session-fix.php')) {
-                            include_once($basePath . 'tech/pwa-session-fix.php');
-                            $tech_logged_in = is_technician_logged_in();
-                        } else {
-                            // Fallback to regular session check
-                            $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
-                        }
+                        // Check if technician is logged in (session already started in main file)
+                        $tech_logged_in = isset($_SESSION['t_id']) && !empty($_SESSION['t_id']);
                         $tech_link = $tech_logged_in ? $basePath . 'tech/dashboard.php' : $basePath . 'tech/index.php';
                         $tech_text = $tech_logged_in ? 'Dashboard' : 'Technician';
                         ?>

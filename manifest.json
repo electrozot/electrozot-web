@@ -2,7 +2,7 @@
   "name": "Electrozot - We Make Perfect",
   "short_name": "Electrozot",
   "description": "Professional electrical and technical service booking platform. Book certified technicians, track services, and manage bookings easily.",
-  "start_url": "./splash.html",
+  "start_url": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],
   "background_color": "#E9D5FF",

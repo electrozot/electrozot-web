@@ -1,17 +1,8 @@
 <?php
-// Check if technician is logged in using PWA-compatible validation
-if (function_exists('is_technician_logged_in')) {
-    // Use PWA session validation if available
-    if (!is_technician_logged_in()) {
-        header('Location: index.php');
-        exit();
-    }
-} else {
-    // Fallback to regular session check
-    if(!isset($_SESSION['t_id']) || !isset($_SESSION['t_name'])){
-        header('Location: index.php');
-        exit();
-    }
+// Check if technician is logged in
+if(!isset($_SESSION['t_id']) || !isset($_SESSION['t_name'])){
+    header('Location: index.php');
+    exit();
 }
 
 // Track this page as the last visited page
