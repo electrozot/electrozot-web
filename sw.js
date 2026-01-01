@@ -1,7 +1,7 @@
 // Service Worker for ElectroZot PWA
-const CACHE_NAME = 'electrozot-v3.7.0'; // UPDATED VERSION - FORCES CACHE REFRESH
+const CACHE_NAME = 'electrozot-v3.9.0'; // UPDATED VERSION - FORCES CACHE REFRESH
 const OFFLINE_URL = './offline.html';
-const APP_VERSION = '3.7.0';
+const APP_VERSION = '3.9.0';
 
 // Service Worker for ElectroZot PWA
 
@@ -21,6 +21,8 @@ const DEV_MODE = false; // Change to false for production
 
 // Files to cache for offline functionality (using relative paths)
 const CACHE_URLS = [
+  './splash.html',
+  './vendor/EZlogonew.png',
   './offline.html',
   './vendor/img/icons/icon-192x192.png',
   './vendor/img/icons/icon-512x512.png',

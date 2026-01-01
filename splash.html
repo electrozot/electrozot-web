@@ -72,7 +72,7 @@
         }
         
         .logo-wrapper {
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             animation: pulse 2s ease-in-out infinite;
             display: flex;
             align-items: center;
@@ -87,17 +87,15 @@
         .logo-circle {
             width: 350px;
             height: 350px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 50%;
+            background: #ffffff;
+            border-radius: 0;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             border: none;
             position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 
-                        0 0 0 10px rgba(255, 255, 255, 0.1),
-                        0 0 0 20px rgba(255, 255, 255, 0.05);
+            box-shadow: none;
             animation: logoFloat 3s ease-in-out infinite;
         }
         
@@ -107,30 +105,19 @@
         }
         
         .logo-circle img {
-            width: 310px;
-            height: 310px;
+            width: 280px;
+            height: 280px;
             object-fit: contain;
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
             position: relative;
             z-index: 1;
-            border-radius: 50%;
             transition: all 0.3s ease;
+            background: transparent;
         }
         
         .logo-circle::before {
-            content: '';
-            position: absolute;
-            top: -20px;
-            left: -20px;
-            right: -20px;
-            bottom: -20px;
-            background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #667eea);
-            background-size: 400% 400%;
-            border-radius: 50%;
-            z-index: -1;
-            animation: gradientRotate 4s linear infinite;
-            opacity: 0.3;
+            display: none;
         }
         
         @keyframes gradientRotate {
@@ -140,19 +127,14 @@
         
         .brand-name {
             font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 8px;
+            font-weight: 500;
+            margin-bottom: 4px;
             margin-top: 0;
             letter-spacing: -1px;
             animation: slideIn 1s ease-out 0.3s both;
             line-height: 1.2;
-            background: linear-gradient(45deg, #ffffff, #f8f9fa, #ffffff);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: slideIn 1s ease-out 0.3s both, textShimmer 2s ease-in-out infinite;
-            text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+            color: #8B1538;
+            text-shadow: 0 4px 20px rgba(139, 21, 56, 0.3);
         }
         
         @keyframes textShimmer {
@@ -189,11 +171,11 @@
         
         .tagline {
             font-size: 1.8rem;
-            font-weight: 700;
-            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+            color: #000000;
             margin-top: 0;
             margin-bottom: 0;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             animation: slideIn 1s ease-out 0.6s both, taglineGlow 3s ease-in-out infinite;
             line-height: 1.4;
             letter-spacing: 1px;
@@ -201,11 +183,11 @@
         
         @keyframes taglineGlow {
             0%, 100% { 
-                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+                text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 transform: scale(1);
             }
             50% { 
-                text-shadow: 0 2px 20px rgba(255, 255, 255, 0.4), 0 0 30px rgba(255, 255, 255, 0.2);
+                text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2), 0 0 30px rgba(0, 0, 0, 0.1);
                 transform: scale(1.02);
             }
         }
@@ -227,24 +209,24 @@
         .dot {
             width: 12px;
             height: 12px;
-            background: linear-gradient(45deg, #ffffff, #f8f9fa);
+            background: linear-gradient(45deg, #FFB6C1, #FFC0CB);
             border-radius: 50%;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
-                        0 0 40px rgba(255, 255, 255, 0.3),
-                        inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 20px rgba(255, 182, 193, 0.6), 
+                        0 0 40px rgba(255, 182, 193, 0.3),
+                        inset 0 2px 4px rgba(255, 182, 193, 0.3);
             animation: bounce 1.4s ease-in-out infinite, dotGlow 2s ease-in-out infinite;
         }
         
         @keyframes dotGlow {
             0%, 100% { 
-                box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 
-                           0 0 40px rgba(255, 255, 255, 0.3),
-                           inset 0 2px 4px rgba(255, 255, 255, 0.3);
+                box-shadow: 0 0 20px rgba(255, 182, 193, 0.6), 
+                           0 0 40px rgba(255, 182, 193, 0.3),
+                           inset 0 2px 4px rgba(255, 182, 193, 0.3);
             }
             50% { 
-                box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 
-                           0 0 60px rgba(255, 255, 255, 0.5),
-                           inset 0 2px 4px rgba(255, 255, 255, 0.5);
+                box-shadow: 0 0 30px rgba(255, 182, 193, 0.8), 
+                           0 0 60px rgba(255, 182, 193, 0.5),
+                           inset 0 2px 4px rgba(255, 182, 193, 0.5);
             }
         }
         
@@ -285,22 +267,25 @@
             }
             
             .logo-wrapper {
-                margin-bottom: 12px;
+                margin-bottom: 6px;
             }
             
             .logo-circle {
                 width: 250px;
                 height: 250px;
+                background: #ffffff;
+                border-radius: 0;
+                box-shadow: none;
             }
             
             .logo-circle img {
-                width: 210px;
-                height: 210px;
+                width: 190px;
+                height: 190px;
             }
             
             .brand-name {
                 font-size: 2.5rem;
-                margin-bottom: 6px;
+                margin-bottom: 3px;
             }
             
             .tagline {
@@ -325,22 +310,25 @@
             }
             
             .logo-wrapper {
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
             
             .logo-circle {
                 width: 180px;
                 height: 180px;
+                background: #ffffff;
+                border-radius: 0;
+                box-shadow: none;
             }
             
             .logo-circle img {
-                width: 150px;
-                height: 150px;
+                width: 130px;
+                height: 130px;
             }
             
             .brand-name {
                 font-size: 1.6rem;
-                margin-bottom: 5px;
+                margin-bottom: 2px;
                 letter-spacing: -0.5px;
             }
             
@@ -367,22 +355,25 @@
             }
             
             .logo-wrapper {
-                margin-bottom: 8px;
+                margin-bottom: 4px;
             }
             
             .logo-circle {
                 width: 160px;
                 height: 160px;
+                background: #ffffff;
+                border-radius: 0;
+                box-shadow: none;
             }
             
             .logo-circle img {
-                width: 135px;
-                height: 135px;
+                width: 115px;
+                height: 115px;
             }
             
             .brand-name {
                 font-size: 1.4rem;
-                margin-bottom: 4px;
+                margin-bottom: 2px;
             }
             
             .tagline {
@@ -408,22 +399,25 @@
             }
             
             .logo-wrapper {
-                margin-bottom: 6px;
+                margin-bottom: 3px;
             }
             
             .logo-circle {
                 width: 130px;
                 height: 130px;
+                background: #ffffff;
+                border-radius: 0;
+                box-shadow: none;
             }
             
             .logo-circle img {
-                width: 110px;
-                height: 110px;
+                width: 95px;
+                height: 95px;
             }
             
             .brand-name {
                 font-size: 1.2rem;
-                margin-bottom: 3px;
+                margin-bottom: 1px;
             }
             
             .tagline {
@@ -612,7 +606,7 @@
     <div class="splash-container">
         <div class="logo-wrapper">
             <div class="logo-circle">
-                <img src="vendor/img/icons/00.jpg" alt="Electrozot Logo">
+                <img src="vendor/EZlogonew.png" alt="Electrozot Logo">
             </div>
         </div>
         
@@ -762,7 +756,7 @@
                 setTimeout(function() {
                     window.location.href = './index.php';
                 }, 500);
-            }, 3000); // Increased to 3 seconds for better experience
+            }, 2000); // Reduced to 2 seconds for faster loading
         }
         
         // Redirect logic
